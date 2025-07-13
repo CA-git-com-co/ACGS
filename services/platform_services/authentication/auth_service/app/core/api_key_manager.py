@@ -2,12 +2,12 @@
 import secrets
 from datetime import datetime, timedelta, timezone
 
+from app.crud import crud_user
+from app.models import ApiKey
 from fastapi import HTTPException
 from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..crud import crud_user
-from ..models import ApiKey
 from .password import get_password_hash, verify_password
 
 # Constitutional compliance hash for ACGS
@@ -37,10 +37,10 @@ class ApiKeyManager:
         db: AsyncSession,
         user_id: int,
         name: str,
-        scopes: list[str] = None,
-        rate_limit_per_minute: int = None,
-        allowed_ips: list[str] = None,
-        expires_in_days: int = None,
+        scopes: list[str] | None = None,
+        rate_limit_per_minute: int | None = None,
+        allowed_ips: list[str] | None = None,
+        expires_in_days: int | None = None,
     ) -> dict:
         """Create new API key for user"""
 
@@ -153,11 +153,11 @@ class ApiKeyManager:
         db: AsyncSession,
         key_id: int,
         user_id: int,
-        name: str = None,
-        scopes: list[str] = None,
-        rate_limit_per_minute: int = None,
-        allowed_ips: list[str] = None,
-        is_active: bool = None,
+        name: str | None = None,
+        scopes: list[str] | None = None,
+        rate_limit_per_minute: int | None = None,
+        allowed_ips: list[str] | None = None,
+        is_active: bool | None = None,
     ) -> bool:
         """Update API key settings"""
         result = await db.execute(
@@ -206,7 +206,7 @@ class ApiKeyManager:
         return True
 
     async def verify_api_key(
-        self, db: AsyncSession, api_key: str, required_scopes: list[str] = None
+        self, db: AsyncSession, api_key: str, required_scopes: list[str] | None = None
     ) -> dict | None:
         """Verify API key and return user/key information"""
         if len(api_key) < self.prefix_length:
@@ -276,8 +276,8 @@ class ApiKeyManager:
         self,
         db: AsyncSession,
         user_id: int,
-        start_date: datetime = None,
-        end_date: datetime = None,
+        start_date: datetime | None = None,
+        end_date: datetime | None = None,
     ) -> dict:
         """Get API key usage statistics"""
         if not start_date:

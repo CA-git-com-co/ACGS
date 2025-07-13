@@ -5,6 +5,7 @@ Implements comprehensive human oversight and approval mechanisms.
 
 import asyncio
 import logging
+import operator
 import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -217,7 +218,7 @@ class HumanApprovalWorkflow:
         self,
         evolution_id: str,
         workflow_type: str = "single_reviewer",
-        required_expertise: list[str] = None,
+        required_expertise: list[str] | None = None,
         priority: ReviewPriority = ReviewPriority.MEDIUM,
     ) -> str:
         """Create a new review workflow."""
@@ -352,7 +353,7 @@ class HumanApprovalWorkflow:
         """Create review tasks for a workflow stage."""
         tasks = []
 
-        for i in range(stage["required_reviewers"]):
+        for _i in range(stage["required_reviewers"]):
             task_id = str(uuid.uuid4())
 
             task = ReviewTask(
@@ -435,7 +436,7 @@ class HumanApprovalWorkflow:
 
         if candidates:
             # Sort by score and return best candidate
-            candidates.sort(key=lambda x: x[1], reverse=True)
+            candidates.sort(key=operator.itemgetter(1), reverse=True)
             return candidates[0][0]
 
         return None
@@ -469,7 +470,7 @@ class HumanApprovalWorkflow:
         reviewer_id: str,
         decision: ReviewDecision,
         justification: str,
-        recommendations: list[str] = None,
+        recommendations: list[str] | None = None,
     ) -> bool:
         """Submit a review decision."""
         if task_id not in self.pending_tasks:
@@ -613,28 +614,23 @@ class HumanApprovalWorkflow:
 
     def get_pending_tasks_for_reviewer(self, reviewer_id: str) -> list[dict[str, Any]]:
         """Get pending tasks for a specific reviewer."""
-        tasks = []
 
-        for task in self.pending_tasks.values():
-            if task.reviewer_id == reviewer_id and task.completed_at is None:
-                tasks.append(
-                    {
-                        "task_id": task.task_id,
-                        "evolution_id": task.evolution_id,
-                        "title": task.title,
-                        "description": task.description,
-                        "priority": task.priority.name,
-                        "assigned_at": (
-                            task.assigned_at.isoformat() if task.assigned_at else None
-                        ),
-                        "deadline": (
-                            task.deadline.isoformat() if task.deadline else None
-                        ),
-                        "required_expertise": task.required_expertise,
-                    }
-                )
-
-        return tasks
+        return [
+            {
+                "task_id": task.task_id,
+                "evolution_id": task.evolution_id,
+                "title": task.title,
+                "description": task.description,
+                "priority": task.priority.name,
+                "assigned_at": (
+                    task.assigned_at.isoformat() if task.assigned_at else None
+                ),
+                "deadline": (task.deadline.isoformat() if task.deadline else None),
+                "required_expertise": task.required_expertise,
+            }
+            for task in self.pending_tasks.values()
+            if task.reviewer_id == reviewer_id and task.completed_at is None
+        ]
 
 
 # Global human approval workflow instance

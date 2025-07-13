@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 - Fetches content from a specified URL
 - Takes a URL and a prompt as input
 - Fetches the URL content, converts HTML to markdown

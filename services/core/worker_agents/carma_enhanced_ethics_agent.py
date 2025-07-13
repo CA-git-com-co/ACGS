@@ -7,30 +7,25 @@ for causal bias detection and robust ethical analysis resistant to spurious corr
 Combines SuperClaude personas with causal modeling for improved ethical robustness.
 """
 
-import asyncio
 import logging
-import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 from ...shared.ai_model_service import AIModelService
-from ...shared.blackboard import BlackboardService, KnowledgeItem, TaskDefinition
+from ...shared.blackboard import BlackboardService, KnowledgeItem
 from ...shared.causal_constitutional_framework import (
     CausalConstitutionalFramework,
-    ConstitutionalAttribute,
 )
 from ...shared.constitutional_counterfactual_generator import (
     ConstitutionalCounterfactualGenerator,
-    GenerationStrategy,
 )
 from ...shared.constitutional_safety_framework import ConstitutionalSafetyValidator
 from ...shared.superclaude_persona_integration import (
     PersonaEnhancedAgent,
-    PersonaIntegrationResult,
     SuperClaudePersona,
 )
 from .enhanced_ethics_agent import EnhancedEthicalAnalysisResult
@@ -77,8 +72,8 @@ class CausalBiasDetectionResult(BaseModel):
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Causal analysis results
-    causal_bias_factors: Dict[str, float] = Field(default_factory=dict)
-    spurious_correlations: Dict[str, float] = Field(default_factory=dict)
+    causal_bias_factors: dict[str, float] = Field(default_factory=dict)
+    spurious_correlations: dict[str, float] = Field(default_factory=dict)
 
     # Robustness metrics
     causal_sensitivity_score: float = Field(ge=0.0, le=1.0, default=0.0)
@@ -86,8 +81,8 @@ class CausalBiasDetectionResult(BaseModel):
     overall_robustness_score: float = Field(ge=0.0, le=1.0, default=0.0)
 
     # Counterfactual analysis
-    counterfactual_tests: List[Dict[str, Any]] = Field(default_factory=list)
-    bias_vulnerability_assessment: Dict[str, Any] = Field(default_factory=dict)
+    counterfactual_tests: list[dict[str, Any]] = Field(default_factory=list)
+    bias_vulnerability_assessment: dict[str, Any] = Field(default_factory=dict)
 
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -96,14 +91,14 @@ class CARMAEthicalAnalysisResult(BaseModel):
     """CARMA-enhanced ethical analysis result"""
 
     base_analysis: EthicalAnalysisResult
-    enhanced_analysis: Optional[EnhancedEthicalAnalysisResult] = None
+    enhanced_analysis: EnhancedEthicalAnalysisResult | None = None
     causal_bias_detection: CausalBiasDetectionResult
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # CARMA-specific insights
-    causal_ethical_insights: Dict[str, Any] = Field(default_factory=dict)
-    spurious_resistance_analysis: Dict[str, Any] = Field(default_factory=dict)
-    robustness_recommendations: List[str] = Field(default_factory=list)
+    causal_ethical_insights: dict[str, Any] = Field(default_factory=dict)
+    spurious_resistance_analysis: dict[str, Any] = Field(default_factory=dict)
+    robustness_recommendations: list[str] = Field(default_factory=list)
 
     # Confidence and reliability
     causal_confidence: float = Field(ge=0.0, le=1.0, default=0.0)
@@ -141,7 +136,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         self,
         blackboard_service: BlackboardService,
         constitutional_validator: ConstitutionalSafetyValidator,
-        ai_model_service: Optional[AIModelService] = None,
+        ai_model_service: AIModelService | None = None,
     ):
         super().__init__(
             agent_type="carma_enhanced_ethics_agent",
@@ -186,8 +181,8 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def analyze_ethics_with_carma(
         self,
-        task_data: Dict[str, Any],
-        persona: Optional[SuperClaudePersona] = None,
+        task_data: dict[str, Any],
+        persona: SuperClaudePersona | None = None,
         enable_counterfactual_testing: bool = True,
     ) -> CARMAEthicalAnalysisResult:
         """Perform CARMA-enhanced ethical analysis with causal robustness"""
@@ -261,7 +256,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         )
 
     async def _perform_base_ethical_analysis(
-        self, task_data: Dict[str, Any]
+        self, task_data: dict[str, Any]
     ) -> EthicalAnalysisResult:
         """Perform base ethical analysis using original ethics agent logic"""
 
@@ -299,7 +294,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         risk_level = self._determine_risk_level(
             bias_assessment, fairness_evaluation, harm_potential
         )
-        approved = risk_level in ["low", "medium"] and constitutional_compliance.get(
+        approved = risk_level in {"low", "medium"} and constitutional_compliance.get(
             "approved", False
         )
         confidence = self._calculate_confidence(
@@ -330,7 +325,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _perform_persona_enhanced_analysis(
         self,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         persona: SuperClaudePersona,
         base_analysis: EthicalAnalysisResult,
     ) -> EnhancedEthicalAnalysisResult:
@@ -356,7 +351,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _perform_causal_bias_detection(
         self,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         base_analysis: EthicalAnalysisResult,
         enable_counterfactual_testing: bool = True,
     ) -> CausalBiasDetectionResult:
@@ -422,10 +417,10 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _test_causal_ethical_attribute(
         self,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         ethical_attr: EthicalAttribute,
         base_analysis: EthicalAnalysisResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test sensitivity to causal ethical attribute"""
 
         # Generate counterfactual scenarios for the ethical attribute
@@ -471,10 +466,10 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _test_spurious_ethical_correlation(
         self,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         spurious_attr: SpuriousEthicalAttribute,
         base_analysis: EthicalAnalysisResult,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Test invariance to spurious ethical correlations"""
 
         try:
@@ -520,10 +515,10 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     async def _generate_ethical_counterfactual(
         self,
-        task_data: Dict[str, Any],
+        task_data: dict[str, Any],
         ethical_attr: EthicalAttribute,
         intervention_type: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate counterfactual scenario for ethical attribute"""
 
         if not self.ai_model_service:
@@ -537,7 +532,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         prompt = f"""
         {intervention_type.title()} the {ethical_attr.value} aspect of this ethical scenario:
         {task_data}
-        
+
         Focus specifically on {ethical_attr.value} while preserving other ethical considerations.
         Maintain constitutional hash: cdd01ef066bc6cf2
         """
@@ -556,8 +551,8 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         return counterfactual
 
     async def _generate_spurious_ethical_variation(
-        self, task_data: Dict[str, Any], spurious_attr: SpuriousEthicalAttribute
-    ) -> Dict[str, Any]:
+        self, task_data: dict[str, Any], spurious_attr: SpuriousEthicalAttribute
+    ) -> dict[str, Any]:
         """Generate spurious variation preserving ethical content"""
 
         variation = task_data.copy()
@@ -593,8 +588,8 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         return variation
 
     async def _quick_ethical_assessment(
-        self, scenario: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any]
+    ) -> dict[str, Any]:
         """Perform quick ethical assessment for counterfactual testing"""
 
         # Simplified assessment for testing purposes
@@ -612,8 +607,8 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
     def _calculate_attribute_sensitivity(
         self,
         base_analysis: EthicalAnalysisResult,
-        improved_analysis: Dict[str, Any],
-        degraded_analysis: Dict[str, Any],
+        improved_analysis: dict[str, Any],
+        degraded_analysis: dict[str, Any],
         ethical_attr: EthicalAttribute,
     ) -> float:
         """Calculate sensitivity score for ethical attribute"""
@@ -640,7 +635,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
     def _calculate_spurious_correlation_strength(
         self,
         base_analysis: EthicalAnalysisResult,
-        variation_analysis: Dict[str, Any],
+        variation_analysis: dict[str, Any],
         spurious_attr: SpuriousEthicalAttribute,
     ) -> float:
         """Calculate spurious correlation strength (lower is better)"""
@@ -651,11 +646,10 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         # Good robustness: spurious changes should not affect approval
         if base_approved == variation_approved:
             return 0.0  # Perfect invariance
-        else:
-            return 1.0  # High correlation (problematic)
+        return 1.0  # High correlation (problematic)
 
     def _calculate_causal_sensitivity_score(
-        self, causal_bias_factors: Dict[str, float]
+        self, causal_bias_factors: dict[str, float]
     ) -> float:
         """Calculate overall causal sensitivity score"""
 
@@ -675,7 +669,7 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         return sum(weighted_scores) / len(weighted_scores) if weighted_scores else 0.0
 
     def _calculate_spurious_invariance_score(
-        self, spurious_correlations: Dict[str, float]
+        self, spurious_correlations: dict[str, float]
     ) -> float:
         """Calculate spurious invariance score (1 - correlation strength)"""
 
@@ -689,9 +683,9 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
 
     def _assess_bias_vulnerabilities(
         self,
-        causal_bias_factors: Dict[str, float],
-        spurious_correlations: Dict[str, float],
-    ) -> Dict[str, Any]:
+        causal_bias_factors: dict[str, float],
+        spurious_correlations: dict[str, float],
+    ) -> dict[str, Any]:
         """Assess specific bias vulnerability patterns"""
 
         vulnerabilities = {
@@ -819,13 +813,13 @@ class CARMAEnhancedEthicsAgent(PersonaEnhancedAgent):
         return ["CARMA-enhanced ethical recommendations"]
 
     async def _execute_base_functionality(
-        self, task_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, task_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Execute base CARMA ethics functionality"""
         carma_analysis = await self.analyze_ethics_with_carma(task_data)
         return carma_analysis.dict()
 
-    def get_carma_statistics(self) -> Dict[str, Any]:
+    def get_carma_statistics(self) -> dict[str, Any]:
         """Get CARMA-specific statistics"""
         stats = self.carma_stats.copy()
         stats.update(

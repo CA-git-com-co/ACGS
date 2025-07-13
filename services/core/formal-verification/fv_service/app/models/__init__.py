@@ -33,21 +33,21 @@ from .verification import (
 )
 
 __all__ = [
-    "ProofObligation",
-    "ProofResult",
-    "ProofStatus",
-    "VerificationRequest",
-    "VerificationResult",
-    "VerificationStatus",
     "ConstitutionalProof",
     "ConstitutionalVerificationRequest",
     "ConstitutionalVerificationResult",
     "PolicyValidationRequest",
     "PolicyValidationResult",
+    "ProofObligation",
+    "ProofResult",
+    "ProofStatus",
     "SMTFormula",
     "SMTModel",
     "SMTResult",
     "SMTSolverRequest",
     "SMTSolverResponse",
+    "VerificationRequest",
+    "VerificationResult",
+    "VerificationStatus",
     "Z3ProofResult",
 ]

@@ -10,16 +10,16 @@ import logging
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 
 import psutil
+from shared.performance.caching import get_cache_manager
+from shared.performance.connection_pool import get_connection_pool_registry
+from shared.resilience.circuit_breaker import get_circuit_breaker_registry
 
-from ..performance.caching import get_cache_manager
-from ..performance.connection_pool import get_connection_pool_registry
-from ..resilience.circuit_breaker import get_circuit_breaker_registry
 from .alerts import AlertSeverity, get_alert_manager
-from .health_checks import HealthStatus, get_health_registry
-from .metrics import MetricValue, get_metrics_collector
+from .health_checks import get_health_registry
+from .metrics import get_metrics_collector
 
 logger = logging.getLogger(__name__)
 
@@ -36,11 +36,11 @@ class SystemMetrics:
     disk_usage: float = 0.0
     disk_total_gb: float = 0.0
     disk_free_gb: float = 0.0
-    load_average: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    load_average: tuple[float, float, float] = (0.0, 0.0, 0.0)
     uptime_seconds: float = 0.0
     process_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -74,7 +74,7 @@ class PerformanceMetrics:
     cache_operations_per_second: float = 0.0
     circuit_breaker_open_count: int = 0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -106,7 +106,7 @@ class BusinessMetrics:
     consensus_operations_per_hour: float = 0.0
     audit_trail_entries_per_hour: float = 0.0
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -133,9 +133,9 @@ class HealthSummary:
     unhealthy_checks: int = 0
     unknown_checks: int = 0
     total_checks: int = 0
-    critical_failures: List[str] = field(default_factory=list)
+    critical_failures: list[str] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -160,9 +160,9 @@ class AlertSummary:
     error_alerts: int = 0
     warning_alerts: int = 0
     info_alerts: int = 0
-    recent_alerts: List[Dict[str, Any]] = field(default_factory=list)
+    recent_alerts: list[dict[str, Any]] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "timestamp": self.timestamp.isoformat(),
@@ -181,7 +181,7 @@ class DashboardMetrics:
 
     def __init__(self, name: str = "acgs_dashboard"):
         self.name = name
-        self._metrics_history: List[Tuple[datetime, Dict[str, Any]]] = []
+        self._metrics_history: list[tuple[datetime, dict[str, Any]]] = []
         self._max_history_size = 1000
         self._last_collection_time = datetime.utcnow()
 
@@ -238,7 +238,7 @@ class DashboardMetrics:
             )
 
         except Exception as e:
-            logger.error(f"Error collecting system metrics: {e}")
+            logger.exception(f"Error collecting system metrics: {e}")
             return SystemMetrics()
 
     async def collect_performance_metrics(self) -> PerformanceMetrics:
@@ -333,7 +333,7 @@ class DashboardMetrics:
             )
 
         except Exception as e:
-            logger.error(f"Error collecting performance metrics: {e}")
+            logger.exception(f"Error collecting performance metrics: {e}")
             return PerformanceMetrics()
 
     async def collect_business_metrics(self) -> BusinessMetrics:
@@ -397,7 +397,7 @@ class DashboardMetrics:
             )
 
         except Exception as e:
-            logger.error(f"Error collecting business metrics: {e}")
+            logger.exception(f"Error collecting business metrics: {e}")
             return BusinessMetrics()
 
     async def collect_health_summary(self) -> HealthSummary:
@@ -415,11 +415,12 @@ class DashboardMetrics:
             total_checks = summary.get("total_checks", 0)
 
             # Find critical failures
-            critical_failures = []
             checks = health_data.get("checks", [])
-            for check in checks:
-                if check.get("status") == "unhealthy":
-                    critical_failures.append(check.get("name", "unknown"))
+            critical_failures = [
+                check.get("name", "unknown")
+                for check in checks
+                if check.get("status") == "unhealthy"
+            ]
 
             return HealthSummary(
                 overall_status=overall_status,
@@ -432,7 +433,7 @@ class DashboardMetrics:
             )
 
         except Exception as e:
-            logger.error(f"Error collecting health summary: {e}")
+            logger.exception(f"Error collecting health summary: {e}")
             return HealthSummary()
 
     async def collect_alert_summary(self) -> AlertSummary:
@@ -455,18 +456,17 @@ class DashboardMetrics:
             )
 
             # Get recent alerts (last 10)
-            recent_alerts = []
             alert_history = self._alert_manager.get_alert_history(10)
-            for alert in alert_history[-10:]:
-                recent_alerts.append(
-                    {
-                        "name": alert.name,
-                        "severity": alert.severity.value,
-                        "message": alert.message,
-                        "timestamp": alert.timestamp.isoformat(),
-                        "status": alert.status.value,
-                    }
-                )
+            recent_alerts = [
+                {
+                    "name": alert.name,
+                    "severity": alert.severity.value,
+                    "message": alert.message,
+                    "timestamp": alert.timestamp.isoformat(),
+                    "status": alert.status.value,
+                }
+                for alert in alert_history[-10:]
+            ]
 
             return AlertSummary(
                 active_alerts=len(active_alerts),
@@ -478,10 +478,10 @@ class DashboardMetrics:
             )
 
         except Exception as e:
-            logger.error(f"Error collecting alert summary: {e}")
+            logger.exception(f"Error collecting alert summary: {e}")
             return AlertSummary()
 
-    async def collect_all_metrics(self) -> Dict[str, Any]:
+    async def collect_all_metrics(self) -> dict[str, Any]:
         """Collect all dashboard metrics."""
         try:
             # Collect all metric types in parallel
@@ -519,14 +519,14 @@ class DashboardMetrics:
             return dashboard_data
 
         except Exception as e:
-            logger.error(f"Error collecting dashboard metrics: {e}")
+            logger.exception(f"Error collecting dashboard metrics: {e}")
             return {
                 "timestamp": datetime.utcnow().isoformat(),
                 "error": str(e),
                 "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
-    def _store_metrics_history(self, metrics: Dict[str, Any]) -> None:
+    def _store_metrics_history(self, metrics: dict[str, Any]) -> None:
         """Store metrics in history for trending."""
         timestamp = datetime.utcnow()
         self._metrics_history.append((timestamp, metrics))
@@ -535,19 +535,17 @@ class DashboardMetrics:
         if len(self._metrics_history) > self._max_history_size:
             self._metrics_history = self._metrics_history[-self._max_history_size :]
 
-    def get_metrics_history(self, hours: int = 24) -> List[Dict[str, Any]]:
+    def get_metrics_history(self, hours: int = 24) -> list[dict[str, Any]]:
         """Get metrics history for specified hours."""
         cutoff_time = datetime.utcnow() - timedelta(hours=hours)
 
-        filtered_history = [
+        return [
             metrics
             for timestamp, metrics in self._metrics_history
             if timestamp >= cutoff_time
         ]
 
-        return filtered_history
-
-    def get_dashboard_summary(self) -> Dict[str, Any]:
+    def get_dashboard_summary(self) -> dict[str, Any]:
         """Get dashboard summary information."""
         return {
             "dashboard_name": self.name,
@@ -567,7 +565,7 @@ def get_dashboard_metrics() -> DashboardMetrics:
     return _global_dashboard
 
 
-async def get_dashboard_data() -> Dict[str, Any]:
+async def get_dashboard_data() -> dict[str, Any]:
     """Convenience function to get current dashboard data."""
     return await _global_dashboard.collect_all_metrics()
 
@@ -579,7 +577,7 @@ class DashboardWebSocketHandler:
     def __init__(self, update_interval: float = 5.0):
         self.update_interval = update_interval
         self._dashboard = get_dashboard_metrics()
-        self._websockets: List[Any] = []  # WebSocket connections
+        self._websockets: list[Any] = []  # WebSocket connections
 
     def add_websocket(self, websocket: Any) -> None:
         """Add WebSocket connection."""
@@ -618,5 +616,5 @@ class DashboardWebSocketHandler:
                 await asyncio.sleep(self.update_interval)
 
             except Exception as e:
-                logger.error(f"Error broadcasting dashboard updates: {e}")
+                logger.exception(f"Error broadcasting dashboard updates: {e}")
                 await asyncio.sleep(self.update_interval)

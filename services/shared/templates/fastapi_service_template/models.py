@@ -12,7 +12,6 @@ This module provides standardized SQLAlchemy models for ACGS services including:
 
 import uuid
 from datetime import datetime, timezone
-from typing import Optional
 
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
@@ -27,7 +26,6 @@ try:
     SHARED_COMPONENTS_AVAILABLE = True
 except ImportError:
     # Fallback for standalone services
-    from sqlalchemy import ForeignKey
     from sqlalchemy.ext.declarative import declarative_base
 
     Base = declarative_base()
@@ -38,7 +36,7 @@ except ImportError:
         """Fallback tenant mixin for standalone services."""
 
         @declared_attr
-        def tenant_id(cls):
+        def tenant_id(self):
             return Column(UUID(as_uuid=True), nullable=False, index=True)
 
 
@@ -56,7 +54,7 @@ class ConstitutionalMixin:
     """
 
     @declared_attr
-    def constitutional_hash(cls):
+    def constitutional_hash(self):
         return Column(
             String(64),
             nullable=False,
@@ -66,7 +64,7 @@ class ConstitutionalMixin:
         )
 
     @declared_attr
-    def constitutional_compliance_score(cls):
+    def constitutional_compliance_score(self):
         return Column(
             Integer, nullable=True, comment="Constitutional compliance score (0-100)"
         )
@@ -82,7 +80,7 @@ class AuditMixin:
     """
 
     @declared_attr
-    def created_at(cls):
+    def created_at(self):
         return Column(
             DateTime(timezone=True),
             nullable=False,
@@ -91,7 +89,7 @@ class AuditMixin:
         )
 
     @declared_attr
-    def updated_at(cls):
+    def updated_at(self):
         return Column(
             DateTime(timezone=True),
             nullable=False,
@@ -101,13 +99,13 @@ class AuditMixin:
         )
 
     @declared_attr
-    def created_by_user_id(cls):
+    def created_by_user_id(self):
         return Column(
             Integer, nullable=True, comment="ID of user who created this record"
         )
 
     @declared_attr
-    def updated_by_user_id(cls):
+    def updated_by_user_id(self):
         return Column(
             Integer, nullable=True, comment="ID of user who last updated this record"
         )
@@ -123,7 +121,7 @@ class StatusMixin:
     """
 
     @declared_attr
-    def status(cls):
+    def status(self):
         return Column(
             String(50),
             nullable=False,
@@ -133,7 +131,7 @@ class StatusMixin:
         )
 
     @declared_attr
-    def is_active(cls):
+    def is_active(self):
         return Column(
             Boolean,
             nullable=False,
@@ -157,7 +155,7 @@ class BaseACGSModel(
     __abstract__ = True
 
     @declared_attr
-    def id(cls):
+    def id(self):
         return Column(
             UUID(as_uuid=True),
             primary_key=True,
@@ -364,7 +362,7 @@ class ModelUtilities:
     """
 
     @staticmethod
-    def to_dict(model_instance, exclude_fields: Optional[list] = None) -> dict:
+    def to_dict(model_instance, exclude_fields: list | None = None) -> dict:
         """
         Convert a model instance to a dictionary.
 
@@ -447,14 +445,14 @@ except ImportError:
 
 # Export commonly used classes
 __all__ = [
+    "CONSTITUTIONAL_HASH",
+    "AuditMixin",
     "BaseACGSModel",
     "ConstitutionalMixin",
-    "AuditMixin",
-    "StatusMixin",
-    "SimpleTenantMixin",
-    "ExampleResource",
-    "ExampleConfiguration",
     "ExampleAuditLog",
+    "ExampleConfiguration",
+    "ExampleResource",
     "ModelUtilities",
-    "CONSTITUTIONAL_HASH",
+    "SimpleTenantMixin",
+    "StatusMixin",
 ]

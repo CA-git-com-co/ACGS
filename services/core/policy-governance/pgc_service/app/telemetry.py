@@ -155,7 +155,7 @@ class TelemetryManager:
             logger.info("OpenTelemetry instrumentation setup complete")
 
         except Exception as e:
-            logger.error(f"Failed to set up OpenTelemetry instrumentation: {e}")
+            logger.exception(f"Failed to set up OpenTelemetry instrumentation: {e}")
 
     def _setup_tracing(self, resource: Resource) -> None:
         """Set up OpenTelemetry tracing.
@@ -341,7 +341,7 @@ class TelemetryManager:
             logger.info("FastAPI application instrumentation complete")
 
         except Exception as e:
-            logger.error(f"Failed to instrument FastAPI application: {e}")
+            logger.exception(f"Failed to instrument FastAPI application: {e}")
 
     def record_cache_result(self, hit: bool, cache_name: str) -> None:
         """Record cache hit or miss.

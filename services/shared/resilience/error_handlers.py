@@ -6,15 +6,13 @@ Centralized error handling with recovery strategies and monitoring.
 """
 
 import logging
-import traceback
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any
 
 from .exceptions import (
-    ACGSError,
-    ConfigurationError,
     ConstitutionalComplianceError,
     DomainError,
     InfrastructureError,
@@ -51,10 +49,10 @@ class ErrorContext:
     def __init__(
         self,
         operation: str,
-        user_id: str = None,
-        tenant_id: str = None,
-        correlation_id: str = None,
-        additional_context: Dict[str, Any] = None,
+        user_id: str | None = None,
+        tenant_id: str | None = None,
+        correlation_id: str | None = None,
+        additional_context: dict[str, Any] | None = None,
     ):
         self.operation = operation
         self.user_id = user_id
@@ -63,7 +61,7 @@ class ErrorContext:
         self.additional_context = additional_context or {}
         self.timestamp = datetime.utcnow()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "operation": self.operation,
@@ -86,7 +84,7 @@ class ErrorHandlingResult:
         fallback_result: Any = None,
         should_retry: bool = False,
         escalated: bool = False,
-        additional_info: Dict[str, Any] = None,
+        additional_info: dict[str, Any] | None = None,
     ):
         self.action_taken = action_taken
         self.severity = severity
@@ -97,7 +95,7 @@ class ErrorHandlingResult:
         self.additional_info = additional_info or {}
         self.timestamp = datetime.utcnow()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "action_taken": self.action_taken.value,
@@ -122,27 +120,24 @@ class ErrorHandler(ABC):
     @abstractmethod
     def can_handle(self, error: Exception) -> bool:
         """Check if this handler can handle the given error."""
-        pass
 
     @abstractmethod
     async def handle(
         self, error: Exception, context: ErrorContext
     ) -> ErrorHandlingResult:
         """Handle the error and return result."""
-        pass
 
     def get_severity(self, error: Exception) -> ErrorSeverity:
         """Determine error severity."""
         if isinstance(error, ConstitutionalComplianceError):
             return ErrorSeverity.CRITICAL
-        elif isinstance(error, SecurityError):
+        if isinstance(error, SecurityError):
             return ErrorSeverity.HIGH
-        elif isinstance(error, DomainError):
+        if isinstance(error, DomainError):
             return ErrorSeverity.MEDIUM
-        elif isinstance(error, ValidationError):
+        if isinstance(error, ValidationError):
             return ErrorSeverity.LOW
-        else:
-            return ErrorSeverity.MEDIUM
+        return ErrorSeverity.MEDIUM
 
     def log_error(
         self, error: Exception, context: ErrorContext, severity: ErrorSeverity
@@ -170,7 +165,7 @@ class ErrorHandler(ABC):
         else:
             logger.info(f"Low severity error in {context.operation}", extra=error_info)
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get handler statistics."""
         return {
             "name": self.name,
@@ -220,7 +215,7 @@ class DomainErrorHandler(ErrorHandler):
                     fallback_result=fallback_result,
                 )
             except Exception as fallback_error:
-                logger.error(f"Fallback strategy failed: {fallback_error}")
+                logger.exception(f"Fallback strategy failed: {fallback_error}")
 
         # Default action based on severity
         if severity == ErrorSeverity.CRITICAL:
@@ -228,10 +223,9 @@ class DomainErrorHandler(ErrorHandler):
             return ErrorHandlingResult(
                 action_taken=RecoveryAction.ESCALATE, severity=severity, escalated=True
             )
-        else:
-            return ErrorHandlingResult(
-                action_taken=RecoveryAction.RETRY, severity=severity, should_retry=True
-            )
+        return ErrorHandlingResult(
+            action_taken=RecoveryAction.RETRY, severity=severity, should_retry=True
+        )
 
     async def _handle_constitutional_error(
         self, error: ConstitutionalComplianceError, context: ErrorContext
@@ -419,7 +413,7 @@ class GlobalErrorHandler:
     """Global error handler that coordinates multiple specific handlers."""
 
     def __init__(self):
-        self.handlers: List[ErrorHandler] = [
+        self.handlers: list[ErrorHandler] = [
             DomainErrorHandler(),
             InfrastructureErrorHandler(),
             ValidationErrorHandler(),
@@ -427,7 +421,7 @@ class GlobalErrorHandler:
             PerformanceErrorHandler(),
         ]
         self.default_handler = self._create_default_handler()
-        self.error_history: List[Dict[str, Any]] = []
+        self.error_history: list[dict[str, Any]] = []
         self.max_history = 1000
 
     def _create_default_handler(self) -> ErrorHandler:
@@ -480,7 +474,7 @@ class GlobalErrorHandler:
             return result
 
         except Exception as handler_error:
-            logger.error(f"Error handler failed: {handler_error}")
+            logger.exception(f"Error handler failed: {handler_error}")
 
             # Fallback to basic escalation
             return ErrorHandlingResult(
@@ -509,11 +503,11 @@ class GlobalErrorHandler:
         if len(self.error_history) > self.max_history:
             self.error_history = self.error_history[-self.max_history :]
 
-    def get_error_statistics(self) -> Dict[str, Any]:
+    def get_error_statistics(self) -> dict[str, Any]:
         """Get comprehensive error statistics."""
         handler_stats = {
             handler.name: handler.get_stats()
-            for handler in self.handlers + [self.default_handler]
+            for handler in [*self.handlers, self.default_handler]
         }
 
         total_handled = sum(stats["handled_count"] for stats in handler_stats.values())

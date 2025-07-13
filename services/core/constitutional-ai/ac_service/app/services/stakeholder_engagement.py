@@ -139,7 +139,7 @@ class StakeholderEngagementInput(BaseModel):
     )
 
     @validator("notification_channels")
-    def validate_channels(cls, v):
+    def validate_channels(self, v):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -323,7 +323,7 @@ class StakeholderNotificationService:
             return engagement_status
 
         except Exception as e:
-            logger.error(f"Failed to initiate stakeholder engagement: {e}")
+            logger.exception(f"Failed to initiate stakeholder engagement: {e}")
             raise
 
     async def _get_stakeholders_by_roles(
@@ -346,7 +346,7 @@ class StakeholderNotificationService:
             return stakeholders
 
         except Exception as e:
-            logger.error(f"Failed to get stakeholders by roles: {e}")
+            logger.exception(f"Failed to get stakeholders by roles: {e}")
             return []
 
     def _user_has_role(self, user: User, role: StakeholderRole) -> bool:
@@ -430,7 +430,9 @@ class StakeholderNotificationService:
             return success
 
         except Exception as e:
-            logger.error(f"Error sending notification to {stakeholder.username}: {e}")
+            logger.exception(
+                f"Error sending notification to {stakeholder.username}: {e}"
+            )
             return False
 
     async def _create_notification_content(
@@ -445,7 +447,7 @@ class StakeholderNotificationService:
         template_config = self.notification_templates.get(notification_type, {})
 
         # Base content structure
-        content = {
+        return {
             "subject": template_config.get(
                 "subject", "Constitutional Amendment Notification"
             ),
@@ -479,8 +481,6 @@ class StakeholderNotificationService:
             },
             "metadata": kwargs,
         }
-
-        return content
 
     async def _send_email_notification(self, notification: NotificationRecord) -> bool:
         """Send email notification."""
@@ -527,7 +527,7 @@ class StakeholderNotificationService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send email notification: {e}")
+            logger.exception(f"Failed to send email notification: {e}")
             notification.error_message = str(e)
             return False
 
@@ -548,7 +548,7 @@ class StakeholderNotificationService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to create dashboard notification: {e}")
+            logger.exception(f"Failed to create dashboard notification: {e}")
             notification.error_message = str(e)
             return False
 
@@ -593,7 +593,7 @@ class StakeholderNotificationService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send webhook notification: {e}")
+            logger.exception(f"Failed to send webhook notification: {e}")
             notification.error_message = str(e)
             return False
 
@@ -644,7 +644,7 @@ class StakeholderNotificationService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send WebSocket notification: {e}")
+            logger.exception(f"Failed to send WebSocket notification: {e}")
             notification.error_message = str(e)
             return False
 
@@ -710,7 +710,7 @@ class StakeholderNotificationService:
             return feedback_record
 
         except Exception as e:
-            logger.error(f"Failed to collect stakeholder feedback: {e}")
+            logger.exception(f"Failed to collect stakeholder feedback: {e}")
             raise
 
     async def _update_engagement_status(
@@ -771,7 +771,7 @@ class StakeholderNotificationService:
             )
 
         except Exception as e:
-            logger.error(f"Failed to update engagement status: {e}")
+            logger.exception(f"Failed to update engagement status: {e}")
 
     async def _broadcast_engagement_update(self, amendment_id: int) -> None:
         """Broadcast real-time engagement updates via WebSocket."""
@@ -821,7 +821,7 @@ class StakeholderNotificationService:
             )
 
         except Exception as e:
-            logger.error(f"Failed to broadcast engagement update: {e}")
+            logger.exception(f"Failed to broadcast engagement update: {e}")
 
     async def _schedule_reminder_notifications(
         self, amendment_id: int, reminder_intervals_hours: list[int], deadline: datetime
@@ -841,7 +841,7 @@ class StakeholderNotificationService:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to schedule reminder notifications: {e}")
+            logger.exception(f"Failed to schedule reminder notifications: {e}")
 
     async def get_engagement_status(
         self, amendment_id: int

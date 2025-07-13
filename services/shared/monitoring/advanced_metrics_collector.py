@@ -24,7 +24,7 @@ from collections import deque
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -97,7 +97,7 @@ class InterventionRecord:
     reviewer_id: str
     confidence_before: float
     confidence_after: float
-    outcome_quality: Optional[float]
+    outcome_quality: float | None
     follow_up_required: bool
 
 
@@ -149,7 +149,7 @@ class AdvancedMetricsCollector:
     Advanced metrics collection system for ACGS monitoring
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -230,7 +230,7 @@ class AdvancedMetricsCollector:
         self.intervention_rate_window = deque(
             maxlen=1440
         )  # 24 hours at 1-minute intervals
-        self.intervention_reasons_counter = {reason: 0 for reason in InterventionReason}
+        self.intervention_reasons_counter = dict.fromkeys(InterventionReason, 0)
 
     async def start_collection(self):
         """Start metrics collection"""
@@ -255,7 +255,7 @@ class AdvancedMetricsCollector:
             await asyncio.gather(*collection_tasks)
 
         except Exception as e:
-            logger.error(f"Metrics collection failed: {e}")
+            logger.exception(f"Metrics collection failed: {e}")
             self.running = False
             raise
         finally:
@@ -288,10 +288,10 @@ class AdvancedMetricsCollector:
                         await self._detect_all_drift_types()
 
             except Exception as e:
-                logger.error(f"Drift detection error: {e}")
+                logger.exception(f"Drift detection error: {e}")
                 await asyncio.sleep(60)
 
-    async def _collect_current_data(self) -> Optional[dict[str, Any]]:
+    async def _collect_current_data(self) -> dict[str, Any] | None:
         """Collect current system data for drift analysis"""
         try:
             # This would integrate with the actual ACGS prediction system
@@ -300,7 +300,7 @@ class AdvancedMetricsCollector:
             current_time = datetime.utcnow()
 
             # Simulate collecting prediction data
-            data = {
+            return {
                 "timestamp": current_time,
                 "predictions": np.random.normal(
                     0.5, 0.1, 10
@@ -311,10 +311,8 @@ class AdvancedMetricsCollector:
                 "model_version": self.config.get("model_version", "1.0.0"),
             }
 
-            return data
-
         except Exception as e:
-            logger.error(f"Data collection failed: {e}")
+            logger.exception(f"Data collection failed: {e}")
             return None
 
     async def _detect_all_drift_types(self):
@@ -336,9 +334,9 @@ class AdvancedMetricsCollector:
                 await self._handle_drift_detection(performance_drift)
 
         except Exception as e:
-            logger.error(f"Drift detection failed: {e}")
+            logger.exception(f"Drift detection failed: {e}")
 
-    async def _detect_data_drift(self) -> Optional[DriftMeasurement]:
+    async def _detect_data_drift(self) -> DriftMeasurement | None:
         """Detect data drift using statistical tests"""
         try:
             if len(self.baseline_data) < 100 or len(self.current_window_data) < 10:
@@ -352,7 +350,7 @@ class AdvancedMetricsCollector:
             drift_scores = {}
             feature_impacts = {}
 
-            for feature_name in baseline_features.keys():
+            for feature_name in baseline_features:
                 if feature_name in current_features:
                     # Simplified drift calculation (would use scipy.stats in practice)
                     baseline_values = baseline_features[feature_name]
@@ -386,7 +384,7 @@ class AdvancedMetricsCollector:
                 or overall_drift_score
                 > self.drift_thresholds[DriftType.DATA_DRIFT]["low"]
             ):
-                measurement = DriftMeasurement(
+                return DriftMeasurement(
                     measurement_id=str(uuid.uuid4()),
                     drift_type=DriftType.DATA_DRIFT,
                     severity=severity,
@@ -404,15 +402,13 @@ class AdvancedMetricsCollector:
                     ),
                 )
 
-                return measurement
-
             return None
 
         except Exception as e:
-            logger.error(f"Data drift detection failed: {e}")
+            logger.exception(f"Data drift detection failed: {e}")
             return None
 
-    async def _detect_prediction_drift(self) -> Optional[DriftMeasurement]:
+    async def _detect_prediction_drift(self) -> DriftMeasurement | None:
         """Detect prediction drift"""
         try:
             if len(self.baseline_data) < 100 or len(self.current_window_data) < 10:
@@ -454,7 +450,7 @@ class AdvancedMetricsCollector:
                 or drift_score
                 > self.drift_thresholds[DriftType.PREDICTION_DRIFT]["low"]
             ):
-                measurement = DriftMeasurement(
+                return DriftMeasurement(
                     measurement_id=str(uuid.uuid4()),
                     drift_type=DriftType.PREDICTION_DRIFT,
                     severity=severity,
@@ -476,15 +472,13 @@ class AdvancedMetricsCollector:
                     ),
                 )
 
-                return measurement
-
             return None
 
         except Exception as e:
-            logger.error(f"Prediction drift detection failed: {e}")
+            logger.exception(f"Prediction drift detection failed: {e}")
             return None
 
-    async def _detect_performance_drift(self) -> Optional[DriftMeasurement]:
+    async def _detect_performance_drift(self) -> DriftMeasurement | None:
         """Detect performance drift"""
         try:
             if len(self.performance_history) < 20:
@@ -532,7 +526,7 @@ class AdvancedMetricsCollector:
                 or overall_drift_score
                 > self.drift_thresholds[DriftType.PERFORMANCE_DRIFT]["low"]
             ):
-                measurement = DriftMeasurement(
+                return DriftMeasurement(
                     measurement_id=str(uuid.uuid4()),
                     drift_type=DriftType.PERFORMANCE_DRIFT,
                     severity=severity,
@@ -554,12 +548,10 @@ class AdvancedMetricsCollector:
                     ),
                 )
 
-                return measurement
-
             return None
 
         except Exception as e:
-            logger.error(f"Performance drift detection failed: {e}")
+            logger.exception(f"Performance drift detection failed: {e}")
             return None
 
     def _extract_features(
@@ -585,12 +577,11 @@ class AdvancedMetricsCollector:
 
         if drift_score >= thresholds["critical"]:
             return DriftSeverity.CRITICAL
-        elif drift_score >= thresholds["high"]:
+        if drift_score >= thresholds["high"]:
             return DriftSeverity.HIGH
-        elif drift_score >= thresholds["medium"]:
+        if drift_score >= thresholds["medium"]:
             return DriftSeverity.MEDIUM
-        else:
-            return DriftSeverity.LOW
+        return DriftSeverity.LOW
 
     def _suggest_drift_remediation(
         self, drift_type: DriftType, drift_score: float
@@ -675,7 +666,7 @@ class AdvancedMetricsCollector:
             )
 
         except Exception as e:
-            logger.error(f"Drift handling failed: {e}")
+            logger.exception(f"Drift handling failed: {e}")
 
     async def _run_intervention_monitoring(self):
         """Monitor human intervention rates and patterns"""
@@ -710,7 +701,7 @@ class AdvancedMetricsCollector:
                 await self._analyze_intervention_patterns(recent_interventions)
 
             except Exception as e:
-                logger.error(f"Intervention monitoring error: {e}")
+                logger.exception(f"Intervention monitoring error: {e}")
                 await asyncio.sleep(60)
 
     async def _analyze_intervention_patterns(
@@ -772,7 +763,7 @@ class AdvancedMetricsCollector:
             )
 
         except Exception as e:
-            logger.error(f"Intervention pattern analysis failed: {e}")
+            logger.exception(f"Intervention pattern analysis failed: {e}")
 
     async def _run_performance_monitoring(self):
         """Monitor system performance metrics"""
@@ -792,16 +783,16 @@ class AdvancedMetricsCollector:
                     await self._check_performance_thresholds(metrics)
 
             except Exception as e:
-                logger.error(f"Performance monitoring error: {e}")
+                logger.exception(f"Performance monitoring error: {e}")
                 await asyncio.sleep(60)
 
-    async def _collect_performance_metrics(self) -> Optional[PerformanceMetrics]:
+    async def _collect_performance_metrics(self) -> PerformanceMetrics | None:
         """Collect current performance metrics"""
         try:
             # Simulate performance metrics collection
             # In practice, this would integrate with actual system metrics
 
-            metrics = PerformanceMetrics(
+            return PerformanceMetrics(
                 accuracy=np.random.normal(0.92, 0.02),
                 precision=np.random.normal(0.88, 0.03),
                 recall=np.random.normal(0.86, 0.03),
@@ -814,10 +805,8 @@ class AdvancedMetricsCollector:
                 constitutional_compliance_score=np.random.normal(0.95, 0.02),
             )
 
-            return metrics
-
         except Exception as e:
-            logger.error(f"Performance metrics collection failed: {e}")
+            logger.exception(f"Performance metrics collection failed: {e}")
             return None
 
     async def _check_performance_thresholds(self, metrics: PerformanceMetrics):
@@ -871,7 +860,7 @@ class AdvancedMetricsCollector:
                 )
 
         except Exception as e:
-            logger.error(f"Performance threshold check failed: {e}")
+            logger.exception(f"Performance threshold check failed: {e}")
 
     async def _run_bias_monitoring(self):
         """Monitor bias metrics"""
@@ -891,14 +880,14 @@ class AdvancedMetricsCollector:
                     await self._check_bias_drift(bias_metrics)
 
             except Exception as e:
-                logger.error(f"Bias monitoring error: {e}")
+                logger.exception(f"Bias monitoring error: {e}")
                 await asyncio.sleep(60)
 
-    async def _collect_bias_metrics(self) -> Optional[BiasMetrics]:
+    async def _collect_bias_metrics(self) -> BiasMetrics | None:
         """Collect bias fairness metrics"""
         try:
             # Simulate bias metrics collection
-            metrics = BiasMetrics(
+            return BiasMetrics(
                 demographic_parity=np.random.normal(0.95, 0.02),
                 equalized_odds=np.random.normal(0.93, 0.03),
                 calibration_score=np.random.normal(0.91, 0.02),
@@ -913,10 +902,8 @@ class AdvancedMetricsCollector:
                 measurement_timestamp=datetime.utcnow(),
             )
 
-            return metrics
-
         except Exception as e:
-            logger.error(f"Bias metrics collection failed: {e}")
+            logger.exception(f"Bias metrics collection failed: {e}")
             return None
 
     async def _check_bias_drift(self, current_metrics: BiasMetrics):
@@ -1000,7 +987,7 @@ class AdvancedMetricsCollector:
                 await self._handle_drift_detection(measurement)
 
         except Exception as e:
-            logger.error(f"Bias drift check failed: {e}")
+            logger.exception(f"Bias drift check failed: {e}")
 
     async def _run_constitutional_monitoring(self):
         """Monitor constitutional AI compliance metrics"""
@@ -1017,14 +1004,14 @@ class AdvancedMetricsCollector:
                     self.constitutional_metrics_history.append(constitutional_metrics)
 
             except Exception as e:
-                logger.error(f"Constitutional monitoring error: {e}")
+                logger.exception(f"Constitutional monitoring error: {e}")
                 await asyncio.sleep(60)
 
-    async def _collect_constitutional_metrics(self) -> Optional[ConstitutionalMetrics]:
+    async def _collect_constitutional_metrics(self) -> ConstitutionalMetrics | None:
         """Collect constitutional AI compliance metrics"""
         try:
             # Simulate constitutional metrics collection
-            metrics = ConstitutionalMetrics(
+            return ConstitutionalMetrics(
                 principle_adherence_score=np.random.normal(0.94, 0.02),
                 conflict_resolution_success_rate=np.random.normal(0.91, 0.03),
                 democratic_value_alignment=np.random.normal(0.93, 0.02),
@@ -1034,10 +1021,8 @@ class AdvancedMetricsCollector:
                 citizen_satisfaction_score=np.random.normal(0.87, 0.04),
             )
 
-            return metrics
-
         except Exception as e:
-            logger.error(f"Constitutional metrics collection failed: {e}")
+            logger.exception(f"Constitutional metrics collection failed: {e}")
             return None
 
     async def _run_alerting_and_reporting(self):
@@ -1053,7 +1038,7 @@ class AdvancedMetricsCollector:
                 await self._generate_hourly_summary()
 
             except Exception as e:
-                logger.error(f"Alerting and reporting error: {e}")
+                logger.exception(f"Alerting and reporting error: {e}")
                 await asyncio.sleep(60)
 
     async def _generate_hourly_summary(self):
@@ -1107,9 +1092,9 @@ class AdvancedMetricsCollector:
                     "performance_metrics_collected": len(
                         [m for m in self.performance_history if hasattr(m, "accuracy")]
                     ),
-                    "bias_metrics_collected": len([m for m in self.bias_history]),
+                    "bias_metrics_collected": len(list(self.bias_history)),
                     "constitutional_metrics_collected": len(
-                        [m for m in self.constitutional_metrics_history]
+                        list(self.constitutional_metrics_history)
                     ),
                 },
             }
@@ -1137,7 +1122,7 @@ class AdvancedMetricsCollector:
                 )
 
         except Exception as e:
-            logger.error(f"Hourly summary generation failed: {e}")
+            logger.exception(f"Hourly summary generation failed: {e}")
 
     # Public methods for recording interventions and establishing baseline
 
@@ -1184,7 +1169,7 @@ class AdvancedMetricsCollector:
             return intervention_id
 
         except Exception as e:
-            logger.error(f"Failed to record human intervention: {e}")
+            logger.exception(f"Failed to record human intervention: {e}")
             raise
 
     async def establish_baseline(self, baseline_data: list[dict[str, Any]]):
@@ -1205,7 +1190,7 @@ class AdvancedMetricsCollector:
             )
 
         except Exception as e:
-            logger.error(f"Failed to establish baseline: {e}")
+            logger.exception(f"Failed to establish baseline: {e}")
             raise
 
     def get_metrics_summary(self) -> dict[str, Any]:

@@ -21,19 +21,19 @@ from .specifications import (
 )
 
 __all__ = [
-    # Base classes
-    "Entity",
-    "ValueObject",
-    "AggregateRoot",
-    "DomainException",
     "CONSTITUTIONAL_HASH",
+    "AggregateRoot",
+    "AndSpecification",
     # Events
     "DomainEvent",
     "DomainEventHandler",
+    "DomainException",
+    # Base classes
+    "Entity",
     "EventMetadata",
+    "NotSpecification",
+    "OrSpecification",
     # Specifications
     "Specification",
-    "AndSpecification",
-    "OrSpecification",
-    "NotSpecification",
+    "ValueObject",
 ]

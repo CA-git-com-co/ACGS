@@ -15,7 +15,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from ..services.z3_solver import (
     CONSTITUTIONAL_HASH,
@@ -78,7 +78,7 @@ class EnhancedProofObligation:
     verification_attempts: int = 0
     max_attempts: int = 3
     timeout_seconds: int = 30
-    parent_policy_id: Optional[str] = None
+    parent_policy_id: str | None = None
 
 
 @dataclass
@@ -134,7 +134,7 @@ class ConstitutionalProofObligationGenerator:
         }
 
     def generate_constitutional_obligations(
-        self, policy_content: str, policy_metadata: dict[str, Any] = None
+        self, policy_content: str, policy_metadata: dict[str, Any] | None = None
     ) -> list[EnhancedProofObligation]:
         """
         Generate comprehensive constitutional proof obligations for a policy.
@@ -489,7 +489,7 @@ class ProofVerificationPipeline:
         name: str,
         description: str,
         policy_content: str,
-        policy_metadata: dict[str, Any] = None,
+        policy_metadata: dict[str, Any] | None = None,
     ) -> VerificationSession:
         """
         Create a new verification session for a policy.
@@ -596,7 +596,7 @@ class ProofVerificationPipeline:
             return session
 
         except Exception as e:
-            logger.error(f"Session verification failed: {e}")
+            logger.exception(f"Session verification failed: {e}")
             session.status = ProofStatus.ERROR
             raise
 
@@ -656,7 +656,7 @@ class ProofVerificationPipeline:
             return report
 
         except Exception as e:
-            logger.error(f"Failed to verify obligation {obligation.id}: {e}")
+            logger.exception(f"Failed to verify obligation {obligation.id}: {e}")
             raise
 
     def _generate_cache_key(self, obligation: EnhancedProofObligation) -> str:

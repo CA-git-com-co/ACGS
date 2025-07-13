@@ -6,6 +6,7 @@ and integrates contextual data during policy generation.
 """
 
 import logging
+import operator
 from datetime import datetime, timezone
 from typing import Any
 
@@ -142,16 +143,17 @@ class ContextualAnalyzer:
 
     def _get_relevant_factors(self, context: str) -> list[EnvironmentalFactor]:
         """Get environmental factors relevant to the given context."""
-        relevant_factors = []
 
         # Simple keyword-based relevance matching
         # In a more sophisticated implementation, this could use NLP or ML
         context_lower = context.lower()
 
-        for factor in self.environmental_factors.values():
-            # Check if factor is relevant based on context keywords
-            if self._is_factor_relevant(factor, context_lower):
-                relevant_factors.append(factor)
+        # Check if factor is relevant based on context keywords
+        relevant_factors = [
+            factor
+            for factor in self.environmental_factors.values()
+            if self._is_factor_relevant(factor, context_lower)
+        ]
 
         # Sort by confidence and recency
         relevant_factors.sort(key=lambda f: (f.confidence, f.timestamp), reverse=True)
@@ -183,12 +185,12 @@ class ContextualAnalyzer:
                 return True
 
         # Check if factor value contains context-related information
-        if isinstance(factor.value, str) and any(
-            keyword in factor.value.lower() for keyword in context_lower.split()
-        ):
-            return True
-
-        return False
+        return bool(
+            isinstance(factor.value, str)
+            and any(
+                keyword in factor.value.lower() for keyword in context_lower.split()
+            )
+        )
 
     def _find_similar_contexts(self, context: str) -> list[dict[str, Any]]:
         """Find historically similar contexts."""
@@ -212,7 +214,7 @@ class ContextualAnalyzer:
                 )
 
         # Sort by similarity score
-        similar_contexts.sort(key=lambda x: x["similarity_score"], reverse=True)
+        similar_contexts.sort(key=operator.itemgetter("similarity_score"), reverse=True)
 
         return similar_contexts[:5]  # Return top 5 similar contexts
 

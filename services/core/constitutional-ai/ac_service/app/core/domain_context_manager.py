@@ -383,7 +383,7 @@ class DomainContextManager:
         rationale = "Conservative adaptation preserving original principle intent"
 
         # Add minimal domain-specific context
-        if domain_context.domain_name.lower() in ["healthcare", "finance"]:
+        if domain_context.domain_name.lower() in {"healthcare", "finance"}:
             if "compliance" not in adapted_content.lower():
                 adapted_content += f" This principle must be applied in compliance with {domain_context.domain_name} regulations."
                 rationale += (
@@ -644,16 +644,28 @@ class DomainContextManager:
         recommendations = []
 
         if "regulatory_framework_mismatch" in conflict_indicators:
-            recommendations.append("Harmonize regulatory requirements across domains")
-            recommendations.append("Create domain-specific compliance guidelines")
+            recommendations.extend(
+                (
+                    "Harmonize regulatory requirements across domains",
+                    "Create domain-specific compliance guidelines",
+                )
+            )
 
         if "privacy_expectation_mismatch" in conflict_indicators:
-            recommendations.append("Establish unified privacy standards")
-            recommendations.append("Implement context-aware privacy controls")
+            recommendations.extend(
+                (
+                    "Establish unified privacy standards",
+                    "Implement context-aware privacy controls",
+                )
+            )
 
         if mapping_type == "conflicting":
-            recommendations.append("Consider principle hierarchy and precedence rules")
-            recommendations.append("Implement conflict resolution mechanisms")
+            recommendations.extend(
+                (
+                    "Consider principle hierarchy and precedence rules",
+                    "Implement conflict resolution mechanisms",
+                )
+            )
 
         return recommendations
 

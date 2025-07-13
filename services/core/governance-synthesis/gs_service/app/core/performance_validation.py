@@ -140,7 +140,7 @@ class PerformanceValidator:
         reliability_score: float,
         sample_count: int,
         context_category: str = "general",
-        measurement_conditions: dict[str, Any] = None,
+        measurement_conditions: dict[str, Any] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -173,7 +173,7 @@ class PerformanceValidator:
         response_time_ms: float,
         reliability_score: float,
         template_selection_counts: dict[str, int],
-        baseline_id: str = None,
+        baseline_id: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -375,8 +375,7 @@ class PerformanceValidator:
         if denominator == 0:
             return 0.0
 
-        slope = (n * sum_xy - sum_x * sum_y) / denominator
-        return slope
+        return (n * sum_xy - sum_x * sum_y) / denominator
 
     def _determine_convergence_status(
         self,
@@ -494,7 +493,9 @@ class PerformanceValidator:
         predicted_performance = current_performance + adjusted_improvement
         return max(0.0, min(1.0, predicted_performance))
 
-    def check_performance_targets(self, baseline_id: str = None) -> dict[str, Any]:
+    def check_performance_targets(
+        self, baseline_id: str | None = None
+    ) -> dict[str, Any]:
         """Check if performance targets are being met."""
         if not self.performance_history:
             return {"status": "no_data"}

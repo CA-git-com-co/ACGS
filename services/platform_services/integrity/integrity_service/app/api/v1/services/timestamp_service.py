@@ -5,9 +5,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import hashlib
 import logging
+import operator
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -20,13 +21,13 @@ class TimestampManager:
 
     def __init__(self):
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self.timestamps: Dict[str, Dict[str, Any]] = {}
+        self.timestamps: dict[str, dict[str, Any]] = {}
         self.authority = "ACGS_Integrity_Service"
         self.supported_algorithms = ["SHA-256", "SHA-512", "SHA3-256", "SHA3-512"]
 
     async def create_timestamp(
         self, data: str, algorithm: str = "SHA-256"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create a timestamp for the given data."""
         try:
             if algorithm not in self.supported_algorithms:
@@ -83,21 +84,21 @@ class TimestampManager:
             }
 
         except Exception as e:
-            logger.error(f"Timestamp creation failed: {e}")
+            logger.exception(f"Timestamp creation failed: {e}")
             raise
 
     async def verify_timestamp(
         self,
         data: str,
         timestamp_token: str,
-        expected_timestamp: Optional[datetime] = None,
+        expected_timestamp: datetime | None = None,
         algorithm: str = "SHA-256",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify a timestamp token against the original data."""
         try:
             # Parse timestamp token
             try:
-                timestamp_id, token_hash = timestamp_token.split(":", 1)
+                timestamp_id, _token_hash = timestamp_token.split(":", 1)
             except ValueError:
                 raise ValueError("Invalid timestamp token format")
 
@@ -162,10 +163,10 @@ class TimestampManager:
             }
 
         except Exception as e:
-            logger.error(f"Timestamp verification failed: {e}")
+            logger.exception(f"Timestamp verification failed: {e}")
             raise
 
-    async def get_timestamp_info(self, timestamp_id: str) -> Dict[str, Any]:
+    async def get_timestamp_info(self, timestamp_id: str) -> dict[str, Any]:
         """Get information about a timestamp."""
         try:
             if timestamp_id not in self.timestamps:
@@ -174,15 +175,15 @@ class TimestampManager:
             return self.timestamps[timestamp_id].copy()
 
         except Exception as e:
-            logger.error(f"Timestamp info retrieval failed: {e}")
+            logger.exception(f"Timestamp info retrieval failed: {e}")
             raise
 
     async def list_timestamps(
         self,
-        start_time: Optional[datetime] = None,
-        end_time: Optional[datetime] = None,
+        start_time: datetime | None = None,
+        end_time: datetime | None = None,
         limit: int = 100,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """List timestamps with optional time range filtering."""
         try:
             filtered_timestamps = []
@@ -200,7 +201,7 @@ class TimestampManager:
                 filtered_timestamps.append(timestamp_record.copy())
 
             # Sort by timestamp (newest first)
-            filtered_timestamps.sort(key=lambda x: x["timestamp"], reverse=True)
+            filtered_timestamps.sort(key=operator.itemgetter("timestamp"), reverse=True)
 
             # Apply limit
             if limit > 0:
@@ -214,10 +215,10 @@ class TimestampManager:
             }
 
         except Exception as e:
-            logger.error(f"Timestamp listing failed: {e}")
+            logger.exception(f"Timestamp listing failed: {e}")
             raise
 
-    async def get_timestamp_statistics(self) -> Dict[str, Any]:
+    async def get_timestamp_statistics(self) -> dict[str, Any]:
         """Get timestamp service statistics."""
         try:
             total_timestamps = len(self.timestamps)
@@ -249,7 +250,7 @@ class TimestampManager:
             }
 
         except Exception as e:
-            logger.error(f"Timestamp statistics retrieval failed: {e}")
+            logger.exception(f"Timestamp statistics retrieval failed: {e}")
             raise
 
 

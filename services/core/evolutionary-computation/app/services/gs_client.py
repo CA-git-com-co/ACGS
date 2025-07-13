@@ -6,6 +6,7 @@ for AlphaEvolve integration and constitutional governance operations.
 """
 
 import logging
+import pathlib
 from typing import Any
 
 import httpx
@@ -20,11 +21,11 @@ try:
     import sys
 
     # Add the correct path to services/shared
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = pathlib.Path(pathlib.Path(__file__).resolve()).parent
     shared_path = os.path.join(
         current_dir, "..", "..", "..", "..", "services", "shared"
     )
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, pathlib.Path(shared_path).resolve())
 
     from config import get_config
 except ImportError:
@@ -94,10 +95,10 @@ class GSServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"GS Service governance evaluation failed: {e}")
+            logger.exception(f"GS Service governance evaluation failed: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in governance evaluation: {e}")
+            logger.exception(f"Unexpected error in governance evaluation: {e}")
             raise
 
     async def synthesize_ec_rules(
@@ -135,10 +136,10 @@ class GSServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"GS Service rule synthesis failed: {e}")
+            logger.exception(f"GS Service rule synthesis failed: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in rule synthesis: {e}")
+            logger.exception(f"Unexpected error in rule synthesis: {e}")
             raise
 
     async def get_wina_synthesis_metrics(self) -> dict[str, Any]:
@@ -155,10 +156,10 @@ class GSServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"Failed to get WINA synthesis metrics: {e}")
+            logger.exception(f"Failed to get WINA synthesis metrics: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error getting WINA metrics: {e}")
+            logger.exception(f"Unexpected error getting WINA metrics: {e}")
             raise
 
 

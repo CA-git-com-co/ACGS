@@ -165,7 +165,7 @@ async def create_verification_session(
         return response
 
     except Exception as e:
-        logger.error(f"Failed to create verification session: {e}")
+        logger.exception(f"Failed to create verification session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to create verification session: {e!s}",
@@ -220,7 +220,7 @@ async def verify_session(
         logger.warning(f"Session not found: {e}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
-        logger.error(f"Verification failed for session {session_id}: {e}")
+        logger.exception(f"Verification failed for session {session_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Verification failed: {e!s}",
@@ -249,14 +249,13 @@ async def get_session_status(
 
         status_data = await pipeline.get_session_status(session_id)
 
-        response = SessionStatusResponse(**status_data)
-        return response
+        return SessionStatusResponse(**status_data)
 
     except ValueError as e:
         logger.warning(f"Session not found: {e}")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to get session status: {e}")
+        logger.exception(f"Failed to get session status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get session status: {e!s}",
@@ -286,7 +285,7 @@ async def delete_session(
         logger.info(f"Successfully deleted session {session_id}")
 
     except Exception as e:
-        logger.error(f"Failed to delete session {session_id}: {e}")
+        logger.exception(f"Failed to delete session {session_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to delete session: {e!s}",
@@ -331,7 +330,7 @@ async def list_sessions(
         return sessions
 
     except Exception as e:
-        logger.error(f"Failed to list sessions: {e}")
+        logger.exception(f"Failed to list sessions: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to list sessions: {e!s}",
@@ -403,7 +402,7 @@ async def get_pipeline_stats(
         return response
 
     except Exception as e:
-        logger.error(f"Failed to get pipeline statistics: {e}")
+        logger.exception(f"Failed to get pipeline statistics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get pipeline statistics: {e!s}",
@@ -464,7 +463,7 @@ async def quick_verify_policy(
         return response
 
     except Exception as e:
-        logger.error(f"Quick verification failed: {e}")
+        logger.exception(f"Quick verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Quick verification failed: {e!s}",
@@ -500,7 +499,7 @@ async def pipeline_health_check() -> dict[str, Any]:
         }
 
     except Exception as e:
-        logger.error(f"Pipeline health check failed: {e}")
+        logger.exception(f"Pipeline health check failed: {e}")
         return {
             "status": "unhealthy",
             "component": "proof-verification-pipeline",

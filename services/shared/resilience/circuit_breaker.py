@@ -8,9 +8,10 @@ Implements circuit breaker pattern for resilient external service calls.
 import asyncio
 import logging
 import time
-from dataclasses import dataclass, field
+from collections.abc import Callable
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, Dict, Optional, Union
+from typing import Any
 
 from .exceptions import InfrastructureError
 
@@ -34,8 +35,8 @@ class CircuitBreakerMetrics:
     success_requests: int = 0
     timeouts: int = 0
     circuit_opens: int = 0
-    last_failure_time: Optional[float] = None
-    last_success_time: Optional[float] = None
+    last_failure_time: float | None = None
+    last_success_time: float | None = None
 
     @property
     def failure_rate(self) -> float:
@@ -115,7 +116,7 @@ class CircuitBreaker:
         return self._metrics
 
     async def call(
-        self, func: Callable, *args, fallback: Callable = None, **kwargs
+        self, func: Callable, *args, fallback: Callable | None = None, **kwargs
     ) -> Any:
         """
         Execute function through circuit breaker.
@@ -148,7 +149,7 @@ class CircuitBreaker:
 
     async def _execute_call(self, func: Callable, *args, **kwargs) -> Any:
         """Execute the actual function call with monitoring."""
-        start_time = time.time()
+        time.time()
 
         try:
             # Execute with timeout
@@ -162,13 +163,13 @@ class CircuitBreaker:
             return result
 
         except asyncio.TimeoutError:
-            logger.error(f"Circuit breaker '{self.name}' - call timed out")
+            logger.exception(f"Circuit breaker '{self.name}' - call timed out")
             self._metrics.timeouts += 1
             await self._record_failure()
             raise
 
         except Exception as e:
-            logger.error(f"Circuit breaker '{self.name}' - call failed: {e}")
+            logger.exception(f"Circuit breaker '{self.name}' - call failed: {e}")
             await self._record_failure()
             raise
 
@@ -178,7 +179,7 @@ class CircuitBreaker:
             logger.info(f"Circuit breaker '{self.name}' - executing fallback")
             return await self._ensure_coroutine(fallback(*args, **kwargs))
         except Exception as e:
-            logger.error(f"Circuit breaker '{self.name}' - fallback failed: {e}")
+            logger.exception(f"Circuit breaker '{self.name}' - fallback failed: {e}")
             raise
 
     async def _ensure_coroutine(self, result: Any) -> Any:
@@ -279,7 +280,7 @@ class CircuitBreaker:
             await self._close_circuit()
             logger.info(f"Circuit breaker '{self.name}' manually closed")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get detailed circuit breaker status."""
         return {
             "name": self.name,
@@ -312,8 +313,8 @@ class CircuitBreakerRegistry:
     """Registry for managing multiple circuit breakers."""
 
     def __init__(self):
-        self._breakers: Dict[str, CircuitBreaker] = {}
-        self._configs: Dict[str, CircuitBreakerConfig] = {}
+        self._breakers: dict[str, CircuitBreaker] = {}
+        self._configs: dict[str, CircuitBreakerConfig] = {}
 
     def register(
         self, name: str, config: CircuitBreakerConfig = None
@@ -329,15 +330,15 @@ class CircuitBreakerRegistry:
         logger.info(f"Registered circuit breaker: {name}")
         return breaker
 
-    def get(self, name: str) -> Optional[CircuitBreaker]:
+    def get(self, name: str) -> CircuitBreaker | None:
         """Get circuit breaker by name."""
         return self._breakers.get(name)
 
-    def get_all_status(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_status(self) -> dict[str, dict[str, Any]]:
         """Get status of all circuit breakers."""
         return {name: breaker.get_status() for name, breaker in self._breakers.items()}
 
-    async def health_check(self) -> Dict[str, Any]:
+    async def health_check(self) -> dict[str, Any]:
         """Perform health check on all circuit breakers."""
         total_breakers = len(self._breakers)
         open_breakers = sum(

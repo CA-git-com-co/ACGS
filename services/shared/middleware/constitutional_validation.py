@@ -8,23 +8,24 @@ Enhanced with O(1) validation performance using FastConstitutionalValidator.
 
 import logging
 import time
-from typing import Any, Callable, Dict
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import HTTPException, Request, Response
 from prometheus_client import Counter
 from starlette.middleware.base import BaseHTTPMiddleware
-
-# Import the fast validator
-from .fast_constitutional_validator import (
-    get_fast_validator,
-    add_constitutional_headers_fast
-)
 
 # Import performance metrics
 from .constitutional_performance_metrics import (
     ConstitutionalPerformanceTracker,
     get_performance_collector,
     setup_constitutional_metrics_endpoint,
+)
+
+# Import the fast validator
+from .fast_constitutional_validator import (
+    add_constitutional_headers_fast,
+    get_fast_validator,
 )
 
 # Constitutional compliance hash
@@ -62,7 +63,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         constitutional_hash: str = CONSTITUTIONAL_HASH,
         performance_target_ms: float = 5.0,
         enable_strict_validation: bool = True,
-        exempt_paths: list = None,
+        exempt_paths: list | None = None,
     ):
         super().__init__(app)
         self.constitutional_hash = constitutional_hash
@@ -83,9 +84,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             f"constitutional-middleware-{hash(app) % 10000}"
         )
 
-    async def dispatch(
-        self, request: Request, call_next: Callable
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: Callable) -> Response:
         # Skip validation for exempt paths
         if request.url.path in self.exempt_paths:
             return await call_next(request)
@@ -100,7 +99,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
             service_name=service_name,
             validation_type="middleware",
             endpoint=endpoint,
-            method=method
+            method=method,
         ) as tracker:
             # Start timing for internal metrics
             start_time = time.time()
@@ -132,16 +131,14 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                 )
 
             # Validate response
-            await self._validate_response(
-                response, service_name, endpoint, method
-            )
+            await self._validate_response(response, service_name, endpoint, method)
 
             # Add constitutional headers to response using fast validator
             add_constitutional_headers_fast(
                 response,
                 self.constitutional_hash,
                 processing_time,
-                self.performance_target_ms
+                self.performance_target_ms,
             )
 
             # Record successful validation
@@ -153,30 +150,29 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
 
         except HTTPException:
             # Record validation failure
-            CONSTITUTIONAL_FAILURES.labels(
-                service_name, endpoint, method
-            ).inc()
+            CONSTITUTIONAL_FAILURES.labels(service_name, endpoint, method).inc()
             CONSTITUTIONAL_VALIDATIONS.labels(
                 service_name, endpoint, method, "failure"
             ).inc()
             raise
         except Exception as e:
             # Record unexpected error
-            logger.error(f"Constitutional validation error: {e}")
-            CONSTITUTIONAL_FAILURES.labels(
-                service_name, endpoint, method
-            ).inc()
+            logger.exception(f"Constitutional validation error: {e}")
+            CONSTITUTIONAL_FAILURES.labels(service_name, endpoint, method).inc()
             CONSTITUTIONAL_VALIDATIONS.labels(
                 service_name, endpoint, method, "error"
             ).inc()
             raise HTTPException(
-                status_code=500,
-                detail="Constitutional validation service error"
+                status_code=500, detail="Constitutional validation service error"
             )
 
     async def _validate_request_headers(
-        self, request: Request, service_name: str, endpoint: str, method: str,
-        tracker=None
+        self,
+        request: Request,
+        service_name: str,
+        endpoint: str,
+        method: str,
+        tracker=None,
     ):
         """Fast validation of constitutional compliance in request headers."""
         if not self.enable_strict_validation:
@@ -211,15 +207,18 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
                         detail=f"Invalid constitutional hash. "
                         f"Expected: {self.constitutional_hash}",
                     )
-        else:
-            # Record compliance for missing hash
-            if tracker:
-                # Missing hash is allowed
-                tracker.record_compliance_result(True)
+        # Record compliance for missing hash
+        elif tracker:
+            # Missing hash is allowed
+            tracker.record_compliance_result(True)
 
     async def _validate_request_body(
-        self, request: Request, service_name: str, endpoint: str, method: str,
-        tracker=None
+        self,
+        request: Request,
+        service_name: str,
+        endpoint: str,
+        method: str,
+        tracker=None,
     ):
         """Fast validation of constitutional compliance in request body."""
         if not self.enable_strict_validation:
@@ -262,7 +261,7 @@ class ConstitutionalValidationMiddleware(BaseHTTPMiddleware):
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Error validating request body: {e}")
+            logger.exception(f"Error validating request body: {e}")
 
     async def _validate_response(
         self, response: Response, service_name: str, endpoint: str, method: str
@@ -290,7 +289,7 @@ class ConstitutionalComplianceChecker:
         """Validate a constitutional hash value."""
         return hash_value == self.constitutional_hash
 
-    def validate_request_data(self, data: Dict[str, Any]) -> bool:
+    def validate_request_data(self, data: dict[str, Any]) -> bool:
         """Validate constitutional compliance in request data."""
         if not isinstance(data, dict):
             return True  # Skip validation for non-dict data
@@ -301,7 +300,7 @@ class ConstitutionalComplianceChecker:
 
         return self.validate_hash(hash_value)
 
-    def validate_response_data(self, data: Dict[str, Any]) -> bool:
+    def validate_response_data(self, data: dict[str, Any]) -> bool:
         """Validate constitutional compliance in response data."""
         if not isinstance(data, dict):
             return True  # Skip validation for non-dict data
@@ -314,13 +313,13 @@ class ConstitutionalComplianceChecker:
 
         return self.validate_hash(hash_value)
 
-    def ensure_compliance(self, data: Dict[str, Any]) -> Dict[str, Any]:
+    def ensure_compliance(self, data: dict[str, Any]) -> dict[str, Any]:
         """Ensure constitutional compliance by adding hash if missing."""
         if isinstance(data, dict):
             data["constitutional_hash"] = self.constitutional_hash
         return data
 
-    def get_compliance_report(self) -> Dict[str, Any]:
+    def get_compliance_report(self) -> dict[str, Any]:
         """Get constitutional compliance report."""
         return {
             "constitutional_hash": self.constitutional_hash,

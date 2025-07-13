@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS Context Service
 
 High-performance context management system providing sub-50ms context retrieval, multi-modal data support, and constitutional compliance validation for the AI Compliance and Governance System (ACGS).

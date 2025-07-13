@@ -324,7 +324,7 @@ class RuntimeGating:
             return decision
 
         except Exception as e:
-            logger.error(f"Gating decision failed for {layer_name}: {e}")
+            logger.exception(f"Gating decision failed for {layer_name}: {e}")
             raise WINAGatingError(f"Gating decision failed: {e}")
 
     def apply_gating_mask(
@@ -360,7 +360,7 @@ class RuntimeGating:
             return masked_input
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to apply gating mask for {gating_decision.layer_name}: {e}"
             )
             raise WINAGatingError(f"Mask application failed: {e}")
@@ -935,11 +935,11 @@ class RuntimeGating:
         self, layer_name: str, strategy: GatingStrategy
     ) -> float:
         """Get adaptation factor for the layer and strategy."""
-        if strategy in [
+        if strategy in {
             GatingStrategy.ADAPTIVE,
             GatingStrategy.PERFORMANCE_ADAPTIVE,
             GatingStrategy.HYBRID_DYNAMIC,
-        ]:
+        }:
             # Get recent performance for adaptive strategies
             performance_history = self.layer_performance_history.get(layer_name, [])
             if len(performance_history) >= 2:

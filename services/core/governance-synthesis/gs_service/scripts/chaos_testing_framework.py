@@ -19,27 +19,22 @@ Key Features:
 """
 
 import asyncio
-import json
 import logging
 import random
-import subprocess
 import time
 from dataclasses import dataclass, field
-from datetime import datetime, timezone, timedelta
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from datetime import datetime, timedelta, timezone
+from typing import Any
 from uuid import uuid4
 
 import aiohttp
-import psutil
 
 # Constitutional compliance hash for ACGS-2
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
@@ -47,21 +42,21 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DomainPrinciple:
     """Domain-specific constitutional principle."""
-    
+
     id: str
     domain: str
     title: str
     content: str
-    compliance_requirements: List[str]
+    compliance_requirements: list[str]
     risk_level: str = "medium"
-    regulatory_framework: Optional[str] = None
+    regulatory_framework: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
 @dataclass
 class ChaosTestMetrics:
     """Metrics collected during chaos testing."""
-    
+
     timestamp: datetime
     rps: float
     latency_p50: float
@@ -73,42 +68,42 @@ class ChaosTestMetrics:
     cpu_utilization: float
     memory_utilization: float
     constitutional_compliance_rate: float
-    domain_specific_metrics: Dict[str, float] = field(default_factory=dict)
+    domain_specific_metrics: dict[str, float] = field(default_factory=dict)
 
 
 @dataclass
 class ChaosTestResult:
     """Result of a chaos testing session."""
-    
+
     test_id: str
     start_time: datetime
     end_time: datetime
     total_duration_minutes: float
     target_users: int
-    domains_tested: List[str]
+    domains_tested: list[str]
     overall_uptime: float
     average_rps: float
     target_rps_achieved: bool
     uptime_target_met: bool
-    metrics_history: List[ChaosTestMetrics]
-    fault_injections: List[Dict[str, Any]]
-    hpa_scaling_events: List[Dict[str, Any]]
+    metrics_history: list[ChaosTestMetrics]
+    fault_injections: list[dict[str, Any]]
+    hpa_scaling_events: list[dict[str, Any]]
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
 class DomainPrincipleLoader:
     """Loads domain-specific constitutional principles for testing."""
-    
+
     def __init__(self):
         """Initialize the domain principle loader."""
-        self.domain_principles: Dict[str, List[DomainPrinciple]] = {}
+        self.domain_principles: dict[str, list[DomainPrinciple]] = {}
         self._load_domain_principles()
-        
+
         logger.info(f"Loaded principles for {len(self.domain_principles)} domains")
-    
+
     def _load_domain_principles(self):
         """Load domain-specific principles."""
-        
+
         # Healthcare domain principles
         healthcare_principles = [
             DomainPrinciple(
@@ -118,7 +113,7 @@ class DomainPrincipleLoader:
                 content="Patient health information must be protected with HIPAA-compliant encryption and access controls.",
                 compliance_requirements=["HIPAA", "GDPR", "SOX"],
                 risk_level="high",
-                regulatory_framework="HIPAA"
+                regulatory_framework="HIPAA",
             ),
             DomainPrinciple(
                 id="health_002",
@@ -127,7 +122,7 @@ class DomainPrincipleLoader:
                 content="AI-assisted medical decisions must provide clear explanations and maintain physician oversight.",
                 compliance_requirements=["FDA_AI_Guidance", "Medical_Ethics"],
                 risk_level="critical",
-                regulatory_framework="FDA"
+                regulatory_framework="FDA",
             ),
             DomainPrinciple(
                 id="health_003",
@@ -136,16 +131,20 @@ class DomainPrincipleLoader:
                 content="Clinical trial data must maintain integrity with tamper-evident audit trails and regulatory compliance.",
                 compliance_requirements=["GCP", "FDA_CFR", "ICH_Guidelines"],
                 risk_level="high",
-                regulatory_framework="FDA"
+                regulatory_framework="FDA",
             ),
             DomainPrinciple(
                 id="health_004",
                 domain="healthcare",
                 title="Telemedicine Security",
                 content="Telemedicine platforms must ensure secure communications and patient identity verification.",
-                compliance_requirements=["HIPAA", "State_Licensing", "Telehealth_Regulations"],
+                compliance_requirements=[
+                    "HIPAA",
+                    "State_Licensing",
+                    "Telehealth_Regulations",
+                ],
                 risk_level="medium",
-                regulatory_framework="State_Medical_Boards"
+                regulatory_framework="State_Medical_Boards",
             ),
             DomainPrinciple(
                 id="health_005",
@@ -154,10 +153,10 @@ class DomainPrincipleLoader:
                 content="Connected medical devices must implement robust cybersecurity measures and vulnerability management.",
                 compliance_requirements=["FDA_Cybersecurity", "IEC_62304", "ISO_14971"],
                 risk_level="critical",
-                regulatory_framework="FDA"
-            )
+                regulatory_framework="FDA",
+            ),
         ]
-        
+
         # Finance domain principles
         finance_principles = [
             DomainPrinciple(
@@ -167,7 +166,7 @@ class DomainPrincipleLoader:
                 content="Financial customer data must be protected with PCI DSS compliance and encryption standards.",
                 compliance_requirements=["PCI_DSS", "SOX", "GDPR", "CCPA"],
                 risk_level="high",
-                regulatory_framework="PCI_Council"
+                regulatory_framework="PCI_Council",
             ),
             DomainPrinciple(
                 id="fin_002",
@@ -176,7 +175,7 @@ class DomainPrincipleLoader:
                 content="Algorithmic trading systems must ensure market fairness and prevent manipulation.",
                 compliance_requirements=["SEC_Regulations", "MiFID_II", "CFTC_Rules"],
                 risk_level="critical",
-                regulatory_framework="SEC"
+                regulatory_framework="SEC",
             ),
             DomainPrinciple(
                 id="fin_003",
@@ -185,7 +184,7 @@ class DomainPrincipleLoader:
                 content="Financial systems must implement robust AML controls and suspicious activity monitoring.",
                 compliance_requirements=["BSA", "USA_PATRIOT_Act", "FATF_Guidelines"],
                 risk_level="critical",
-                regulatory_framework="FinCEN"
+                regulatory_framework="FinCEN",
             ),
             DomainPrinciple(
                 id="fin_004",
@@ -194,7 +193,7 @@ class DomainPrincipleLoader:
                 content="AI-driven credit decisions must be explainable and comply with fair lending regulations.",
                 compliance_requirements=["ECOA", "FCRA", "GDPR_Right_to_Explanation"],
                 risk_level="high",
-                regulatory_framework="CFPB"
+                regulatory_framework="CFPB",
             ),
             DomainPrinciple(
                 id="fin_005",
@@ -203,10 +202,10 @@ class DomainPrincipleLoader:
                 content="Financial market data must maintain accuracy, timeliness, and audit trail integrity.",
                 compliance_requirements=["SEC_Market_Data", "MiFID_II", "Reg_NMS"],
                 risk_level="medium",
-                regulatory_framework="SEC"
-            )
+                regulatory_framework="SEC",
+            ),
         ]
-        
+
         # Education domain principles
         education_principles = [
             DomainPrinciple(
@@ -216,7 +215,7 @@ class DomainPrincipleLoader:
                 content="Student educational records must be protected under FERPA with appropriate access controls.",
                 compliance_requirements=["FERPA", "COPPA", "State_Privacy_Laws"],
                 risk_level="high",
-                regulatory_framework="Department_of_Education"
+                regulatory_framework="Department_of_Education",
             ),
             DomainPrinciple(
                 id="edu_002",
@@ -225,10 +224,10 @@ class DomainPrincipleLoader:
                 content="AI-powered educational tools must ensure equitable access and unbiased learning recommendations.",
                 compliance_requirements=["Section_504", "ADA", "Educational_Equity"],
                 risk_level="medium",
-                regulatory_framework="OCR"
-            )
+                regulatory_framework="OCR",
+            ),
         ]
-        
+
         # Government domain principles
         government_principles = [
             DomainPrinciple(
@@ -238,119 +237,127 @@ class DomainPrincipleLoader:
                 content="Government systems must protect citizen data with appropriate security and privacy controls.",
                 compliance_requirements=["Privacy_Act", "FISMA", "FedRAMP"],
                 risk_level="critical",
-                regulatory_framework="NIST"
+                regulatory_framework="NIST",
             ),
             DomainPrinciple(
                 id="gov_002",
                 domain="government",
                 title="Public Service AI Accountability",
                 content="AI systems in public services must maintain transparency and democratic accountability.",
-                compliance_requirements=["Administrative_Procedure_Act", "FOIA", "Due_Process"],
+                compliance_requirements=[
+                    "Administrative_Procedure_Act",
+                    "FOIA",
+                    "Due_Process",
+                ],
                 risk_level="high",
-                regulatory_framework="OMB"
-            )
+                regulatory_framework="OMB",
+            ),
         ]
-        
+
         self.domain_principles = {
             "healthcare": healthcare_principles,
             "finance": finance_principles,
             "education": education_principles,
-            "government": government_principles
+            "government": government_principles,
         }
-    
-    def get_principles_for_domain(self, domain: str) -> List[DomainPrinciple]:
+
+    def get_principles_for_domain(self, domain: str) -> list[DomainPrinciple]:
         """Get all principles for a specific domain."""
         return self.domain_principles.get(domain, [])
-    
-    def get_all_domains(self) -> List[str]:
+
+    def get_all_domains(self) -> list[str]:
         """Get list of all available domains."""
         return list(self.domain_principles.keys())
-    
-    def get_high_risk_principles(self, domain: Optional[str] = None) -> List[DomainPrinciple]:
+
+    def get_high_risk_principles(
+        self, domain: str | None = None
+    ) -> list[DomainPrinciple]:
         """Get high-risk principles for testing."""
         high_risk_principles = []
-        
+
         domains_to_check = [domain] if domain else self.get_all_domains()
-        
+
         for domain_name in domains_to_check:
             principles = self.domain_principles.get(domain_name, [])
-            high_risk_principles.extend([
-                p for p in principles 
-                if p.risk_level in ["high", "critical"]
-            ])
-        
+            high_risk_principles.extend(
+                [p for p in principles if p.risk_level in {"high", "critical"}]
+            )
+
         return high_risk_principles
 
 
 class ChaosMeshSimulator:
     """Simulates Chaos Mesh fault injection using subprocess calls."""
-    
+
     def __init__(self, namespace: str = "acgs-system"):
         """Initialize the Chaos Mesh simulator."""
         self.namespace = namespace
-        self.active_faults: List[Dict[str, Any]] = []
-        self.fault_history: List[Dict[str, Any]] = []
-        
+        self.active_faults: list[dict[str, Any]] = []
+        self.fault_history: list[dict[str, Any]] = []
+
         logger.info(f"Initialized Chaos Mesh simulator for namespace: {namespace}")
-    
+
     async def inject_pod_kill_fault(
-        self, 
-        target_service: str, 
-        duration_seconds: int = 60
-    ) -> Dict[str, Any]:
+        self, target_service: str, duration_seconds: int = 60
+    ) -> dict[str, Any]:
         """Simulate pod kill fault injection."""
         fault_id = str(uuid4())[:8]
-        
+
         fault_config = {
             "fault_id": fault_id,
             "type": "pod_kill",
             "target_service": target_service,
             "duration_seconds": duration_seconds,
             "start_time": datetime.now(timezone.utc),
-            "status": "active"
+            "status": "active",
         }
-        
+
         try:
             # Simulate kubectl command for pod deletion
             cmd = [
-                "kubectl", "delete", "pod", 
-                "-l", f"app={target_service}",
-                "-n", self.namespace,
+                "kubectl",
+                "delete",
+                "pod",
+                "-l",
+                f"app={target_service}",
+                "-n",
+                self.namespace,
                 "--grace-period=0",
-                "--force"
+                "--force",
             ]
-            
-            logger.info(f"Simulating pod kill for {target_service} (fault_id: {fault_id})")
-            
+
+            logger.info(
+                f"Simulating pod kill for {target_service} (fault_id: {fault_id})"
+            )
+
             # In real implementation, would execute: subprocess.run(cmd, capture_output=True)
             # For simulation, we'll just log the command
             logger.info(f"Would execute: {' '.join(cmd)}")
-            
-            fault_config["command_executed"] = ' '.join(cmd)
+
+            fault_config["command_executed"] = " ".join(cmd)
             fault_config["simulation_mode"] = True
-            
+
             self.active_faults.append(fault_config)
-            
+
             # Schedule fault cleanup
-            asyncio.create_task(self._cleanup_fault_after_duration(fault_id, duration_seconds))
-            
+            asyncio.create_task(
+                self._cleanup_fault_after_duration(fault_id, duration_seconds)
+            )
+
             return fault_config
-            
+
         except Exception as e:
-            logger.error(f"Pod kill fault injection failed: {e}")
+            logger.exception(f"Pod kill fault injection failed: {e}")
             fault_config["status"] = "failed"
             fault_config["error"] = str(e)
             return fault_config
-    
+
     async def inject_network_delay_fault(
-        self, 
-        target_service: str, 
-        delay_ms: int = 100,
-        duration_seconds: int = 60
-    ) -> Dict[str, Any]:
+        self, target_service: str, delay_ms: int = 100, duration_seconds: int = 60
+    ) -> dict[str, Any]:
         """Simulate network delay fault injection."""
         fault_id = str(uuid4())[:8]
-        
+
         fault_config = {
             "fault_id": fault_id,
             "type": "network_delay",
@@ -358,9 +365,9 @@ class ChaosMeshSimulator:
             "delay_ms": delay_ms,
             "duration_seconds": duration_seconds,
             "start_time": datetime.now(timezone.utc),
-            "status": "active"
+            "status": "active",
         }
-        
+
         try:
             # Simulate Chaos Mesh NetworkChaos YAML
             chaos_yaml = f"""
@@ -379,35 +386,36 @@ spec:
     latency: "{delay_ms}ms"
   duration: "{duration_seconds}s"
 """
-            
-            logger.info(f"Simulating network delay for {target_service} (fault_id: {fault_id})")
+
+            logger.info(
+                f"Simulating network delay for {target_service} (fault_id: {fault_id})"
+            )
             logger.info(f"Delay: {delay_ms}ms, Duration: {duration_seconds}s")
-            
+
             fault_config["chaos_yaml"] = chaos_yaml
             fault_config["simulation_mode"] = True
-            
+
             self.active_faults.append(fault_config)
-            
+
             # Schedule fault cleanup
-            asyncio.create_task(self._cleanup_fault_after_duration(fault_id, duration_seconds))
-            
+            asyncio.create_task(
+                self._cleanup_fault_after_duration(fault_id, duration_seconds)
+            )
+
             return fault_config
-            
+
         except Exception as e:
-            logger.error(f"Network delay fault injection failed: {e}")
+            logger.exception(f"Network delay fault injection failed: {e}")
             fault_config["status"] = "failed"
             fault_config["error"] = str(e)
             return fault_config
-    
+
     async def inject_cpu_stress_fault(
-        self, 
-        target_service: str, 
-        cpu_percentage: int = 80,
-        duration_seconds: int = 60
-    ) -> Dict[str, Any]:
+        self, target_service: str, cpu_percentage: int = 80, duration_seconds: int = 60
+    ) -> dict[str, Any]:
         """Simulate CPU stress fault injection."""
         fault_id = str(uuid4())[:8]
-        
+
         fault_config = {
             "fault_id": fault_id,
             "type": "cpu_stress",
@@ -415,9 +423,9 @@ spec:
             "cpu_percentage": cpu_percentage,
             "duration_seconds": duration_seconds,
             "start_time": datetime.now(timezone.utc),
-            "status": "active"
+            "status": "active",
         }
-        
+
         try:
             # Simulate Chaos Mesh StressChaos YAML
             chaos_yaml = f"""
@@ -437,48 +445,52 @@ spec:
       load: {cpu_percentage}
   duration: "{duration_seconds}s"
 """
-            
-            logger.info(f"Simulating CPU stress for {target_service} (fault_id: {fault_id})")
+
+            logger.info(
+                f"Simulating CPU stress for {target_service} (fault_id: {fault_id})"
+            )
             logger.info(f"CPU load: {cpu_percentage}%, Duration: {duration_seconds}s")
-            
+
             fault_config["chaos_yaml"] = chaos_yaml
             fault_config["simulation_mode"] = True
-            
+
             self.active_faults.append(fault_config)
-            
+
             # Schedule fault cleanup
-            asyncio.create_task(self._cleanup_fault_after_duration(fault_id, duration_seconds))
-            
+            asyncio.create_task(
+                self._cleanup_fault_after_duration(fault_id, duration_seconds)
+            )
+
             return fault_config
-            
+
         except Exception as e:
-            logger.error(f"CPU stress fault injection failed: {e}")
+            logger.exception(f"CPU stress fault injection failed: {e}")
             fault_config["status"] = "failed"
             fault_config["error"] = str(e)
             return fault_config
-    
+
     async def _cleanup_fault_after_duration(self, fault_id: str, duration_seconds: int):
         """Clean up fault after specified duration."""
         await asyncio.sleep(duration_seconds)
-        
+
         # Find and update fault status
         for fault in self.active_faults:
             if fault["fault_id"] == fault_id:
                 fault["status"] = "completed"
                 fault["end_time"] = datetime.now(timezone.utc)
-                
+
                 # Move to history
                 self.fault_history.append(fault)
                 self.active_faults.remove(fault)
-                
+
                 logger.info(f"Fault {fault_id} completed and cleaned up")
                 break
-    
-    def get_active_faults(self) -> List[Dict[str, Any]]:
+
+    def get_active_faults(self) -> list[dict[str, Any]]:
         """Get currently active faults."""
         return self.active_faults.copy()
-    
-    def get_fault_history(self) -> List[Dict[str, Any]]:
+
+    def get_fault_history(self) -> list[dict[str, Any]]:
         """Get fault injection history."""
         return self.fault_history.copy()
 
@@ -489,11 +501,11 @@ class PrometheusMetricsCollector:
     def __init__(self, prometheus_url: str = "http://localhost:9090"):
         """Initialize the Prometheus metrics collector."""
         self.prometheus_url = prometheus_url
-        self.metrics_cache: Dict[str, Any] = {}
+        self.metrics_cache: dict[str, Any] = {}
 
         logger.info(f"Initialized Prometheus metrics collector: {prometheus_url}")
 
-    async def collect_acgs_metrics(self) -> Dict[str, float]:
+    async def collect_acgs_metrics(self) -> dict[str, float]:
         """Collect ACGS-specific metrics from Prometheus."""
         try:
             async with aiohttp.ClientSession() as session:
@@ -508,8 +520,8 @@ class PrometheusMetricsCollector:
                     "error_rate": 'rate(http_requests_total{service=~".*acgs.*",status=~"5.."}[1m])',
                     "cpu_utilization": 'avg(rate(container_cpu_usage_seconds_total{pod=~".*acgs.*"}[1m])) * 100',
                     "memory_utilization": 'avg(container_memory_working_set_bytes{pod=~".*acgs.*"}) / avg(container_spec_memory_limit_bytes{pod=~".*acgs.*"}) * 100',
-                    "constitutional_compliance": 'avg(acgs_constitutional_compliance_rate)',
-                    "active_pods": 'count(up{job=~".*acgs.*"} == 1)'
+                    "constitutional_compliance": "avg(acgs_constitutional_compliance_rate)",
+                    "active_pods": 'count(up{job=~".*acgs.*"} == 1)',
                 }
 
                 for metric_name, query in metric_queries.items():
@@ -521,16 +533,23 @@ class PrometheusMetricsCollector:
                             if response.status == 200:
                                 data = await response.json()
 
-                                if data["status"] == "success" and data["data"]["result"]:
+                                if (
+                                    data["status"] == "success"
+                                    and data["data"]["result"]
+                                ):
                                     # Extract metric value
                                     result = data["data"]["result"][0]
                                     value = float(result["value"][1])
                                     metrics[metric_name] = value
                                 else:
                                     # Use simulated values for testing
-                                    metrics[metric_name] = self._get_simulated_metric(metric_name)
+                                    metrics[metric_name] = self._get_simulated_metric(
+                                        metric_name
+                                    )
                             else:
-                                metrics[metric_name] = self._get_simulated_metric(metric_name)
+                                metrics[metric_name] = self._get_simulated_metric(
+                                    metric_name
+                                )
 
                     except Exception as e:
                         logger.warning(f"Failed to collect metric {metric_name}: {e}")
@@ -539,7 +558,7 @@ class PrometheusMetricsCollector:
                 return metrics
 
         except Exception as e:
-            logger.error(f"Prometheus metrics collection failed: {e}")
+            logger.exception(f"Prometheus metrics collection failed: {e}")
             # Return simulated metrics for testing
             return {
                 "rps": self._get_simulated_metric("rps"),
@@ -549,13 +568,15 @@ class PrometheusMetricsCollector:
                 "error_rate": self._get_simulated_metric("error_rate"),
                 "cpu_utilization": self._get_simulated_metric("cpu_utilization"),
                 "memory_utilization": self._get_simulated_metric("memory_utilization"),
-                "constitutional_compliance": self._get_simulated_metric("constitutional_compliance"),
-                "active_pods": self._get_simulated_metric("active_pods")
+                "constitutional_compliance": self._get_simulated_metric(
+                    "constitutional_compliance"
+                ),
+                "active_pods": self._get_simulated_metric("active_pods"),
             }
 
     def _get_simulated_metric(self, metric_name: str) -> float:
         """Get simulated metric values for testing."""
-        base_time = time.time()
+        time.time()
 
         # Add some realistic variation based on time
         variation = 0.1 * (0.5 - random.random())
@@ -569,12 +590,14 @@ class PrometheusMetricsCollector:
             "cpu_utilization": 65.0 + (15 * variation),  # 65% ± 15%
             "memory_utilization": 70.0 + (10 * variation),  # 70% ± 10%
             "constitutional_compliance": max(0.995 + (0.005 * variation), 0.99),  # >99%
-            "active_pods": max(3 + int(2 * variation), 1)  # 3 ± 2 pods
+            "active_pods": max(3 + int(2 * variation), 1),  # 3 ± 2 pods
         }
 
         return simulated_values.get(metric_name, 0.0)
 
-    async def export_custom_metric(self, metric_name: str, value: float, labels: Dict[str, str] = None):
+    async def export_custom_metric(
+        self, metric_name: str, value: float, labels: dict[str, str] | None = None
+    ):
         """Export custom metric to Prometheus (simulated)."""
         try:
             # In real implementation, would use Prometheus client library
@@ -588,11 +611,11 @@ class PrometheusMetricsCollector:
             self.metrics_cache[metric_name] = {
                 "value": value,
                 "labels": labels or {},
-                "timestamp": datetime.now(timezone.utc)
+                "timestamp": datetime.now(timezone.utc),
             }
 
         except Exception as e:
-            logger.error(f"Failed to export metric {metric_name}: {e}")
+            logger.exception(f"Failed to export metric {metric_name}: {e}")
 
 
 class ACGSChaosTestRunner:
@@ -602,7 +625,7 @@ class ACGSChaosTestRunner:
         self,
         target_rps: int = 1247,
         uptime_target: float = 0.999,
-        prometheus_url: str = "http://localhost:9090"
+        prometheus_url: str = "http://localhost:9090",
     ):
         """Initialize the chaos test runner."""
         self.target_rps = target_rps
@@ -614,17 +637,19 @@ class ACGSChaosTestRunner:
         self.metrics_collector = PrometheusMetricsCollector(prometheus_url)
 
         # Test state
-        self.test_results: List[ChaosTestResult] = []
-        self.current_test: Optional[ChaosTestResult] = None
+        self.test_results: list[ChaosTestResult] = []
+        self.current_test: ChaosTestResult | None = None
 
-        logger.info(f"Initialized ACGS Chaos Test Runner - Target RPS: {target_rps}, Uptime: {uptime_target*100}%")
+        logger.info(
+            f"Initialized ACGS Chaos Test Runner - Target RPS: {target_rps}, Uptime: {uptime_target * 100}%"
+        )
 
     async def run_chaos_test(
         self,
         users: int = 10000,
-        domains: List[str] = None,
+        domains: list[str] | None = None,
         duration_minutes: int = 60,
-        fault_injection_interval: int = 300  # 5 minutes
+        fault_injection_interval: int = 300,  # 5 minutes
     ) -> ChaosTestResult:
         """
         Run comprehensive chaos test with domain-specific validation.
@@ -639,12 +664,14 @@ class ACGSChaosTestRunner:
             ChaosTestResult with comprehensive test results
         """
         if domains is None:
-            domains = ['healthcare', 'finance']
+            domains = ["healthcare", "finance"]
 
         test_id = str(uuid4())[:8]
         start_time = datetime.now(timezone.utc)
 
-        logger.info(f"Starting chaos test {test_id} - Users: {users}, Domains: {domains}, Duration: {duration_minutes}min")
+        logger.info(
+            f"Starting chaos test {test_id} - Users: {users}, Domains: {domains}, Duration: {duration_minutes}min"
+        )
 
         # Initialize test result
         self.current_test = ChaosTestResult(
@@ -660,7 +687,7 @@ class ACGSChaosTestRunner:
             uptime_target_met=False,
             metrics_history=[],
             fault_injections=[],
-            hpa_scaling_events=[]
+            hpa_scaling_events=[],
         )
 
         try:
@@ -674,7 +701,9 @@ class ACGSChaosTestRunner:
 
             # Start fault injection
             fault_injection_task = asyncio.create_task(
-                self._inject_faults_periodically(duration_minutes, fault_injection_interval)
+                self._inject_faults_periodically(
+                    duration_minutes, fault_injection_interval
+                )
             )
 
             # Start HPA monitoring
@@ -693,7 +722,7 @@ class ACGSChaosTestRunner:
                 fault_injection_task,
                 hpa_monitoring_task,
                 load_simulation_task,
-                return_exceptions=True
+                return_exceptions=True,
             )
 
             # Finalize test results
@@ -706,17 +735,19 @@ class ACGSChaosTestRunner:
             # Store test result
             self.test_results.append(self.current_test)
 
-            logger.info(f"Chaos test {test_id} completed - Uptime: {self.current_test.overall_uptime:.3f}, RPS: {self.current_test.average_rps:.1f}")
+            logger.info(
+                f"Chaos test {test_id} completed - Uptime: {self.current_test.overall_uptime:.3f}, RPS: {self.current_test.average_rps:.1f}"
+            )
 
             return self.current_test
 
         except Exception as e:
-            logger.error(f"Chaos test {test_id} failed: {e}")
+            logger.exception(f"Chaos test {test_id} failed: {e}")
             if self.current_test:
                 self.current_test.end_time = datetime.now(timezone.utc)
             raise
 
-    async def _load_domain_principles_for_test(self, domains: List[str]):
+    async def _load_domain_principles_for_test(self, domains: list[str]):
         """Load and validate domain-specific principles for testing."""
         for domain in domains:
             principles = self.domain_loader.get_principles_for_domain(domain)
@@ -726,7 +757,7 @@ class ACGSChaosTestRunner:
             await self.metrics_collector.export_custom_metric(
                 "acgs_domain_principles_loaded",
                 len(principles),
-                {"domain": domain, "constitutional_hash": CONSTITUTIONAL_HASH}
+                {"domain": domain, "constitutional_hash": CONSTITUTIONAL_HASH},
             )
 
     async def _collect_metrics_continuously(self, duration_minutes: int):
@@ -753,7 +784,9 @@ class ACGSChaosTestRunner:
                     active_pods=int(metrics_data.get("active_pods", 0)),
                     cpu_utilization=metrics_data.get("cpu_utilization", 0.0),
                     memory_utilization=metrics_data.get("memory_utilization", 0.0),
-                    constitutional_compliance_rate=metrics_data.get("constitutional_compliance", 0.0)
+                    constitutional_compliance_rate=metrics_data.get(
+                        "constitutional_compliance", 0.0
+                    ),
                 )
 
                 if self.current_test:
@@ -766,10 +799,10 @@ class ACGSChaosTestRunner:
                 await asyncio.sleep(10)  # Collect every 10 seconds
 
             except Exception as e:
-                logger.error(f"Metrics collection error: {e}")
+                logger.exception(f"Metrics collection error: {e}")
                 await asyncio.sleep(10)
 
-    def _calculate_current_uptime(self, metrics_data: Dict[str, float]) -> float:
+    def _calculate_current_uptime(self, metrics_data: dict[str, float]) -> float:
         """Calculate current uptime percentage."""
         error_rate = metrics_data.get("error_rate", 0.0)
         active_pods = metrics_data.get("active_pods", 0)
@@ -791,32 +824,49 @@ class ACGSChaosTestRunner:
             await self.metrics_collector.export_custom_metric(
                 "acgs_chaos_test_rps",
                 metrics.rps,
-                {"test_id": self.current_test.test_id if self.current_test else "unknown"}
+                {
+                    "test_id": (
+                        self.current_test.test_id if self.current_test else "unknown"
+                    )
+                },
             )
 
             await self.metrics_collector.export_custom_metric(
                 "acgs_chaos_test_uptime",
                 metrics.uptime_percentage,
-                {"test_id": self.current_test.test_id if self.current_test else "unknown"}
+                {
+                    "test_id": (
+                        self.current_test.test_id if self.current_test else "unknown"
+                    )
+                },
             )
 
             await self.metrics_collector.export_custom_metric(
                 "acgs_chaos_test_latency_p99",
                 metrics.latency_p99,
-                {"test_id": self.current_test.test_id if self.current_test else "unknown"}
+                {
+                    "test_id": (
+                        self.current_test.test_id if self.current_test else "unknown"
+                    )
+                },
             )
 
         except Exception as e:
-            logger.error(f"Real-time metrics export failed: {e}")
+            logger.exception(f"Real-time metrics export failed: {e}")
 
-    async def _inject_faults_periodically(self, duration_minutes: int, interval_seconds: int):
+    async def _inject_faults_periodically(
+        self, duration_minutes: int, interval_seconds: int
+    ):
         """Inject faults periodically during the test."""
         end_time = datetime.now(timezone.utc) + timedelta(minutes=duration_minutes)
 
         # ACGS services to target for fault injection
         target_services = [
-            "governance-synthesis", "policy-governance", "integrity-service",
-            "constitutional-ai", "formal-verification"
+            "governance-synthesis",
+            "policy-governance",
+            "integrity-service",
+            "constitutional-ai",
+            "formal-verification",
         ]
 
         fault_types = ["pod_kill", "network_delay", "cpu_stress"]
@@ -833,12 +883,18 @@ class ACGSChaosTestRunner:
                         target_service, duration_seconds=120
                     )
                 elif fault_type == "network_delay":
-                    fault_result = await self.chaos_simulator.inject_network_delay_fault(
-                        target_service, delay_ms=random.randint(50, 200), duration_seconds=180
+                    fault_result = (
+                        await self.chaos_simulator.inject_network_delay_fault(
+                            target_service,
+                            delay_ms=random.randint(50, 200),
+                            duration_seconds=180,
+                        )
                     )
                 elif fault_type == "cpu_stress":
                     fault_result = await self.chaos_simulator.inject_cpu_stress_fault(
-                        target_service, cpu_percentage=random.randint(70, 90), duration_seconds=150
+                        target_service,
+                        cpu_percentage=random.randint(70, 90),
+                        duration_seconds=150,
                     )
 
                 if self.current_test:
@@ -850,7 +906,7 @@ class ACGSChaosTestRunner:
                 await asyncio.sleep(interval_seconds)
 
             except Exception as e:
-                logger.error(f"Fault injection error: {e}")
+                logger.exception(f"Fault injection error: {e}")
                 await asyncio.sleep(interval_seconds)
 
     async def _monitor_hpa_scaling(self, duration_minutes: int):
@@ -866,7 +922,11 @@ class ACGSChaosTestRunner:
                 cpu_utilization = current_metrics.get("cpu_utilization", 50.0)
 
                 # Simulate HPA scaling decisions
-                for service in ["governance-synthesis", "policy-governance", "integrity-service"]:
+                for service in [
+                    "governance-synthesis",
+                    "policy-governance",
+                    "integrity-service",
+                ]:
                     previous_count = previous_pod_counts.get(service, 3)
 
                     # Simple scaling logic simulation
@@ -880,14 +940,16 @@ class ACGSChaosTestRunner:
                             "previous_replicas": previous_count,
                             "new_replicas": new_count,
                             "trigger": f"CPU utilization: {cpu_utilization:.1f}%",
-                            "constitutional_hash": CONSTITUTIONAL_HASH
+                            "constitutional_hash": CONSTITUTIONAL_HASH,
                         }
 
                         if self.current_test:
                             self.current_test.hpa_scaling_events.append(scaling_event)
 
                         previous_pod_counts[service] = new_count
-                        logger.info(f"HPA scaled up {service}: {previous_count} -> {new_count}")
+                        logger.info(
+                            f"HPA scaled up {service}: {previous_count} -> {new_count}"
+                        )
 
                     elif cpu_utilization < 30 and current_pods > 2:
                         # Scale down
@@ -899,45 +961,61 @@ class ACGSChaosTestRunner:
                             "previous_replicas": previous_count,
                             "new_replicas": new_count,
                             "trigger": f"CPU utilization: {cpu_utilization:.1f}%",
-                            "constitutional_hash": CONSTITUTIONAL_HASH
+                            "constitutional_hash": CONSTITUTIONAL_HASH,
                         }
 
                         if self.current_test:
                             self.current_test.hpa_scaling_events.append(scaling_event)
 
                         previous_pod_counts[service] = new_count
-                        logger.info(f"HPA scaled down {service}: {previous_count} -> {new_count}")
+                        logger.info(
+                            f"HPA scaled down {service}: {previous_count} -> {new_count}"
+                        )
 
                 await asyncio.sleep(30)  # Check every 30 seconds
 
             except Exception as e:
-                logger.error(f"HPA monitoring error: {e}")
+                logger.exception(f"HPA monitoring error: {e}")
                 await asyncio.sleep(30)
 
-    async def _simulate_user_load(self, users: int, duration_minutes: int, domains: List[str]):
+    async def _simulate_user_load(
+        self, users: int, duration_minutes: int, domains: list[str]
+    ):
         """Simulate user load across different domains."""
         end_time = datetime.now(timezone.utc) + timedelta(minutes=duration_minutes)
 
         # Distribute users across domains
         users_per_domain = users // len(domains)
 
-        logger.info(f"Simulating {users} users across {len(domains)} domains ({users_per_domain} per domain)")
+        logger.info(
+            f"Simulating {users} users across {len(domains)} domains ({users_per_domain} per domain)"
+        )
 
         while datetime.now(timezone.utc) < end_time:
             try:
                 for domain in domains:
                     # Simulate domain-specific load patterns
-                    domain_principles = self.domain_loader.get_principles_for_domain(domain)
+                    domain_principles = self.domain_loader.get_principles_for_domain(
+                        domain
+                    )
 
                     # Simulate requests based on domain characteristics
                     if domain == "healthcare":
                         # Healthcare: Higher compliance requirements, more complex queries
                         request_complexity = "high"
-                        compliance_checks = len([p for p in domain_principles if p.risk_level == "critical"])
+                        compliance_checks = len(
+                            [p for p in domain_principles if p.risk_level == "critical"]
+                        )
                     elif domain == "finance":
                         # Finance: High frequency, strict latency requirements
                         request_complexity = "medium"
-                        compliance_checks = len([p for p in domain_principles if "AML" in str(p.compliance_requirements)])
+                        compliance_checks = len(
+                            [
+                                p
+                                for p in domain_principles
+                                if "AML" in str(p.compliance_requirements)
+                            ]
+                        )
                     else:
                         request_complexity = "medium"
                         compliance_checks = len(domain_principles)
@@ -950,14 +1028,14 @@ class ACGSChaosTestRunner:
                             "domain": domain,
                             "complexity": request_complexity,
                             "compliance_checks": str(compliance_checks),
-                            "constitutional_hash": CONSTITUTIONAL_HASH
-                        }
+                            "constitutional_hash": CONSTITUTIONAL_HASH,
+                        },
                     )
 
                 await asyncio.sleep(60)  # Update every minute
 
             except Exception as e:
-                logger.error(f"Load simulation error: {e}")
+                logger.exception(f"Load simulation error: {e}")
                 await asyncio.sleep(60)
 
     async def _calculate_final_test_metrics(self):
@@ -969,15 +1047,23 @@ class ACGSChaosTestRunner:
 
         # Calculate average RPS
         rps_values = [m.rps for m in metrics_history]
-        self.current_test.average_rps = sum(rps_values) / len(rps_values) if rps_values else 0.0
+        self.current_test.average_rps = (
+            sum(rps_values) / len(rps_values) if rps_values else 0.0
+        )
 
         # Calculate overall uptime
         uptime_values = [m.uptime_percentage for m in metrics_history]
-        self.current_test.overall_uptime = sum(uptime_values) / len(uptime_values) if uptime_values else 0.0
+        self.current_test.overall_uptime = (
+            sum(uptime_values) / len(uptime_values) if uptime_values else 0.0
+        )
 
         # Check if targets were met
-        self.current_test.target_rps_achieved = self.current_test.average_rps >= self.target_rps
-        self.current_test.uptime_target_met = self.current_test.overall_uptime >= self.uptime_target
+        self.current_test.target_rps_achieved = (
+            self.current_test.average_rps >= self.target_rps
+        )
+        self.current_test.uptime_target_met = (
+            self.current_test.overall_uptime >= self.uptime_target
+        )
 
         # Export final test metrics
         await self.metrics_collector.export_custom_metric(
@@ -986,8 +1072,8 @@ class ACGSChaosTestRunner:
             {
                 "test_id": self.current_test.test_id,
                 "target_achieved": str(self.current_test.target_rps_achieved),
-                "constitutional_hash": CONSTITUTIONAL_HASH
-            }
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+            },
         )
 
         await self.metrics_collector.export_custom_metric(
@@ -996,17 +1082,19 @@ class ACGSChaosTestRunner:
             {
                 "test_id": self.current_test.test_id,
                 "target_achieved": str(self.current_test.uptime_target_met),
-                "constitutional_hash": CONSTITUTIONAL_HASH
-            }
+                "constitutional_hash": CONSTITUTIONAL_HASH,
+            },
         )
 
-        logger.info(f"Final test metrics calculated - RPS: {self.current_test.average_rps:.1f} (target: {self.target_rps}), Uptime: {self.current_test.overall_uptime:.3f} (target: {self.uptime_target})")
+        logger.info(
+            f"Final test metrics calculated - RPS: {self.current_test.average_rps:.1f} (target: {self.target_rps}), Uptime: {self.current_test.overall_uptime:.3f} (target: {self.uptime_target})"
+        )
 
-    def get_test_results(self) -> List[ChaosTestResult]:
+    def get_test_results(self) -> list[ChaosTestResult]:
         """Get all test results."""
         return self.test_results.copy()
 
-    def get_latest_test_result(self) -> Optional[ChaosTestResult]:
+    def get_latest_test_result(self) -> ChaosTestResult | None:
         """Get the latest test result."""
         return self.test_results[-1] if self.test_results else None
 
@@ -1017,9 +1105,7 @@ async def main():
     try:
         # Initialize chaos test runner
         chaos_runner = ACGSChaosTestRunner(
-            target_rps=1247,
-            uptime_target=0.999,
-            prometheus_url="http://localhost:9090"
+            target_rps=1247, uptime_target=0.999, prometheus_url="http://localhost:9090"
         )
 
         # Run 1-hour chaos test with 10,000 users across healthcare and finance domains
@@ -1027,38 +1113,21 @@ async def main():
 
         test_result = await chaos_runner.run_chaos_test(
             users=10000,
-            domains=['healthcare', 'finance'],
+            domains=["healthcare", "finance"],
             duration_minutes=60,
-            fault_injection_interval=300  # 5 minutes
+            fault_injection_interval=300,  # 5 minutes
         )
 
         # Print test summary
-        print("\n" + "="*80)
-        print("ACGS CHAOS TEST RESULTS")
-        print("="*80)
-        print(f"Test ID: {test_result.test_id}")
-        print(f"Duration: {test_result.total_duration_minutes} minutes")
-        print(f"Target Users: {test_result.target_users:,}")
-        print(f"Domains Tested: {', '.join(test_result.domains_tested)}")
-        print(f"Average RPS: {test_result.average_rps:.1f} (Target: 1247)")
-        print(f"Overall Uptime: {test_result.overall_uptime:.3f} (Target: 0.999)")
-        print(f"RPS Target Achieved: {'✅' if test_result.target_rps_achieved else '❌'}")
-        print(f"Uptime Target Achieved: {'✅' if test_result.uptime_target_met else '❌'}")
-        print(f"Fault Injections: {len(test_result.fault_injections)}")
-        print(f"HPA Scaling Events: {len(test_result.hpa_scaling_events)}")
-        print(f"Constitutional Hash: {test_result.constitutional_hash}")
-        print("="*80)
 
         # Validate 99.9% uptime requirement
         if test_result.uptime_target_met:
-            print("🎉 SUCCESS: 99.9% uptime target achieved!")
-        else:
-            print("⚠️  WARNING: 99.9% uptime target not met")
+            pass
 
         return test_result
 
     except Exception as e:
-        logger.error(f"Chaos testing failed: {e}")
+        logger.exception(f"Chaos testing failed: {e}")
         raise
 
 

@@ -6,7 +6,7 @@ Command objects for multi-agent coordination operations.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from services.shared.domain.base import EntityId, TenantId
 
@@ -25,8 +25,8 @@ class RegisterAgentCommand:
     tenant_id: TenantId
     agent_id: EntityId
     agent_type: str
-    capabilities: List[AgentCapability]
-    metadata: Optional[Dict[str, Any]] = None
+    capabilities: list[AgentCapability]
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -56,7 +56,7 @@ class AssignTaskCommand:
     agent_id: EntityId
     task_id: EntityId
     task_requirements: TaskRequirements
-    session_id: Optional[EntityId] = None
+    session_id: EntityId | None = None
 
 
 @dataclass
@@ -66,7 +66,7 @@ class CompleteTaskCommand:
     tenant_id: TenantId
     agent_id: EntityId
     task_id: EntityId
-    result: Dict[str, Any]
+    result: dict[str, Any]
     performance_score: float
 
 
@@ -78,8 +78,8 @@ class StartCoordinationSessionCommand:
     session_id: EntityId
     objective: CoordinationObjective
     initiator_id: str
-    required_agents: List[str]
-    participating_agents: List[EntityId]
+    required_agents: list[str]
+    participating_agents: list[EntityId]
 
 
 @dataclass
@@ -88,7 +88,7 @@ class CompleteCoordinationSessionCommand:
 
     tenant_id: TenantId
     session_id: EntityId
-    final_results: Dict[str, Any]
+    final_results: dict[str, Any]
 
 
 @dataclass
@@ -97,9 +97,9 @@ class RequestAgentCollaborationCommand:
 
     tenant_id: TenantId
     primary_agent_id: EntityId
-    collaborating_agents: List[EntityId]
+    collaborating_agents: list[EntityId]
     collaboration_type: str
-    shared_context: Dict[str, Any]
+    shared_context: dict[str, Any]
     session_id: EntityId
 
 
@@ -111,7 +111,7 @@ class ResolveCoordinationConflictCommand:
     session_id: EntityId
     conflict_id: str
     resolution_strategy: str
-    resolution_parameters: Dict[str, Any]
+    resolution_parameters: dict[str, Any]
 
 
 @dataclass
@@ -120,7 +120,7 @@ class AllocateResourcesCommand:
 
     tenant_id: TenantId
     agent_id: EntityId
-    resource_allocations: Dict[str, int]  # resource_type -> amount
+    resource_allocations: dict[str, int]  # resource_type -> amount
     allocation_duration: int  # minutes
 
 
@@ -130,7 +130,7 @@ class UpdatePerformanceMetricsCommand:
 
     tenant_id: TenantId
     agent_id: EntityId
-    metrics: Dict[str, float]
+    metrics: dict[str, float]
     measurement_period: str
 
 
@@ -144,7 +144,7 @@ class CreateCoordinationTaskCommand:
     task_type: str
     requirements: TaskRequirements
     assigned_agent_id: EntityId
-    dependencies: List[EntityId]
+    dependencies: list[EntityId]
 
 
 @dataclass
@@ -175,9 +175,9 @@ class RequestImpactAnalysisCommand:
     analysis_id: EntityId
     subject_id: str  # ID of what needs analysis
     analysis_type: str
-    required_agents: List[str]
-    context_data: Dict[str, Any]
-    deadline: Optional[str] = None
+    required_agents: list[str]
+    context_data: dict[str, Any]
+    deadline: str | None = None
 
 
 @dataclass
@@ -186,8 +186,8 @@ class OptimizeAgentAllocationCommand:
 
     tenant_id: TenantId
     session_id: EntityId
-    optimization_criteria: Dict[str, float]  # criteria -> weight
-    constraints: Dict[str, Any]
+    optimization_criteria: dict[str, float]  # criteria -> weight
+    constraints: dict[str, Any]
 
 
 @dataclass
@@ -197,4 +197,4 @@ class ScaleCoordinationCapacityCommand:
     tenant_id: TenantId
     target_capacity: int  # number of concurrent sessions
     scaling_strategy: str  # "horizontal", "vertical", "adaptive"
-    resource_constraints: Dict[str, Any]
+    resource_constraints: dict[str, Any]

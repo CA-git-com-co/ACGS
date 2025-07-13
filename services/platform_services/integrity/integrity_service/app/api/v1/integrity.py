@@ -34,7 +34,7 @@ from validation_models import SignatureRequest
 
 # Local auth stubs (replace with actual auth in production)
 class User:
-    def __init__(self, user_id: str = "system", roles: list[str] = None):
+    def __init__(self, user_id: str = "system", roles: list[str] | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -157,7 +157,7 @@ async def sign_policy_rule(
             correlation_id=correlation_id,
         )
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Failed to sign policy rule {rule_id}: {e}",
             extra={"correlation_id": correlation_id},
         )
@@ -315,8 +315,8 @@ async def batch_verify_audit_logs(
 
 @router.get("/chain-integrity/audit-logs")
 async def verify_audit_log_chain_integrity(
-    start_id: int = None,
-    end_id: int = None,
+    start_id: int | None = None,
+    end_id: int | None = None,
     limit: int = 100,
     db: AsyncSession = Depends(get_async_db),
     current_user: User = Depends(require_auditor),
@@ -351,7 +351,7 @@ async def verify_audit_log_chain_integrity(
         chain_integrity_results = []
         previous_hash = None
 
-        for _i, log in enumerate(audit_logs):
+        for log in audit_logs:
             expected_previous_hash = previous_hash
             actual_previous_hash = log.previous_hash
 

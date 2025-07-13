@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Changelog
 
 ## 0.1.0-alpha.8 (2025-07-02)

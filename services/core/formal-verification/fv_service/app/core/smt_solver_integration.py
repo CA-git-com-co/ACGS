@@ -105,7 +105,7 @@ class Z3SMTSolverClient:
             )
 
         except Exception as e:
-            logger.error(f"Error in Z3 verification: {e!s}")
+            logger.exception(f"Error in Z3 verification: {e!s}")
             return SMTSolverOutput(
                 is_satisfiable=False,
                 is_unsatisfiable=False,
@@ -116,7 +116,7 @@ class Z3SMTSolverClient:
         self,
         policy_content: str,
         policy_id: str,
-        constitutional_principles_file: str = None,
+        constitutional_principles_file: str | None = None,
     ) -> dict[str, Any]:
         """
         Enhanced policy verification with constitutional compliance checking.
@@ -186,7 +186,7 @@ class Z3SMTSolverClient:
             return verification_result
 
         except Exception as e:
-            logger.error(f"Enhanced verification failed for {policy_id}: {e}")
+            logger.exception(f"Enhanced verification failed for {policy_id}: {e}")
             return {
                 "policy_id": policy_id,
                 "verification_status": "error",
@@ -228,7 +228,7 @@ class Z3SMTSolverClient:
             }
 
         except Exception as e:
-            logger.error(f"Constitutional compliance check failed: {e}")
+            logger.exception(f"Constitutional compliance check failed: {e}")
             return {"overall_compliant": False, "error": str(e)}
 
     def _verify_formal_properties(self) -> dict[str, Any]:
@@ -262,7 +262,7 @@ class Z3SMTSolverClient:
             }
 
         except Exception as e:
-            logger.error(f"Formal properties verification failed: {e}")
+            logger.exception(f"Formal properties verification failed: {e}")
             return {"all_properties_verified": False, "error": str(e)}
 
     def _generate_verification_recommendations(self, result) -> list[str]:
@@ -275,18 +275,18 @@ class Z3SMTSolverClient:
                     "Policy is formally verified and consistent with constitutional principles"
                 )
             elif result == z3.sat:
-                recommendations.append(
-                    "Policy has potential inconsistencies - review model for conflicts"
-                )
-                recommendations.append(
-                    "Consider strengthening constitutional constraints"
+                recommendations.extend(
+                    (
+                        "Policy has potential inconsistencies - review model for conflicts",
+                        "Consider strengthening constitutional constraints",
+                    )
                 )
             elif result == z3.unknown:
-                recommendations.append(
-                    "Verification inconclusive - consider simplifying policy complexity"
-                )
-                recommendations.append(
-                    "Increase solver timeout or use different verification strategy"
+                recommendations.extend(
+                    (
+                        "Verification inconclusive - consider simplifying policy complexity",
+                        "Increase solver timeout or use different verification strategy",
+                    )
                 )
 
             # Add constitutional compliance recommendations
@@ -299,7 +299,7 @@ class Z3SMTSolverClient:
                 )
 
         except Exception as e:
-            logger.error(f"Failed to generate recommendations: {e}")
+            logger.exception(f"Failed to generate recommendations: {e}")
             recommendations.append("Review verification system configuration")
 
         return recommendations
@@ -317,7 +317,7 @@ class Z3SMTSolverClient:
             return model_info
 
         except Exception as e:
-            logger.error(f"Model extraction failed: {e}")
+            logger.exception(f"Model extraction failed: {e}")
             return {"error": str(e)}
 
     def _convert_datalog_to_z3(self, datalog_rules: list[str]) -> list[z3.BoolRef]:
@@ -562,7 +562,6 @@ if __name__ == "__main__":
         # ensures: Correct function execution
         # sha256: func_hash
         """Test Z3 SMT solver with real formal verification examples."""
-        print("=== Testing Z3 SMT Solver ===")
 
         # Test 1: Simple role-based access rule that should verify
         rules1 = [
@@ -571,8 +570,7 @@ if __name__ == "__main__":
         ]
         obligations1 = ["ensure_role_based_access_for_principle_1."]
 
-        output1 = await verify_rules_against_obligations(rules1, obligations1)
-        print(f"Test 1 (Role-based access): {output1.model_dump_json(indent=2)}\n")
+        await verify_rules_against_obligations(rules1, obligations1)
 
         # Test 2: Data protection rule
         rules2 = [
@@ -582,8 +580,7 @@ if __name__ == "__main__":
         ]
         obligations2 = ["protect_sensitive_data_for_principle_2."]
 
-        output2 = await verify_rules_against_obligations(rules2, obligations2)
-        print(f"Test 2 (Data protection): {output2.model_dump_json(indent=2)}\n")
+        await verify_rules_against_obligations(rules2, obligations2)
 
         # Test 3: Contradiction case
         rules3 = [
@@ -593,17 +590,13 @@ if __name__ == "__main__":
             "ensure_role_based_access_for_principle_1."
         ]  # But we need access
 
-        output3 = await verify_rules_against_obligations(rules3, obligations3)
-        print(f"Test 3 (Contradiction): {output3.model_dump_json(indent=2)}\n")
-
-        print("Z3 SMT solver tests completed!")
+        await verify_rules_against_obligations(rules3, obligations3)
 
     async def test_mock_smt_solver():
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
         """Test mock SMT solver for backward compatibility."""
-        print("=== Testing Mock SMT Solver ===")
 
         rules1 = [
             "user_role_is(User, 'admin') :- has_attribute(User, 'role', 'admin')."
@@ -615,18 +608,14 @@ if __name__ == "__main__":
         solver_input = SMTSolverInput(
             datalog_rules=rules1, proof_obligations=obligations1
         )
-        output1 = await mock_client.check_satisfiability(solver_input)
-        print(f"Mock Test 1: {output1.model_dump_json(indent=2)}\n")
+        await mock_client.check_satisfiability(solver_input)
 
         # Test failure case
         obligations2 = ["fail_verification_for_obligation_2."]
         solver_input2 = SMTSolverInput(
             datalog_rules=rules1, proof_obligations=obligations2
         )
-        output2 = await mock_client.check_satisfiability(solver_input2)
-        print(f"Mock Test 2 (Failure): {output2.model_dump_json(indent=2)}\n")
-
-        print("Mock SMT solver tests completed!")
+        await mock_client.check_satisfiability(solver_input2)
 
     async def run_all_tests():
         # requires: Valid input parameters

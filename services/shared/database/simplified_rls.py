@@ -10,7 +10,6 @@ import logging
 import uuid
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
-from typing import Any, Dict, Optional
 
 from sqlalchemy import Column, ForeignKey, text
 from sqlalchemy.dialects.postgresql import UUID
@@ -28,7 +27,7 @@ class SimpleTenantContext:
     """Simplified tenant context for RLS operations."""
 
     tenant_id: uuid.UUID
-    user_id: Optional[int] = None
+    user_id: int | None = None
     is_admin: bool = False
     bypass_rls: bool = False
 
@@ -48,7 +47,7 @@ class SimpleTenantMixin:
     """
 
     @declared_attr
-    def tenant_id(cls):
+    def tenant_id(self):
         return Column(
             UUID(as_uuid=True),
             ForeignKey("tenants.id", ondelete="CASCADE"),
@@ -70,12 +69,12 @@ class SimplifiedRLSManager:
 
     def __init__(self, session: AsyncSession):
         self.session = session
-        self._context: Optional[SimpleTenantContext] = None
+        self._context: SimpleTenantContext | None = None
 
     async def set_tenant_context(
         self,
         tenant_id: uuid.UUID,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         is_admin: bool = False,
         bypass_rls: bool = False,
     ) -> None:
@@ -98,9 +97,9 @@ class SimplifiedRLSManager:
                 text(
                     """
                 SELECT EXISTS(
-                    SELECT 1 FROM tenant_users 
-                    WHERE user_id = :user_id 
-                    AND tenant_id = :tenant_id 
+                    SELECT 1 FROM tenant_users
+                    WHERE user_id = :user_id
+                    AND tenant_id = :tenant_id
                     AND is_active = true
                 )
             """
@@ -163,7 +162,7 @@ class SimplifiedRLSManager:
     async def tenant_context(
         self,
         tenant_id: uuid.UUID,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         is_admin: bool = False,
         bypass_rls: bool = False,
     ):
@@ -184,7 +183,7 @@ class SimplifiedRLSManager:
                 await self.clear_context()
 
     @property
-    def current_context(self) -> Optional[SimpleTenantContext]:
+    def current_context(self) -> SimpleTenantContext | None:
         """Get current tenant context."""
         return self._context
 
@@ -201,15 +200,15 @@ async def setup_simplified_rls_policies(session: AsyncSession) -> None:
     await session.execute(
         text(
             """
-        DO $$ 
-        DECLARE 
+        DO $$
+        DECLARE
             pol_name text;
         BEGIN
-            FOR pol_name IN 
-                SELECT policyname FROM pg_policies 
+            FOR pol_name IN
+                SELECT policyname FROM pg_policies
                 WHERE schemaname = 'public' AND policyname LIKE '%_isolation_policy'
             LOOP
-                EXECUTE 'DROP POLICY IF EXISTS ' || pol_name || ' ON ' || 
+                EXECUTE 'DROP POLICY IF EXISTS ' || pol_name || ' ON ' ||
                         (SELECT tablename FROM pg_policies WHERE policyname = pol_name LIMIT 1);
             END LOOP;
         END $$;
@@ -223,7 +222,7 @@ async def setup_simplified_rls_policies(session: AsyncSession) -> None:
             "tenants",
             """
             USING (
-                id = current_setting('app.current_tenant_id', true)::uuid 
+                id = current_setting('app.current_tenant_id', true)::uuid
                 OR current_setting('app.bypass_rls', true) = 'true'
                 OR current_setting('app.is_admin', true) = 'true'
             )
@@ -233,7 +232,7 @@ async def setup_simplified_rls_policies(session: AsyncSession) -> None:
             "tenant_users",
             """
             USING (
-                tenant_id = current_setting('app.current_tenant_id', true)::uuid 
+                tenant_id = current_setting('app.current_tenant_id', true)::uuid
                 OR current_setting('app.bypass_rls', true) = 'true'
                 OR current_setting('app.is_admin', true) = 'true'
             )
@@ -243,7 +242,7 @@ async def setup_simplified_rls_policies(session: AsyncSession) -> None:
             "tenant_settings",
             """
             USING (
-                tenant_id = current_setting('app.current_tenant_id', true)::uuid 
+                tenant_id = current_setting('app.current_tenant_id', true)::uuid
                 OR current_setting('app.bypass_rls', true) = 'true'
                 OR current_setting('app.is_admin', true) = 'true'
             )
@@ -294,17 +293,17 @@ async def create_simplified_tenant_function(session: AsyncSession) -> None:
             -- Validate user authorization if not bypassing RLS
             IF p_tenant_id IS NOT NULL AND NOT p_bypass_rls AND p_user_id IS NOT NULL THEN
                 SELECT EXISTS(
-                    SELECT 1 FROM tenant_users 
-                    WHERE user_id = p_user_id 
+                    SELECT 1 FROM tenant_users
+                    WHERE user_id = p_user_id
                     AND tenant_id = p_tenant_id
                     AND is_active = true
                 ) INTO user_authorized;
-                
+
                 IF NOT user_authorized THEN
                     RAISE EXCEPTION 'User % not authorized for tenant %', p_user_id, p_tenant_id;
                 END IF;
             END IF;
-            
+
             -- Set session variables
             PERFORM set_config('app.current_tenant_id', p_tenant_id::text, true);
             PERFORM set_config('app.current_user_id', COALESCE(p_user_id::text, ''), true);
@@ -335,7 +334,7 @@ class SimpleTenantRepository:
     async def with_tenant(
         self,
         tenant_id: uuid.UUID,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
         is_admin: bool = False,
     ):
         """Set tenant context for this repository."""
@@ -346,7 +345,7 @@ class SimpleTenantRepository:
         """Find all records for current tenant."""
         query = text(f"SELECT * FROM {self.model_class.__tablename__}")
         if filters:
-            conditions = [f"{k} = :{k}" for k in filters.keys()]
+            conditions = [f"{k} = :{k}" for k in filters]
             query = text(
                 f"SELECT * FROM {self.model_class.__tablename__} WHERE {' AND '.join(conditions)}"
             )
@@ -374,7 +373,7 @@ class SimpleTenantRepository:
 
         # Build insert query dynamically
         columns = ", ".join(data.keys())
-        placeholders = ", ".join(f":{k}" for k in data.keys())
+        placeholders = ", ".join(f":{k}" for k in data)
         query = text(
             f"INSERT INTO {self.model_class.__tablename__} ({columns}) VALUES ({placeholders})"
         )
@@ -388,7 +387,7 @@ class SimpleTenantRepository:
         if hasattr(self.model_class, "constitutional_hash"):
             data["constitutional_hash"] = CONSTITUTIONAL_HASH
 
-        set_clause = ", ".join(f"{k} = :{k}" for k in data.keys())
+        set_clause = ", ".join(f"{k} = :{k}" for k in data)
         query = text(
             f"UPDATE {self.model_class.__tablename__} SET {set_clause} WHERE id = :id"
         )
@@ -409,7 +408,7 @@ async def get_simple_tenant_repository(
     model_class,
     session: AsyncSession,
     tenant_id: uuid.UUID,
-    user_id: Optional[int] = None,
+    user_id: int | None = None,
     is_admin: bool = False,
 ) -> SimpleTenantRepository:
     """Get a simplified tenant repository with context already set."""

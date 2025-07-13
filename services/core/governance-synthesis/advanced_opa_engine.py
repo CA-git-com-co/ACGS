@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 
@@ -118,7 +118,7 @@ class PolicyConflict:
     policies_involved: list[str]
     severity: str
     description: str
-    resolution_strategy: Optional[str] = None
+    resolution_strategy: str | None = None
     resolution_confidence: float = 0.0
     constitutional_impact: dict[str, Any] = field(default_factory=dict)
 
@@ -219,7 +219,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             return decision
 
         except Exception as e:
-            logger.error(f"Policy evaluation error for {policy_name}: {e}")
+            logger.exception(f"Policy evaluation error for {policy_name}: {e}")
             return self._create_error_decision(
                 policy_name, str(e), time.time() - start_time
             )
@@ -273,18 +273,17 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             # Route to appropriate OPA policy evaluation method
             if "constitutional" in policy_name:
                 return await self.opa_client.evaluate_constitutional_policy(opa_input)
-            elif "evolutionary" in policy_name:
+            if "evolutionary" in policy_name:
                 return await self.opa_client.evaluate_evolutionary_policy(opa_input)
-            elif "security" in policy_name:
+            if "security" in policy_name:
                 return await self.opa_client.evaluate_security_policy(opa_input)
-            elif "multi_tenant" in policy_name:
+            if "multi_tenant" in policy_name:
                 return await self.opa_client.evaluate_multi_tenant_policy(opa_input)
-            else:
-                # For other policy types, use generic evaluation
-                return await self.opa_client.evaluate_policy(policy_name, opa_input)
+            # For other policy types, use generic evaluation
+            return await self.opa_client.evaluate_policy(policy_name, opa_input)
 
         except Exception as e:
-            logger.error(f"Real OPA evaluation failed for {policy_name}: {e}")
+            logger.exception(f"Real OPA evaluation failed for {policy_name}: {e}")
             # Fallback to simulation on error
             logger.info(f"Falling back to simulation for {policy_name}")
             return await self._simulate_opa_evaluation(policy_name, opa_input)
@@ -298,14 +297,13 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         # Simulate different policy evaluations based on policy type
         if "constitutional" in policy_name:
             return await self._simulate_constitutional_evaluation(opa_input)
-        elif "evolutionary" in policy_name:
+        if "evolutionary" in policy_name:
             return await self._simulate_evolutionary_evaluation(opa_input)
-        elif "security" in policy_name:
+        if "security" in policy_name:
             return await self._simulate_security_evaluation(opa_input)
-        elif "multi_tenant" in policy_name:
+        if "multi_tenant" in policy_name:
             return await self._simulate_multi_tenant_evaluation(opa_input)
-        else:
-            return await self._simulate_default_evaluation(opa_input)
+        return await self._simulate_default_evaluation(opa_input)
 
     async def _simulate_constitutional_evaluation(
         self, opa_input: dict[str, Any]
@@ -313,7 +311,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         """Simulate constitutional policy evaluation."""
 
         # Extract constitutional requirements
-        const_reqs = opa_input.get("context", {}).get("constitutional_requirements", {})
+        opa_input.get("context", {}).get("constitutional_requirements", {})
 
         # Simulate constitutional compliance scoring
         human_dignity_score = self._calculate_principle_score(
@@ -365,7 +363,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         """Simulate evolutionary governance policy evaluation."""
 
         # Extract evolution request details
-        action = opa_input.get("action", "")
+        opa_input.get("action", "")
         resource = opa_input.get("resource", {})
 
         # Risk assessment simulation
@@ -505,7 +503,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             basic_score += 0.1
         if principal.get("authorized", False):
             basic_score += 0.1
-        if action in ["read", "view", "list"]:
+        if action in {"read", "view", "list"}:
             basic_score += 0.1
 
         decision = "allow" if basic_score >= 0.8 else "conditional"
@@ -534,53 +532,47 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         # Principle-specific scoring logic
         if principle == "human_dignity":
             # Check if action respects human autonomy and dignity
-            if action in ["respect", "protect", "enhance"]:
+            if action in {"respect", "protect", "enhance"}:
                 return 0.9
-            elif action in ["inform", "support"]:
+            if action in {"inform", "support"}:
                 return 0.8
-            elif action in ["monitor", "analyze"]:
+            if action in {"monitor", "analyze"}:
                 return 0.7
-            else:
-                return 0.6
+            return 0.6
 
-        elif principle == "fairness":
+        if principle == "fairness":
             # Check for fair treatment and non-discrimination
             if resource.get("access_type") == "equal":
                 return 0.9
-            elif resource.get("bias_checked", False):
+            if resource.get("bias_checked", False):
                 return 0.8
-            else:
-                return 0.6
+            return 0.6
 
-        elif principle == "transparency":
+        if principle == "transparency":
             # Check for transparency in decision-making
             if resource.get("explainable", False):
                 return 0.9
-            elif action in ["log", "audit", "trace"]:
+            if action in {"log", "audit", "trace"}:
                 return 0.8
-            else:
-                return 0.6
+            return 0.6
 
-        elif principle == "accountability":
+        if principle == "accountability":
             # Check for clear accountability mechanisms
             if principal.get("accountable", False):
                 return 0.9
-            elif resource.get("traceable", False):
+            if resource.get("traceable", False):
                 return 0.8
-            else:
-                return 0.6
+            return 0.6
 
-        elif principle == "privacy":
+        if principle == "privacy":
             # Check for privacy protection
             if resource.get("privacy_preserving", False):
                 return 0.9
-            elif action in ["anonymize", "encrypt"]:
+            if action in {"anonymize", "encrypt"}:
                 return 0.8
-            else:
-                return 0.6
+            return 0.6
 
-        else:
-            return 0.7  # Default moderate score
+        return 0.7  # Default moderate score
 
     def _calculate_evolution_risk(self, resource: dict[str, Any]) -> float:
         """Calculate risk score for evolutionary changes."""
@@ -719,13 +711,13 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         if environment.get("suspicious_activity", False):
             threat_score += 0.4
 
-        if action in ["delete", "destroy", "modify_critical"]:
+        if action in {"delete", "destroy", "modify_critical"}:
             threat_score += 0.3
 
         if environment.get("ip_reputation", "good") == "bad":
             threat_score += 0.2
 
-        if environment.get("time_of_day") in ["late_night", "early_morning"]:
+        if environment.get("time_of_day") in {"late_night", "early_morning"}:
             threat_score += 0.1
 
         return min(threat_score, 1.0)
@@ -751,8 +743,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
 
         if principal_rank >= required_rank:
             return 1.0
-        else:
-            return principal_rank / required_rank
+        return principal_rank / required_rank
 
     def _assess_data_governance_compliance(self, opa_input: dict[str, Any]) -> float:
         """Assess data governance compliance."""
@@ -773,7 +764,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             compliance_score += 0.3
 
         # Check audit logging
-        if action in ["access", "modify", "delete"] and resource.get(
+        if action in {"access", "modify", "delete"} and resource.get(
             "audit_enabled", False
         ):
             compliance_score += 0.2
@@ -799,11 +790,13 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             if compliance_score >= 0.9:
                 reasons.append("Excellent constitutional alignment achieved")
         else:
-            reasons.append(
-                f"Constitutional compliance score {compliance_score:.2f} below"
-                " threshold"
+            reasons.extend(
+                (
+                    f"Constitutional compliance score {compliance_score:.2f} below"
+                    " threshold",
+                    "Constitutional principles require strengthening",
+                )
             )
-            reasons.append("Constitutional principles require strengthening")
 
         return reasons
 
@@ -815,11 +808,19 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         reasons = []
 
         if decision == "allow":
-            reasons.append(f"Risk score {risk_score:.2f} within acceptable bounds")
-            reasons.append(f"Safety score {safety_score:.2f} meets requirements")
+            reasons.extend(
+                (
+                    f"Risk score {risk_score:.2f} within acceptable bounds",
+                    f"Safety score {safety_score:.2f} meets requirements",
+                )
+            )
         elif decision == "conditional":
-            reasons.append(f"Moderate risk score {risk_score:.2f} requires conditions")
-            reasons.append("Additional safety measures recommended")
+            reasons.extend(
+                (
+                    f"Moderate risk score {risk_score:.2f} requires conditions",
+                    "Additional safety measures recommended",
+                )
+            )
         else:
             reasons.append(f"Risk score {risk_score:.2f} exceeds acceptable threshold")
             if safety_score < 0.7:
@@ -835,8 +836,12 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         reasons = []
 
         if decision == "allow":
-            reasons.append(f"Security score {security_score:.2f} meets requirements")
-            reasons.append(f"Threat level {threat_score:.2f} acceptable")
+            reasons.extend(
+                (
+                    f"Security score {security_score:.2f} meets requirements",
+                    f"Threat level {threat_score:.2f} acceptable",
+                )
+            )
         elif decision == "conditional":
             reasons.append(
                 f"Security score {security_score:.2f} requires additional measures"
@@ -856,11 +861,19 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
         reasons = []
 
         if decision == "allow":
-            reasons.append(f"Multi-tenant compliance score {mt_score:.2f} satisfactory")
-            reasons.append("Tenant isolation maintained")
+            reasons.extend(
+                (
+                    f"Multi-tenant compliance score {mt_score:.2f} satisfactory",
+                    "Tenant isolation maintained",
+                )
+            )
         else:
-            reasons.append(f"Multi-tenant compliance score {mt_score:.2f} insufficient")
-            reasons.append("Tenant isolation requirements not met")
+            reasons.extend(
+                (
+                    f"Multi-tenant compliance score {mt_score:.2f} insufficient",
+                    "Tenant isolation requirements not met",
+                )
+            )
 
         return reasons
 
@@ -983,10 +996,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
 
         # Simple time-based cache validity (5 minutes)
         cache_duration = timedelta(minutes=5)
-        if datetime.now(timezone.utc) - context.timestamp > cache_duration:
-            return False
-
-        return True
+        return not datetime.now(timezone.utc) - context.timestamp > cache_duration
 
     def _create_error_decision(
         self, policy_name: str, error_msg: str, evaluation_time: float
@@ -1048,7 +1058,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
                 await self.opa_client.close()
                 logger.info("OPA client connection closed")
             except Exception as e:
-                logger.error(f"Error closing OPA client: {e}")
+                logger.exception(f"Error closing OPA client: {e}")
 
     async def initialize_opa_policies(self) -> bool:
         """Initialize OPA server with default policies."""
@@ -1077,7 +1087,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             return success
 
         except Exception as e:
-            logger.error(f"Failed to initialize OPA policies: {e}")
+            logger.exception(f"Failed to initialize OPA policies: {e}")
             return False
 
 
@@ -1106,7 +1116,7 @@ class AdvancedGovernanceSynthesisEngine:
         )
 
     async def synthesize_governance_decision(
-        self, context: PolicyEvaluationContext, policy_scope: Optional[list[str]] = None
+        self, context: PolicyEvaluationContext, policy_scope: list[str] | None = None
     ) -> dict[str, Any]:
         """
         Synthesize comprehensive governance decision.
@@ -1184,7 +1194,7 @@ class AdvancedGovernanceSynthesisEngine:
             return synthesis_result
 
         except Exception as e:
-            logger.error(f"Governance synthesis failed: {e}")
+            logger.exception(f"Governance synthesis failed: {e}")
             return self._create_error_synthesis_result(
                 synthesis_id, str(e), time.time() - start_time
             )
@@ -1335,12 +1345,13 @@ class AdvancedGovernanceSynthesisEngine:
         # Determine scope based on context
         action = context.action
         resource_type = context.resource.get("type", "")
-        principal_type = context.principal.get("type", "")
+        context.principal.get("type", "")
 
         # Map context to policy scopes
         if "constitutional" in action or "governance" in action:
-            applicable_policies.append("constitutional_principles")
-            applicable_policies.append("governance_compliance")
+            applicable_policies.extend(
+                ("constitutional_principles", "governance_compliance")
+            )
 
         if "tenant" in resource_type or "multi_tenant" in action:
             applicable_policies.append("multi_tenant_security")
@@ -1378,7 +1389,7 @@ class AdvancedGovernanceSynthesisEngine:
 
         # Check for decision conflicts
         for i, decision_a in enumerate(policy_decisions):
-            for j, decision_b in enumerate(policy_decisions[i + 1 :], i + 1):
+            for _j, decision_b in enumerate(policy_decisions[i + 1 :], i + 1):
                 conflict = self._check_decision_conflict(
                     decision_a, decision_b, context
                 )
@@ -1392,7 +1403,7 @@ class AdvancedGovernanceSynthesisEngine:
         decision_a: PolicyDecision,
         decision_b: PolicyDecision,
         context: PolicyEvaluationContext,
-    ) -> Optional[PolicyConflict]:
+    ) -> PolicyConflict | None:
         """Check if two policy decisions conflict."""
 
         # Direct contradiction: one allows, other denies
@@ -1541,9 +1552,11 @@ class AdvancedGovernanceSynthesisEngine:
             all_reasons.extend(decision.reasons)
 
         # Add conflict resolution reasons
-        for conflict in resolved_conflicts:
-            if conflict.resolution_strategy:
-                all_reasons.append(f"Conflict resolved: {conflict.resolution_strategy}")
+        all_reasons.extend(
+            f"Conflict resolved: {conflict.resolution_strategy}"
+            for conflict in resolved_conflicts
+            if conflict.resolution_strategy
+        )
 
         # Aggregate conditions
         all_conditions = []
@@ -1551,7 +1564,7 @@ class AdvancedGovernanceSynthesisEngine:
             all_conditions.extend(decision.conditions)
 
         # Create final decision
-        final_decision = PolicyDecision(
+        return PolicyDecision(
             decision_id=str(uuid.uuid4()),
             decision=final_decision_type,
             confidence_score=confidence_score,
@@ -1568,8 +1581,6 @@ class AdvancedGovernanceSynthesisEngine:
                 "constitutional_hash": "cdd01ef066bc6cf2",
             },
         )
-
-        return final_decision
 
     def _calculate_decision_weights(
         self, policy_decisions: list[PolicyDecision]
@@ -1604,16 +1615,14 @@ class AdvancedGovernanceSynthesisEngine:
         # Priority order: deny > conditional > escalate > defer > allow
         if weights["deny"] > 0.3:  # If any significant denial, deny
             return DecisionType.DENY
-        elif (
-            weights["conditional"] > 0.2
-        ):  # If significant conditional, make conditional
+        if weights["conditional"] > 0.2:  # If significant conditional, make conditional
             return DecisionType.CONDITIONAL
-        elif weights["escalate"] > 0.1:  # If any escalation needed
+        if weights["escalate"] > 0.1:  # If any escalation needed
             return DecisionType.ESCALATE
-        elif weights["defer"] > 0.1:  # If any deferral needed
+        if weights["defer"] > 0.1:  # If any deferral needed
             return DecisionType.DEFER
-        else:  # Otherwise allow
-            return DecisionType.ALLOW
+        # Otherwise allow
+        return DecisionType.ALLOW
 
     def _calculate_synthesis_confidence(
         self,
@@ -1642,11 +1651,9 @@ class AdvancedGovernanceSynthesisEngine:
         else:
             resolution_factor = 1.0
 
-        final_confidence = max(
+        return max(
             0.0, min(1.0, (base_confidence - conflict_penalty) * resolution_factor)
         )
-
-        return final_confidence
 
     def _generate_audit_trail(
         self,
@@ -1676,29 +1683,29 @@ class AdvancedGovernanceSynthesisEngine:
             audit_trail.extend(decision.audit_trail)
 
         # Add conflicts
-        for conflict in conflicts:
-            audit_trail.append(
-                {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "event": "conflict_detected",
-                    "conflict_id": conflict.conflict_id,
-                    "conflict_type": conflict.conflict_type.value,
-                    "policies": conflict.policies_involved,
-                    "severity": conflict.severity,
-                }
-            )
+        audit_trail.extend(
+            {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "event": "conflict_detected",
+                "conflict_id": conflict.conflict_id,
+                "conflict_type": conflict.conflict_type.value,
+                "policies": conflict.policies_involved,
+                "severity": conflict.severity,
+            }
+            for conflict in conflicts
+        )
 
         # Add resolutions
-        for resolved_conflict in resolved_conflicts:
-            audit_trail.append(
-                {
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "event": "conflict_resolved",
-                    "conflict_id": resolved_conflict.conflict_id,
-                    "resolution_strategy": resolved_conflict.resolution_strategy,
-                    "confidence": resolved_conflict.resolution_confidence,
-                }
-            )
+        audit_trail.extend(
+            {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "event": "conflict_resolved",
+                "conflict_id": resolved_conflict.conflict_id,
+                "resolution_strategy": resolved_conflict.resolution_strategy,
+                "confidence": resolved_conflict.resolution_confidence,
+            }
+            for resolved_conflict in resolved_conflicts
+        )
 
         return audit_trail
 
@@ -1855,15 +1862,12 @@ async def test_advanced_governance_synthesis():
     )
 
     # Perform governance synthesis
-    result = await engine.synthesize_governance_decision(context)
+    await engine.synthesize_governance_decision(context)
 
     # Print results
-    print(json.dumps(result, indent=2, default=str))
 
     # Get performance metrics
-    metrics = await engine.get_performance_metrics()
-    print("\nPerformance Metrics:")
-    print(json.dumps(metrics, indent=2, default=str))
+    await engine.get_performance_metrics()
 
 
 if __name__ == "__main__":

@@ -207,7 +207,7 @@ class WINACore:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize WINA model transformation: {e}")
+            logger.exception(f"Failed to initialize WINA model transformation: {e}")
             raise WINAOptimizationError(
                 f"Model transformation initialization failed: {e}"
             )
@@ -295,7 +295,7 @@ class WINACore:
             return result
 
         except Exception as e:
-            logger.error(f"WINA inference optimization failed: {e}")
+            logger.exception(f"WINA inference optimization failed: {e}")
             return WINAOptimizationResult(
                 optimized_output=None,
                 activation_masks={},

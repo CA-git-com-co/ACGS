@@ -8,7 +8,7 @@ with integration to the ACGS constitutional AI framework.
 import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import aiohttp
 from prometheus_client import Counter, Histogram
@@ -36,8 +36,8 @@ class ConstitutionalValidator:
         self.setup_metrics()
 
         # Validation cache for O(1) lookups
-        self.validation_cache: Dict[str, float] = {}
-        self.principle_cache: Dict[str, Dict[str, Any]] = {}
+        self.validation_cache: dict[str, float] = {}
+        self.principle_cache: dict[str, dict[str, Any]] = {}
 
         # Constitutional principles (cached for performance)
         self.core_principles = {
@@ -108,7 +108,7 @@ class ConstitutionalValidator:
             return compliance_score
 
         except Exception as e:
-            logger.error(f"Constitutional validation failed: {e}")
+            logger.exception(f"Constitutional validation failed: {e}")
             self.validation_requests_total.labels(
                 validation_type="individual", result="error"
             ).inc()
@@ -126,8 +126,8 @@ class ConstitutionalValidator:
                 )
 
     async def validate_evolution_request(
-        self, genotype: Dict[str, Any], evolution_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, genotype: dict[str, Any], evolution_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """
         Validate evolution request for constitutional compliance.
 
@@ -159,7 +159,7 @@ class ConstitutionalValidator:
             # Determine if human oversight is required
             requires_oversight = (
                 overall_score < 0.8
-                or risk_assessment.overall_risk in [RiskLevel.HIGH, RiskLevel.CRITICAL]
+                or risk_assessment.overall_risk in {RiskLevel.HIGH, RiskLevel.CRITICAL}
             )
 
             validation_result = {
@@ -178,7 +178,7 @@ class ConstitutionalValidator:
             return validation_result
 
         except Exception as e:
-            logger.error(f"Evolution request validation failed: {e}")
+            logger.exception(f"Evolution request validation failed: {e}")
             self.validation_requests_total.labels(
                 validation_type="evolution_request", result="error"
             ).inc()
@@ -219,8 +219,7 @@ class ConstitutionalValidator:
                     if response.status == 200:
                         result = await response.json()
                         return result.get("compliance_score", 0.0)
-                    else:
-                        logger.warning(f"AC service returned status {response.status}")
+                    logger.warning(f"AC service returned status {response.status}")
 
         except asyncio.TimeoutError:
             logger.warning("AC service timeout, using fallback validation")
@@ -280,7 +279,7 @@ class ConstitutionalValidator:
         return compliance_indicators / total_checks
 
     async def _validate_principle(
-        self, genotype: Dict[str, Any], principle: str, description: str
+        self, genotype: dict[str, Any], principle: str, description: str
     ) -> float:
         """Validate specific constitutional principle."""
         # Simplified principle validation
@@ -298,7 +297,7 @@ class ConstitutionalValidator:
         return min(1.0, max(0.0, principle_mapping.get(principle, 0.8)))
 
     async def _assess_constitutional_risks(
-        self, genotype: Dict[str, Any], context: Dict[str, Any]
+        self, genotype: dict[str, Any], context: dict[str, Any]
     ) -> RiskAssessment:
         """Assess constitutional risks for the evolution."""
         # Simplified risk assessment
@@ -327,7 +326,7 @@ class ConstitutionalValidator:
             constitutional_hash=CONSTITUTIONAL_HASH,
         )
 
-    def _get_validation_cache_key(self, genotype: Dict[str, Any]) -> str:
+    def _get_validation_cache_key(self, genotype: dict[str, Any]) -> str:
         """Generate cache key for validation result."""
         import hashlib
         import json

@@ -3,16 +3,18 @@ Tests for Integrated Authentication in API Gateway
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import os
+import pathlib
 
 # Import the app
 import sys
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(
+    pathlib.Path(pathlib.Path(pathlib.Path(__file__).resolve()).parent).parent
+)
 
 # Mock dependencies to avoid import errors
 with (

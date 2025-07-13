@@ -22,17 +22,17 @@ from .services import EvolutionService, FitnessService, HITLService
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 __all__ = [
-    "v1_router",
+    "ConstitutionalComplianceMiddleware",
     "ConstitutionalValidator",
     "EvolutionEngine",
-    "WINAECOversightCoordinator",
-    "ConstitutionalComplianceMiddleware",
-    "PerformanceMonitoringMiddleware",
     "EvolutionRequest",
     "EvolutionResult",
-    "Individual",
-    "Population",
     "EvolutionService",
     "FitnessService",
     "HITLService",
+    "Individual",
+    "PerformanceMonitoringMiddleware",
+    "Population",
+    "WINAECOversightCoordinator",
+    "v1_router",
 ]

@@ -197,7 +197,7 @@ class QPEClient:
 
         except Exception as e:
             self._update_metrics((time.time() - start_time) * 1000, success=False)
-            logger.error(f"QPE register failed for policy {policy_id}: {e!s}")
+            logger.exception(f"QPE register failed for policy {policy_id}: {e!s}")
             raise
 
     async def measure(
@@ -261,7 +261,7 @@ class QPEClient:
 
         except Exception as e:
             self._update_metrics((time.time() - start_time) * 1000, success=False)
-            logger.error(f"QPE measure failed for policy {policy_id}: {e!s}")
+            logger.exception(f"QPE measure failed for policy {policy_id}: {e!s}")
             raise
 
     async def set_uncertainty(self, lambda_value: float) -> float:
@@ -288,7 +288,7 @@ class QPEClient:
             return lambda_val
 
         except Exception as e:
-            logger.error(f"QPE set uncertainty failed: {e!s}")
+            logger.exception(f"QPE set uncertainty failed: {e!s}")
             raise
 
     async def observe(
@@ -333,7 +333,7 @@ class QPEClient:
             )
 
         except Exception as e:
-            logger.error(f"QPE observe failed for policy {policy_id}: {e!s}")
+            logger.exception(f"QPE observe failed for policy {policy_id}: {e!s}")
             raise
 
     async def get_quantum_state(self, policy_id: str) -> QuantumPolicy | None:
@@ -358,7 +358,9 @@ class QPEClient:
             return response.quantum_state
 
         except Exception as e:
-            logger.error(f"QPE get quantum state failed for policy {policy_id}: {e!s}")
+            logger.exception(
+                f"QPE get quantum state failed for policy {policy_id}: {e!s}"
+            )
             raise
 
     async def health_check(self) -> dict[str, Any]:
@@ -380,7 +382,7 @@ class QPEClient:
             }
 
         except Exception as e:
-            logger.error(f"QPE health check failed: {e!s}")
+            logger.exception(f"QPE health check failed: {e!s}")
             return {
                 "healthy": False,
                 "status": f"Health check failed: {e!s}",

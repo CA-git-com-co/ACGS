@@ -500,7 +500,7 @@ class TestWINAEnforcementIntegration:
             )
 
             # Should get some response (even if mocked components fail)
-            assert response.status_code in [200, 422, 500]  # Various possible outcomes
+            assert response.status_code in {200, 422, 500}  # Various possible outcomes
 
     @pytest.mark.asyncio
     async def test_wina_enforcement_authentication_required(
@@ -517,11 +517,11 @@ class TestWINAEnforcementIntegration:
         )
 
         # Should require authentication
-        assert response.status_code in [
+        assert response.status_code in {
             401,
             403,
             422,
-        ]  # Unauthorized or validation error
+        }  # Unauthorized or validation error
 
     @pytest.mark.asyncio
     async def test_wina_enforcement_invalid_request(self, client):
@@ -551,4 +551,4 @@ class TestWINAEnforcementIntegration:
             )
 
             # Should handle invalid request gracefully
-            assert response.status_code in [200, 400, 422]
+            assert response.status_code in {200, 400, 422}

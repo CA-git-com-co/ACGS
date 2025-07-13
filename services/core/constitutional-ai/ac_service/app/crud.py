@@ -63,7 +63,7 @@ async def update_principle(
         # Simple version increment if content changes, or could be more complex
         if "content" in update_data and update_data["content"] != db_principle.content:
             # Increment version using instance attribute, not class attribute
-            db_principle.version = db_principle.version + 1
+            db_principle.version += 1
             # Optionally, reset status to 'draft' or handle as per business logic
             # db_principle.status = "draft"
 

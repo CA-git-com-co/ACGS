@@ -27,8 +27,6 @@ os.environ["SECURITY_LEVEL"] = "minimal"
 from app.main import app
 
 if __name__ == "__main__":
-    print("🚀 Starting GS Service with minimal security configuration...")
-    print("⚠️ This configuration is for health check compatibility only")
 
     # Start with minimal configuration
     uvicorn.run(

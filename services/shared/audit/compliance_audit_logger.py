@@ -12,11 +12,12 @@ import hashlib
 import json
 import logging
 import os
+import pathlib
 import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 try:
     from cryptography.exceptions import InvalidSignature
@@ -176,22 +177,22 @@ class AuditEvent:
     event_type: AuditEventType
     severity: AuditSeverity
     service_name: str
-    user_id: Optional[str]
-    tenant_id: Optional[str]
-    session_id: Optional[str]
-    ip_address: Optional[str]
-    user_agent: Optional[str]
-    resource: Optional[str]
+    user_id: str | None
+    tenant_id: str | None
+    session_id: str | None
+    ip_address: str | None
+    user_agent: str | None
+    resource: str | None
     action: str
     outcome: str  # success, failure, error
     details: dict[str, Any]
     constitutional_hash: str
     compliance_tags: list[ComplianceStandard]
     retention_period_days: int
-    encryption_key_id: Optional[str] = None
-    signature: Optional[str] = None
-    previous_event_hash: Optional[str] = None
-    event_hash: Optional[str] = None
+    encryption_key_id: str | None = None
+    signature: str | None = None
+    previous_event_hash: str | None = None
+    event_hash: str | None = None
 
     def __post_init__(self):
         """Calculate event hash after initialization."""
@@ -245,7 +246,7 @@ class ComplianceAuditLogger:
     def __init__(
         self,
         service_name: str,
-        storage_backend: Optional[Any] = None,
+        storage_backend: Any | None = None,
         encryption_enabled: bool = True,
         signing_enabled: bool = True,
         chain_verification: bool = True,
@@ -256,11 +257,11 @@ class ComplianceAuditLogger:
         self.signing_enabled = signing_enabled and CRYPTO_AVAILABLE
         self.chain_verification = chain_verification
 
-        self._private_key: Optional[Any] = None
-        self._public_key: Optional[Any] = None
-        self._last_event_hash: Optional[str] = None
+        self._private_key: Any | None = None
+        self._public_key: Any | None = None
+        self._last_event_hash: str | None = None
         self._event_queue: asyncio.Queue = asyncio.Queue()
-        self._processing_task: Optional[asyncio.Task] = None
+        self._processing_task: asyncio.Task | None = None
 
         if self.signing_enabled:
             self._initialize_signing_keys()
@@ -273,7 +274,7 @@ class ComplianceAuditLogger:
             # Generate or load RSA key pair
             key_path = f"/app/audit_keys/{self.service_name}_private.pem"
 
-            if os.path.exists(key_path):
+            if pathlib.Path(key_path).exists():
                 # Load existing key
                 with open(key_path, "rb") as f:
                     self._private_key = serialization.load_pem_private_key(
@@ -286,7 +287,7 @@ class ComplianceAuditLogger:
                 )
 
                 # Save private key (in production, use proper key management)
-                os.makedirs(os.path.dirname(key_path), exist_ok=True)
+                os.makedirs(pathlib.Path(key_path).parent, exist_ok=True)
                 with open(key_path, "wb") as f:
                     f.write(
                         self._private_key.private_bytes(
@@ -301,7 +302,7 @@ class ComplianceAuditLogger:
             logger.info("Audit signing keys initialized")
 
         except Exception as e:
-            logger.error(f"Failed to initialize signing keys: {e}")
+            logger.exception(f"Failed to initialize signing keys: {e}")
             self.signing_enabled = False
 
     def _sign_event(self, event: AuditEvent) -> str:
@@ -321,7 +322,7 @@ class ComplianceAuditLogger:
             )
             return signature.hex()
         except Exception as e:
-            logger.error(f"Failed to sign audit event: {e}")
+            logger.exception(f"Failed to sign audit event: {e}")
             return ""
 
     def _verify_signature(self, event: AuditEvent, signature: str) -> bool:
@@ -345,7 +346,7 @@ class ComplianceAuditLogger:
             )
             return True
         except (InvalidSignature, Exception) as e:
-            logger.error(f"Signature verification failed: {e}")
+            logger.exception(f"Signature verification failed: {e}")
             return False
 
     async def log_event(
@@ -354,14 +355,14 @@ class ComplianceAuditLogger:
         action: str,
         outcome: str = "success",
         severity: AuditSeverity = AuditSeverity.LOW,
-        user_id: Optional[str] = None,
-        tenant_id: Optional[str] = None,
-        session_id: Optional[str] = None,
-        ip_address: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        resource: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
-        compliance_tags: Optional[list[ComplianceStandard]] = None,
+        user_id: str | None = None,
+        tenant_id: str | None = None,
+        session_id: str | None = None,
+        ip_address: str | None = None,
+        user_agent: str | None = None,
+        resource: str | None = None,
+        details: dict[str, Any] | None = None,
+        compliance_tags: list[ComplianceStandard] | None = None,
     ) -> str:
         """Log an audit event with comprehensive compliance tracking."""
 
@@ -420,26 +421,26 @@ class ComplianceAuditLogger:
         tags = [ComplianceStandard.ACGS_CONSTITUTIONAL]  # Always include constitutional
 
         # Map event types to compliance standards
-        if event_type in [
+        if event_type in {
             AuditEventType.USER_LOGIN,
             AuditEventType.USER_LOGOUT,
             AuditEventType.TOKEN_ISSUED,
             AuditEventType.PERMISSION_DENIED,
-        ]:
+        }:
             tags.extend([ComplianceStandard.SOC2_TYPE_II, ComplianceStandard.ISO27001])
 
-        if event_type in [
+        if event_type in {
             AuditEventType.PII_ACCESS,
             AuditEventType.DATA_EXPORT,
             AuditEventType.DATA_DELETE,
-        ]:
+        }:
             tags.extend([ComplianceStandard.GDPR, ComplianceStandard.SOC2_TYPE_II])
 
-        if event_type in [
+        if event_type in {
             AuditEventType.SECURITY_ALERT,
             AuditEventType.INTRUSION_ATTEMPT,
             AuditEventType.PRIVILEGE_ESCALATION,
-        ]:
+        }:
             tags.extend(
                 [
                     ComplianceStandard.SOC2_TYPE_II,
@@ -448,11 +449,11 @@ class ComplianceAuditLogger:
                 ]
             )
 
-        if event_type in [
+        if event_type in {
             AuditEventType.CONSTITUTIONAL_VALIDATION,
             AuditEventType.CONSTITUTIONAL_VIOLATION,
             AuditEventType.FORMAL_VERIFICATION,
-        ]:
+        }:
             tags.append(ComplianceStandard.ACGS_CONSTITUTIONAL)
 
         return list(set(tags))  # Remove duplicates
@@ -492,7 +493,7 @@ class ComplianceAuditLogger:
                 # No events to process, break the loop
                 break
             except Exception as e:
-                logger.error(f"Error processing audit event: {e}")
+                logger.exception(f"Error processing audit event: {e}")
 
     async def _store_event(self, event: AuditEvent):
         """Store audit event using configured backend."""
@@ -503,7 +504,7 @@ class ComplianceAuditLogger:
                 # Default to file-based storage
                 await self._store_to_file(event)
         except Exception as e:
-            logger.error(f"Failed to store audit event {event.event_id}: {e}")
+            logger.exception(f"Failed to store audit event {event.event_id}: {e}")
 
     async def _store_to_file(self, event: AuditEvent):
         """Store event to file (default storage method)."""
@@ -513,17 +514,17 @@ class ComplianceAuditLogger:
         date_str = event.timestamp.strftime("%Y-%m-%d")
         log_file = f"{log_dir}/audit-{date_str}.jsonl"
 
-        with open(log_file, "a") as f:
+        with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(event.to_dict()) + "\n")
 
     async def log_constitutional_event(
         self,
         action: str,
         compliance_score: float,
-        violations: list[str] = None,
-        user_id: str = None,
-        tenant_id: str = None,
-        details: dict[str, Any] = None,
+        violations: list[str] | None = None,
+        user_id: str | None = None,
+        tenant_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> str:
         """Log constitutional compliance event."""
         return await self.log_event(
@@ -548,9 +549,9 @@ class ComplianceAuditLogger:
         self,
         action: str,
         tenant_id: str,
-        user_id: str = None,
+        user_id: str | None = None,
         cross_tenant_attempt: bool = False,
-        details: dict[str, Any] = None,
+        details: dict[str, Any] | None = None,
     ) -> str:
         """Log multi-tenant specific event."""
         event_type = (
@@ -579,8 +580,8 @@ class ComplianceAuditLogger:
         self,
         compliance_result: dict[str, Any],
         action: str,
-        user_id: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        user_id: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> str:
         """Log constitutional compliance validation event with operational transparency and reversibility."""
         severity = (
@@ -624,7 +625,7 @@ class ComplianceAuditLogger:
         )
 
     async def verify_audit_chain(
-        self, start_event_id: str = None, end_event_id: str = None
+        self, start_event_id: str | None = None, end_event_id: str | None = None
     ) -> dict[str, Any]:
         """Verify the integrity of the audit chain."""
         if not self.chain_verification:
@@ -642,10 +643,10 @@ class ComplianceAuditLogger:
 
 
 # Global audit logger instance
-_audit_logger: Optional[ComplianceAuditLogger] = None
+_audit_logger: ComplianceAuditLogger | None = None
 
 
-def get_audit_logger(service_name: str = None) -> ComplianceAuditLogger:
+def get_audit_logger(service_name: str | None = None) -> ComplianceAuditLogger:
     """Get or create the global audit logger instance."""
     global _audit_logger
 
@@ -668,9 +669,9 @@ async def log_authentication_event(
     event_type: str,
     user_id: str,
     outcome: str,
-    ip_address: str = None,
-    user_agent: str = None,
-    details: dict[str, Any] = None,
+    ip_address: str | None = None,
+    user_agent: str | None = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log authentication-related audit event."""
     audit_logger = get_audit_logger()
@@ -697,7 +698,7 @@ async def log_data_access_event(
     user_id: str,
     tenant_id: str,
     outcome: str = "success",
-    details: dict[str, Any] = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log data access audit event."""
     audit_logger = get_audit_logger()
@@ -721,28 +722,28 @@ async def log_multi_agent_event(
     event_type: AuditEventType,
     action: str,
     agent_id: str,
-    coordinator_id: str = None,
-    task_id: str = None,
-    tenant_id: str = None,
+    coordinator_id: str | None = None,
+    task_id: str | None = None,
+    tenant_id: str | None = None,
     outcome: str = "success",
-    details: dict[str, Any] = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log multi-agent coordination audit event."""
     audit_logger = get_audit_logger()
 
     # Determine severity based on event type
     severity = AuditSeverity.LOW
-    if event_type in [
+    if event_type in {
         AuditEventType.AGENT_TASK_FAILED,
         AuditEventType.CONSENSUS_FAILED,
         AuditEventType.AGENT_CONFLICT_DETECTED,
-    ]:
+    }:
         severity = AuditSeverity.HIGH
-    elif event_type in [
+    elif event_type in {
         AuditEventType.AGENT_COORDINATION_DECISION,
         AuditEventType.CONSENSUS_REACHED,
         AuditEventType.AGENT_CONFLICT_RESOLVED,
-    ]:
+    }:
         severity = AuditSeverity.MEDIUM
 
     event_details = {
@@ -771,12 +772,12 @@ async def log_policy_synthesis_event(
     policy_id: str,
     policy_type: str,
     synthesis_engine: str,
-    user_id: str = None,
-    tenant_id: str = None,
+    user_id: str | None = None,
+    tenant_id: str | None = None,
     outcome: str = "success",
-    compliance_score: float = None,
-    conflicts_detected: list[str] = None,
-    details: dict[str, Any] = None,
+    compliance_score: float | None = None,
+    conflicts_detected: list[str] | None = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log policy synthesis and governance audit event."""
     audit_logger = get_audit_logger()
@@ -785,9 +786,9 @@ async def log_policy_synthesis_event(
     severity = AuditSeverity.LOW
     if outcome != "success":
         severity = AuditSeverity.HIGH
-    elif compliance_score and compliance_score < 0.8:
-        severity = AuditSeverity.MEDIUM
-    elif conflicts_detected and len(conflicts_detected) > 0:
+    elif (compliance_score and compliance_score < 0.8) or (
+        conflicts_detected and len(conflicts_detected) > 0
+    ):
         severity = AuditSeverity.MEDIUM
 
     event_details = {
@@ -821,12 +822,12 @@ async def log_constitutional_compliance_event(
     action: str,
     compliance_score: float,
     hash_verified: bool = True,
-    violations: list[str] = None,
-    principles_checked: list[str] = None,
-    user_id: str = None,
-    tenant_id: str = None,
-    service_name: str = None,
-    details: dict[str, Any] = None,
+    violations: list[str] | None = None,
+    principles_checked: list[str] | None = None,
+    user_id: str | None = None,
+    tenant_id: str | None = None,
+    service_name: str | None = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log constitutional compliance audit event with enhanced tracking."""
     audit_logger = get_audit_logger()
@@ -886,28 +887,28 @@ async def log_tenant_isolation_event(
     tenant_id: str,
     isolation_type: str,  # redis, database, memory, network
     resource_accessed: str,
-    user_id: str = None,
+    user_id: str | None = None,
     outcome: str = "success",
-    violation_details: dict[str, Any] = None,
-    details: dict[str, Any] = None,
+    violation_details: dict[str, Any] | None = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log tenant isolation and resource management audit event."""
     audit_logger = get_audit_logger()
 
     # Determine severity based on event type
     severity = AuditSeverity.LOW
-    if event_type in [
+    if event_type in {
         AuditEventType.REDIS_TENANT_ISOLATION_BREACH,
         AuditEventType.DATABASE_RLS_VIOLATION,
         AuditEventType.NETWORK_POLICY_VIOLATION,
         AuditEventType.MEMORY_LIMIT_EXCEEDED,
-    ]:
+    }:
         severity = AuditSeverity.CRITICAL
         outcome = "violation"
-    elif event_type in [
+    elif event_type in {
         AuditEventType.MEMORY_OPTIMIZATION_PERFORMED,
         AuditEventType.DATABASE_RLS_POLICY_APPLIED,
-    ]:
+    }:
         severity = AuditSeverity.MEDIUM
 
     event_details = {
@@ -940,11 +941,11 @@ async def log_performance_monitoring_event(
     action: str,
     metric_name: str,
     metric_value: float,
-    threshold: float = None,
-    service_name: str = None,
-    tenant_id: str = None,
+    threshold: float | None = None,
+    service_name: str | None = None,
+    tenant_id: str | None = None,
     outcome: str = "success",
-    details: dict[str, Any] = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log performance monitoring and anomaly detection audit event."""
     audit_logger = get_audit_logger()
@@ -958,10 +959,10 @@ async def log_performance_monitoring_event(
             severity = AuditSeverity.HIGH
         else:
             severity = AuditSeverity.MEDIUM
-    elif event_type in [
+    elif event_type in {
         AuditEventType.HEALTH_CHECK_FAILED,
         AuditEventType.ALERT_TRIGGERED,
-    ]:
+    }:
         severity = AuditSeverity.HIGH
 
     event_details = {
@@ -990,10 +991,10 @@ async def log_blackboard_event(
     action: str,
     knowledge_item_id: str,
     agent_id: str,
-    tenant_id: str = None,
-    data_type: str = None,
+    tenant_id: str | None = None,
+    data_type: str | None = None,
     outcome: str = "success",
-    details: dict[str, Any] = None,
+    details: dict[str, Any] | None = None,
 ) -> str:
     """Log blackboard service audit event."""
     audit_logger = get_audit_logger()

@@ -9,6 +9,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import json
 import os
+import pathlib
 import statistics
 import sys
 import time
@@ -19,7 +20,7 @@ from typing import Any
 import requests
 
 # Add current directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 
 class ACGSIntegrationTester:
@@ -36,7 +37,6 @@ class ACGSIntegrationTester:
 
     def setup_environment(self):
         """Set up required environment variables for testing"""
-        print("=== Setting up test environment ===")
 
         # Core service configuration
         os.environ["POSTGRESQL_PASSWORD"] = "test_password"
@@ -50,11 +50,8 @@ class ACGSIntegrationTester:
         os.environ["AUTH_SERVICE_URL"] = self.auth_service_url
         os.environ["CONTEXT_SERVICE_URL"] = self.context_service_url
 
-        print("✓ Environment variables configured")
-
     def test_acgs_infrastructure_connectivity(self) -> dict[str, Any]:
         """Test connectivity to all ACGS infrastructure services"""
-        print("\n=== Testing ACGS Infrastructure Connectivity ===")
 
         results = {
             "postgresql": self._test_postgresql_connectivity(),
@@ -87,10 +84,6 @@ class ACGSIntegrationTester:
                 return result == 1
 
             success = asyncio.run(test_connection())
-            print(
-                f"✓ PostgreSQL connectivity (port {self.postgresql_port}):"
-                f" {'OK' if success else 'FAILED'}"
-            )
 
             return {
                 "status": "ok" if success else "failed",
@@ -100,7 +93,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ PostgreSQL connectivity failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -126,10 +118,6 @@ class ACGSIntegrationTester:
             client.delete(test_key)
 
             success = retrieved_value == test_value
-            print(
-                f"✓ Redis connectivity (port {self.redis_port}):"
-                f" {'OK' if success else 'FAILED'}"
-            )
 
             return {
                 "status": "ok" if success else "failed",
@@ -139,7 +127,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ Redis connectivity failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -153,10 +140,6 @@ class ACGSIntegrationTester:
             response = requests.get(f"{self.auth_service_url}/health", timeout=5)
 
             success = response.status_code == 200
-            print(
-                "✓ Auth Service connectivity (port 8016):"
-                f" {'OK' if success else 'FAILED'}"
-            )
 
             return {
                 "status": "ok" if success else "failed",
@@ -166,7 +149,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ Auth Service connectivity failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -180,10 +162,6 @@ class ACGSIntegrationTester:
             response = requests.get(f"{self.context_service_url}/health", timeout=5)
 
             success = response.status_code == 200
-            print(
-                "✓ Context Service connectivity (port 8012):"
-                f" {'OK' if success else 'FAILED'}"
-            )
 
             return {
                 "status": "ok" if success else "failed",
@@ -193,7 +171,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ Context Service connectivity failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -207,7 +184,6 @@ class ACGSIntegrationTester:
             response = requests.get("http://localhost:8001/registry/health", timeout=5)
 
             success = response.status_code == 200
-            print(f"✓ Service Registry connectivity: {'OK' if success else 'FAILED'}")
 
             return {
                 "status": "ok" if success else "failed",
@@ -217,7 +193,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ Service Registry connectivity failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -227,7 +202,6 @@ class ACGSIntegrationTester:
 
     def test_service_startup_and_health(self) -> dict[str, Any]:
         """Test service startup and health check"""
-        print("\n=== Testing Service Startup and Health ===")
 
         try:
             # Test health endpoint
@@ -241,29 +215,19 @@ class ACGSIntegrationTester:
                     health_data.get("constitutional_hash") == self.constitutional_hash
                 )
 
-                print("✓ Service health check: OK")
-                print(
-                    "✓ Constitutional hash validation:"
-                    f" {'OK' if constitutional_valid else 'FAILED'}"
-                )
-                print(f"✓ Service status: {health_data.get('status', 'unknown')}")
-
                 return {
                     "status": "ok",
                     "health_data": health_data,
                     "constitutional_valid": constitutional_valid,
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                print(f"✗ Service health check failed: HTTP {response.status_code}")
-                return {
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "timestamp": datetime.now().isoformat(),
-                }
+            return {
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "timestamp": datetime.now().isoformat(),
+            }
 
         except Exception as e:
-            print(f"✗ Service startup test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -272,7 +236,6 @@ class ACGSIntegrationTester:
 
     def test_performance_benchmarks(self) -> dict[str, Any]:
         """Test performance benchmarks: P99 <10ms, >100 RPS, >85% cache hit rate"""
-        print("\n=== Testing Performance Benchmarks ===")
 
         results = {
             "latency_test": self._test_latency_performance(),
@@ -285,7 +248,6 @@ class ACGSIntegrationTester:
 
     def _test_latency_performance(self) -> dict[str, Any]:
         """Test P99 latency <10ms for cached queries"""
-        print("Testing P99 latency performance...")
 
         try:
             latencies = []
@@ -296,7 +258,7 @@ class ACGSIntegrationTester:
                 requests.get(test_endpoint, timeout=5)
 
             # Measure latencies
-            for i in range(100):
+            for _i in range(100):
                 start_time = time.time()
                 response = requests.get(test_endpoint, timeout=5)
                 end_time = time.time()
@@ -316,13 +278,6 @@ class ACGSIntegrationTester:
 
                 target_met = p99_latency < 10.0
 
-                print(
-                    f"✓ P99 latency: {p99_latency:.2f}ms (target: <10ms) -"
-                    f" {'PASS' if target_met else 'FAIL'}"
-                )
-                print(f"✓ P95 latency: {p95_latency:.2f}ms")
-                print(f"✓ Average latency: {avg_latency:.2f}ms")
-
                 return {
                     "status": "ok" if target_met else "failed",
                     "p99_latency_ms": p99_latency,
@@ -333,15 +288,13 @@ class ACGSIntegrationTester:
                     "sample_size": len(latencies),
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                return {
-                    "status": "failed",
-                    "error": "No successful requests",
-                    "timestamp": datetime.now().isoformat(),
-                }
+            return {
+                "status": "failed",
+                "error": "No successful requests",
+                "timestamp": datetime.now().isoformat(),
+            }
 
         except Exception as e:
-            print(f"✗ Latency performance test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -350,7 +303,6 @@ class ACGSIntegrationTester:
 
     def _test_throughput_performance(self) -> dict[str, Any]:
         """Test sustained throughput >100 RPS"""
-        print("Testing throughput performance...")
 
         try:
             test_endpoint = f"{self.base_url}/health"
@@ -391,14 +343,6 @@ class ACGSIntegrationTester:
 
             target_met = actual_rps >= target_rps
 
-            status_text = "PASS" if target_met else "FAIL"
-            print(
-                f"✓ Throughput: {actual_rps:.1f} RPS "
-                f"(target: >{target_rps} RPS) - {status_text}"
-            )
-            print(f"✓ Success rate: {success_rate:.1%}")
-            print(f"✓ Total requests: {total_requests}")
-
             return {
                 "status": "ok" if target_met else "failed",
                 "actual_rps": actual_rps,
@@ -412,7 +356,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ Throughput performance test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -421,7 +364,6 @@ class ACGSIntegrationTester:
 
     def _test_cache_performance(self) -> dict[str, Any]:
         """Test cache hit rate >85%"""
-        print("Testing cache performance...")
 
         try:
             # This would test actual cache endpoints when implemented
@@ -431,11 +373,6 @@ class ACGSIntegrationTester:
             total_requests = 100
             cache_hit_rate = cache_hits / total_requests
             target_met = cache_hit_rate >= 0.85
-
-            status_text = "PASS" if target_met else "FAIL"
-            print(
-                f"✓ Cache hit rate: {cache_hit_rate:.1%} (target: >85%) - {status_text}"
-            )
 
             return {
                 "status": "ok" if target_met else "failed",
@@ -448,7 +385,6 @@ class ACGSIntegrationTester:
             }
 
         except Exception as e:
-            print(f"✗ Cache performance test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -457,7 +393,6 @@ class ACGSIntegrationTester:
 
     def test_constitutional_compliance(self) -> dict[str, Any]:
         """Test constitutional compliance validation (hash cdd01ef066bc6cf2)"""
-        print("\n=== Testing Constitutional Compliance ===")
 
         try:
             # Test health endpoint for constitutional hash
@@ -469,11 +404,6 @@ class ACGSIntegrationTester:
 
                 hash_valid = constitutional_hash == self.constitutional_hash
 
-                status_text = "PASS" if hash_valid else "FAIL"
-                print(f"✓ Constitutional hash validation: {status_text}")
-                print(f"✓ Expected: {self.constitutional_hash}")
-                print(f"✓ Received: {constitutional_hash}")
-
                 return {
                     "status": "ok" if hash_valid else "failed",
                     "expected_hash": self.constitutional_hash,
@@ -481,15 +411,13 @@ class ACGSIntegrationTester:
                     "hash_valid": hash_valid,
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                return {
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "timestamp": datetime.now().isoformat(),
-                }
+            return {
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "timestamp": datetime.now().isoformat(),
+            }
 
         except Exception as e:
-            print(f"✗ Constitutional compliance test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -498,7 +426,6 @@ class ACGSIntegrationTester:
 
     def test_service_integration(self) -> dict[str, Any]:
         """Test comprehensive service integration"""
-        print("\n=== Testing Service Integration ===")
 
         results = {
             "api_endpoints": self._test_api_endpoints(),
@@ -533,16 +460,14 @@ class ACGSIntegrationTester:
                     results[endpoint] = {
                         "status_code": response.status_code,
                         "accessible": response.status_code
-                        in [
+                        in {
                             200,
                             400,
                             401,
                             422,
-                        ],  # Valid responses
+                        },  # Valid responses
                         "method": method,
                     }
-
-                    print(f"✓ {method} {endpoint}: HTTP {response.status_code}")
 
                 except Exception as e:
                     results[endpoint] = {
@@ -550,7 +475,6 @@ class ACGSIntegrationTester:
                         "accessible": False,
                         "method": method,
                     }
-                    print(f"✗ {method} {endpoint}: {e}")
 
             return {
                 "status": "ok",
@@ -584,8 +508,6 @@ class ACGSIntegrationTester:
 
             all_passed = all(middleware_checks.values())
 
-            print(f"✓ Middleware integration: {'PASS' if all_passed else 'PARTIAL'}")
-
             return {
                 "status": "ok" if all_passed else "partial",
                 "checks": middleware_checks,
@@ -616,8 +538,6 @@ class ACGSIntegrationTester:
 
             all_passed = all(error_handling_checks.values())
 
-            print(f"✓ Error handling: {'PASS' if all_passed else 'PARTIAL'}")
-
             return {
                 "status": "ok" if all_passed else "partial",
                 "checks": error_handling_checks,
@@ -633,9 +553,6 @@ class ACGSIntegrationTester:
 
     def run_comprehensive_tests(self) -> dict[str, Any]:
         """Run all comprehensive integration tests"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Priority 3 Integration Testing")
-        print("=" * 80)
 
         start_time = time.time()
 
@@ -655,11 +572,9 @@ class ACGSIntegrationTester:
 
         for suite_name, test_function in test_suites:
             try:
-                print(f"\n{'=' * 20} {suite_name} {'=' * 20}")
                 result = test_function()
                 all_results[suite_name.lower().replace(" ", "_")] = result
             except Exception as e:
-                print(f"✗ Test suite '{suite_name}' failed: {e}")
                 all_results[suite_name.lower().replace(" ", "_")] = {
                     "status": "failed",
                     "error": str(e),
@@ -670,25 +585,11 @@ class ACGSIntegrationTester:
         total_time = time.time() - start_time
         summary = self._generate_test_summary(all_results, total_time)
 
-        print("\n" + "=" * 80)
-        print("TEST SUMMARY")
-        print("=" * 80)
-        print(f"Total execution time: {total_time:.2f} seconds")
-        print(f"Test suites run: {len(test_suites)}")
-        print(f"Overall status: {summary['overall_status']}")
-
         if summary["failed_tests"]:
-            print(f"Failed tests: {', '.join(summary['failed_tests'])}")
+            pass
 
         if summary["success_criteria_met"]:
-            print(
-                "✓ All success criteria met - Service ready for production deployment"
-            )
-        else:
-            print(
-                "✗ Some success criteria not met - Review failed tests before"
-                " deployment"
-            )
+            pass
 
         return {
             "summary": summary,
@@ -709,7 +610,7 @@ class ACGSIntegrationTester:
             if isinstance(result, dict):
                 if result.get("status") == "failed":
                     failed_tests.append(test_name)
-                elif result.get("status") in ["ok", "partial"]:
+                elif result.get("status") in {"ok", "partial"}:
                     passed_tests.append(test_name)
 
         # Check success criteria
@@ -768,26 +669,16 @@ def main():
 
         # Save results to file
         results_file = "priority3_integration_test_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Detailed results saved to: {results_file}")
 
         # Exit with appropriate code
         if results["summary"]["success_criteria_met"]:
-            print(
-                "\n🎉 All integration tests passed! Service ready for production"
-                " deployment."
-            )
             sys.exit(0)
         else:
-            print(
-                "\n❌ Some integration tests failed. Review results before deployment."
-            )
             sys.exit(1)
 
-    except Exception as e:
-        print(f"\n💥 Integration testing failed with error: {e}")
+    except Exception:
         sys.exit(1)
 
 

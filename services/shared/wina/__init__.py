@@ -45,27 +45,27 @@ __version__ = "1.0.0"
 __author__ = "ACGS-PGP Development Team"
 
 __all__ = [
-    # Core components
-    "WINACore",
-    "WINAOptimizer",
-    "SVDTransformation",
-    "OrthogonalityProtocol",
-    "RuntimeGating",
-    "NeuronGate",
-    "GatingStrategy",
+    # Constitutional integration
+    "ConstitutionalWINASupport",
+    "GFLOPsTracker",
     "GatingDecision",
     "GatingPerformance",
+    "GatingStrategy",
+    "NeuronGate",
+    "OrthogonalityProtocol",
+    "PerformanceMonitor",
+    "RuntimeGating",
+    "SVDTransformation",
     # Configuration
     "WINAConfig",
+    "WINAConfigurationError",
+    # Core components
+    "WINACore",
+    # Exceptions
+    "WINAError",
     "WINAIntegrationConfig",
     # Monitoring
     "WINAMetrics",
-    "GFLOPsTracker",
-    "PerformanceMonitor",
-    # Constitutional integration
-    "ConstitutionalWINASupport",
-    # Exceptions
-    "WINAError",
-    "WINAConfigurationError",
     "WINAOptimizationError",
+    "WINAOptimizer",
 ]

@@ -6,7 +6,7 @@ Provides specification pattern for complex domain queries and validations.
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 T = TypeVar("T")
 
@@ -22,7 +22,6 @@ class Specification(ABC, Generic[T]):
     @abstractmethod
     def is_satisfied_by(self, candidate: T) -> bool:
         """Check if the candidate satisfies this specification."""
-        pass
 
     def and_(self, other: "Specification[T]") -> "Specification[T]":
         """Create an AND specification combining this and another."""

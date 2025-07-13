@@ -24,7 +24,6 @@ from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, Field
 
 from .performance_monitoring import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
     WINAComponentType,
     WINAConstitutionalComplianceMetrics,
     WINADynamicGatingMetrics,
@@ -208,7 +207,7 @@ async def get_performance_collector() -> WINAPerformanceCollector:
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get performance collector: {e}")
+        logger.exception(f"Failed to get performance collector: {e}")
         raise HTTPException(
             status_code=500, detail="Performance monitoring service unavailable"
         )
@@ -274,7 +273,7 @@ async def get_health_status(
         return health_status
 
     except Exception as e:
-        logger.error(f"Health status check failed: {e}")
+        logger.exception(f"Health status check failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Health status check failed: {e!s}"
         )
@@ -293,7 +292,7 @@ async def get_realtime_metrics(
         return await collector.get_real_time_metrics()
 
     except Exception as e:
-        logger.error(f"Real-time metrics retrieval failed: {e}")
+        logger.exception(f"Real-time metrics retrieval failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Real-time metrics retrieval failed: {e!s}"
         )
@@ -324,7 +323,7 @@ async def get_metrics_summary(
         # Get performance report for the time range
         report = await collector.get_performance_report(start_time, end_time)
 
-        summary = {
+        return {
             "time_range": {
                 "start_time": start_time.isoformat(),
                 "end_time": end_time.isoformat(),
@@ -348,10 +347,8 @@ async def get_metrics_summary(
             "trends": report.trends,
         }
 
-        return summary
-
     except Exception as e:
-        logger.error(f"Metrics summary retrieval failed: {e}")
+        logger.exception(f"Metrics summary retrieval failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Metrics summary retrieval failed: {e!s}"
         )
@@ -405,7 +402,7 @@ async def generate_performance_report(
         }
 
     except Exception as e:
-        logger.error(f"Performance report generation failed: {e}")
+        logger.exception(f"Performance report generation failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Performance report generation failed: {e!s}"
         )
@@ -426,7 +423,7 @@ async def get_prometheus_metrics(
         return PlainTextResponse(content=metrics_text, media_type="text/plain")
 
     except Exception as e:
-        logger.error(f"Prometheus metrics export failed: {e}")
+        logger.exception(f"Prometheus metrics export failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Prometheus metrics export failed: {e!s}"
         )
@@ -478,7 +475,7 @@ async def get_recent_alerts(
         }
 
     except Exception as e:
-        logger.error(f"Alerts retrieval failed: {e}")
+        logger.exception(f"Alerts retrieval failed: {e}")
         raise HTTPException(status_code=500, detail=f"Alerts retrieval failed: {e!s}")
 
 
@@ -513,7 +510,7 @@ async def record_neuron_activation_metrics(
         }
 
     except Exception as e:
-        logger.error(f"Neuron activation metrics recording failed: {e}")
+        logger.exception(f"Neuron activation metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -544,7 +541,7 @@ async def record_svd_transformation_metrics(
         }
 
     except Exception as e:
-        logger.error(f"SVD transformation metrics recording failed: {e}")
+        logger.exception(f"SVD transformation metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -576,7 +573,7 @@ async def record_dynamic_gating_metrics(
         }
 
     except Exception as e:
-        logger.error(f"Dynamic gating metrics recording failed: {e}")
+        logger.exception(f"Dynamic gating metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -607,7 +604,7 @@ async def record_constitutional_compliance_metrics(
         }
 
     except Exception as e:
-        logger.error(f"Constitutional compliance metrics recording failed: {e}")
+        logger.exception(f"Constitutional compliance metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -638,7 +635,7 @@ async def record_learning_feedback_metrics(
         }
 
     except Exception as e:
-        logger.error(f"Learning feedback metrics recording failed: {e}")
+        logger.exception(f"Learning feedback metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -670,7 +667,7 @@ async def record_integration_metrics(
         }
 
     except Exception as e:
-        logger.error(f"Integration metrics recording failed: {e}")
+        logger.exception(f"Integration metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -698,7 +695,7 @@ async def record_system_health_metrics(
         return {"status": "success", "message": "System health metrics recorded"}
 
     except Exception as e:
-        logger.error(f"System health metrics recording failed: {e}")
+        logger.exception(f"System health metrics recording failed: {e}")
         raise HTTPException(status_code=500, detail=f"Metrics recording failed: {e!s}")
 
 
@@ -729,7 +726,7 @@ async def get_monitoring_configuration(
         }
 
     except Exception as e:
-        logger.error(f"Configuration retrieval failed: {e}")
+        logger.exception(f"Configuration retrieval failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Configuration retrieval failed: {e!s}"
         )
@@ -768,7 +765,7 @@ async def update_monitoring_configuration(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Configuration update failed: {e}")
+        logger.exception(f"Configuration update failed: {e}")
         raise HTTPException(
             status_code=500, detail=f"Configuration update failed: {e!s}"
         )
@@ -784,7 +781,7 @@ async def start_monitoring(
         return {"status": "success", "message": "Performance monitoring started"}
 
     except Exception as e:
-        logger.error(f"Monitoring start failed: {e}")
+        logger.exception(f"Monitoring start failed: {e}")
         raise HTTPException(status_code=500, detail=f"Monitoring start failed: {e!s}")
 
 
@@ -798,7 +795,7 @@ async def stop_monitoring(
         return {"status": "success", "message": "Performance monitoring stopped"}
 
     except Exception as e:
-        logger.error(f"Monitoring stop failed: {e}")
+        logger.exception(f"Monitoring stop failed: {e}")
         raise HTTPException(status_code=500, detail=f"Monitoring stop failed: {e!s}")
 
 

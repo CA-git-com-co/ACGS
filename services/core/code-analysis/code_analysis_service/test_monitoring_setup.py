@@ -7,7 +7,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import json
-import os
+import pathlib
 import sys
 import time
 from datetime import datetime
@@ -16,7 +16,7 @@ from typing import Any
 import requests
 
 # Add current directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 
 class MonitoringValidator:
@@ -31,7 +31,6 @@ class MonitoringValidator:
 
     def test_prometheus_metrics(self) -> dict[str, Any]:
         """Test Prometheus metrics collection"""
-        print("\n=== Testing Prometheus Metrics Collection ===")
 
         try:
             # Test metrics endpoint
@@ -55,8 +54,6 @@ class MonitoringValidator:
                 for metric in required_metrics:
                     found = metric in metrics_text
                     found_metrics[metric] = found
-                    status = "✓" if found else "✗"
-                    print(f"{status} {metric}: {'Found' if found else 'Missing'}")
 
                 # Check constitutional compliance metric
                 constitutional_metric_found = (
@@ -65,15 +62,6 @@ class MonitoringValidator:
                 )
 
                 all_metrics_found = all(found_metrics.values())
-
-                print(
-                    "✓ Constitutional compliance metric: "
-                    f"{'Found' if constitutional_metric_found else 'Missing'}"
-                )
-                print(
-                    "✓ All required metrics: "
-                    f"{'Present' if all_metrics_found else 'Missing'}"
-                )
 
                 return {
                     "status": "ok" if all_metrics_found else "partial",
@@ -90,17 +78,14 @@ class MonitoringValidator:
                     ),
                     "timestamp": datetime.now().isoformat(),
                 }
-            else:
-                print(f"✗ Metrics endpoint failed: HTTP {response.status_code}")
-                return {
-                    "status": "failed",
-                    "error": f"HTTP {response.status_code}",
-                    "metrics_endpoint_accessible": False,
-                    "timestamp": datetime.now().isoformat(),
-                }
+            return {
+                "status": "failed",
+                "error": f"HTTP {response.status_code}",
+                "metrics_endpoint_accessible": False,
+                "timestamp": datetime.now().isoformat(),
+            }
 
         except Exception as e:
-            print(f"✗ Prometheus metrics test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -110,13 +95,12 @@ class MonitoringValidator:
 
     def test_health_monitoring(self) -> dict[str, Any]:
         """Test health check monitoring with constitutional compliance"""
-        print("\n=== Testing Health Check Monitoring ===")
 
         try:
             # Test health endpoint multiple times
             health_checks = []
 
-            for i in range(10):
+            for _i in range(10):
                 start_time = time.time()
                 response = requests.get(f"{self.base_url}/health", timeout=5)
                 end_time = time.time()
@@ -169,13 +153,6 @@ class MonitoringValidator:
                 health_checks
             )
 
-            print(f"✓ Health check success rate: {success_rate:.1%}")
-            print(
-                "✓ Constitutional compliance rate: "
-                f"{constitutional_compliance_rate:.1%}"
-            )
-            print(f"✓ Average response time: {avg_response_time:.2f}ms")
-
             monitoring_healthy = (
                 success_rate >= 0.9
                 and constitutional_compliance_rate >= 0.9
@@ -195,7 +172,6 @@ class MonitoringValidator:
             }
 
         except Exception as e:
-            print(f"✗ Health monitoring test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -204,7 +180,6 @@ class MonitoringValidator:
 
     def test_structured_logging(self) -> dict[str, Any]:
         """Test structured logging with constitutional compliance"""
-        print("\n=== Testing Structured Logging ===")
 
         try:
             # Make requests to generate logs
@@ -238,19 +213,6 @@ class MonitoringValidator:
 
             all_logging_valid = all(log_validation.values())
 
-            print(
-                "✓ Structured logging format: "
-                f"{'Valid' if log_validation['structured_format'] else 'Invalid'}"
-            )
-            print(
-                "✓ Constitutional hash in logs: "
-                f"{'Present' if log_validation['constitutional_hash_present'] else 'Missing'}"
-            )
-            print(
-                "✓ Request ID tracking: "
-                f"{'Enabled' if log_validation['request_id_tracking'] else 'Disabled'}"
-            )
-
             return {
                 "status": "ok" if all_logging_valid else "partial",
                 "log_validation": log_validation,
@@ -259,7 +221,6 @@ class MonitoringValidator:
             }
 
         except Exception as e:
-            print(f"✗ Structured logging test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -268,7 +229,6 @@ class MonitoringValidator:
 
     def test_alerting_configuration(self) -> dict[str, Any]:
         """Test alerting configuration for critical metrics"""
-        print("\n=== Testing Alerting Configuration ===")
 
         try:
             # Define critical alerts that should be configured
@@ -319,19 +279,8 @@ class MonitoringValidator:
                     "threshold": alert["threshold"],
                 }
 
-                status = "✓" if configured else "✗"
-                print(
-                    f"{status} {alert['name']}: "
-                    f"{'Configured' if configured else 'Missing'}"
-                )
-
             all_alerts_configured = all(
                 alert["configured"] for alert in configured_alerts.values()
-            )
-
-            print(
-                "✓ All critical alerts configured: "
-                f"{'Yes' if all_alerts_configured else 'No'}"
             )
 
             return {
@@ -343,7 +292,6 @@ class MonitoringValidator:
             }
 
         except Exception as e:
-            print(f"✗ Alerting configuration test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -352,7 +300,6 @@ class MonitoringValidator:
 
     def test_dashboard_configuration(self) -> dict[str, Any]:
         """Test monitoring dashboard configuration"""
-        print("\n=== Testing Dashboard Configuration ===")
 
         try:
             # Define essential dashboard panels
@@ -378,15 +325,7 @@ class MonitoringValidator:
                 configured = True  # Assume panels are configured
                 configured_panels[panel] = configured
 
-                status = "✓" if configured else "✗"
-                print(f"{status} {panel}: {'Configured' if configured else 'Missing'}")
-
             all_panels_configured = all(configured_panels.values())
-
-            print(
-                "✓ All essential panels configured: "
-                f"{'Yes' if all_panels_configured else 'No'}"
-            )
 
             return {
                 "status": "ok" if all_panels_configured else "partial",
@@ -397,7 +336,6 @@ class MonitoringValidator:
             }
 
         except Exception as e:
-            print(f"✗ Dashboard configuration test failed: {e}")
             return {
                 "status": "failed",
                 "error": str(e),
@@ -406,9 +344,6 @@ class MonitoringValidator:
 
     def run_monitoring_validation(self) -> dict[str, Any]:
         """Run comprehensive monitoring and observability validation"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Monitoring & Observability Validation")
-        print("=" * 80)
 
         start_time = time.time()
 
@@ -425,12 +360,10 @@ class MonitoringValidator:
 
         for test_name, test_function in monitoring_tests:
             try:
-                print(f"\n{'=' * 20} {test_name} {'=' * 20}")
                 result = test_function()
                 all_results[test_name.lower().replace(" ", "_")] = result
                 self.results[test_name.lower().replace(" ", "_")] = result
             except Exception as e:
-                print(f"✗ {test_name} failed: {e}")
                 error_result = {
                     "status": "failed",
                     "error": str(e),
@@ -443,20 +376,11 @@ class MonitoringValidator:
         total_time = time.time() - start_time
         summary = self._generate_monitoring_summary(all_results, total_time)
 
-        print("\n" + "=" * 80)
-        print("MONITORING VALIDATION SUMMARY")
-        print("=" * 80)
-        print(f"Total execution time: {total_time:.2f} seconds")
-        print(f"Tests run: {len(monitoring_tests)}")
-        print(f"Overall status: {summary['overall_status']}")
-
         if summary["failed_tests"]:
-            print(f"Failed tests: {', '.join(summary['failed_tests'])}")
+            pass
 
         if summary["monitoring_ready"]:
-            print("✓ Monitoring and observability ready for production")
-        else:
-            print("✗ Monitoring setup needs attention before production")
+            pass
 
         return {
             "summary": summary,
@@ -527,21 +451,16 @@ def main():
 
         # Save results to file
         results_file = "monitoring_validation_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Detailed results saved to: {results_file}")
 
         # Exit with appropriate code
         if results["summary"]["monitoring_ready"]:
-            print("\n🎉 Monitoring and observability ready for production!")
             sys.exit(0)
         else:
-            print("\n⚠️  Monitoring setup needs attention before production.")
             sys.exit(1)
 
-    except Exception as e:
-        print(f"\n💥 Monitoring validation failed: {e}")
+    except Exception:
         sys.exit(1)
 
 

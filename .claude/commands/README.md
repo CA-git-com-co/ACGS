@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Claude Commands for ACGS-2 Project Organization
 
 This directory contains Claude-specific commands and specifications for optimizing the ACGS-2 project structure.

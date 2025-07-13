@@ -8,7 +8,7 @@ and health monitoring with constitutional compliance.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -45,19 +45,19 @@ class GatewayRequest(BaseModel):
     # Request details
     method: RequestMethod = Field(..., description="HTTP method")
     path: str = Field(..., description="Request path")
-    headers: Dict[str, str] = Field(default_factory=dict, description="Request headers")
-    query_params: Dict[str, str] = Field(
+    headers: dict[str, str] = Field(default_factory=dict, description="Request headers")
+    query_params: dict[str, str] = Field(
         default_factory=dict, description="Query parameters"
     )
-    body: Optional[str] = Field(None, description="Request body")
+    body: str | None = Field(None, description="Request body")
 
     # Client information
     client_ip: str = Field(..., description="Client IP address")
     user_agent: str = Field(default="", description="User agent")
 
     # Authentication
-    auth_token: Optional[str] = Field(None, description="Authentication token")
-    user_id: Optional[str] = Field(None, description="Authenticated user ID")
+    auth_token: str | None = Field(None, description="Authentication token")
+    user_id: str | None = Field(None, description="Authenticated user ID")
 
     # Constitutional compliance
     constitutional_compliance_required: bool = Field(default=True)
@@ -78,10 +78,10 @@ class GatewayResponse(BaseModel):
 
     # Response details
     status_code: int = Field(..., description="HTTP status code")
-    headers: Dict[str, str] = Field(
+    headers: dict[str, str] = Field(
         default_factory=dict, description="Response headers"
     )
-    body: Optional[str] = Field(None, description="Response body")
+    body: str | None = Field(None, description="Response body")
 
     # Routing information
     target_service: str = Field(..., description="Target service name")
@@ -166,7 +166,7 @@ class ServiceHealth(BaseModel):
     constitutional_compliance_active: bool = Field(default=True)
 
     # Health details
-    health_details: Dict[str, Any] = Field(
+    health_details: dict[str, Any] = Field(
         default_factory=dict, description="Additional health info"
     )
 
@@ -184,14 +184,14 @@ class RouteConfig(BaseModel):
 
     # Route matching
     path_pattern: str = Field(..., description="Path pattern for matching")
-    methods: List[RequestMethod] = Field(
+    methods: list[RequestMethod] = Field(
         default_factory=list, description="Allowed HTTP methods"
     )
-    host_pattern: Optional[str] = Field(None, description="Host pattern for matching")
+    host_pattern: str | None = Field(None, description="Host pattern for matching")
 
     # Target service
     target_service: str = Field(..., description="Target service name")
-    target_path: Optional[str] = Field(None, description="Target path (if different)")
+    target_path: str | None = Field(None, description="Target path (if different)")
 
     # Route configuration
     timeout_ms: int = Field(
@@ -201,9 +201,7 @@ class RouteConfig(BaseModel):
 
     # Security
     auth_required: bool = Field(default=True, description="Authentication required")
-    rate_limit_rpm: Optional[int] = Field(
-        None, ge=1, description="Rate limit per minute"
-    )
+    rate_limit_rpm: int | None = Field(None, ge=1, description="Rate limit per minute")
 
     # Constitutional compliance
     constitutional_compliance_required: bool = Field(default=True)

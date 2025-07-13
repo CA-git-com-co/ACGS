@@ -29,32 +29,28 @@ from .config.service_config import get_service_config
 # Import API routers with error handling
 try:
     from .api.v1.enforcement import router as enforcement_router
-except ImportError as e:
-    print(f"Warning: Enforcement router not available: {e}")
+except ImportError:
     from fastapi import APIRouter
 
     enforcement_router = APIRouter()
 
 try:
     from .api.v1.alphaevolve_enforcement import router as alphaevolve_enforcement_router
-except ImportError as e:
-    print(f"Warning: AlphaEvolve enforcement router not available: {e}")
+except ImportError:
     from fastapi import APIRouter
 
     alphaevolve_enforcement_router = APIRouter()
 
 try:
     from .api.v1.incremental_compilation import router as incremental_compilation_router
-except ImportError as e:
-    print(f"Warning: Incremental compilation router not available: {e}")
+except ImportError:
     from fastapi import APIRouter
 
     incremental_compilation_router = APIRouter()
 
 try:
     from .api.v1.ultra_low_latency import router as ultra_low_latency_router
-except ImportError as e:
-    print(f"Warning: Ultra low latency router not available: {e}")
+except ImportError:
     from fastapi import APIRouter
 
     ultra_low_latency_router = APIRouter()
@@ -62,9 +58,7 @@ except ImportError as e:
 try:
     from .api.v1.governance_workflows import router as governance_workflows_router
 
-    print("✅ Governance workflows router enabled")
-except ImportError as e:
-    print(f"Warning: Governance workflows router not available: {e}")
+except ImportError:
     from fastapi import APIRouter
 
     governance_workflows_router = APIRouter()
@@ -76,7 +70,6 @@ try:
     POLICY_MANAGER_AVAILABLE = True
 except ImportError:
     POLICY_MANAGER_AVAILABLE = False
-    print("⚠️ Policy manager not available - using mock")
 
 try:
     from .services.integrity_client import integrity_service_client
@@ -84,7 +77,6 @@ try:
     INTEGRITY_CLIENT_AVAILABLE = True
 except ImportError:
     INTEGRITY_CLIENT_AVAILABLE = False
-    print("⚠️ Integrity client not available - using mock")
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
@@ -141,7 +133,7 @@ async def enhanced_lifespan(app):
                 await policy_manager.get_active_rules(force_refresh=True)
                 logger.info("✅ Policy Manager initialized")
             except Exception as e:
-                logger.error(f"❌ Policy Manager initialization failed: {e}")
+                logger.exception(f"❌ Policy Manager initialization failed: {e}")
         else:
             logger.info("⚠️ Using mock Policy Manager")
 
@@ -157,7 +149,7 @@ async def enhanced_lifespan(app):
         yield
 
     except Exception as e:
-        logger.error(f"❌ Enhanced PGC Service initialization failed: {e}")
+        logger.exception(f"❌ Enhanced PGC Service initialization failed: {e}")
         yield
     finally:
         logger.info("🔄 Shutting down Enhanced PGC Service")
@@ -167,7 +159,7 @@ async def enhanced_lifespan(app):
             try:
                 await integrity_service_client.close()
             except Exception as e:
-                logger.error(f"Error closing integrity client: {e}")
+                logger.exception(f"Error closing integrity client: {e}")
 
 
 async def create_enhanced_pgc_service():

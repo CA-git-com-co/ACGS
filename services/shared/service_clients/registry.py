@@ -6,7 +6,6 @@ Centralized service discovery and client management to prevent circular dependen
 """
 
 import os
-from typing import Dict, Optional
 
 from .base_client import BaseServiceClient, create_client
 
@@ -20,7 +19,7 @@ class ServiceRegistry:
     """
 
     def __init__(self):
-        self._clients: Dict[str, BaseServiceClient] = {}
+        self._clients: dict[str, BaseServiceClient] = {}
         self._service_urls = {
             "constitutional-core": os.getenv(
                 "CONSTITUTIONAL_CORE_URL", "http://localhost:8001"
@@ -33,7 +32,7 @@ class ServiceRegistry:
             "api-gateway": os.getenv("API_GATEWAY_URL", "http://localhost:8080"),
         }
 
-    async def get_client(self, service_name: str) -> Optional[BaseServiceClient]:
+    async def get_client(self, service_name: str) -> BaseServiceClient | None:
         """Get a client for the specified service"""
         if service_name not in self._clients:
             url = self._service_urls.get(service_name)
@@ -45,7 +44,7 @@ class ServiceRegistry:
 
         return self._clients[service_name]
 
-    async def health_check_all(self) -> Dict[str, bool]:
+    async def health_check_all(self) -> dict[str, bool]:
         """Check health of all registered services"""
         results = {}
         for service_name in self._service_urls:
@@ -71,12 +70,12 @@ class ServiceRegistry:
 _registry = ServiceRegistry()
 
 
-async def get_service_client(service_name: str) -> Optional[BaseServiceClient]:
+async def get_service_client(service_name: str) -> BaseServiceClient | None:
     """Get a client for the specified service from the global registry"""
     return await _registry.get_client(service_name)
 
 
-async def health_check_services() -> Dict[str, bool]:
+async def health_check_services() -> dict[str, bool]:
     """Check health of all services"""
     return await _registry.health_check_all()
 

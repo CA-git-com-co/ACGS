@@ -20,6 +20,8 @@ from .common_types import LoadBalancingStrategy, ServiceInstance, ServiceType
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+import contextlib
+
 from .failover_circuit_breaker import FailoverConfig, FailoverManager
 from .governance_session_manager import GovernanceSessionManager, GovernanceWorkflowType
 from .infrastructure_integration import (
@@ -129,10 +131,8 @@ class ServiceDiscovery:
         # Cancel health check task
         if self._health_check_task:
             self._health_check_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._health_check_task
-            except asyncio.CancelledError:
-                pass
 
         # Close HTTP client
         if self._http_client:
@@ -197,7 +197,7 @@ class ServiceDiscovery:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in health check loop: {e}")
+                logger.exception(f"Error in health check loop: {e}")
                 await asyncio.sleep(5.0)  # Short delay before retrying
 
     async def _perform_health_checks(self):
@@ -207,7 +207,7 @@ class ServiceDiscovery:
         """Perform health checks on all service instances."""
         tasks = []
 
-        for _service_type, instances in self.instances.items():
+        for instances in self.instances.values():
             for instance in instances:
                 task = asyncio.create_task(self._check_instance_health(instance))
                 tasks.append(task)
@@ -327,7 +327,7 @@ class ServiceDiscovery:
             try:
                 callback(instance)
             except Exception as e:
-                logger.error(f"Error in service up callback: {e}")
+                logger.exception(f"Error in service up callback: {e}")
 
     def _notify_service_down(self, instance: ServiceInstance):
         # requires: Valid input parameters
@@ -340,7 +340,7 @@ class ServiceDiscovery:
             try:
                 callback(instance)
             except Exception as e:
-                logger.error(f"Error in service down callback: {e}")
+                logger.exception(f"Error in service down callback: {e}")
 
     def register_service_up_callback(self, callback: Callable[[ServiceInstance], None]):
         # requires: Valid input parameters

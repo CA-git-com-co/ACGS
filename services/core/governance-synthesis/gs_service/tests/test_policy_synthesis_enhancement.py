@@ -85,7 +85,7 @@ class TestProactiveErrorPrediction:
         assert "overall_risk" in risk_assessment
 
         # Verify all risk scores are between 0 and 1
-        for _risk_type, score in risk_assessment.items():
+        for score in risk_assessment.values():
             assert 0.0 <= score <= 1.0
 
         # Verify strategy recommendation is valid
@@ -107,7 +107,7 @@ class TestProactiveErrorPrediction:
 
         assert len(features) == len(sample_principles)
 
-        for _i, feature in enumerate(features):
+        for feature in features:
             assert "principle_id" in feature
             assert "word_count" in feature
             assert "ambiguity_score" in feature
@@ -374,19 +374,19 @@ class TestIntegration:
 
         # Verify prediction result
         assert prediction_result["risk_assessment"]["overall_risk"] > 0.0
-        assert prediction_result["recommended_strategy"] in [
+        assert prediction_result["recommended_strategy"] in {
             "standard_synthesis",
             "enhanced_validation",
             "multi_model_consensus",
             "human_review_required",
-        ]
+        }
 
         # Verify the system recommends appropriate strategy for high-stakes context
         if prediction_result["risk_assessment"]["overall_risk"] > 0.6:
-            assert prediction_result["recommended_strategy"] in [
+            assert prediction_result["recommended_strategy"] in {
                 "multi_model_consensus",
                 "human_review_required",
-            ]
+            }
 
         # Test that metadata is properly populated
         assert prediction_result["prediction_metadata"]["principles_analyzed"] == 2

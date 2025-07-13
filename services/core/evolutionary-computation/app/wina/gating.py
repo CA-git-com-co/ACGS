@@ -157,7 +157,7 @@ class RuntimeGating:
             return result
 
         except Exception as e:
-            logger.error(f"Gating decision evaluation failed: {e}")
+            logger.exception(f"Gating decision evaluation failed: {e}")
             return GatingResult(
                 decision=GatingDecision.BLOCK,
                 confidence=0.0,
@@ -348,17 +348,15 @@ class RuntimeGating:
                 else 0.7 if context.risk_level == "medium" else 0.3
             )
 
-            performance_score = (
+            return (
                 weights["success_rate"] * context.historical_success_rate
                 + weights["constitutional_score"] * context.constitutional_score
                 + weights["load_factor"] * load_score
                 + weights["risk_factor"] * risk_score
             )
 
-            return performance_score
-
         except Exception as e:
-            logger.error(f"Performance score calculation failed: {e}")
+            logger.exception(f"Performance score calculation failed: {e}")
             return 0.5  # Default moderate score
 
     def _get_recent_success_rate(self) -> float:
@@ -371,13 +369,13 @@ class RuntimeGating:
             successful_decisions = sum(
                 1
                 for result in recent_decisions
-                if result.decision in [GatingDecision.ALLOW, GatingDecision.THROTTLE]
+                if result.decision in {GatingDecision.ALLOW, GatingDecision.THROTTLE}
             )
 
             return successful_decisions / len(recent_decisions)
 
         except Exception as e:
-            logger.error(f"Recent success rate calculation failed: {e}")
+            logger.exception(f"Recent success rate calculation failed: {e}")
             return 0.8
 
     def _should_reset_circuit_breaker(self) -> bool:
@@ -397,7 +395,7 @@ class RuntimeGating:
             self.decision_counts[result.decision] += 1
 
         except Exception as e:
-            logger.error(f"Failed to update gating metrics: {e}")
+            logger.exception(f"Failed to update gating metrics: {e}")
 
     def get_gating_summary(self) -> dict[str, Any]:
         """Get summary of gating performance."""
@@ -424,5 +422,5 @@ class RuntimeGating:
             }
 
         except Exception as e:
-            logger.error(f"Failed to generate gating summary: {e}")
+            logger.exception(f"Failed to generate gating summary: {e}")
             return {"error": str(e)}

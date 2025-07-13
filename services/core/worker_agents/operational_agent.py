@@ -6,9 +6,8 @@ Specialized agent for operational validation, performance analysis, and implemen
 import asyncio
 import logging
 import time
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Set, Tuple
-from uuid import uuid4
+from datetime import datetime, timezone
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -26,15 +25,15 @@ class OperationalAnalysisResult(BaseModel):
     approved: bool
     risk_level: str  # 'low', 'medium', 'high', 'critical'
     confidence: float = Field(ge=0.0, le=1.0)
-    performance_assessment: Dict[str, Any] = Field(default_factory=dict)
-    scalability_analysis: Dict[str, Any] = Field(default_factory=dict)
-    resource_requirements: Dict[str, Any] = Field(default_factory=dict)
-    infrastructure_readiness: Dict[str, Any] = Field(default_factory=dict)
-    deployment_plan: Dict[str, Any] = Field(default_factory=dict)
-    monitoring_plan: Dict[str, Any] = Field(default_factory=dict)
-    recommendations: List[str] = Field(default_factory=list)
-    constitutional_compliance: Dict[str, Any] = Field(default_factory=dict)
-    analysis_metadata: Dict[str, Any] = Field(default_factory=dict)
+    performance_assessment: dict[str, Any] = Field(default_factory=dict)
+    scalability_analysis: dict[str, Any] = Field(default_factory=dict)
+    resource_requirements: dict[str, Any] = Field(default_factory=dict)
+    infrastructure_readiness: dict[str, Any] = Field(default_factory=dict)
+    deployment_plan: dict[str, Any] = Field(default_factory=dict)
+    monitoring_plan: dict[str, Any] = Field(default_factory=dict)
+    recommendations: list[str] = Field(default_factory=list)
+    constitutional_compliance: dict[str, Any] = Field(default_factory=dict)
+    analysis_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class PerformanceAnalyzer:
@@ -42,10 +41,10 @@ class PerformanceAnalyzer:
 
     @staticmethod
     async def analyze_performance_requirements(
-        model_info: Dict[str, Any],
-        performance_requirements: Dict[str, Any],
-        infrastructure_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        performance_requirements: dict[str, Any],
+        infrastructure_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze if model can meet performance requirements"""
 
         analysis_results = {
@@ -74,7 +73,7 @@ class PerformanceAnalyzer:
             score = analysis.get("performance_score", 0.5)
             performance_scores.append(score)
 
-            if analysis.get("meets_requirements", True) == False:
+            if not analysis.get("meets_requirements", True):
                 critical_failures.append(category)
 
         overall_score = (
@@ -97,10 +96,10 @@ class PerformanceAnalyzer:
 
     @staticmethod
     async def _analyze_latency_requirements(
-        model_info: Dict[str, Any],
-        performance_requirements: Dict[str, Any],
-        infrastructure_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        performance_requirements: dict[str, Any],
+        infrastructure_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze latency performance"""
 
         # Get requirements
@@ -148,9 +147,9 @@ class PerformanceAnalyzer:
 
         # Adjust for infrastructure
         gpu_type = infrastructure_constraints.get("gpu_type", "standard")
-        if gpu_type in ["A100", "H100"]:
+        if gpu_type in {"A100", "H100"}:
             estimated_latency *= 0.7
-        elif gpu_type in ["V100", "T4"]:
+        elif gpu_type in {"V100", "T4"}:
             estimated_latency *= 1.3
 
         # Account for network latency
@@ -199,10 +198,10 @@ class PerformanceAnalyzer:
 
     @staticmethod
     async def _analyze_throughput_requirements(
-        model_info: Dict[str, Any],
-        performance_requirements: Dict[str, Any],
-        infrastructure_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        performance_requirements: dict[str, Any],
+        infrastructure_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze throughput performance"""
 
         # Get requirements
@@ -277,7 +276,7 @@ class PerformanceAnalyzer:
             else 1.0
         )
 
-        performance_score = min(1.0, min(rps_ratio, concurrent_ratio))
+        performance_score = min(1.0, rps_ratio, concurrent_ratio)
 
         return {
             "meets_requirements": meets_rps and meets_concurrent,
@@ -294,8 +293,8 @@ class PerformanceAnalyzer:
 
     @staticmethod
     async def _analyze_accuracy_requirements(
-        model_info: Dict[str, Any], performance_requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], performance_requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze accuracy performance"""
 
         # Get requirements
@@ -323,7 +322,7 @@ class PerformanceAnalyzer:
         )
         recall_ratio = model_recall / required_recall if required_recall > 0 else 1.0
 
-        performance_score = min(1.0, min(accuracy_ratio, precision_ratio, recall_ratio))
+        performance_score = min(1.0, accuracy_ratio, precision_ratio, recall_ratio)
 
         # Identify gaps
         gaps = []
@@ -362,9 +361,9 @@ class PerformanceAnalyzer:
 
     @staticmethod
     async def _analyze_availability_requirements(
-        performance_requirements: Dict[str, Any],
-        infrastructure_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        performance_requirements: dict[str, Any],
+        infrastructure_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze availability requirements"""
 
         # Get requirements
@@ -428,7 +427,7 @@ class PerformanceAnalyzer:
         )
         mttr_ratio = required_mttr / estimated_mttr if estimated_mttr > 0 else 1.0
 
-        performance_score = min(1.0, min(uptime_ratio, mttr_ratio))
+        performance_score = min(1.0, uptime_ratio, mttr_ratio)
 
         return {
             "meets_requirements": meets_uptime and meets_mttr,
@@ -446,8 +445,8 @@ class PerformanceAnalyzer:
 
     @staticmethod
     async def _analyze_resource_utilization(
-        model_info: Dict[str, Any], infrastructure_constraints: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], infrastructure_constraints: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze resource utilization efficiency"""
 
         # Calculate resource requirements
@@ -471,7 +470,7 @@ class PerformanceAnalyzer:
         # Memory requirements (GB)
         # Rough estimate: 2 bytes per parameter for inference, 4x for training
         inference_memory_gb = (model_size * 2) / (1024**3)  # Convert bytes to GB
-        training_memory_gb = inference_memory_gb * 4
+        inference_memory_gb * 4
 
         # GPU requirements
         available_memory_per_gpu = infrastructure_constraints.get(
@@ -552,11 +551,11 @@ class PerformanceAnalyzer:
 
     @staticmethod
     def _identify_latency_bottlenecks(
-        model_info: Dict[str, Any],
-        infrastructure_constraints: Dict[str, Any],
+        model_info: dict[str, Any],
+        infrastructure_constraints: dict[str, Any],
         estimated_latency: float,
         required_latency: float,
-    ) -> List[str]:
+    ) -> list[str]:
         """Identify latency bottlenecks"""
         bottlenecks = []
 
@@ -566,7 +565,7 @@ class PerformanceAnalyzer:
                 bottlenecks.append("Large model size causing computation delays")
 
             gpu_type = infrastructure_constraints.get("gpu_type", "standard")
-            if gpu_type in ["T4", "standard"]:
+            if gpu_type in {"T4", "standard"}:
                 bottlenecks.append("Insufficient GPU compute power")
 
             deployment_type = infrastructure_constraints.get("deployment_type", "cloud")
@@ -578,7 +577,7 @@ class PerformanceAnalyzer:
     @staticmethod
     def _generate_scaling_recommendations(
         required_rps: float, estimated_rps: float, available_gpus: int, gpu_type: str
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate scaling recommendations"""
         recommendations = []
 
@@ -590,38 +589,42 @@ class PerformanceAnalyzer:
                     f"Consider horizontal scaling: add {int(scaling_factor * available_gpus)} more GPUs"
                 )
 
-            if gpu_type in ["T4", "standard"]:
+            if gpu_type in {"T4", "standard"}:
                 recommendations.append(
                     "Upgrade to higher-performance GPUs (A100, H100)"
                 )
 
-            recommendations.append(
-                "Implement model optimization techniques (quantization, pruning)"
-            )
-            recommendations.append(
-                "Consider model serving optimizations (batching, caching)"
+            recommendations.extend(
+                (
+                    "Implement model optimization techniques (quantization, pruning)",
+                    "Consider model serving optimizations (batching, caching)",
+                )
             )
 
         return recommendations
 
     @staticmethod
-    def _generate_accuracy_improvement_suggestions(gaps: List[str]) -> List[str]:
+    def _generate_accuracy_improvement_suggestions(gaps: list[str]) -> list[str]:
         """Generate suggestions for improving accuracy"""
         suggestions = []
 
         if gaps:
-            suggestions.append("Fine-tune model on domain-specific data")
-            suggestions.append("Implement ensemble methods with multiple models")
-            suggestions.append("Apply post-processing techniques to improve accuracy")
-            suggestions.append("Consider data augmentation for training")
-            suggestions.append("Review and improve data quality")
+            suggestions.extend(
+                (
+                    "Fine-tune model on domain-specific data",
+                    "Implement ensemble methods with multiple models",
+                    "Apply post-processing techniques to improve accuracy",
+                    "Consider data augmentation for training",
+                    "Review and improve data quality",
+                )
+            )
 
         return suggestions
 
     @staticmethod
     def _generate_availability_improvements(
-        infrastructure_constraints: Dict[str, Any], meets_uptime: bool, meets_mttr: bool
-    ) -> List[str]:
+        infrastructure_constraints: dict[str, Any], meets_uptime: bool, meets_mttr: bool
+    ) -> list[str]:
         """Generate availability improvement recommendations"""
         improvements = []
 
@@ -654,13 +657,17 @@ class PerformanceAnalyzer:
     @staticmethod
     def _identify_optimization_opportunities(
         memory_utilization: float, cpu_utilization: float, storage_utilization: float
-    ) -> List[str]:
+    ) -> list[str]:
         """Identify resource optimization opportunities"""
         opportunities = []
 
         if memory_utilization > 0.8:
-            opportunities.append("Consider model quantization to reduce memory usage")
-            opportunities.append("Implement memory-efficient inference techniques")
+            opportunities.extend(
+                (
+                    "Consider model quantization to reduce memory usage",
+                    "Implement memory-efficient inference techniques",
+                )
+            )
         elif memory_utilization < 0.3:
             opportunities.append(
                 "Resources over-provisioned - consider cost optimization"
@@ -683,19 +690,18 @@ class PerformanceAnalyzer:
         """Categorize performance level based on score"""
         if score >= 0.9:
             return "excellent"
-        elif score >= 0.75:
+        if score >= 0.75:
             return "good"
-        elif score >= 0.6:
+        if score >= 0.6:
             return "acceptable"
-        elif score >= 0.4:
+        if score >= 0.4:
             return "poor"
-        else:
-            return "critical"
+        return "critical"
 
     @staticmethod
     def _generate_performance_recommendations(
-        analysis_results: Dict[str, Any], critical_failures: List[str]
-    ) -> List[str]:
+        analysis_results: dict[str, Any], critical_failures: list[str]
+    ) -> list[str]:
         """Generate overall performance recommendations"""
         recommendations = []
 
@@ -724,10 +730,10 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     async def analyze_scalability_requirements(
-        scalability_requirements: Dict[str, Any],
-        current_infrastructure: Dict[str, Any],
-        growth_projections: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        scalability_requirements: dict[str, Any],
+        current_infrastructure: dict[str, Any],
+        growth_projections: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze scalability requirements and capacity planning"""
 
         # Current capacity analysis
@@ -768,8 +774,8 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     async def _assess_current_capacity(
-        infrastructure: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        infrastructure: dict[str, Any],
+    ) -> dict[str, Any]:
         """Assess current infrastructure capacity"""
         return {
             "compute_capacity": {
@@ -792,8 +798,8 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     async def _project_future_requirements(
-        scalability_requirements: Dict[str, Any], growth_projections: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        scalability_requirements: dict[str, Any], growth_projections: dict[str, Any]
+    ) -> dict[str, Any]:
         """Project future capacity requirements"""
 
         # Get growth projections
@@ -844,8 +850,8 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     async def _identify_scalability_bottlenecks(
-        current_capacity: Dict[str, Any], future_requirements: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        current_capacity: dict[str, Any], future_requirements: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Identify scalability bottlenecks"""
         bottlenecks = []
 
@@ -917,10 +923,10 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     async def _develop_scaling_strategies(
-        current_capacity: Dict[str, Any],
-        future_requirements: Dict[str, Any],
-        bottlenecks: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        current_capacity: dict[str, Any],
+        future_requirements: dict[str, Any],
+        bottlenecks: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """Develop scaling strategies"""
 
         strategies = {
@@ -986,8 +992,8 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     def _calculate_capacity_gaps(
-        current_capacity: Dict[str, Any], future_requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        current_capacity: dict[str, Any], future_requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Calculate capacity gaps"""
 
         compute_gap = {
@@ -1027,7 +1033,7 @@ class ScalabilityAnalyzer:
 
     @staticmethod
     def _calculate_scalability_score(
-        current_capacity: Dict[str, Any], future_requirements: Dict[str, Any]
+        current_capacity: dict[str, Any], future_requirements: dict[str, Any]
     ) -> float:
         """Calculate overall scalability score"""
 
@@ -1053,16 +1059,12 @@ class ScalabilityAnalyzer:
         )
 
         # Overall score is the minimum ratio (bottleneck determines scalability)
-        scalability_score = min(
-            1.0, min(gpu_ratio, memory_ratio, storage_ratio, bandwidth_ratio)
-        )
-
-        return scalability_score
+        return min(1.0, gpu_ratio, memory_ratio, storage_ratio, bandwidth_ratio)
 
     @staticmethod
     def _generate_scalability_recommendations(
-        bottlenecks: List[Dict[str, Any]], scaling_strategies: Dict[str, Any]
-    ) -> List[str]:
+        bottlenecks: list[dict[str, Any]], scaling_strategies: dict[str, Any]
+    ) -> list[str]:
         """Generate scalability recommendations"""
         recommendations = []
 
@@ -1107,11 +1109,11 @@ class DeploymentPlanner:
 
     @staticmethod
     async def create_deployment_plan(
-        model_info: Dict[str, Any],
-        infrastructure_requirements: Dict[str, Any],
-        performance_analysis: Dict[str, Any],
-        scalability_analysis: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        infrastructure_requirements: dict[str, Any],
+        performance_analysis: dict[str, Any],
+        scalability_analysis: dict[str, Any],
+    ) -> dict[str, Any]:
         """Create comprehensive deployment plan"""
 
         # Determine deployment strategy
@@ -1154,8 +1156,8 @@ class DeploymentPlanner:
 
     @staticmethod
     def _select_deployment_strategy(
-        performance_analysis: Dict[str, Any], scalability_analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        performance_analysis: dict[str, Any], scalability_analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """Select appropriate deployment strategy"""
 
         performance_level = performance_analysis.get("performance_level", "acceptable")
@@ -1165,7 +1167,7 @@ class DeploymentPlanner:
         if critical_failures or performance_level == "critical":
             strategy = "canary_with_extensive_monitoring"
             risk_level = "high"
-        elif performance_level in ["poor", "acceptable"] or scalability_score < 0.6:
+        elif performance_level in {"poor", "acceptable"} or scalability_score < 0.6:
             strategy = "blue_green_with_staged_rollout"
             risk_level = "medium"
         else:
@@ -1184,12 +1186,12 @@ class DeploymentPlanner:
 
     @staticmethod
     def _create_rollout_phases(
-        deployment_strategy: Dict[str, Any], scalability_analysis: Dict[str, Any]
-    ) -> List[Dict[str, Any]]:
+        deployment_strategy: dict[str, Any], scalability_analysis: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """Create phased rollout plan"""
 
         strategy = deployment_strategy["strategy"]
-        risk_level = deployment_strategy["risk_level"]
+        deployment_strategy["risk_level"]
 
         if strategy == "canary_with_extensive_monitoring":
             return [
@@ -1228,7 +1230,7 @@ class DeploymentPlanner:
                 },
             ]
 
-        elif strategy == "blue_green_with_staged_rollout":
+        if strategy == "blue_green_with_staged_rollout":
             return [
                 {
                     "phase": 1,
@@ -1259,38 +1261,38 @@ class DeploymentPlanner:
                 },
             ]
 
-        else:  # rolling_deployment
-            return [
-                {
-                    "phase": 1,
-                    "name": "Rolling Start",
-                    "traffic_percentage": 25,
-                    "duration_hours": 12,
-                    "success_criteria": ["No issues detected"],
-                    "rollback_triggers": ["Any errors"],
-                },
-                {
-                    "phase": 2,
-                    "name": "Rolling Continue",
-                    "traffic_percentage": 75,
-                    "duration_hours": 12,
-                    "success_criteria": ["Performance stable"],
-                    "rollback_triggers": ["Performance issues"],
-                },
-                {
-                    "phase": 3,
-                    "name": "Rolling Complete",
-                    "traffic_percentage": 100,
-                    "duration_hours": 24,
-                    "success_criteria": ["Full deployment successful"],
-                    "rollback_triggers": ["Any critical issue"],
-                },
-            ]
+        # rolling_deployment
+        return [
+            {
+                "phase": 1,
+                "name": "Rolling Start",
+                "traffic_percentage": 25,
+                "duration_hours": 12,
+                "success_criteria": ["No issues detected"],
+                "rollback_triggers": ["Any errors"],
+            },
+            {
+                "phase": 2,
+                "name": "Rolling Continue",
+                "traffic_percentage": 75,
+                "duration_hours": 12,
+                "success_criteria": ["Performance stable"],
+                "rollback_triggers": ["Performance issues"],
+            },
+            {
+                "phase": 3,
+                "name": "Rolling Complete",
+                "traffic_percentage": 100,
+                "duration_hours": 24,
+                "success_criteria": ["Full deployment successful"],
+                "rollback_triggers": ["Any critical issue"],
+            },
+        ]
 
     @staticmethod
     def _create_risk_mitigation_plan(
-        performance_analysis: Dict[str, Any], scalability_analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        performance_analysis: dict[str, Any], scalability_analysis: dict[str, Any]
+    ) -> dict[str, Any]:
         """Create risk mitigation plan"""
 
         risks = []
@@ -1334,8 +1336,8 @@ class DeploymentPlanner:
 
     @staticmethod
     def _create_monitoring_plan(
-        model_info: Dict[str, Any], infrastructure_requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], infrastructure_requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Create comprehensive monitoring plan"""
 
         return {
@@ -1379,7 +1381,7 @@ class DeploymentPlanner:
         }
 
     @staticmethod
-    def _create_rollback_plan(deployment_strategy: Dict[str, Any]) -> Dict[str, Any]:
+    def _create_rollback_plan(deployment_strategy: dict[str, Any]) -> dict[str, Any]:
         """Create rollback plan"""
 
         strategy = deployment_strategy["strategy"]
@@ -1418,8 +1420,8 @@ class DeploymentPlanner:
 
     @staticmethod
     def _estimate_deployment_timeline(
-        rollout_phases: List[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        rollout_phases: list[dict[str, Any]],
+    ) -> dict[str, Any]:
         """Estimate deployment timeline"""
 
         total_hours = sum(phase["duration_hours"] for phase in rollout_phases)
@@ -1442,7 +1444,7 @@ class DeploymentPlanner:
         }
 
     @staticmethod
-    def _define_success_criteria(performance_analysis: Dict[str, Any]) -> List[str]:
+    def _define_success_criteria(performance_analysis: dict[str, Any]) -> list[str]:
         """Define success criteria for deployment"""
 
         criteria = [
@@ -1453,13 +1455,13 @@ class DeploymentPlanner:
         ]
 
         performance_level = performance_analysis.get("performance_level", "acceptable")
-        if performance_level in ["good", "excellent"]:
+        if performance_level in {"good", "excellent"}:
             criteria.append("Performance improvements demonstrated")
 
         return criteria
 
     @staticmethod
-    def _create_go_live_checklist() -> List[str]:
+    def _create_go_live_checklist() -> list[str]:
         """Create go-live checklist"""
 
         return [
@@ -1476,7 +1478,7 @@ class DeploymentPlanner:
         ]
 
     @staticmethod
-    def _get_validation_requirements(risk_level: str) -> List[str]:
+    def _get_validation_requirements(risk_level: str) -> list[str]:
         """Get validation requirements based on risk level"""
 
         base_requirements = [
@@ -1511,9 +1513,9 @@ class OperationalAgent:
     def __init__(
         self,
         agent_id: str = "operational_agent",
-        blackboard_service: Optional[BlackboardService] = None,
-        constitutional_framework: Optional[ConstitutionalSafetyValidator] = None,
-        performance_monitor: Optional[PerformanceMonitor] = None,
+        blackboard_service: BlackboardService | None = None,
+        constitutional_framework: ConstitutionalSafetyValidator | None = None,
+        performance_monitor: PerformanceMonitor | None = None,
     ):
         self.agent_id = agent_id
         self.agent_type = "operational_agent"
@@ -1558,22 +1560,21 @@ class OperationalAgent:
             model_size_str = model_size_str.upper()
             if model_size_str.endswith("B"):
                 return int(float(model_size_str[:-1]) * 1_000_000_000)
-            elif model_size_str.endswith("M"):
+            if model_size_str.endswith("M"):
                 return int(float(model_size_str[:-1]) * 1_000_000)
-            else:
-                try:
-                    return int(float(model_size_str))
-                except ValueError:
-                    return 7_000_000_000  # Default to 7B
+            try:
+                return int(float(model_size_str))
+            except ValueError:
+                return 7_000_000_000  # Default to 7B
         else:
             return int(model_size_str) if model_size_str else 7_000_000_000
 
     async def _analyze_performance_requirements(
         self,
-        model_info: Dict[str, Any],
-        performance_requirements: Dict[str, Any],
-        infrastructure_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        performance_requirements: dict[str, Any],
+        infrastructure_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze performance requirements and constraints"""
 
         # Parse model size for performance estimation
@@ -1627,10 +1628,10 @@ class OperationalAgent:
 
     async def _assess_scalability(
         self,
-        current_deployment: Dict[str, Any],
-        scaling_requirements: Dict[str, Any],
-        infrastructure_capabilities: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        current_deployment: dict[str, Any],
+        scaling_requirements: dict[str, Any],
+        infrastructure_capabilities: dict[str, Any],
+    ) -> dict[str, Any]:
         """Assess scalability options and requirements"""
 
         # Analyze bottlenecks based on current deployment and scaling requirements
@@ -1670,13 +1671,16 @@ class OperationalAgent:
         # Generate scaling recommendations
         scaling_recommendations = []
         if bottlenecks:
-            scaling_recommendations.append(
-                "Address identified bottlenecks before scaling"
+            scaling_recommendations.extend(
+                (
+                    "Address identified bottlenecks before scaling",
+                    "Consider vertical scaling as alternative",
+                )
             )
-            scaling_recommendations.append("Consider vertical scaling as alternative")
         else:
-            scaling_recommendations.append("Horizontal scaling is feasible")
-            scaling_recommendations.append("Implement auto-scaling policies")
+            scaling_recommendations.extend(
+                ("Horizontal scaling is feasible", "Implement auto-scaling policies")
+            )
 
         return {
             "horizontal_scaling": {
@@ -1702,8 +1706,8 @@ class OperationalAgent:
         }
 
     async def _plan_resource_requirements(
-        self, model_requirements: Dict[str, Any], deployment_scale: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_requirements: dict[str, Any], deployment_scale: dict[str, Any]
+    ) -> dict[str, Any]:
         """Plan resource requirements for deployment"""
 
         # Calculate resource adequacy score
@@ -1758,8 +1762,8 @@ class OperationalAgent:
         }
 
     async def _plan_monitoring_setup(
-        self, deployment_config: Dict[str, Any], monitoring_capabilities: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, deployment_config: dict[str, Any], monitoring_capabilities: dict[str, Any]
+    ) -> dict[str, Any]:
         """Plan monitoring and observability setup"""
 
         # Calculate monitoring completeness score
@@ -1832,8 +1836,8 @@ class OperationalAgent:
         }
 
     async def _create_deployment_plan(
-        self, model_info: Dict[str, Any], deployment_strategy: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_info: dict[str, Any], deployment_strategy: dict[str, Any]
+    ) -> dict[str, Any]:
         """Create comprehensive deployment plan"""
 
         # Calculate deployment risk score based on model complexity
@@ -1852,13 +1856,19 @@ class OperationalAgent:
         # Generate deployment recommendations
         deployment_recommendations = []
         if deployment_risk_score > 0.5:
-            deployment_recommendations.append(
-                "Use canary deployment for high-risk model"
+            deployment_recommendations.extend(
+                (
+                    "Use canary deployment for high-risk model",
+                    "Implement comprehensive monitoring",
+                )
             )
-            deployment_recommendations.append("Implement comprehensive monitoring")
         else:
-            deployment_recommendations.append("Standard deployment process is suitable")
-            deployment_recommendations.append("Monitor key performance metrics")
+            deployment_recommendations.extend(
+                (
+                    "Standard deployment process is suitable",
+                    "Monitor key performance metrics",
+                )
+            )
 
         # Define success criteria
         success_criteria = [
@@ -1949,7 +1959,7 @@ class OperationalAgent:
                 await asyncio.sleep(5)  # Check for new tasks every 5 seconds
 
             except Exception as e:
-                self.logger.error(f"Error in task claiming loop: {str(e)}")
+                self.logger.exception(f"Error in task claiming loop: {e!s}")
                 await asyncio.sleep(10)  # Wait longer on error
 
     async def process_task(self, task_id: str) -> Any:
@@ -1974,13 +1984,11 @@ class OperationalAgent:
                 raise ValueError(f"No handler for task type: {task.task_type}")
 
             # Process the task and return the actual result
-            result = await handler(task)
-
-            return result
+            return await handler(task)
 
         except Exception as e:
-            self.logger.error(f"Error processing task {task_id}: {str(e)}")
-            raise e
+            self.logger.exception(f"Error processing task {task_id}: {e!s}")
+            raise
 
     async def _process_task(self, task: TaskDefinition) -> None:
         """Process a claimed task"""
@@ -2012,7 +2020,7 @@ class OperationalAgent:
             )
 
         except Exception as e:
-            self.logger.error(f"Error processing task {task.id}: {str(e)}")
+            self.logger.exception(f"Error processing task {task.id}: {e!s}")
 
             # Mark task as failed
             error_result = {
@@ -2032,7 +2040,7 @@ class OperationalAgent:
 
         model_info = input_data.get("model_info", {})
         infrastructure_constraints = input_data.get("infrastructure_constraints", {})
-        performance_benchmarks = input_data.get("performance_benchmarks", {})
+        input_data.get("performance_benchmarks", {})
 
         # Get performance requirements
         performance_requirements = requirements.get("performance_thresholds", {})
@@ -2100,7 +2108,7 @@ class OperationalAgent:
         approved = (
             len(critical_failures) == 0
             and len(high_severity_bottlenecks) == 0
-            and performance_level not in ["critical", "poor"]
+            and performance_level not in {"critical", "poor"}
             and scalability_score >= 0.4
             and infrastructure_ready >= 0.6
             and constitutional_compliant
@@ -2136,7 +2144,7 @@ class OperationalAgent:
             all_recommendations.append(
                 "Address all operational issues before deployment"
             )
-        if risk_level in ["high", "critical"]:
+        if risk_level in {"high", "critical"}:
             all_recommendations.append(
                 "Implement extensive monitoring and rollback procedures"
             )
@@ -2189,10 +2197,10 @@ class OperationalAgent:
         )
         critical_failures = performance_assessment.get("critical_failures", [])
 
-        approved = len(critical_failures) == 0 and performance_level not in [
+        approved = len(critical_failures) == 0 and performance_level not in {
             "critical",
             "poor",
-        ]
+        }
 
         if performance_level == "critical":
             risk_level = "critical"
@@ -2284,9 +2292,7 @@ class OperationalAgent:
 
         approved = scalability_score >= 0.6 and len(high_severity_bottlenecks) == 0
 
-        if len(high_severity_bottlenecks) > 0:
-            risk_level = "high"
-        elif scalability_score < 0.4:
+        if len(high_severity_bottlenecks) > 0 or scalability_score < 0.4:
             risk_level = "high"
         elif scalability_score < 0.6:
             risk_level = "medium"
@@ -2394,8 +2400,8 @@ class OperationalAgent:
         )
 
     async def _assess_infrastructure_readiness(
-        self, infrastructure: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, infrastructure: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess infrastructure readiness"""
 
         readiness_checks = {
@@ -2450,8 +2456,8 @@ class OperationalAgent:
         }
 
     def _check_compute_readiness(
-        self, infrastructure: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, infrastructure: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check compute infrastructure readiness"""
         available_gpus = infrastructure.get("gpu_count", 0)
         required_gpus = requirements.get("min_gpu_count", 1)
@@ -2490,8 +2496,8 @@ class OperationalAgent:
         }
 
     def _check_storage_readiness(
-        self, infrastructure: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, infrastructure: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check storage infrastructure readiness"""
         available_storage = infrastructure.get("storage_gb", 0)
         required_storage = requirements.get("min_storage_gb", 100)
@@ -2526,8 +2532,8 @@ class OperationalAgent:
         }
 
     def _check_network_readiness(
-        self, infrastructure: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, infrastructure: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check network infrastructure readiness"""
         available_bandwidth = infrastructure.get("network_bandwidth_gbps", 1)
         required_bandwidth = requirements.get("min_network_bandwidth_gbps", 10)
@@ -2549,8 +2555,8 @@ class OperationalAgent:
         }
 
     def _check_security_readiness(
-        self, infrastructure: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, infrastructure: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check security infrastructure readiness"""
         security_measures = infrastructure.get("security_measures", [])
         required_measures = requirements.get(
@@ -2580,8 +2586,8 @@ class OperationalAgent:
         }
 
     def _check_monitoring_readiness(
-        self, infrastructure: Dict[str, Any], requirements: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, infrastructure: dict[str, Any], requirements: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check monitoring infrastructure readiness"""
         monitoring_capabilities = infrastructure.get("monitoring_capabilities", [])
         required_capabilities = requirements.get(
@@ -2616,9 +2622,9 @@ class OperationalAgent:
 
     def _extract_resource_requirements(
         self,
-        performance_assessment: Dict[str, Any],
-        scalability_analysis: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        performance_assessment: dict[str, Any],
+        scalability_analysis: dict[str, Any],
+    ) -> dict[str, Any]:
         """Extract resource requirements from analyses"""
 
         # Get current requirements from performance analysis
@@ -2640,10 +2646,10 @@ class OperationalAgent:
 
     async def _create_implementation_plan(
         self,
-        policy_requirements: Dict[str, Any],
-        system_architecture: Dict[str, Any],
-        resource_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        policy_requirements: dict[str, Any],
+        system_architecture: dict[str, Any],
+        resource_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Create implementation plan for policy enforcement"""
 
         implementation_phases = []
@@ -2740,8 +2746,8 @@ class OperationalAgent:
         }
 
     async def _assess_implementation_feasibility(
-        self, implementation_plan: Dict[str, Any], resource_constraints: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, implementation_plan: dict[str, Any], resource_constraints: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess implementation feasibility"""
 
         resource_allocation = implementation_plan.get("resource_allocation", {})
@@ -2834,8 +2840,8 @@ class OperationalAgent:
         }
 
     async def _assess_deployment_readiness(
-        self, deployment_plan: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, deployment_plan: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess deployment readiness"""
 
         go_live_checklist = deployment_plan.get("go_live_checklist", [])
@@ -2872,9 +2878,9 @@ class OperationalAgent:
 
     def _calculate_resource_allocation(
         self,
-        implementation_phases: List[Dict[str, Any]],
-        resource_constraints: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        implementation_phases: list[dict[str, Any]],
+        resource_constraints: dict[str, Any],
+    ) -> dict[str, Any]:
         """Calculate resource allocation for implementation"""
 
         total_weeks = sum(phase["duration_weeks"] for phase in implementation_phases)
@@ -2894,8 +2900,8 @@ class OperationalAgent:
         }
 
     def _identify_implementation_risks(
-        self, policy_requirements: Dict[str, Any], system_architecture: Dict[str, Any]
-    ) -> List[str]:
+        self, policy_requirements: dict[str, Any], system_architecture: dict[str, Any]
+    ) -> list[str]:
         """Identify implementation risks"""
 
         risks = []
@@ -2914,7 +2920,7 @@ class OperationalAgent:
 
         return risks
 
-    def _define_implementation_success_metrics(self) -> List[str]:
+    def _define_implementation_success_metrics(self) -> list[str]:
         """Define success metrics for implementation"""
 
         return [
@@ -2926,8 +2932,8 @@ class OperationalAgent:
         ]
 
     async def _check_constitutional_compliance(
-        self, required_principles: List[str], analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, required_principles: list[str], analysis_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check constitutional compliance for operational analysis"""
         if not self.constitutional_framework:
             return {
@@ -2966,8 +2972,8 @@ class OperationalAgent:
         }
 
     async def _check_principle_compliance(
-        self, principle: str, analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: str, analysis_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check compliance with a specific constitutional principle"""
         if principle == "resource_limits":
             # Check if resource utilization is within acceptable limits
@@ -2989,7 +2995,7 @@ class OperationalAgent:
 
             return {"compliant": True, "note": "Resource limits respected"}
 
-        elif principle == "reversibility":
+        if principle == "reversibility":
             # Check if deployment plan includes rollback capabilities
             deployment_plan = analysis_results.get("deployment_plan", {})
             rollback_plan = deployment_plan.get("rollback_plan", {})
@@ -3006,7 +3012,7 @@ class OperationalAgent:
                 "note": "Reversibility ensured through rollback plan",
             }
 
-        elif principle == "least_privilege":
+        if principle == "least_privilege":
             # Check if infrastructure follows least privilege principles
             infrastructure_readiness = analysis_results.get(
                 "infrastructure_readiness", {}
@@ -3025,11 +3031,10 @@ class OperationalAgent:
 
             return {"compliant": True, "note": "Least privilege principle enforced"}
 
-        else:
-            return {
-                "compliant": True,
-                "note": f"Principle {principle} not specifically checked",
-            }
+        return {
+            "compliant": True,
+            "note": f"Principle {principle} not specifically checked",
+        }
 
     async def _add_task_knowledge(
         self, task: TaskDefinition, result: OperationalAnalysisResult
@@ -3062,5 +3067,5 @@ class OperationalAgent:
                 await self.blackboard.agent_heartbeat(self.agent_id)
                 await asyncio.sleep(30)  # Heartbeat every 30 seconds
             except Exception as e:
-                self.logger.error(f"Error in heartbeat loop: {str(e)}")
+                self.logger.exception(f"Error in heartbeat loop: {e!s}")
                 await asyncio.sleep(60)

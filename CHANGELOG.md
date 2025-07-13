@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # Changelog
 
 All notable changes to the ACGS-2 project will be documented in this file.

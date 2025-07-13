@@ -7,7 +7,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -79,10 +79,10 @@ class SemanticSearchRequest(BaseModel):
     min_confidence: float = Field(
         default=0.7, ge=0.0, le=1.0, description="Minimum confidence score"
     )
-    symbol_types: Optional[list[SymbolType]] = Field(
+    symbol_types: list[SymbolType] | None = Field(
         default=None, description="Filter by symbol types"
     )
-    file_paths: Optional[list[str]] = Field(
+    file_paths: list[str] | None = Field(
         default=None, description="Filter by file paths"
     )
     include_embeddings: bool = Field(
@@ -94,7 +94,7 @@ class AnalysisRequest(ConstitutionalBaseModel):
     """Request model for triggering code analysis."""
 
     analysis_type: AnalysisType = Field(..., description="Type of analysis to perform")
-    file_paths: Optional[list[str]] = Field(
+    file_paths: list[str] | None = Field(
         default=None, description="Specific file paths to analyze"
     )
     force_reanalysis: bool = Field(
@@ -112,7 +112,7 @@ class ContextEnrichmentRequest(ConstitutionalBaseModel):
     """Request model for context enrichment."""
 
     symbol_ids: list[UUID] = Field(..., description="Symbol IDs to enrich with context")
-    context_types: Optional[list[ContextType]] = Field(
+    context_types: list[ContextType] | None = Field(
         default=None, description="Types of context to retrieve"
     )
     min_confidence: float = Field(
@@ -130,10 +130,10 @@ class CodeSymbol(ConstitutionalBaseModel):
     symbol_type: SymbolType = Field(..., description="Type of the symbol")
     start_line: int = Field(..., ge=1, description="Starting line number")
     end_line: int = Field(..., ge=1, description="Ending line number")
-    signature: Optional[str] = Field(default=None, description="Symbol signature")
-    docstring: Optional[str] = Field(default=None, description="Symbol documentation")
+    signature: str | None = Field(default=None, description="Symbol signature")
+    docstring: str | None = Field(default=None, description="Symbol documentation")
     language: str = Field(..., description="Programming language")
-    complexity_score: Optional[int] = Field(
+    complexity_score: int | None = Field(
         default=None, ge=0, description="Complexity score"
     )
     is_public: bool = Field(
@@ -151,14 +151,14 @@ class CodeDependency(ConstitutionalBaseModel):
 
     id: UUID = Field(..., description="Unique dependency identifier")
     source_symbol_id: UUID = Field(..., description="Source symbol ID")
-    target_symbol_id: Optional[UUID] = Field(
+    target_symbol_id: UUID | None = Field(
         default=None, description="Target symbol ID (if internal)"
     )
     dependency_type: DependencyType = Field(..., description="Type of dependency")
-    target_name: Optional[str] = Field(
+    target_name: str | None = Field(
         default=None, description="Target name (if external)"
     )
-    target_module: Optional[str] = Field(
+    target_module: str | None = Field(
         default=None, description="Target module (if external)"
     )
     is_external: bool = Field(
@@ -173,9 +173,7 @@ class CodeEmbedding(ConstitutionalBaseModel):
 
     id: UUID = Field(..., description="Unique embedding identifier")
     symbol_id: UUID = Field(..., description="Associated symbol ID")
-    embedding: Optional[list[float]] = Field(
-        default=None, description="Embedding vector"
-    )
+    embedding: list[float] | None = Field(default=None, description="Embedding vector")
     embedding_model: str = Field(..., description="Model used for embedding")
     embedding_version: str = Field(..., description="Model version")
     chunk_text: str = Field(..., description="Text that was embedded")
@@ -190,10 +188,10 @@ class SemanticSearchResult(ConstitutionalBaseModel):
     confidence_score: float = Field(
         ..., ge=0.0, le=1.0, description="Search confidence score"
     )
-    embedding: Optional[CodeEmbedding] = Field(
+    embedding: CodeEmbedding | None = Field(
         default=None, description="Associated embedding"
     )
-    context_snippet: Optional[str] = Field(
+    context_snippet: str | None = Field(
         default=None, description="Relevant context snippet"
     )
 
@@ -216,9 +214,7 @@ class AnalysisJob(ConstitutionalBaseModel):
     id: UUID = Field(..., description="Unique job identifier")
     job_type: str = Field(..., description="Type of analysis job")
     status: str = Field(..., description="Current job status")
-    file_path: Optional[str] = Field(
-        default=None, description="File path being analyzed"
-    )
+    file_path: str | None = Field(default=None, description="File path being analyzed")
     progress_percentage: float = Field(
         default=0.0, ge=0.0, le=100.0, description="Job progress percentage"
     )
@@ -232,16 +228,14 @@ class AnalysisJob(ConstitutionalBaseModel):
     embeddings_created: int = Field(
         default=0, ge=0, description="Number of embeddings created"
     )
-    processing_time_ms: Optional[int] = Field(
+    processing_time_ms: int | None = Field(
         default=None, ge=0, description="Processing time in milliseconds"
     )
-    error_message: Optional[str] = Field(
+    error_message: str | None = Field(
         default=None, description="Error message if job failed"
     )
-    started_at: Optional[datetime] = Field(
-        default=None, description="Job start timestamp"
-    )
-    completed_at: Optional[datetime] = Field(
+    started_at: datetime | None = Field(default=None, description="Job start timestamp")
+    completed_at: datetime | None = Field(
         default=None, description="Job completion timestamp"
     )
     created_at: datetime = Field(..., description="Job creation timestamp")
@@ -268,7 +262,7 @@ class HealthCheck(ConstitutionalBaseModel):
     uptime_seconds: int = Field(
         default=0, ge=0, description="Service uptime in seconds"
     )
-    last_analysis_job: Optional[datetime] = Field(
+    last_analysis_job: datetime | None = Field(
         default=None, description="Last analysis job timestamp"
     )
 
@@ -278,15 +272,13 @@ class ErrorResponse(ConstitutionalBaseModel):
 
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Error message")
-    details: Optional[dict[str, Any]] = Field(
+    details: dict[str, Any] | None = Field(
         default=None, description="Additional error details"
     )
     timestamp: datetime = Field(
         default_factory=datetime.now, description="Error timestamp"
     )
-    request_id: Optional[str] = Field(
-        default=None, description="Request ID for tracking"
-    )
+    request_id: str | None = Field(default=None, description="Request ID for tracking")
 
 
 class ContextLink(ConstitutionalBaseModel):
@@ -298,7 +290,7 @@ class ContextLink(ConstitutionalBaseModel):
     context_type: ContextType = Field(..., description="Type of context")
     relationship_type: str = Field(..., description="Type of relationship")
     confidence_score: float = Field(..., ge=0.0, le=1.0, description="Confidence score")
-    metadata: Optional[dict[str, Any]] = Field(
+    metadata: dict[str, Any] | None = Field(
         default=None, description="Additional metadata"
     )
     created_at: datetime = Field(..., description="Creation timestamp")

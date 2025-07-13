@@ -23,7 +23,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.monitoring.intelligent_alerting_system import AlertingSystem
 from services.shared.security.enhanced_audit_logging import AuditLogger
@@ -110,7 +110,7 @@ class TechnicalDocumentationManager:
     EU AI Act Technical Documentation Management System
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -637,7 +637,7 @@ class TechnicalDocumentationManager:
                         )
                         documents[doc_type] = document
                     except Exception as e:
-                        logger.error(
+                        logger.exception(
                             f"Failed to generate {doc_type.value} document: {e}"
                         )
                         missing_elements.append(f"{doc_type.value}_document")
@@ -692,7 +692,7 @@ class TechnicalDocumentationManager:
             return package
 
         except Exception as e:
-            logger.error(f"Documentation package generation failed: {e}")
+            logger.exception(f"Documentation package generation failed: {e}")
             raise
 
     async def _generate_document(
@@ -722,7 +722,7 @@ class TechnicalDocumentationManager:
             # Calculate content hash for version tracking
             content_hash = hashlib.md5(document_content.encode()).hexdigest()
 
-            document = {
+            return {
                 "document_id": str(uuid.uuid4()),
                 "document_type": doc_type.value,
                 "title": (
@@ -752,10 +752,8 @@ class TechnicalDocumentationManager:
                 },
             }
 
-            return document
-
         except Exception as e:
-            logger.error(f"Document generation failed for {doc_type.value}: {e}")
+            logger.exception(f"Document generation failed for {doc_type.value}: {e}")
             raise
 
     def _calculate_document_completeness(
@@ -791,7 +789,7 @@ class TechnicalDocumentationManager:
 
             # Save package metadata
             metadata_file = package_dir / "package_metadata.json"
-            with open(metadata_file, "w") as f:
+            with open(metadata_file, "w", encoding="utf-8") as f:
                 # Convert package to dict, handling datetime serialization
                 package_dict = asdict(package)
                 package_dict["creation_date"] = package.creation_date.isoformat()
@@ -815,13 +813,13 @@ class TechnicalDocumentationManager:
                 doc_filename = f"{doc_type.value if isinstance(doc_type, DocumentationType) else str(doc_type)}.md"
                 doc_file = package_dir / doc_filename
 
-                with open(doc_file, "w") as f:
+                with open(doc_file, "w", encoding="utf-8") as f:
                     f.write(document["content"])
 
             logger.info(f"Documentation package saved to {package_dir}")
 
         except Exception as e:
-            logger.error(f"Failed to save documentation package: {e}")
+            logger.exception(f"Failed to save documentation package: {e}")
 
     async def update_documentation(
         self, package_id: str, updates: dict[str, Any]
@@ -883,7 +881,7 @@ class TechnicalDocumentationManager:
             return package
 
         except Exception as e:
-            logger.error(f"Documentation update failed: {e}")
+            logger.exception(f"Documentation update failed: {e}")
             raise
 
     async def validate_documentation_compliance(
@@ -975,7 +973,7 @@ class TechnicalDocumentationManager:
             return validation_results
 
         except Exception as e:
-            logger.error(f"Documentation validation failed: {e}")
+            logger.exception(f"Documentation validation failed: {e}")
             raise
 
     async def _validate_document_content(
@@ -1040,7 +1038,7 @@ class TechnicalDocumentationManager:
             return validation_result
 
         except Exception as e:
-            logger.error(f"Document content validation failed: {e}")
+            logger.exception(f"Document content validation failed: {e}")
             return {
                 "compliant": False,
                 "completeness_score": 0.0,
@@ -1127,7 +1125,7 @@ class TechnicalDocumentationManager:
             return str(export_file)
 
         except Exception as e:
-            logger.error(f"Documentation export failed: {e}")
+            logger.exception(f"Documentation export failed: {e}")
             raise
 
     async def _export_to_html(
@@ -1193,10 +1191,10 @@ class TechnicalDocumentationManager:
             return html_file
 
         except Exception as e:
-            logger.error(f"HTML export failed: {e}")
+            logger.exception(f"HTML export failed: {e}")
             # Fallback to simple HTML
             html_file = export_dir / f"{package.system_name}_documentation_simple.html"
-            with open(html_file, "w") as f:
+            with open(html_file, "w", encoding="utf-8") as f:
                 f.write(
                     f"<h1>{package.system_name} Documentation</h1><p>Export generated:"
                     f" {datetime.utcnow()}</p>"
@@ -1225,7 +1223,7 @@ class TechnicalDocumentationManager:
             for doc_type, doc_data in package.documents.items()
         }
 
-        with open(json_file, "w") as f:
+        with open(json_file, "w", encoding="utf-8") as f:
             json.dump(package_dict, f, indent=2, default=str)
 
         return json_file
@@ -1251,7 +1249,7 @@ class TechnicalDocumentationManager:
             content += "-" * len(doc_title) + "\n"
             content += doc_content + "\n\n"
 
-        with open(pdf_file, "w") as f:
+        with open(pdf_file, "w", encoding="utf-8") as f:
             f.write(content)
 
         return pdf_file

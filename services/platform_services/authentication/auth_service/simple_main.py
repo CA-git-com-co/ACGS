@@ -31,9 +31,9 @@ setup_constitutional_validation(
 )
 
 # Constitutional compliance logging
-logger.info(f"✅ Optimized constitutional middleware enabled for auth")
-logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
-logger.info(f"🎯 Performance Target: <0.5ms validation")
+logger.info("✅ Optimized constitutional middleware enabled for auth")
+logger.info("📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info("🎯 Performance Target: <0.5ms validation")
 
 
 # CORS middleware

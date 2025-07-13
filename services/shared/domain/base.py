@@ -9,17 +9,15 @@ import hashlib
 import json
 import logging
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
+from typing import Any, TypeVar
 from uuid import UUID, uuid4
 
 # Import enhanced error handling
-from ..resilience.exceptions import (
+from shared.resilience.exceptions import (
     BusinessRuleViolationError,
-    ConstitutionalComplianceError,
     DomainError,
-    DomainValidationError,
     OptimisticLockingError,
 )
 
@@ -33,8 +31,6 @@ logger = logging.getLogger(__name__)
 # Legacy exceptions for backward compatibility
 class DomainException(DomainError):
     """Base exception for domain-related errors."""
-
-    pass
 
 
 class InvalidEntityStateException(BusinessRuleViolationError):
@@ -53,8 +49,6 @@ class InvalidEntityStateException(BusinessRuleViolationError):
 
 class ConcurrencyException(OptimisticLockingError):
     """Raised when there's a concurrency conflict."""
-
-    pass
 
 
 @dataclass(frozen=True)
@@ -80,7 +74,7 @@ class Entity(ABC):
     if they have the same identity, regardless of their attributes.
     """
 
-    def __init__(self, entity_id: Optional[EntityId] = None):
+    def __init__(self, entity_id: EntityId | None = None):
         """Initialize entity with an ID."""
         self._id = entity_id or EntityId.generate()
         self._version = 0
@@ -127,7 +121,6 @@ class Entity(ABC):
         Validate entity invariants. Override in subclasses.
         Raises InvalidEntityStateException if invariants are violated.
         """
-        pass
 
 
 class ValueObject(ABC):
@@ -148,7 +141,6 @@ class ValueObject(ABC):
         Validate the value object's state.
         Raises ValueError if validation fails.
         """
-        pass
 
     def __eq__(self, other: Any) -> bool:
         """Value objects are equal if all attributes are equal."""
@@ -161,7 +153,7 @@ class ValueObject(ABC):
         values = tuple(sorted(self.__dict__.items()))
         return hash(values)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert value object to dictionary."""
         return {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
 
@@ -169,7 +161,7 @@ class ValueObject(ABC):
 class DomainEvent:
     """Base class for domain events."""
 
-    def __init__(self, aggregate_id: EntityId, occurred_at: Optional[datetime] = None):
+    def __init__(self, aggregate_id: EntityId, occurred_at: datetime | None = None):
         """Initialize domain event."""
         self.event_id = EntityId.generate()
         self.aggregate_id = aggregate_id
@@ -178,7 +170,7 @@ class DomainEvent:
         self.event_version = "1.0"
         self.constitutional_hash = CONSTITUTIONAL_HASH
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert event to dictionary for serialization."""
         return {
             "event_id": str(self.event_id),
@@ -190,7 +182,7 @@ class DomainEvent:
             "data": self._get_event_data(),
         }
 
-    def _get_event_data(self) -> Dict[str, Any]:
+    def _get_event_data(self) -> dict[str, Any]:
         """Get event-specific data. Override in subclasses."""
         return {}
 
@@ -203,14 +195,14 @@ class AggregateRoot(Entity):
     consistency boundaries. They can emit domain events.
     """
 
-    def __init__(self, entity_id: Optional[EntityId] = None):
+    def __init__(self, entity_id: EntityId | None = None):
         """Initialize aggregate root."""
         super().__init__(entity_id)
-        self._uncommitted_events: List[DomainEvent] = []
+        self._uncommitted_events: list[DomainEvent] = []
         self._event_version = 0
 
     @property
-    def uncommitted_events(self) -> List[DomainEvent]:
+    def uncommitted_events(self) -> list[DomainEvent]:
         """Get uncommitted domain events."""
         return self._uncommitted_events.copy()
 
@@ -231,7 +223,7 @@ class AggregateRoot(Entity):
         # Default implementation - subclasses should override
         self._event_version += 1
 
-    def load_from_history(self, events: List[DomainEvent]) -> None:
+    def load_from_history(self, events: list[DomainEvent]) -> None:
         """Rebuild aggregate state from event history."""
         for event in events:
             self.apply_event(event)
@@ -244,7 +236,7 @@ class AggregateRoot(Entity):
         state_json = json.dumps(state_dict, sort_keys=True, default=str)
         return hashlib.sha256(state_json.encode()).hexdigest()
 
-    def _get_state_for_hash(self) -> Dict[str, Any]:
+    def _get_state_for_hash(self) -> dict[str, Any]:
         """
         Get the state to be included in the aggregate hash.
         Override in subclasses to include relevant state.
@@ -262,7 +254,6 @@ class AggregateRoot(Entity):
         Validate aggregate invariants.
         Must be implemented by subclasses.
         """
-        pass
 
 
 @dataclass(frozen=True)
@@ -288,7 +279,7 @@ class TenantId(ValueObject):
 class MultiTenantEntity(Entity):
     """Base class for multi-tenant entities."""
 
-    def __init__(self, entity_id: Optional[EntityId], tenant_id: TenantId):
+    def __init__(self, entity_id: EntityId | None, tenant_id: TenantId):
         """Initialize multi-tenant entity."""
         super().__init__(entity_id)
         self._tenant_id = tenant_id
@@ -311,7 +302,7 @@ class MultiTenantEntity(Entity):
 class MultiTenantAggregateRoot(AggregateRoot):
     """Base class for multi-tenant aggregate roots."""
 
-    def __init__(self, entity_id: Optional[EntityId], tenant_id: TenantId):
+    def __init__(self, entity_id: EntityId | None, tenant_id: TenantId):
         """Initialize multi-tenant aggregate root."""
         super().__init__(entity_id)
         self._tenant_id = tenant_id

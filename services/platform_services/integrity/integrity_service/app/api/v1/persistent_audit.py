@@ -9,18 +9,17 @@ including event logging, integrity verification, and audit trail management.
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
-from pydantic import BaseModel, Field
-
-from ...core.persistent_audit_trail import (
+from app.core.persistent_audit_trail import (
     CONSTITUTIONAL_HASH,
     AuditEventType,
     AuditSeverity,
     CryptographicAuditChain,
     log_audit_event,
 )
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
@@ -56,8 +55,8 @@ class LogAuditEventRequest(BaseModel):
     action: str = Field(..., description="Action that was performed")
     resource_type: str = Field(..., description="Type of resource affected")
     description: str = Field(..., description="Human-readable description of event")
-    user_id: Optional[str] = Field(None, description="ID of user who performed action")
-    resource_id: Optional[str] = Field(
+    user_id: str | None = Field(None, description="ID of user who performed action")
+    resource_id: str | None = Field(
         None, description="ID of specific resource affected"
     )
     metadata: dict[str, Any] = Field(
@@ -66,10 +65,10 @@ class LogAuditEventRequest(BaseModel):
     severity: AuditSeverity = Field(
         AuditSeverity.MEDIUM, description="Event severity level"
     )
-    session_id: Optional[str] = Field(None, description="Session ID")
-    ip_address: Optional[str] = Field(None, description="IP address of request")
-    user_agent: Optional[str] = Field(None, description="User agent string")
-    request_id: Optional[str] = Field(None, description="Request ID for tracing")
+    session_id: str | None = Field(None, description="Session ID")
+    ip_address: str | None = Field(None, description="IP address of request")
+    user_agent: str | None = Field(None, description="User agent string")
+    request_id: str | None = Field(None, description="Request ID for tracing")
 
     class Config:
         json_schema_extra = {
@@ -109,8 +108,8 @@ class AuditEventResponse(BaseModel):
     description: str
     severity: str
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    user_id: Optional[str] = None
-    resource_id: Optional[str] = None
+    user_id: str | None = None
+    resource_id: str | None = None
     metadata: dict[str, Any] = {}
 
 
@@ -205,7 +204,7 @@ async def log_audit_event_endpoint(
         return response
 
     except Exception as e:
-        logger.error(f"Failed to log audit event: {e}")
+        logger.exception(f"Failed to log audit event: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to log audit event: {e!s}",
@@ -224,7 +223,7 @@ async def log_audit_event_endpoint(
 )
 async def verify_audit_trail_integrity(
     start_block: int = Query(1, description="Starting block number for verification"),
-    end_block: Optional[int] = Query(
+    end_block: int | None = Query(
         None, description="Ending block number (None for latest)"
     ),
     audit_chain: CryptographicAuditChain = Depends(get_audit_chain),
@@ -277,7 +276,7 @@ async def verify_audit_trail_integrity(
         return response
 
     except Exception as e:
-        logger.error(f"Integrity verification failed: {e}")
+        logger.exception(f"Integrity verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Integrity verification failed: {e!s}",
@@ -311,7 +310,7 @@ async def get_audit_event(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get audit event {event_id}: {e}")
+        logger.exception(f"Failed to get audit event {event_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve audit event: {e!s}",
@@ -328,16 +327,14 @@ async def get_audit_event(
 async def list_audit_events(
     limit: int = Query(100, le=1000, description="Maximum number of events to return"),
     offset: int = Query(0, ge=0, description="Number of events to skip"),
-    event_type: Optional[AuditEventType] = Query(
-        None, description="Filter by event type"
-    ),
-    service_name: Optional[str] = Query(None, description="Filter by service name"),
-    user_id: Optional[str] = Query(None, description="Filter by user ID"),
-    severity: Optional[AuditSeverity] = Query(None, description="Filter by severity"),
-    start_time: Optional[datetime] = Query(
+    event_type: AuditEventType | None = Query(None, description="Filter by event type"),
+    service_name: str | None = Query(None, description="Filter by service name"),
+    user_id: str | None = Query(None, description="Filter by user ID"),
+    severity: AuditSeverity | None = Query(None, description="Filter by severity"),
+    start_time: datetime | None = Query(
         None, description="Filter events after this time"
     ),
-    end_time: Optional[datetime] = Query(
+    end_time: datetime | None = Query(
         None, description="Filter events before this time"
     ),
     audit_chain: CryptographicAuditChain = Depends(get_audit_chain),
@@ -358,7 +355,7 @@ async def list_audit_events(
         return []
 
     except Exception as e:
-        logger.error(f"Failed to list audit events: {e}")
+        logger.exception(f"Failed to list audit events: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to list audit events: {e!s}",
@@ -390,7 +387,7 @@ async def get_audit_block(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get audit block {block_id}: {e}")
+        logger.exception(f"Failed to get audit block {block_id}: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve audit block: {e!s}",
@@ -432,7 +429,7 @@ async def get_audit_trail_stats(
         return response
 
     except Exception as e:
-        logger.error(f"Failed to get audit trail stats: {e}")
+        logger.exception(f"Failed to get audit trail stats: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to get audit trail statistics: {e!s}",
@@ -482,7 +479,7 @@ async def emergency_seal_block(
         }
 
     except Exception as e:
-        logger.error(f"Emergency block seal failed: {e}")
+        logger.exception(f"Emergency block seal failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Emergency block seal failed: {e!s}",
@@ -503,7 +500,7 @@ async def audit_trail_health_check() -> dict[str, Any]:
     of the audit trail system.
     """
     try:
-        audit_chain = await get_audit_chain()
+        await get_audit_chain()
 
         return {
             "status": "healthy",
@@ -524,7 +521,7 @@ async def audit_trail_health_check() -> dict[str, Any]:
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
     except Exception as e:
-        logger.error(f"Audit trail health check failed: {e}")
+        logger.exception(f"Audit trail health check failed: {e}")
         return {
             "status": "unhealthy",
             "component": "persistent-audit-trail",

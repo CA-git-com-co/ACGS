@@ -9,16 +9,16 @@ import asyncio
 import logging
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 
 import psutil
-
-from ..performance.caching import get_cache_manager
-from ..performance.connection_pool import get_connection_pool_registry
-from ..resilience.circuit_breaker import get_circuit_breaker_registry
+from shared.performance.caching import get_cache_manager
+from shared.performance.connection_pool import get_connection_pool_registry
+from shared.resilience.circuit_breaker import get_circuit_breaker_registry
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +41,10 @@ class HealthCheckResult:
     message: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
     duration_ms: float = 0.0
-    details: Dict[str, Any] = field(default_factory=dict)
-    error: Optional[str] = None
+    details: dict[str, Any] = field(default_factory=dict)
+    error: str | None = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "name": self.name,
@@ -69,7 +69,7 @@ class HealthCheck(ABC):
     def __init__(
         self,
         name: str,
-        description: str = None,
+        description: str | None = None,
         timeout: float = 30.0,
         critical: bool = False,
     ):
@@ -77,14 +77,13 @@ class HealthCheck(ABC):
         self.description = description or name
         self.timeout = timeout
         self.critical = critical
-        self._last_result: Optional[HealthCheckResult] = None
+        self._last_result: HealthCheckResult | None = None
         self._check_count = 0
         self._failure_count = 0
 
     @abstractmethod
     async def check(self) -> HealthCheckResult:
         """Perform the health check."""
-        pass
 
     async def run_check(self) -> HealthCheckResult:
         """Run the health check with timeout and error handling."""
@@ -125,12 +124,12 @@ class HealthCheck(ABC):
             duration_ms = (time.time() - start_time) * 1000
             self._failure_count += 1
 
-            logger.error(f"Health check '{self.name}' failed: {e}")
+            logger.exception(f"Health check '{self.name}' failed: {e}")
 
             result = HealthCheckResult(
                 name=self.name,
                 status=HealthStatus.UNHEALTHY,
-                message=f"Health check failed: {str(e)}",
+                message=f"Health check failed: {e!s}",
                 duration_ms=duration_ms,
                 error=str(e),
             )
@@ -138,7 +137,7 @@ class HealthCheck(ABC):
             self._last_result = result
             return result
 
-    def get_stats(self) -> Dict[str, Any]:
+    def get_stats(self) -> dict[str, Any]:
         """Get health check statistics."""
         failure_rate = self._failure_count / max(self._check_count, 1)
 
@@ -305,7 +304,7 @@ class DatabaseHealthCheck(HealthCheck):
 class CacheHealthCheck(HealthCheck):
     """Health check for cache connectivity and performance."""
 
-    def __init__(self, cache_name: str = None, **kwargs):
+    def __init__(self, cache_name: str | None = None, **kwargs):
         cache_label = cache_name or "default"
         super().__init__(
             f"cache_{cache_label}", f"Cache health for {cache_label}", **kwargs
@@ -399,14 +398,13 @@ class ExternalServiceHealthCheck(HealthCheck):
                         status=HealthStatus.HEALTHY,
                         message=f"External service {self.service_name} is healthy",
                     )
-                else:
-                    return HealthCheckResult(
-                        name=self.name,
-                        status=HealthStatus.UNHEALTHY,
-                        message=f"External service {self.service_name} is unhealthy",
-                    )
+                return HealthCheckResult(
+                    name=self.name,
+                    status=HealthStatus.UNHEALTHY,
+                    message=f"External service {self.service_name} is unhealthy",
+                )
 
-            elif isinstance(result, dict):
+            if isinstance(result, dict):
                 status = result.get("status", HealthStatus.UNKNOWN)
                 message = result.get(
                     "message", f"External service {self.service_name} status: {status}"
@@ -420,13 +418,12 @@ class ExternalServiceHealthCheck(HealthCheck):
                     details=details,
                 )
 
-            else:
-                return HealthCheckResult(
-                    name=self.name,
-                    status=HealthStatus.HEALTHY,
-                    message=f"External service {self.service_name} responded",
-                    details={"response": str(result)},
-                )
+            return HealthCheckResult(
+                name=self.name,
+                status=HealthStatus.HEALTHY,
+                message=f"External service {self.service_name} responded",
+                details={"response": str(result)},
+            )
 
         except Exception as e:
             return HealthCheckResult(
@@ -482,16 +479,16 @@ class HealthCheckRegistry:
     """Registry for managing and executing health checks."""
 
     def __init__(self):
-        self._health_checks: List[HealthCheck] = []
-        self._last_run: Optional[datetime] = None
-        self._last_results: List[HealthCheckResult] = []
+        self._health_checks: list[HealthCheck] = []
+        self._last_run: datetime | None = None
+        self._last_results: list[HealthCheckResult] = []
 
     def register(self, health_check: HealthCheck) -> None:
         """Register a health check."""
         self._health_checks.append(health_check)
         logger.info(f"Registered health check: {health_check.name}")
 
-    async def run_all_checks(self, parallel: bool = True) -> List[HealthCheckResult]:
+    async def run_all_checks(self, parallel: bool = True) -> list[HealthCheckResult]:
         """Run all registered health checks."""
         if not self._health_checks:
             return []
@@ -511,7 +508,7 @@ class HealthCheckRegistry:
 
         return self._last_results
 
-    async def get_overall_health(self) -> Dict[str, Any]:
+    async def get_overall_health(self) -> dict[str, Any]:
         """Get overall system health status."""
         if not self._last_results:
             await self.run_all_checks()
@@ -581,7 +578,7 @@ class HealthCheckRegistry:
             "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
-    def get_health_check_stats(self) -> Dict[str, Any]:
+    def get_health_check_stats(self) -> dict[str, Any]:
         """Get statistics for all health checks."""
         return {
             "total_checks": len(self._health_checks),
@@ -600,9 +597,9 @@ def get_health_registry() -> HealthCheckRegistry:
 
 
 def setup_default_health_checks(
-    database_pools: List[str] = None,
-    cache_names: List[str] = None,
-    external_services: Dict[str, Callable] = None,
+    database_pools: list[str] | None = None,
+    cache_names: list[str] | None = None,
+    external_services: dict[str, Callable] | None = None,
 ) -> None:
     """Set up default health checks for common components."""
     registry = get_health_registry()

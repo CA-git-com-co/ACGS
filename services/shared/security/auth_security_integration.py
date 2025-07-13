@@ -5,11 +5,10 @@ This module provides seamless integration between the authentication service
 and the enhanced security validation system.
 """
 
-import asyncio
-from typing import Any, Dict, Optional
+from typing import Any
 
 import structlog
-from fastapi import HTTPException, Request, Response, status
+from fastapi import HTTPException, Request, status
 
 from .csrf_protection import CSRFConfig, CSRFProtection
 from .unified_input_validation import (
@@ -35,7 +34,7 @@ class AuthSecurityIntegration:
         self.validator = EnhancedInputValidator(self.security_config)
         self.csrf_protection = CSRFProtection(self.csrf_config)
 
-    def validate_user_registration(self, user_data: Dict[str, Any]) -> Dict[str, Any]:
+    def validate_user_registration(self, user_data: dict[str, Any]) -> dict[str, Any]:
         """
         Validate user registration data with comprehensive security checks.
 
@@ -90,7 +89,7 @@ class AuthSecurityIntegration:
 
             # Handle optional name fields
             for field in ["first_name", "last_name"]:
-                if field in user_data and user_data[field]:
+                if user_data.get(field):
                     name_result = self.validator.validate_string(
                         user_data[field],
                         max_length=100,
@@ -117,7 +116,7 @@ class AuthSecurityIntegration:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "User registration validation error",
                 error=str(e),
                 constitutional_hash=CONSTITUTIONAL_HASH,
@@ -186,7 +185,7 @@ class AuthSecurityIntegration:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Login validation error",
                 error=str(e),
                 constitutional_hash=CONSTITUTIONAL_HASH,
@@ -322,7 +321,7 @@ class AuthSecurityIntegration:
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Token validation error",
                 error=str(e),
                 constitutional_hash=CONSTITUTIONAL_HASH,
@@ -332,12 +331,12 @@ class AuthSecurityIntegration:
                 detail="Internal validation error",
             )
 
-    def generate_csrf_tokens(self, session_id: Optional[str] = None) -> Dict[str, str]:
+    def generate_csrf_tokens(self, session_id: str | None = None) -> dict[str, str]:
         """Generate CSRF token pair for authentication flows."""
         return self.csrf_protection.generate_token_pair(session_id)
 
     def validate_csrf_tokens(
-        self, token: str, signed_token: str, session_id: Optional[str] = None
+        self, token: str, signed_token: str, session_id: str | None = None
     ) -> bool:
         """Validate CSRF tokens for authentication flows."""
         return self.csrf_protection.validate_request(token, signed_token, session_id)
@@ -345,8 +344,8 @@ class AuthSecurityIntegration:
     async def log_security_event(
         self,
         event_type: str,
-        details: Dict[str, Any],
-        request: Optional[Request] = None,
+        details: dict[str, Any],
+        request: Request | None = None,
         severity: str = "warning",
     ):
         """Log security events with structured logging."""
@@ -388,16 +387,15 @@ def create_auth_security_integration(
 
 
 def validate_user_input_secure(
-    data: Dict[str, Any], security_level: SecurityLevel = SecurityLevel.HIGH
-) -> Dict[str, Any]:
+    data: dict[str, Any], security_level: SecurityLevel = SecurityLevel.HIGH
+) -> dict[str, Any]:
     """Quick utility for validating user input data."""
     integration = AuthSecurityIntegration()
 
     if "username" in data and "email" in data and "password" in data:
         # This looks like registration data
         return integration.validate_user_registration(data)
-    else:
-        # Generic validation
-        from .unified_input_validation import sanitize_dict
+    # Generic validation
+    from .unified_input_validation import sanitize_dict
 
-        return sanitize_dict(data, security_level)
+    return sanitize_dict(data, security_level)

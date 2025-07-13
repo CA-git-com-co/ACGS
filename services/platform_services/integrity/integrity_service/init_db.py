@@ -75,21 +75,21 @@ async def run_migration_scripts():
         for migration_file in migration_files:
             logger.info(f"🔄 Running migration: {migration_file.name}")
 
-            with open(migration_file) as f:
+            with open(migration_file, encoding="utf-8") as f:
                 migration_sql = f.read()
 
             try:
                 await conn.execute(migration_sql)
                 logger.info(f"✅ Migration completed: {migration_file.name}")
             except Exception as e:
-                logger.error(f"❌ Migration failed: {migration_file.name} - {e}")
+                logger.exception(f"❌ Migration failed: {migration_file.name} - {e}")
                 raise
 
         await conn.close()
         logger.info("✅ All migrations completed successfully")
 
     except Exception as e:
-        logger.error(f"❌ Migration process failed: {e}")
+        logger.exception(f"❌ Migration process failed: {e}")
         raise
 
 
@@ -124,7 +124,7 @@ async def test_database_connectivity():
         logger.info("✅ Database connectivity test passed")
 
     except Exception as e:
-        logger.error(f"❌ Database connectivity test failed: {e}")
+        logger.exception(f"❌ Database connectivity test failed: {e}")
         raise
 
 
@@ -145,7 +145,7 @@ async def main():
         logger.info("🔒 Persistent audit trail is ready for production use")
 
     except Exception as e:
-        logger.error(f"💥 Database initialization failed: {e}")
+        logger.exception(f"💥 Database initialization failed: {e}")
         raise
 
 

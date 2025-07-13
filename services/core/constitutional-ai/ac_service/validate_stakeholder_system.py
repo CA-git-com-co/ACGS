@@ -7,7 +7,7 @@ by checking code structure, imports, and basic functionality.
 """
 
 import ast
-import os
+import pathlib
 import sys
 
 # Constitutional compliance hash for ACGS
@@ -19,24 +19,19 @@ def validate_file_structure():
     # ensures: Correct function execution
     # sha256: func_hash
     """Validate that all required files exist."""
-    print("Validating file structure...")
 
     required_files = [
         "app/services/stakeholder_engagement.py",
         "app/api/v1/stakeholder_engagement.py",
     ]
 
-    missing_files = []
-    for file_path in required_files:
-        if not os.path.exists(file_path):
-            missing_files.append(file_path)
+    missing_files = [
+        file_path
+        for file_path in required_files
+        if not pathlib.Path(file_path).exists()
+    ]
 
-    if missing_files:
-        print(f"❌ Missing files: {missing_files}")
-        return False
-
-    print("✓ All required files exist")
-    return True
+    return not missing_files
 
 
 def validate_stakeholder_service():
@@ -44,12 +39,11 @@ def validate_stakeholder_service():
     # ensures: Correct function execution
     # sha256: func_hash
     """Validate stakeholder engagement service structure."""
-    print("Validating stakeholder engagement service...")
 
     service_file = "app/services/stakeholder_engagement.py"
 
     try:
-        with open(service_file) as f:
+        with open(service_file, encoding="utf-8") as f:
             content = f.read()
 
         # Parse the AST to check for required classes and methods
@@ -63,9 +57,11 @@ def validate_stakeholder_service():
                 classes_found.append(node.name)
 
                 # Check for methods in classes
-                for item in node.body:
-                    if isinstance(item, ast.FunctionDef):
-                        methods_found.append(f"{node.name}.{item.name}")
+                methods_found.extend(
+                    f"{node.name}.{item.name}"
+                    for item in node.body
+                    if isinstance(item, ast.FunctionDef)
+                )
 
         # Required classes
         required_classes = [
@@ -83,7 +79,6 @@ def validate_stakeholder_service():
         missing_classes = [cls for cls in required_classes if cls not in classes_found]
 
         if missing_classes:
-            print(f"❌ Missing classes: {missing_classes}")
             return False
 
         # Required methods in StakeholderNotificationService
@@ -99,15 +94,9 @@ def validate_stakeholder_service():
             method for method in required_methods if method not in methods_found
         ]
 
-        if missing_methods:
-            print(f"❌ Missing methods: {missing_methods}")
-            return False
+        return not missing_methods
 
-        print("✓ Stakeholder engagement service structure is correct")
-        return True
-
-    except Exception as e:
-        print(f"❌ Error validating service: {e}")
+    except Exception:
         return False
 
 
@@ -116,12 +105,11 @@ def validate_api_endpoints():
     # ensures: Correct function execution
     # sha256: func_hash
     """Validate API endpoints structure."""
-    print("Validating API endpoints...")
 
     api_file = "app/api/v1/stakeholder_engagement.py"
 
     try:
-        with open(api_file) as f:
+        with open(api_file, encoding="utf-8") as f:
             content = f.read()
 
         # Check for required endpoint patterns
@@ -134,20 +122,13 @@ def validate_api_endpoints():
             '@router.websocket("/ws/{amendment_id}")',
         ]
 
-        missing_patterns = []
-        for pattern in required_patterns:
-            if pattern not in content:
-                missing_patterns.append(pattern)
+        missing_patterns = [
+            pattern for pattern in required_patterns if pattern not in content
+        ]
 
-        if missing_patterns:
-            print(f"❌ Missing API patterns: {missing_patterns}")
-            return False
+        return not missing_patterns
 
-        print("✓ API endpoints structure is correct")
-        return True
-
-    except Exception as e:
-        print(f"❌ Error validating API: {e}")
+    except Exception:
         return False
 
 
@@ -156,12 +137,11 @@ def validate_constitutional_council_integration():
     # ensures: Correct function execution
     # sha256: func_hash
     """Validate integration with Constitutional Council StateGraph."""
-    print("Validating Constitutional Council integration...")
 
     graph_file = "app/workflows/constitutional_council_graph.py"
 
     try:
-        with open(graph_file) as f:
+        with open(graph_file, encoding="utf-8") as f:
             content = f.read()
 
         # Check for stakeholder engagement imports and usage
@@ -171,27 +151,19 @@ def validate_constitutional_council_integration():
             "StakeholderEngagementInput",
         ]
 
-        missing_imports = []
-        for import_pattern in required_imports:
-            if import_pattern not in content:
-                missing_imports.append(import_pattern)
+        missing_imports = [
+            import_pattern
+            for import_pattern in required_imports
+            if import_pattern not in content
+        ]
 
         if missing_imports:
-            print(f"❌ Missing imports in Constitutional Council: {missing_imports}")
             return False
 
         # Check for stakeholder service initialization
-        if "self.stakeholder_service = StakeholderNotificationService" not in content:
-            print(
-                "❌ Missing stakeholder service initialization in Constitutional Council"
-            )
-            return False
+        return "self.stakeholder_service = StakeholderNotificationService" in content
 
-        print("✓ Constitutional Council integration is correct")
-        return True
-
-    except Exception as e:
-        print(f"❌ Error validating Constitutional Council integration: {e}")
+    except Exception:
         return False
 
 
@@ -200,31 +172,23 @@ def validate_main_app_integration():
     # ensures: Correct function execution
     # sha256: func_hash
     """Validate integration with main AC service app."""
-    print("Validating main app integration...")
 
     main_file = "app/main.py"
 
     try:
-        with open(main_file) as f:
+        with open(main_file, encoding="utf-8") as f:
             content = f.read()
 
         # Check for stakeholder engagement router import and inclusion
         if "stakeholder_engagement_router" not in content:
-            print("❌ Missing stakeholder engagement router in main app")
             return False
 
-        if (
+        return not (
             "app.include_router" not in content
             or "stakeholder_engagement_router" not in content
-        ):
-            print("❌ Stakeholder engagement router not included in main app")
-            return False
+        )
 
-        print("✓ Main app integration is correct")
-        return True
-
-    except Exception as e:
-        print(f"❌ Error validating main app integration: {e}")
+    except Exception:
         return False
 
 
@@ -233,9 +197,6 @@ def run_validation():
     # ensures: Correct function execution
     # sha256: func_hash
     """Run all validation checks."""
-    print("=" * 60)
-    print("STAKEHOLDER ENGAGEMENT SYSTEM - VALIDATION")
-    print("=" * 60)
 
     checks = [
         ("File Structure", validate_file_structure),
@@ -251,49 +212,23 @@ def run_validation():
     results = []
 
     for check_name, check_func in checks:
-        print(f"\n{check_name}:")
         try:
             result = check_func()
             results.append((check_name, result))
-        except Exception as e:
-            print(f"❌ {check_name} failed with error: {e}")
+        except Exception:
             results.append((check_name, False))
 
     # Summary
-    print("\n" + "=" * 60)
-    print("VALIDATION SUMMARY")
-    print("=" * 60)
 
     passed = 0
     total = len(results)
 
     for check_name, result in results:
-        status = "✅ PASS" if result else "❌ FAIL"
-        print(f"{check_name}: {status}")
         if result:
             passed += 1
 
-    print(f"\nOverall: {passed}/{total} checks passed")
-
     if passed == total:
-        print("\n🎉 ALL VALIDATIONS PASSED!")
-        print("Stakeholder Engagement System is properly implemented and integrated.")
-        print("\nKey Features Implemented:")
-        print(
-            "- Multi-channel notification system (email, dashboard, webhook, websocket)"
-        )
-        print("- Role-based stakeholder management (4 stakeholder roles)")
-        print("- Real-time feedback collection and tracking")
-        print("- Integration with Constitutional Council StateGraph")
-        print("- REST API endpoints for stakeholder engagement")
-        print("- WebSocket support for real-time updates")
-        print("- Comprehensive status tracking and reporting")
-    else:
-        print(
-            f"\n⚠️  {total - passed} validation(s) failed. Please review the issues above."
-        )
-
-    print("=" * 60)
+        pass
 
     return passed == total
 

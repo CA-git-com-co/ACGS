@@ -11,4 +11,4 @@ from .bus import Event, EventBus, EventHandler
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-__all__ = ["EventBus", "Event", "EventHandler"]
+__all__ = ["Event", "EventBus", "EventHandler"]

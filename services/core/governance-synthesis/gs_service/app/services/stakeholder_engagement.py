@@ -150,7 +150,7 @@ class StakeholderNotificationService:
                         channels_used.append(channel)
                         total_sent += sent_count
                 except Exception as e:
-                    logger.error(f"Failed to send via {channel.value}: {e}")
+                    logger.exception(f"Failed to send via {channel.value}: {e}")
 
             return NotificationResult(
                 notification_id=notification_id,
@@ -161,7 +161,7 @@ class StakeholderNotificationService:
             )
 
         except Exception as e:
-            logger.error(f"Error sending notification {notification_id}: {e}")
+            logger.exception(f"Error sending notification {notification_id}: {e}")
             return NotificationResult(
                 notification_id=notification_id,
                 sent=False,
@@ -199,7 +199,7 @@ class StakeholderNotificationService:
                     sent_count += 1
             return sent_count
         except Exception as e:
-            logger.error(f"Error sending email notifications: {e}")
+            logger.exception(f"Error sending email notifications: {e}")
             return 0
 
     async def _send_email_notification_direct(
@@ -222,7 +222,7 @@ class StakeholderNotificationService:
             return True
 
         except Exception as e:
-            logger.error(f"Error sending email to {recipient_email}: {e}")
+            logger.exception(f"Error sending email to {recipient_email}: {e}")
             return False
 
     async def _send_websocket_notifications(
@@ -236,7 +236,7 @@ class StakeholderNotificationService:
             )
             return len(recipients)
         except Exception as e:
-            logger.error(f"Error sending WebSocket notifications: {e}")
+            logger.exception(f"Error sending WebSocket notifications: {e}")
             return 0
 
     async def _send_sms_notifications(
@@ -250,7 +250,7 @@ class StakeholderNotificationService:
             )
             return len(recipients)
         except Exception as e:
-            logger.error(f"Error sending SMS notifications: {e}")
+            logger.exception(f"Error sending SMS notifications: {e}")
             return 0
 
     def _render_template(self, template: str, context: dict[str, Any]) -> str:
@@ -262,7 +262,7 @@ class StakeholderNotificationService:
                 rendered = rendered.replace(f"{{{key}}}", str(value))
             return rendered
         except Exception as e:
-            logger.error(f"Error rendering template: {e}")
+            logger.exception(f"Error rendering template: {e}")
             return template
 
     def _initialize_templates(self) -> dict[str, NotificationTemplate]:

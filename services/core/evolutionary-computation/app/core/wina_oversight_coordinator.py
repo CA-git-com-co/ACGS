@@ -693,7 +693,7 @@ class WINAECOversightCoordinator:
             return alerts
 
         except Exception as e:
-            logger.error(f"Alert condition checking failed: {e}")
+            logger.exception(f"Alert condition checking failed: {e}")
             return []
 
     async def initialize_constitutional_principles(self):
@@ -876,7 +876,7 @@ class WINAECOversightCoordinator:
             return result
 
         except Exception as e:
-            logger.error(f"WINA EC oversight coordination failed: {e}")
+            logger.exception(f"WINA EC oversight coordination failed: {e}")
             errors.append(str(e))
 
             # Fallback to standard oversight
@@ -991,7 +991,7 @@ class WINAECOversightCoordinator:
             return report
 
         except Exception as e:
-            logger.error(f"Failed to generate oversight report: {e}")
+            logger.exception(f"Failed to generate oversight report: {e}")
             raise
 
     async def _select_oversight_strategy(
@@ -1006,7 +1006,7 @@ class WINAECOversightCoordinator:
             # Analyze request characteristics
             has_constitutional_constraints = bool(request.constitutional_constraints)
             has_performance_thresholds = bool(request.performance_thresholds)
-            is_high_priority = request.priority_level in ["high", "critical"]
+            is_high_priority = request.priority_level in {"high", "critical"}
             is_emergency = (
                 request.oversight_type == ECOversightContext.INCIDENT_RESPONSE
             )
@@ -1193,7 +1193,7 @@ class WINAECOversightCoordinator:
             return result
 
         except Exception as e:
-            logger.error(f"Oversight strategy execution failed: {e}")
+            logger.exception(f"Oversight strategy execution failed: {e}")
             return {
                 "decision": "requires_review",
                 "rationale": f"Oversight execution failed: {e!s}",
@@ -1764,7 +1764,7 @@ class WINAECOversightCoordinator:
             )
 
         except Exception as e:
-            logger.error(f"Fallback oversight failed: {e}")
+            logger.exception(f"Fallback oversight failed: {e}")
             raise
 
     async def _clean_oversight_cache(self) -> None:
@@ -1931,7 +1931,7 @@ class WINAECOversightCoordinator:
             await self.learning_system.process_feedback_signal(performance_feedback)
 
             # Create efficiency feedback if WINA optimization was applied
-            if oversight_result.get("wina_optimization_applied", False):
+            if oversight_result.get("wina_optimization_applied"):
                 wina_insights = oversight_result.get("wina_insights", {})
                 gflops_reduction = wina_insights.get("gflops_reduction", 0.0)
 
@@ -2023,7 +2023,9 @@ class WINAECOversightCoordinator:
             )
 
         except Exception as e:
-            logger.error(f"Failed to send oversight feedback to learning system: {e}")
+            logger.exception(
+                f"Failed to send oversight feedback to learning system: {e}"
+            )
             raise
 
     async def _apply_wina_optimization(
@@ -2436,7 +2438,7 @@ class WINAECOversightCoordinator:
             return health_status
 
         except Exception as e:
-            logger.error(f"Health check failed: {e}")
+            logger.exception(f"Health check failed: {e}")
             return {"status": "unhealthy", "error": str(e), "timestamp": time.time()}
 
     async def _generate_oversight_recommendations(
@@ -2496,34 +2498,34 @@ class WINAECOversightCoordinator:
 
             for operation in operations:
                 if operation.errors:
-                    for error in operation.errors:
-                        issues.append(
-                            {
-                                "type": "error",
-                                "severity": "high",
-                                "description": error,
-                                "strategy": operation.oversight_metrics.strategy_used.value,
-                                "suggestions": [
-                                    "Review error logs",
-                                    "Check system configuration",
-                                ],
-                            }
-                        )
+                    issues.extend(
+                        {
+                            "type": "error",
+                            "severity": "high",
+                            "description": error,
+                            "strategy": operation.oversight_metrics.strategy_used.value,
+                            "suggestions": [
+                                "Review error logs",
+                                "Check system configuration",
+                            ],
+                        }
+                        for error in operation.errors
+                    )
 
                 if operation.warnings:
-                    for warning in operation.warnings:
-                        issues.append(
-                            {
-                                "type": "warning",
-                                "severity": "medium",
-                                "description": warning,
-                                "strategy": operation.oversight_metrics.strategy_used.value,
-                                "suggestions": [
-                                    "Monitor system behavior",
-                                    "Consider preventive measures",
-                                ],
-                            }
-                        )
+                    issues.extend(
+                        {
+                            "type": "warning",
+                            "severity": "medium",
+                            "description": warning,
+                            "strategy": operation.oversight_metrics.strategy_used.value,
+                            "suggestions": [
+                                "Monitor system behavior",
+                                "Consider preventive measures",
+                            ],
+                        }
+                        for warning in operation.warnings
+                    )
 
                 # Check for performance issues
                 if operation.oversight_metrics.oversight_time_ms > 10000:

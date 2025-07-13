@@ -255,7 +255,7 @@ class TestUncertaintyAssessment:
                 assert set(dimensional_uncertainties.keys()) == expected_dimensions
 
                 # Check all values are in valid range
-                for _dimension, uncertainty in dimensional_uncertainties.items():
+                for uncertainty in dimensional_uncertainties.values():
                     assert 0.0 <= uncertainty <= 1.0
 
 

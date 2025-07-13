@@ -8,7 +8,6 @@ finding that fixed values were asserted without derivation.
 
 import asyncio
 import hashlib
-import json
 import logging
 
 # Use built-in math instead of external dependencies
@@ -329,7 +328,7 @@ class LipschitzEstimator:
             )
             return response.strip()
         except Exception as e:
-            logger.error(f"LLM generation failed: {e}")
+            logger.exception(f"LLM generation failed: {e}")
             return ""
 
     def _compute_estimation_result(
@@ -437,13 +436,13 @@ class LipschitzEstimator:
 
         # Test triangle inequality
         triangle_result = validator.validate_triangle_inequality(
-            lambda x, y: self.distance_func.combined_distance(x, y),
+            self.distance_func.combined_distance,
             test_principles[:20],  # Limit for computational efficiency
         )
 
         # Test symmetry
         symmetry_result = validator.validate_symmetry(
-            lambda x, y: self.distance_func.combined_distance(x, y),
+            self.distance_func.combined_distance,
             test_principles[:20],
         )
 
@@ -474,13 +473,10 @@ async def run_lipschitz_estimation_example():
     ]
 
     # Validate metric properties
-    metric_validation = await estimator.validate_metric_properties(test_principles)
-    print("Metric validation:", json.dumps(metric_validation, indent=2))
+    await estimator.validate_metric_properties(test_principles)
 
     # Estimate LLM Lipschitz constant
-    llm_result = await estimator.estimate_llm_lipschitz_constant(test_principles)
-    print(f"LLM Lipschitz estimate: {llm_result.estimated_constant:.3f}")
-    print(f"Confidence interval: {llm_result.confidence_interval}")
+    await estimator.estimate_llm_lipschitz_constant(test_principles)
 
 
 if __name__ == "__main__":

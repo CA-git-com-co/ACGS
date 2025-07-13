@@ -7,7 +7,7 @@ supporting Redis, Qdrant, and PostgreSQL storage tiers.
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -32,7 +32,7 @@ class VectorDocument(BaseModel):
 
     # Vector data
     embedding_vector: list[float] = Field(description="Dense embedding vector")
-    sparse_vector: Optional[dict[int, float]] = Field(
+    sparse_vector: dict[int, float] | None = Field(
         None, description="Sparse vector for keywords"
     )
 
@@ -65,7 +65,7 @@ class ContextEmbedding(BaseModel):
 
     # Vector data
     dense_vector: list[float] = Field(description="Dense embedding vector")
-    sparse_vector: Optional[dict[int, float]] = Field(None, description="Sparse vector")
+    sparse_vector: dict[int, float] | None = Field(None, description="Sparse vector")
     vector_dimension: int = Field(description="Vector dimension")
 
     # Embedding metadata
@@ -75,16 +75,16 @@ class ContextEmbedding(BaseModel):
     )
 
     # Quality metrics
-    embedding_confidence: Optional[float] = Field(
+    embedding_confidence: float | None = Field(
         None, description="Embedding quality confidence"
     )
-    semantic_density: Optional[float] = Field(
+    semantic_density: float | None = Field(
         None, description="Semantic information density"
     )
 
     # WINA optimization
     wina_optimized: bool = Field(default=False, description="WINA optimization applied")
-    wina_compression_ratio: Optional[float] = Field(
+    wina_compression_ratio: float | None = Field(
         None, description="WINA compression ratio"
     )
 
@@ -108,8 +108,8 @@ class StorageMetrics(BaseModel):
     throughput_ops_per_second: float = Field(description="Operations per second")
 
     # Quality metrics
-    cache_hit_rate: Optional[float] = Field(None, description="Cache hit rate (for L1)")
-    index_efficiency: Optional[float] = Field(
+    cache_hit_rate: float | None = Field(None, description="Cache hit rate (for L1)")
+    index_efficiency: float | None = Field(
         None, description="Index efficiency (for L2)"
     )
     query_success_rate: float = Field(description="Query success rate")
@@ -148,7 +148,7 @@ class CacheEntry(BaseModel):
     # Access tracking
     hit_count: int = Field(default=0, description="Number of cache hits")
     miss_count: int = Field(default=0, description="Number of cache misses")
-    last_hit: Optional[datetime] = Field(None, description="Last cache hit time")
+    last_hit: datetime | None = Field(None, description="Last cache hit time")
 
     # Timestamps
     created_at: datetime = Field(description="Cache entry creation time")
@@ -172,7 +172,7 @@ class ArchiveEntry(BaseModel):
 
     # Archive metadata
     archive_reason: str = Field(description="Reason for archival")
-    retention_period_days: Optional[int] = Field(None, description="Retention period")
+    retention_period_days: int | None = Field(None, description="Retention period")
     access_restrictions: list[str] = Field(
         default_factory=list, description="Access restrictions"
     )
@@ -188,7 +188,7 @@ class ArchiveEntry(BaseModel):
     # Timestamps
     archived_at: datetime = Field(description="Archival timestamp")
     original_created_at: datetime = Field(description="Original context creation time")
-    scheduled_deletion_at: Optional[datetime] = Field(
+    scheduled_deletion_at: datetime | None = Field(
         None, description="Scheduled deletion time"
     )
 
@@ -209,13 +209,13 @@ class StorageOperation(BaseModel):
     # Performance metrics
     latency_ms: float = Field(description="Operation latency")
     success: bool = Field(description="Operation success status")
-    error_message: Optional[str] = Field(None, description="Error message if failed")
+    error_message: str | None = Field(None, description="Error message if failed")
 
     # WINA optimization
     wina_optimization_applied: bool = Field(
         default=False, description="WINA optimization used"
     )
-    optimization_savings_ms: Optional[float] = Field(
+    optimization_savings_ms: float | None = Field(
         None, description="Latency savings from optimization"
     )
 
@@ -225,4 +225,4 @@ class StorageOperation(BaseModel):
 
     # Context
     service_name: str = Field(description="Service that performed operation")
-    user_id: Optional[str] = Field(None, description="User who initiated operation")
+    user_id: str | None = Field(None, description="User who initiated operation")

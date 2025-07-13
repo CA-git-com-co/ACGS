@@ -5,7 +5,7 @@ Standard response schemas for the evolutionary computation service API.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -18,7 +18,7 @@ class SuccessResponse(BaseModel):
 
     success: bool = Field(default=True, description="Success status")
     message: str = Field(..., description="Success message")
-    data: Optional[Dict[str, Any]] = Field(None, description="Response data")
+    data: dict[str, Any] | None = Field(None, description="Response data")
 
     # Metadata
     timestamp: datetime = Field(
@@ -36,11 +36,11 @@ class ErrorResponse(BaseModel):
     success: bool = Field(default=False, description="Success status")
     error: str = Field(..., description="Error type")
     message: str = Field(..., description="Error message")
-    details: Optional[Dict[str, Any]] = Field(None, description="Error details")
+    details: dict[str, Any] | None = Field(None, description="Error details")
 
     # Error context
-    error_code: Optional[str] = Field(None, description="Error code")
-    request_id: Optional[str] = Field(None, description="Request ID")
+    error_code: str | None = Field(None, description="Error code")
+    request_id: str | None = Field(None, description="Request ID")
 
     # Metadata
     timestamp: datetime = Field(
@@ -75,7 +75,7 @@ class StatusResponse(BaseModel):
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
 
     # Dependencies
-    dependencies: Dict[str, str] = Field(
+    dependencies: dict[str, str] = Field(
         default_factory=dict, description="Dependency status"
     )
 

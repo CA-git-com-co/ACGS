@@ -8,7 +8,7 @@ individuals, populations, and fitness metrics with constitutional compliance.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -81,11 +81,11 @@ class Individual(BaseModel):
     """Individual in evolutionary computation with constitutional compliance."""
 
     individual_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    genotype: Dict[str, Any] = Field(..., description="Genetic representation")
-    phenotype: Optional[Dict[str, Any]] = Field(None, description="Expressed traits")
-    fitness_metrics: Optional[FitnessMetrics] = None
+    genotype: dict[str, Any] = Field(..., description="Genetic representation")
+    phenotype: dict[str, Any] | None = Field(None, description="Expressed traits")
+    fitness_metrics: FitnessMetrics | None = None
     generation: int = Field(default=0, description="Generation number")
-    parent_ids: List[str] = Field(
+    parent_ids: list[str] = Field(
         default_factory=list, description="Parent individual IDs"
     )
 
@@ -111,7 +111,7 @@ class Population(BaseModel):
     """Population of individuals in evolutionary computation."""
 
     population_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    individuals: List[Individual] = Field(..., description="Population individuals")
+    individuals: list[Individual] = Field(..., description="Population individuals")
     generation: int = Field(default=0, description="Current generation")
     size: int = Field(..., description="Population size")
 
@@ -156,7 +156,7 @@ class EvolutionRequest(BaseModel):
     status: EvolutionStatus = Field(default=EvolutionStatus.PENDING)
 
     # Request parameters
-    initial_population: Optional[Population] = None
+    initial_population: Population | None = None
     target_fitness: float = Field(default=0.9, ge=0.0, le=1.0)
     max_generations: int = Field(default=100, ge=1, le=1000)
     population_size: int = Field(default=50, ge=10, le=500)
@@ -183,8 +183,8 @@ class EvolutionResult(BaseModel):
     status: EvolutionStatus = Field(..., description="Final status")
 
     # Results
-    final_population: Optional[Population] = None
-    best_individual: Optional[Individual] = None
+    final_population: Population | None = None
+    best_individual: Individual | None = None
     generations_completed: int = Field(default=0)
 
     # Performance metrics

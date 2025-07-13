@@ -3,16 +3,17 @@ Tests for Constitutional Core Service
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import os
+import pathlib
 
 # Import the app
 import sys
-from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(
+    pathlib.Path(pathlib.Path(pathlib.Path(__file__).resolve()).parent).parent
+)
 
 from app.main import app
 
@@ -54,7 +55,8 @@ def test_constitutional_validation():
     assert "compliant" in data
     assert "score" in data
     assert data["constitutional_hash"] == "cdd01ef066bc6cf2"
-    assert data["score"] >= 0.0 and data["score"] <= 1.0
+    assert data["score"] >= 0.0
+    assert data["score"] <= 1.0
 
 
 def test_constitutional_validation_with_violations():
@@ -225,7 +227,7 @@ def test_error_handling():
 
     response = client.post("/api/v1/verification/verify", json=invalid_request)
     # Should handle gracefully, either with validation error or processed result
-    assert response.status_code in [200, 422]  # 422 for validation error
+    assert response.status_code in {200, 422}  # 422 for validation error
 
 
 def test_high_risk_context():

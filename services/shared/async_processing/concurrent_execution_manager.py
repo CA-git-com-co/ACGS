@@ -10,11 +10,12 @@ This module provides advanced concurrent execution capabilities with:
 
 import asyncio
 import time
-from collections import defaultdict, deque
-from contextlib import asynccontextmanager
+from collections import deque
+from collections.abc import Callable
+from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, List, Optional, Set, Tuple, Union
+from datetime import datetime
+from typing import Any
 
 import psutil
 import structlog
@@ -67,7 +68,7 @@ class CircuitBreaker:
         self.expected_exception = expected_exception
 
         self.failure_count = 0
-        self.last_failure_time: Optional[datetime] = None
+        self.last_failure_time: datetime | None = None
         self.state = "CLOSED"  # CLOSED, OPEN, HALF_OPEN
 
     def call(self, func):
@@ -84,9 +85,9 @@ class CircuitBreaker:
                 result = await func(*args, **kwargs)
                 self._on_success()
                 return result
-            except self.expected_exception as e:
+            except self.expected_exception:
                 self._on_failure()
-                raise e
+                raise
 
         return wrapper
 
@@ -121,7 +122,7 @@ class ResourceMonitor:
         self.cpu_history = deque(maxlen=60)  # Last 60 measurements
         self.memory_history = deque(maxlen=60)
         self._monitoring = False
-        self._monitor_task: Optional[asyncio.Task] = None
+        self._monitor_task: asyncio.Task | None = None
 
     async def start_monitoring(self):
         """Start resource monitoring."""
@@ -137,10 +138,8 @@ class ResourceMonitor:
         self._monitoring = False
         if self._monitor_task:
             self._monitor_task.cancel()
-            try:
+            with suppress(asyncio.CancelledError):
                 await self._monitor_task
-            except asyncio.CancelledError:
-                pass
         logger.info("Resource monitoring stopped")
 
     async def _monitor_loop(self):
@@ -159,13 +158,13 @@ class ResourceMonitor:
         except asyncio.CancelledError:
             logger.info("Resource monitoring loop cancelled")
 
-    def get_current_usage(self) -> Tuple[float, float]:
+    def get_current_usage(self) -> tuple[float, float]:
         """Get current CPU and memory usage."""
         cpu = psutil.cpu_percent(interval=None)
         memory = psutil.virtual_memory().percent
         return cpu, memory
 
-    def get_average_usage(self, window_seconds: int = 10) -> Tuple[float, float]:
+    def get_average_usage(self, window_seconds: int = 10) -> tuple[float, float]:
         """Get average CPU and memory usage over time window."""
         samples = min(window_seconds, len(self.cpu_history))
 
@@ -189,14 +188,14 @@ class ResourceMonitor:
 class ConcurrentExecutionManager:
     """Advanced concurrent execution manager with resource awareness."""
 
-    def __init__(self, config: Optional[ExecutionConfig] = None):
+    def __init__(self, config: ExecutionConfig | None = None):
         self.config = config or ExecutionConfig()
         self.metrics = ExecutionMetrics()
         self.resource_monitor = ResourceMonitor()
         self.circuit_breaker = CircuitBreaker()
 
         # Execution tracking
-        self.active_executions: Set[str] = set()
+        self.active_executions: set[str] = set()
         self.execution_queue = asyncio.Queue()
         self.semaphore = asyncio.Semaphore(self.config.max_concurrent)
 
@@ -205,8 +204,8 @@ class ConcurrentExecutionManager:
         self.last_metrics_update = datetime.now()
 
         # Background tasks
-        self._executor_task: Optional[asyncio.Task] = None
-        self._metrics_task: Optional[asyncio.Task] = None
+        self._executor_task: asyncio.Task | None = None
+        self._metrics_task: asyncio.Task | None = None
         self._running = False
 
     async def start(self):
@@ -237,10 +236,8 @@ class ConcurrentExecutionManager:
         for task in [self._executor_task, self._metrics_task]:
             if task and not task.done():
                 task.cancel()
-                try:
+                with suppress(asyncio.CancelledError):
                     await task
-                except asyncio.CancelledError:
-                    pass
 
         # Stop resource monitoring
         await self.resource_monitor.stop_monitoring()
@@ -248,7 +245,7 @@ class ConcurrentExecutionManager:
         logger.info("Concurrent execution manager stopped")
 
     @asynccontextmanager
-    async def execute_with_limit(self, execution_id: Optional[str] = None):
+    async def execute_with_limit(self, execution_id: str | None = None):
         """Context manager for resource-limited execution."""
         if not execution_id:
             execution_id = f"exec_{int(time.time() * 1000)}"
@@ -279,7 +276,7 @@ class ConcurrentExecutionManager:
 
             except Exception as e:
                 self.metrics.failed_executions += 1
-                logger.error(f"Execution {execution_id} failed", error=str(e))
+                logger.exception(f"Execution {execution_id} failed", error=str(e))
                 raise
 
             finally:
@@ -289,10 +286,10 @@ class ConcurrentExecutionManager:
 
     async def execute_batch(
         self,
-        tasks: List[Callable],
-        batch_size: Optional[int] = None,
-        timeout: Optional[float] = None,
-    ) -> List[Any]:
+        tasks: list[Callable],
+        batch_size: int | None = None,
+        timeout: float | None = None,
+    ) -> list[Any]:
         """Execute a batch of tasks concurrently with resource management."""
         batch_size = batch_size or self.config.batch_size
         timeout = timeout or self.config.timeout
@@ -304,9 +301,7 @@ class ConcurrentExecutionManager:
             batch = tasks[i : i + batch_size]
 
             # Execute batch concurrently
-            batch_tasks = []
-            for task in batch:
-                batch_tasks.append(self._execute_single_task(task, timeout))
+            batch_tasks = [self._execute_single_task(task, timeout) for task in batch]
 
             try:
                 batch_results = await asyncio.wait_for(
@@ -316,7 +311,7 @@ class ConcurrentExecutionManager:
                 results.extend(batch_results)
 
             except asyncio.TimeoutError:
-                logger.error(f"Batch execution timeout after {timeout}s")
+                logger.exception(f"Batch execution timeout after {timeout}s")
                 # Cancel remaining tasks
                 for task in batch_tasks:
                     if not task.done():
@@ -345,7 +340,7 @@ class ConcurrentExecutionManager:
                 logger.warning(f"Task execution timeout: {execution_id}")
                 raise
             except Exception as e:
-                logger.error(f"Task execution failed: {execution_id}", error=str(e))
+                logger.exception(f"Task execution failed: {execution_id}", error=str(e))
                 raise
 
     def _should_apply_backpressure(self) -> bool:
@@ -385,7 +380,7 @@ class ConcurrentExecutionManager:
                     # No tasks in queue, continue
                     continue
                 except Exception as e:
-                    logger.error("Error in executor loop", error=str(e))
+                    logger.exception("Error in executor loop", error=str(e))
 
         except asyncio.CancelledError:
             logger.info("Executor loop cancelled")
@@ -468,13 +463,13 @@ class ConcurrentExecutionManager:
                     memory_usage=avg_memory,
                 )
 
-    async def queue_task(self, task: Callable, timeout: Optional[float] = None):
+    async def queue_task(self, task: Callable, timeout: float | None = None):
         """Queue a task for execution."""
         await self.execution_queue.put(
             {"task": task, "timeout": timeout or self.config.timeout}
         )
 
-    def get_metrics(self) -> Dict[str, Any]:
+    def get_metrics(self) -> dict[str, Any]:
         """Get current execution metrics."""
         cpu, memory = self.resource_monitor.get_current_usage()
 
@@ -515,8 +510,8 @@ class ConcurrentExecutionManager:
         }
 
     async def execute_constitutional_batch(
-        self, tasks: List[Callable], priority_boost: bool = True
-    ) -> List[Any]:
+        self, tasks: list[Callable], priority_boost: bool = True
+    ) -> list[Any]:
         """Execute constitutional tasks with priority handling."""
         if priority_boost:
             # Temporarily increase concurrency for constitutional tasks

@@ -102,7 +102,7 @@ async def lifespan(app: FastAPI):
             constitutional_middleware = ConstitutionalAuthMiddleware(acge_integration)
             logger.info(f"✅ ACGE integration initialized: {ACGE_MODEL_ENDPOINT}")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize ACGE integration: {e}")
+            logger.exception(f"❌ Failed to initialize ACGE integration: {e}")
             acge_integration = None
             constitutional_middleware = None
 
@@ -180,7 +180,7 @@ async def constitutional_compliance_middleware(request: Request, call_next):
         return response
 
     except Exception as e:
-        logger.error(f"Constitutional middleware error: {e}")
+        logger.exception(f"Constitutional middleware error: {e}")
         REQUEST_COUNT.labels(
             method=request.method,
             endpoint=request.url.path,
@@ -252,7 +252,7 @@ async def constitutional_health_check():
         }
 
     except Exception as e:
-        logger.error(f"Constitutional health check failed: {e}")
+        logger.exception(f"Constitutional health check failed: {e}")
         return {
             "constitutional_compliance": "error",
             "error": str(e),
@@ -332,7 +332,7 @@ async def login_with_constitutional_validation(
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Constitutional validation error during login: {e}")
+            logger.exception(f"Constitutional validation error during login: {e}")
             # Continue with fallback mode
             compliance_result = {
                 "compliance_score": 0.5,
@@ -394,10 +394,10 @@ async def validate_token_with_constitutional_check(
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
-    except HTTPException as e:
-        raise e
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Token validation error: {e}")
+        logger.exception(f"Token validation error: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Token validation error",

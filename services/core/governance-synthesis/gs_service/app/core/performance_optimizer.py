@@ -212,7 +212,7 @@ class WINAPerformanceOptimizer:
             logger.info("WINA performance optimizer initialized")
 
         except Exception as e:
-            logger.error(f"Failed to initialize WINA performance optimizer: {e}")
+            logger.exception(f"Failed to initialize WINA performance optimizer: {e}")
             raise
 
     async def optimize_synthesis_performance(
@@ -263,7 +263,7 @@ class WINAPerformanceOptimizer:
             return optimization_result
 
         except Exception as e:
-            logger.error(f"WINA performance optimization failed: {e}")
+            logger.exception(f"WINA performance optimization failed: {e}")
             return OptimizationResult(
                 optimized=False,
                 gflops_reduction_achieved=0.0,
@@ -670,7 +670,7 @@ class WINAPerformanceOptimizer:
             )
 
         except Exception as e:
-            logger.error(f"Error tracking synthesis performance: {e}")
+            logger.exception(f"Error tracking synthesis performance: {e}")
 
     async def _update_synthesis_strategy_performance(
         self, metrics: SynthesisPerformanceMetrics
@@ -781,7 +781,7 @@ class WINAPerformanceOptimizer:
             return self.synthesis_strategy_weights
 
         except Exception as e:
-            logger.error(f"Error adjusting synthesis strategy weights: {e}")
+            logger.exception(f"Error adjusting synthesis strategy weights: {e}")
             return self.synthesis_strategy_weights
 
     def get_synthesis_performance_summary(self) -> dict[str, Any]:
@@ -846,5 +846,5 @@ class WINAPerformanceOptimizer:
             }
 
         except Exception as e:
-            logger.error(f"Error generating synthesis performance summary: {e}")
+            logger.exception(f"Error generating synthesis performance summary: {e}")
             return {"status": "error", "error": str(e)}

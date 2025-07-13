@@ -9,12 +9,14 @@ import hashlib
 import json
 import time
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 import redis.asyncio as redis
-
-from ..utils.constitutional import CONSTITUTIONAL_HASH, ensure_constitutional_compliance
-from ..utils.logging import get_logger, performance_logger
+from app.utils.constitutional import (
+    CONSTITUTIONAL_HASH,
+    ensure_constitutional_compliance,
+)
+from app.utils.logging import get_logger, performance_logger
 
 logger = get_logger("services.cache")
 
@@ -51,7 +53,7 @@ class CacheService:
         self.retry_delay = retry_delay
 
         # Redis client
-        self.redis_client: Optional[redis.Redis] = None
+        self.redis_client: redis.Redis | None = None
         self.is_connected = False
 
         # Cache statistics
@@ -172,15 +174,14 @@ class CacheService:
 
                 self.cache_hits += 1
                 return value
-            else:
-                # Log cache miss
-                duration_ms = (time.time() - start_time) * 1000
-                performance_logger.log_cache_operation(
-                    operation="get", cache_hit=False, key=key, duration_ms=duration_ms
-                )
+            # Log cache miss
+            duration_ms = (time.time() - start_time) * 1000
+            performance_logger.log_cache_operation(
+                operation="get", cache_hit=False, key=key, duration_ms=duration_ms
+            )
 
-                self.cache_misses += 1
-                return default
+            self.cache_misses += 1
+            return default
 
         except Exception as e:
             logger.error(
@@ -192,7 +193,7 @@ class CacheService:
             self.cache_errors += 1
             return default
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """
         Set value in cache.
 
@@ -358,8 +359,7 @@ class CacheService:
                 )
 
                 return result
-            else:
-                return 0
+            return 0
 
         except Exception as e:
             logger.error(
@@ -448,10 +448,7 @@ class CacheService:
                 return False
 
         # Check service name
-        if data.get("service") != "acgs-code-analysis-engine":
-            return False
-
-        return True
+        return data.get("service") == "acgs-code-analysis-engine"
 
     def generate_cache_key(self, *components: str) -> str:
         """

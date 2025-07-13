@@ -9,9 +9,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
 import os
+import pathlib
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import Any, Optional
+from typing import Any
 
 from sqlalchemy import MetaData, create_engine, text
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
@@ -46,7 +47,7 @@ class RealDatabaseManager:
     Replaces mock database operations with production-ready functionality.
     """
 
-    def __init__(self, database_url: Optional[str] = None):
+    def __init__(self, database_url: str | None = None):
         """Initialize real database manager with SQLAlchemy engine."""
         self.database_url = database_url or DATABASE_URL
         self.database_url_sync = DATABASE_URL_SYNC
@@ -69,7 +70,7 @@ class RealDatabaseManager:
         if "://" in url:
             scheme, rest = url.split("://", 1)
             if "@" in rest:
-                credentials, host_part = rest.split("@", 1)
+                _credentials, host_part = rest.split("@", 1)
                 return f"{scheme}://***:***@{host_part}"
         return url
 
@@ -108,7 +109,7 @@ class RealDatabaseManager:
             return True
 
         except Exception as e:
-            logger.error(f"Real database connection failed: {e}")
+            logger.exception(f"Real database connection failed: {e}")
             self.connected = False
             return False
 
@@ -128,7 +129,7 @@ class RealDatabaseManager:
             logger.info("Real database connection closed")
 
         except Exception as e:
-            logger.error(f"Error disconnecting from database: {e}")
+            logger.exception(f"Error disconnecting from database: {e}")
 
     @asynccontextmanager
     async def get_session(self) -> AsyncGenerator[AsyncSession, None]:
@@ -141,13 +142,13 @@ class RealDatabaseManager:
                 yield session
             except Exception as e:
                 await session.rollback()
-                logger.error(f"Database session error: {e}")
+                logger.exception(f"Database session error: {e}")
                 raise
             finally:
                 await session.close()
 
     async def execute_query(
-        self, query: str, params: Optional[dict[str, Any]] = None
+        self, query: str, params: dict[str, Any] | None = None
     ) -> list[dict[str, Any]]:
         """Execute a raw SQL query and return results."""
         if not self.connected:
@@ -162,14 +163,13 @@ class RealDatabaseManager:
                     rows = result.fetchall()
                     # Convert rows to dictionaries
                     columns = result.keys()
-                    return [dict(zip(columns, row)) for row in rows]
-                else:
-                    # For INSERT, UPDATE, DELETE operations
-                    await session.commit()
-                    return [{"affected_rows": result.rowcount}]
+                    return [dict(zip(columns, row, strict=False)) for row in rows]
+                # For INSERT, UPDATE, DELETE operations
+                await session.commit()
+                return [{"affected_rows": result.rowcount}]
 
         except Exception as e:
-            logger.error(f"Query execution failed: {e}")
+            logger.exception(f"Query execution failed: {e}")
             logger.debug(f"Query: {query}, Params: {params}")
             raise
 
@@ -179,29 +179,28 @@ class RealDatabaseManager:
             raise RuntimeError("Database not connected")
 
         try:
-            async with self.get_session() as session:
-                async with session.begin():
-                    for operation in operations:
-                        query = operation.get("query")
-                        params = operation.get("params", {})
+            async with self.get_session() as session, session.begin():
+                for operation in operations:
+                    query = operation.get("query")
+                    params = operation.get("params", {})
 
-                        if not query:
-                            raise ValueError("Operation missing 'query' field")
+                    if not query:
+                        raise ValueError("Operation missing 'query' field")
 
-                        await session.execute(text(query), params)
+                    await session.execute(text(query), params)
 
-                    await session.commit()
-                    logger.debug(
-                        "Transaction completed successfully"
-                        f" ({len(operations)} operations)"
-                    )
-                    return True
+                await session.commit()
+                logger.debug(
+                    "Transaction completed successfully"
+                    f" ({len(operations)} operations)"
+                )
+                return True
 
         except Exception as e:
-            logger.error(f"Transaction failed: {e}")
+            logger.exception(f"Transaction failed: {e}")
             return False
 
-    async def create_tables(self, metadata: Optional[MetaData] = None) -> bool:
+    async def create_tables(self, metadata: MetaData | None = None) -> bool:
         """Create database tables from metadata."""
         if not self.connected:
             raise RuntimeError("Database not connected")
@@ -216,10 +215,10 @@ class RealDatabaseManager:
             return True
 
         except Exception as e:
-            logger.error(f"Table creation failed: {e}")
+            logger.exception(f"Table creation failed: {e}")
             return False
 
-    async def drop_tables(self, metadata: Optional[MetaData] = None) -> bool:
+    async def drop_tables(self, metadata: MetaData | None = None) -> bool:
         """Drop database tables."""
         if not self.connected:
             raise RuntimeError("Database not connected")
@@ -234,7 +233,7 @@ class RealDatabaseManager:
             return True
 
         except Exception as e:
-            logger.error(f"Table dropping failed: {e}")
+            logger.exception(f"Table dropping failed: {e}")
             return False
 
     async def health_check(self) -> bool:
@@ -249,7 +248,7 @@ class RealDatabaseManager:
                 return row is not None and row[0] == 1
 
         except Exception as e:
-            logger.error(f"Database health check failed: {e}")
+            logger.exception(f"Database health check failed: {e}")
             return False
 
     async def get_connection_info(self) -> dict[str, Any]:
@@ -279,7 +278,7 @@ class RealDatabaseManager:
                 }
 
         except Exception as e:
-            logger.error(f"Failed to get connection info: {e}")
+            logger.exception(f"Failed to get connection info: {e}")
             return {"connected": True, "error": str(e)}
 
     async def backup_database(self, backup_path: str) -> bool:
@@ -296,16 +295,15 @@ class RealDatabaseManager:
                 "./", ""
             )
 
-            if os.path.exists(db_path):
+            if pathlib.Path(db_path).exists():
                 shutil.copy2(db_path, backup_path)
                 logger.info(f"Database backup created: {backup_path}")
                 return True
-            else:
-                logger.error(f"Database file not found: {db_path}")
-                return False
+            logger.error(f"Database file not found: {db_path}")
+            return False
 
         except Exception as e:
-            logger.error(f"Database backup failed: {e}")
+            logger.exception(f"Database backup failed: {e}")
             return False
 
 
@@ -318,7 +316,7 @@ class DatabaseConnectionPool:
     def __init__(self, max_connections: int = 10):
         self.max_connections = max_connections
         self.managers: dict[str, RealDatabaseManager] = {}
-        self.default_manager: Optional[RealDatabaseManager] = None
+        self.default_manager: RealDatabaseManager | None = None
 
     async def get_manager(self, name: str = "default") -> RealDatabaseManager:
         """Get or create a database manager by name."""
@@ -339,15 +337,15 @@ class DatabaseConnectionPool:
                 await manager.disconnect()
                 logger.info(f"Closed database manager: {name}")
             except Exception as e:
-                logger.error(f"Error closing database manager {name}: {e}")
+                logger.exception(f"Error closing database manager {name}: {e}")
 
         self.managers.clear()
         self.default_manager = None
 
 
 # Global instances
-_db_manager: Optional[RealDatabaseManager] = None
-_connection_pool: Optional[DatabaseConnectionPool] = None
+_db_manager: RealDatabaseManager | None = None
+_connection_pool: DatabaseConnectionPool | None = None
 
 
 def get_real_database_manager() -> RealDatabaseManager:

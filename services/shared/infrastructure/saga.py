@@ -12,13 +12,13 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any
 from uuid import UUID, uuid4
 
 import asyncpg
 
 from services.shared.domain.base import CONSTITUTIONAL_HASH, EntityId, TenantId
-from services.shared.domain.events import DomainEvent, EventPublisher
+from services.shared.domain.events import EventPublisher
 
 logger = logging.getLogger(__name__)
 
@@ -51,13 +51,13 @@ class SagaStep:
     step_id: str
     step_name: str
     action: str  # Action to execute (command type)
-    action_data: Dict[str, Any]
-    compensation_action: Optional[str] = None
-    compensation_data: Optional[Dict[str, Any]] = None
+    action_data: dict[str, Any]
+    compensation_action: str | None = None
+    compensation_data: dict[str, Any] | None = None
     status: StepStatus = StepStatus.PENDING
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    error_message: Optional[str] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    error_message: str | None = None
     retry_count: int = 0
     max_retries: int = 3
     timeout_seconds: int = 300
@@ -100,11 +100,11 @@ class SagaDefinition:
     """Defines the structure and steps of a saga."""
 
     saga_type: str
-    steps: List[SagaStep]
+    steps: list[SagaStep]
     description: str
     max_duration_minutes: int = 60
 
-    def get_step_by_id(self, step_id: str) -> Optional[SagaStep]:
+    def get_step_by_id(self, step_id: str) -> SagaStep | None:
         """Get step by ID."""
         for step in self.steps:
             if step.step_id == step_id:
@@ -120,14 +120,14 @@ class SagaInstance:
     tenant_id: TenantId
     saga_type: str
     status: SagaStatus
-    steps: List[SagaStep]
+    steps: list[SagaStep]
     current_step_index: int
     created_at: datetime
     updated_at: datetime
-    completed_at: Optional[datetime] = None
-    context_data: Dict[str, Any] = field(default_factory=dict)
-    correlation_id: Optional[str] = None
-    initiator: Optional[str] = None
+    completed_at: datetime | None = None
+    context_data: dict[str, Any] = field(default_factory=dict)
+    correlation_id: str | None = None
+    initiator: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
     @classmethod
@@ -135,9 +135,9 @@ class SagaInstance:
         cls,
         saga_definition: SagaDefinition,
         tenant_id: TenantId,
-        context_data: Dict[str, Any],
-        correlation_id: Optional[str] = None,
-        initiator: Optional[str] = None,
+        context_data: dict[str, Any],
+        correlation_id: str | None = None,
+        initiator: str | None = None,
     ) -> "SagaInstance":
         """Create new saga instance from definition."""
         return cls(
@@ -154,7 +154,7 @@ class SagaInstance:
             initiator=initiator,
         )
 
-    def get_current_step(self) -> Optional[SagaStep]:
+    def get_current_step(self) -> SagaStep | None:
         """Get current step to execute."""
         if 0 <= self.current_step_index < len(self.steps):
             return self.steps[self.current_step_index]
@@ -188,7 +188,7 @@ class SagaInstance:
         self.completed_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
-    def get_completed_steps(self) -> List[SagaStep]:
+    def get_completed_steps(self) -> list[SagaStep]:
         """Get all completed steps (for compensation)."""
         return [step for step in self.steps if step.status == StepStatus.COMPLETED]
 
@@ -202,7 +202,7 @@ class SagaCommand(ABC):
     """Base class for saga commands."""
 
     @abstractmethod
-    async def execute(self, context: Dict[str, Any]) -> Dict[str, Any]:
+    async def execute(self, context: dict[str, Any]) -> dict[str, Any]:
         """
         Execute the command.
 
@@ -212,17 +212,15 @@ class SagaCommand(ABC):
         Returns:
             Result data to be added to context
         """
-        pass
 
     @abstractmethod
-    async def compensate(self, context: Dict[str, Any]) -> None:
+    async def compensate(self, context: dict[str, Any]) -> None:
         """
         Compensate for the command execution.
 
         Args:
             context: Execution context data
         """
-        pass
 
 
 class SagaOrchestrator:
@@ -238,15 +236,15 @@ class SagaOrchestrator:
         self.saga_store = saga_store
         self.command_dispatcher = command_dispatcher
         self.event_publisher = event_publisher
-        self._running_sagas: Dict[str, asyncio.Task] = {}
+        self._running_sagas: dict[str, asyncio.Task] = {}
 
     async def start_saga(
         self,
         saga_definition: SagaDefinition,
         tenant_id: TenantId,
-        context_data: Dict[str, Any],
-        correlation_id: Optional[str] = None,
-        initiator: Optional[str] = None,
+        context_data: dict[str, Any],
+        correlation_id: str | None = None,
+        initiator: str | None = None,
     ) -> str:
         """
         Start a new saga instance.
@@ -378,7 +376,7 @@ class SagaOrchestrator:
 
         except Exception as e:
             error_msg = str(e)
-            logger.error(
+            logger.exception(
                 f"Step {step.step_name} failed in saga {saga.saga_id}: {error_msg}"
             )
 
@@ -481,7 +479,7 @@ class SagaOrchestrator:
                 def _get_event_version(self) -> str:
                     return "1.0"
 
-                def get_event_data(self) -> Dict[str, Any]:
+                def get_event_data(self) -> dict[str, Any]:
                     return self.saga_data
 
             event = SagaEvent(
@@ -494,9 +492,9 @@ class SagaOrchestrator:
             await self.event_publisher.publish(event)
 
         except Exception as e:
-            logger.error(f"Failed to publish saga event {event_type}: {e}")
+            logger.exception(f"Failed to publish saga event {event_type}: {e}")
 
-    async def get_saga_status(self, saga_id: str) -> Optional[SagaStatus]:
+    async def get_saga_status(self, saga_id: str) -> SagaStatus | None:
         """Get current status of a saga."""
         saga = await self.saga_store.get_saga(saga_id)
         return saga.status if saga else None
@@ -510,7 +508,7 @@ class SagaOrchestrator:
 
         # Mark saga as failed and compensate
         saga = await self.saga_store.get_saga(saga_id)
-        if saga and saga.status in [SagaStatus.PENDING, SagaStatus.RUNNING]:
+        if saga and saga.status in {SagaStatus.PENDING, SagaStatus.RUNNING}:
             saga.mark_failed()
             await self.saga_store.save_saga(saga)
             await self._compensate_saga(saga)
@@ -530,7 +528,7 @@ class SagaOrchestrator:
                 await self.cancel_saga(saga.saga_id, "Expired due to timeout")
                 cleanup_count += 1
             except Exception as e:
-                logger.error(f"Failed to cleanup expired saga {saga.saga_id}: {e}")
+                logger.exception(f"Failed to cleanup expired saga {saga.saga_id}: {e}")
 
         logger.info(f"Cleaned up {cleanup_count} expired sagas")
         return cleanup_count
@@ -542,24 +540,20 @@ class SagaStore(ABC):
     @abstractmethod
     async def save_saga(self, saga: SagaInstance) -> None:
         """Save saga instance."""
-        pass
 
     @abstractmethod
-    async def get_saga(self, saga_id: str) -> Optional[SagaInstance]:
+    async def get_saga(self, saga_id: str) -> SagaInstance | None:
         """Get saga by ID."""
-        pass
 
     @abstractmethod
     async def get_sagas_by_status(
-        self, status: SagaStatus, tenant_id: Optional[TenantId] = None
-    ) -> List[SagaInstance]:
+        self, status: SagaStatus, tenant_id: TenantId | None = None
+    ) -> list[SagaInstance]:
         """Get sagas by status."""
-        pass
 
     @abstractmethod
-    async def get_expired_sagas(self, max_age_hours: int) -> List[SagaInstance]:
+    async def get_expired_sagas(self, max_age_hours: int) -> list[SagaInstance]:
         """Get expired sagas for cleanup."""
-        pass
 
 
 class PostgreSQLSagaStore(SagaStore):
@@ -588,7 +582,7 @@ class PostgreSQLSagaStore(SagaStore):
                     completed_at TIMESTAMPTZ,
                     constitutional_hash TEXT NOT NULL DEFAULT 'cdd01ef066bc6cf2'
                 );
-                
+
                 CREATE TABLE IF NOT EXISTS saga_steps (
                     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
                     saga_id UUID NOT NULL REFERENCES sagas(saga_id) ON DELETE CASCADE,
@@ -605,43 +599,43 @@ class PostgreSQLSagaStore(SagaStore):
                     retry_count INTEGER NOT NULL DEFAULT 0,
                     max_retries INTEGER NOT NULL DEFAULT 3,
                     timeout_seconds INTEGER NOT NULL DEFAULT 300,
-                    
+
                     UNIQUE(saga_id, step_id)
                 );
-                
+
                 -- Enable RLS for multi-tenant isolation
                 ALTER TABLE sagas ENABLE ROW LEVEL SECURITY;
                 ALTER TABLE saga_steps ENABLE ROW LEVEL SECURITY;
-                
+
                 -- RLS policies
                 DROP POLICY IF EXISTS saga_tenant_isolation ON sagas;
                 CREATE POLICY saga_tenant_isolation ON sagas
                     FOR ALL TO application_role
                     USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
-                
+
                 DROP POLICY IF EXISTS saga_steps_tenant_isolation ON saga_steps;
                 CREATE POLICY saga_steps_tenant_isolation ON saga_steps
                     FOR ALL TO application_role
                     USING (
                         saga_id IN (
-                            SELECT saga_id FROM sagas 
+                            SELECT saga_id FROM sagas
                             WHERE tenant_id = current_setting('app.current_tenant_id')::uuid
                         )
                     );
-                
+
                 -- Indexes
-                CREATE INDEX IF NOT EXISTS idx_sagas_status_tenant 
+                CREATE INDEX IF NOT EXISTS idx_sagas_status_tenant
                     ON sagas (tenant_id, status, created_at);
-                
-                CREATE INDEX IF NOT EXISTS idx_sagas_correlation 
+
+                CREATE INDEX IF NOT EXISTS idx_sagas_correlation
                     ON sagas (correlation_id) WHERE correlation_id IS NOT NULL;
-                
-                CREATE INDEX IF NOT EXISTS idx_saga_steps_saga 
+
+                CREATE INDEX IF NOT EXISTS idx_saga_steps_saga
                     ON saga_steps (saga_id, step_id);
-                
+
                 -- Constitutional hash constraints
-                ALTER TABLE sagas 
-                ADD CONSTRAINT saga_constitutional_hash_check 
+                ALTER TABLE sagas
+                ADD CONSTRAINT saga_constitutional_hash_check
                 CHECK (constitutional_hash = 'cdd01ef066bc6cf2');
             """
             )
@@ -661,7 +655,7 @@ class PostgreSQLSagaStore(SagaStore):
                     """
                     INSERT INTO sagas (
                         saga_id, tenant_id, saga_type, status, current_step_index,
-                        context_data, correlation_id, initiator, created_at, 
+                        context_data, correlation_id, initiator, created_at,
                         updated_at, completed_at, constitutional_hash
                     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
                     ON CONFLICT (saga_id) DO UPDATE SET
@@ -692,30 +686,29 @@ class PostgreSQLSagaStore(SagaStore):
 
                 # Insert steps
                 if saga.steps:
-                    step_rows = []
-                    for step in saga.steps:
-                        step_rows.append(
+                    step_rows = [
+                        (
+                            UUID(saga.saga_id),
+                            step.step_id,
+                            step.step_name,
+                            step.action,
+                            json.dumps(step.action_data),
+                            step.compensation_action,
                             (
-                                UUID(saga.saga_id),
-                                step.step_id,
-                                step.step_name,
-                                step.action,
-                                json.dumps(step.action_data),
-                                step.compensation_action,
-                                (
-                                    json.dumps(step.compensation_data)
-                                    if step.compensation_data
-                                    else None
-                                ),
-                                step.status.value,
-                                step.started_at,
-                                step.completed_at,
-                                step.error_message,
-                                step.retry_count,
-                                step.max_retries,
-                                step.timeout_seconds,
-                            )
+                                json.dumps(step.compensation_data)
+                                if step.compensation_data
+                                else None
+                            ),
+                            step.status.value,
+                            step.started_at,
+                            step.completed_at,
+                            step.error_message,
+                            step.retry_count,
+                            step.max_retries,
+                            step.timeout_seconds,
                         )
+                        for step in saga.steps
+                    ]
 
                     await conn.executemany(
                         """
@@ -729,7 +722,7 @@ class PostgreSQLSagaStore(SagaStore):
                         step_rows,
                     )
 
-    async def get_saga(self, saga_id: str) -> Optional[SagaInstance]:
+    async def get_saga(self, saga_id: str) -> SagaInstance | None:
         """Get saga by ID with all steps."""
         async with self.pool.acquire() as conn:
             # Get saga
@@ -793,8 +786,8 @@ class PostgreSQLSagaStore(SagaStore):
             )
 
     async def get_sagas_by_status(
-        self, status: SagaStatus, tenant_id: Optional[TenantId] = None
-    ) -> List[SagaInstance]:
+        self, status: SagaStatus, tenant_id: TenantId | None = None
+    ) -> list[SagaInstance]:
         """Get sagas by status."""
         async with self.pool.acquire() as conn:
             if tenant_id:
@@ -821,15 +814,15 @@ class PostgreSQLSagaStore(SagaStore):
 
             return sagas
 
-    async def get_expired_sagas(self, max_age_hours: int) -> List[SagaInstance]:
+    async def get_expired_sagas(self, max_age_hours: int) -> list[SagaInstance]:
         """Get expired sagas for cleanup."""
         cutoff_time = datetime.utcnow() - timedelta(hours=max_age_hours)
 
         async with self.pool.acquire() as conn:
             rows = await conn.fetch(
                 """
-                SELECT saga_id FROM sagas 
-                WHERE created_at < $1 
+                SELECT saga_id FROM sagas
+                WHERE created_at < $1
                       AND status IN ('pending', 'running')
             """,
                 cutoff_time,
@@ -851,10 +844,10 @@ class CommandDispatcher(ABC):
     async def dispatch(
         self,
         command_type: str,
-        command_data: Dict[str, Any],
-        context: Dict[str, Any],
+        command_data: dict[str, Any],
+        context: dict[str, Any],
         timeout: int = 300,
-    ) -> Optional[Dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Dispatch command to appropriate service.
 
@@ -867,12 +860,11 @@ class CommandDispatcher(ABC):
         Returns:
             Command execution result
         """
-        pass
 
 
 # Global saga instances
-_saga_orchestrator: Optional[SagaOrchestrator] = None
-_saga_store: Optional[SagaStore] = None
+_saga_orchestrator: SagaOrchestrator | None = None
+_saga_store: SagaStore | None = None
 
 
 def get_saga_orchestrator() -> SagaOrchestrator:

@@ -1,13 +1,12 @@
 # backend/auth_service/app/api/v1/deps.py
 from collections.abc import AsyncGenerator
 
+from app.core.security import get_current_active_user
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession  # For type hinting
 
 from services.shared.database import get_async_db
 from services.shared.models import User
-
-from ...core.security import get_current_active_user
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

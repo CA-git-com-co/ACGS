@@ -7,6 +7,7 @@ integration points, and performance parameters.
 """
 
 import os
+import pathlib
 from typing import Any
 
 import yaml
@@ -94,7 +95,7 @@ class ServiceConfig:
             config_path = env_config_path
 
         # Load from YAML file if provided
-        if config_path and os.path.exists(config_path):
+        if config_path and pathlib.Path(config_path).exists():
             self._load_from_yaml(config_path)
 
         # Override with environment variables
@@ -107,13 +108,13 @@ class ServiceConfig:
             config_path: Path to YAML configuration file
         """
         try:
-            with open(config_path) as f:
+            with open(config_path, encoding="utf-8") as f:
                 yaml_config = yaml.safe_load(f)
                 if yaml_config:
                     # Deep merge configuration
                     self._deep_merge(self.config, yaml_config)
-        except Exception as e:
-            print(f"Error loading configuration from {config_path}: {e}")
+        except Exception:
+            pass
 
     def _load_from_env(self) -> None:
         """Load configuration from environment variables.
@@ -131,11 +132,11 @@ class ServiceConfig:
                         # Convert value to the appropriate type
                         current_value = self.config[section][key]
                         if isinstance(current_value, bool):
-                            self.config[section][key] = env_value.lower() in [
+                            self.config[section][key] = env_value.lower() in {
                                 "true",
                                 "1",
                                 "yes",
-                            ]
+                            }
                         elif isinstance(current_value, int):
                             self.config[section][key] = int(env_value)
                         elif isinstance(current_value, float):

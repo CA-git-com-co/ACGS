@@ -5,7 +5,7 @@ Request and response schemas for oversight and governance API endpoints.
 """
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -24,21 +24,21 @@ class OversightRequestCreate(BaseModel):
     # Request details
     reason: str = Field(..., description="Reason for oversight request")
     urgency: str = Field(default="normal", description="Urgency level")
-    deadline_hours: Optional[int] = Field(
+    deadline_hours: int | None = Field(
         None, ge=1, le=168, description="Deadline in hours"
     )
 
     # Context
-    context_data: Dict[str, Any] = Field(
+    context_data: dict[str, Any] = Field(
         default_factory=dict, description="Additional context"
     )
-    risk_factors: List[str] = Field(
+    risk_factors: list[str] = Field(
         default_factory=list, description="Identified risk factors"
     )
 
     # Assignment preferences
-    preferred_reviewer: Optional[str] = Field(None, description="Preferred reviewer ID")
-    expertise_required: List[str] = Field(
+    preferred_reviewer: str | None = Field(None, description="Preferred reviewer ID")
+    expertise_required: list[str] = Field(
         default_factory=list, description="Required expertise"
     )
 
@@ -53,15 +53,15 @@ class OversightRequestResponse(BaseModel):
     # Request details
     reason: str = Field(..., description="Reason for oversight")
     urgency: str = Field(..., description="Urgency level")
-    deadline: Optional[datetime] = Field(None, description="Deadline")
+    deadline: datetime | None = Field(None, description="Deadline")
 
     # Status
     status: str = Field(..., description="Request status")
-    assigned_to: Optional[str] = Field(None, description="Assigned reviewer")
-    assigned_at: Optional[datetime] = Field(None, description="Assignment timestamp")
+    assigned_to: str | None = Field(None, description="Assigned reviewer")
+    assigned_at: datetime | None = Field(None, description="Assignment timestamp")
 
     # Progress
-    estimated_completion: Optional[datetime] = Field(
+    estimated_completion: datetime | None = Field(
         None, description="Estimated completion"
     )
     progress_notes: str = Field(default="", description="Progress notes")
@@ -86,10 +86,10 @@ class OversightDecisionCreate(BaseModel):
     reasoning: str = Field(..., description="Decision reasoning")
 
     # Conditions and requirements
-    conditions: List[str] = Field(
+    conditions: list[str] = Field(
         default_factory=list, description="Approval conditions"
     )
-    requirements: List[str] = Field(
+    requirements: list[str] = Field(
         default_factory=list, description="Additional requirements"
     )
 
@@ -103,7 +103,7 @@ class OversightDecisionCreate(BaseModel):
 
     # Follow-up actions
     follow_up_required: bool = Field(default=False, description="Follow-up required")
-    follow_up_deadline_hours: Optional[int] = Field(
+    follow_up_deadline_hours: int | None = Field(
         None, ge=1, le=168, description="Follow-up deadline"
     )
 
@@ -121,8 +121,8 @@ class OversightDecisionResponse(BaseModel):
     reasoning: str = Field(..., description="Decision reasoning")
 
     # Conditions and requirements
-    conditions: List[str] = Field(..., description="Approval conditions")
-    requirements: List[str] = Field(..., description="Additional requirements")
+    conditions: list[str] = Field(..., description="Approval conditions")
+    requirements: list[str] = Field(..., description="Additional requirements")
 
     # Constitutional compliance
     constitutional_compliance_verified: bool = Field(
@@ -163,8 +163,8 @@ class RiskAssessmentResponse(BaseModel):
     )
 
     # Details
-    risk_factors: List[str] = Field(..., description="Identified risk factors")
-    mitigation_strategies: List[str] = Field(..., description="Recommended mitigations")
+    risk_factors: list[str] = Field(..., description="Identified risk factors")
+    mitigation_strategies: list[str] = Field(..., description="Recommended mitigations")
 
     # Constitutional compliance
     constitutional_compliance_score: float = Field(
@@ -175,7 +175,7 @@ class RiskAssessmentResponse(BaseModel):
     recommended_oversight_level: OversightLevel = Field(
         ..., description="Recommended oversight level"
     )
-    immediate_actions_required: List[str] = Field(
+    immediate_actions_required: list[str] = Field(
         default_factory=list, description="Immediate actions required"
     )
 

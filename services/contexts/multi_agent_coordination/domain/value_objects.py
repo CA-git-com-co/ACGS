@@ -8,7 +8,7 @@ Immutable value objects for the multi-agent coordination domain.
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from services.shared.domain.base import ValueObject
 
@@ -47,9 +47,9 @@ class AgentCapability(ValueObject):
 
     capability_type: str
     proficiency_level: float  # 0.0 to 1.0
-    domain_knowledge: List[str]
-    resource_requirements: Dict[str, Any]
-    performance_indicators: Dict[str, float]
+    domain_knowledge: list[str]
+    resource_requirements: dict[str, Any]
+    performance_indicators: dict[str, float]
 
     def __post_init__(self):
         """Validate capability data."""
@@ -66,7 +66,7 @@ class AgentCapability(ValueObject):
             and len(set(self.domain_knowledge) & set(other.domain_knowledge)) > 0
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "capability_type": self.capability_type,
@@ -81,10 +81,10 @@ class AgentCapability(ValueObject):
 class TaskRequirements(ValueObject):
     """Requirements for executing a coordination task."""
 
-    required_capabilities: List[str]
+    required_capabilities: list[str]
     minimum_proficiency: float
     estimated_duration_minutes: int
-    resource_limits: Dict[str, Any]
+    resource_limits: dict[str, Any]
     priority_level: int  # 1-5, 5 being highest
     complexity_score: float  # 0.0 to 1.0
 
@@ -106,7 +106,7 @@ class TaskRequirements(ValueObject):
             and capability.proficiency_level >= self.minimum_proficiency
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "required_capabilities": self.required_capabilities,
@@ -124,10 +124,10 @@ class CoordinationObjective(ValueObject):
 
     objective_type: str
     description: str
-    success_criteria: List[str]
-    quality_thresholds: Dict[str, float]
-    time_constraints: Dict[str, int]  # in minutes
-    stakeholder_requirements: List[str]
+    success_criteria: list[str]
+    quality_thresholds: dict[str, float]
+    time_constraints: dict[str, int]  # in minutes
+    stakeholder_requirements: list[str]
 
     def __post_init__(self):
         """Validate coordination objective."""
@@ -140,7 +140,7 @@ class CoordinationObjective(ValueObject):
         if not self.success_criteria:
             raise ValueError("Success criteria must be specified")
 
-    def is_achieved(self, results: Dict[str, Any]) -> bool:
+    def is_achieved(self, results: dict[str, Any]) -> bool:
         """Check if objective is achieved based on results."""
         # Check quality thresholds
         for metric, threshold in self.quality_thresholds.items():
@@ -153,7 +153,7 @@ class CoordinationObjective(ValueObject):
             criterion in achieved_criteria for criterion in self.success_criteria
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "objective_type": self.objective_type,
@@ -218,7 +218,7 @@ class CoordinationMetrics(ValueObject):
 
         return min(1.0, max(0.0, overall_score))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "efficiency_score": self.efficiency_score,
@@ -237,8 +237,8 @@ class AgentProfile(ValueObject):
 
     agent_name: str
     agent_version: str
-    specializations: List[str]
-    performance_history: Dict[str, float]
+    specializations: list[str]
+    performance_history: dict[str, float]
     trust_level: float  # 0.0 to 1.0
     reputation_score: float  # 0.0 to 1.0
     last_active: datetime
@@ -270,14 +270,13 @@ class AgentProfile(ValueObject):
 
         if avg_performance >= 0.9 and task_count >= 100:
             return "expert"
-        elif avg_performance >= 0.8 and task_count >= 50:
+        if avg_performance >= 0.8 and task_count >= 50:
             return "advanced"
-        elif avg_performance >= 0.7 and task_count >= 20:
+        if avg_performance >= 0.7 and task_count >= 20:
             return "intermediate"
-        else:
-            return "novice"
+        return "novice"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "agent_name": self.agent_name,
@@ -296,11 +295,11 @@ class CoordinationContext(ValueObject):
     """Context information for coordination sessions."""
 
     context_type: str
-    environment_constraints: Dict[str, Any]
-    available_resources: Dict[str, int]
-    time_constraints: Dict[str, datetime]
-    regulatory_requirements: List[str]
-    stakeholder_preferences: Dict[str, Any]
+    environment_constraints: dict[str, Any]
+    available_resources: dict[str, int]
+    time_constraints: dict[str, datetime]
+    regulatory_requirements: list[str]
+    stakeholder_preferences: dict[str, Any]
 
     def __post_init__(self):
         """Validate coordination context."""
@@ -321,7 +320,7 @@ class CoordinationContext(ValueObject):
 
         return True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary representation."""
         return {
             "context_type": self.context_type,

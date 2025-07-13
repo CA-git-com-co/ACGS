@@ -9,6 +9,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
 import os
+import pathlib
 import sys
 import time
 from contextlib import asynccontextmanager
@@ -18,7 +19,14 @@ from datetime import datetime, timezone
 sys.path.insert(
     0,
     os.path.join(
-        os.path.dirname(__file__), "..", "..", "..", "..", "..", "services", "shared"
+        pathlib.Path(__file__).parent,
+        "..",
+        "..",
+        "..",
+        "..",
+        "..",
+        "services",
+        "shared",
     ),
 )
 
@@ -37,9 +45,7 @@ try:
     from services.tenant_management import TenantManagementService
 
     MULTI_TENANT_AVAILABLE = True
-    print("✅ Multi-tenant components loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Multi-tenant components not available: {e}")
+except ImportError:
     MULTI_TENANT_AVAILABLE = False
 
 # Import production security middleware
@@ -50,9 +56,7 @@ try:
     )
 
     SECURITY_MIDDLEWARE_AVAILABLE = True
-    print("✅ Production security middleware loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Production security middleware not available: {e}")
+except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
 from config.infrastructure_config import (
@@ -68,7 +72,6 @@ from prometheus_metrics import (
     add_prometheus_metrics_endpoint,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.responses import PlainTextResponse
 
 # Service configuration with shared ACGS config
 config = get_acgs_config()
@@ -124,7 +127,7 @@ app.add_middleware(PrometheusMiddleware, service_name=SERVICE_NAME)
 
 # Add Security Headers Middleware (Critical Security Fix)
 from fastapi.middleware.base import BaseHTTPMiddleware
-from fastapi import Request, Response
+
 
 class SecurityHeadersMiddleware(BaseHTTPMiddleware):
     """Add comprehensive security headers to all responses"""
@@ -139,7 +142,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "Content-Security-Policy": "default-src 'self'; script-src 'self'",
             "Referrer-Policy": "strict-origin-when-cross-origin",
             "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
-            "X-Constitutional-Hash": CONSTITUTIONAL_HASH
+            "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
         }
 
     async def dispatch(self, request: Request, call_next):
@@ -150,6 +153,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             response.headers[header] = value
 
         return response
+
 
 app.add_middleware(SecurityHeadersMiddleware)
 
@@ -183,9 +187,8 @@ if MULTI_TENANT_AVAILABLE:
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
 
-    print("✅ Multi-tenant middleware applied to auth service")
 else:
-    print("⚠️ Multi-tenant middleware not available for auth service")
+    pass
 # Apply production-grade security middleware
 if SECURITY_MIDDLEWARE_AVAILABLE:
     security_config = create_security_config(
@@ -195,9 +198,6 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "auth_service", security_config)
-    print("✅ Production security middleware applied to auth service")
-else:
-    print("⚠️ Security middleware not available for auth service")
 
 
 # Add secure CORS middleware with environment-based configuration
@@ -296,18 +296,23 @@ add_prometheus_metrics_endpoint(app, SERVICE_NAME)
 @app.post("/api/v1/auth/validate")
 async def validate_token(request: Request):
     """Optimized token validation endpoint with sub-5ms P99 latency target"""
-    import time
     import hashlib
+    import time
 
     start_time = time.perf_counter()
 
     try:
         # Import multi-tier cache
-        import sys
         import os
-        sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../../shared/performance'))
+        import sys
+
+        sys.path.append(
+            os.path.join(
+                pathlib.Path(__file__).parent, "../../../../../shared/performance"
+            )
+        )
         try:
-            from multi_tier_cache import get_cached_jwt_validation, cache_jwt_validation
+            from multi_tier_cache import cache_jwt_validation, get_cached_jwt_validation
         except ImportError:
             # Fallback if cache not available
             get_cached_jwt_validation = None
@@ -321,7 +326,7 @@ async def validate_token(request: Request):
                 "valid": False,
                 "error": "No token provided",
                 "constitutional_hash": CONSTITUTIONAL_HASH,
-                "processing_time_ms": (time.perf_counter() - start_time) * 1000
+                "processing_time_ms": (time.perf_counter() - start_time) * 1000,
             }
 
         # Generate cache key for token
@@ -350,7 +355,7 @@ async def validate_token(request: Request):
             "username": "system",
             "roles": ["service"],
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "cache_hit": False
+            "cache_hit": False,
         }
 
         # Cache the result (1 hour TTL)
@@ -368,12 +373,12 @@ async def validate_token(request: Request):
 
     except Exception as e:
         processing_time = (time.perf_counter() - start_time) * 1000
-        logger.error(f"Token validation error: {e}")
+        logger.exception(f"Token validation error: {e}")
         return {
             "valid": False,
             "error": str(e),
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "processing_time_ms": processing_time
+            "processing_time_ms": processing_time,
         }
 
 
@@ -391,7 +396,7 @@ async def generate_token(request: Request):
         }
 
     except Exception as e:
-        logger.error(f"Token generation error: {e}")
+        logger.exception(f"Token generation error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -402,7 +407,7 @@ if MULTI_TENANT_AVAILABLE:
     async def tenant_login(
         username: str,
         password: str,
-        tenant_id: str = None,
+        tenant_id: str | None = None,
         session: AsyncSession = Depends(get_tenant_db),
     ):
         """Login with tenant context support."""
@@ -446,7 +451,7 @@ if MULTI_TENANT_AVAILABLE:
             }
 
         except Exception as e:
-            logger.error(f"Tenant login error: {e}")
+            logger.exception(f"Tenant login error: {e}")
             raise HTTPException(status_code=401, detail="Authentication failed")
 
     @app.post("/api/v1/auth/tenant-refresh")
@@ -465,7 +470,7 @@ if MULTI_TENANT_AVAILABLE:
             return tokens
 
         except Exception as e:
-            logger.error(f"Token refresh error: {e}")
+            logger.exception(f"Token refresh error: {e}")
             raise HTTPException(status_code=401, detail="Token refresh failed")
 
     @app.post("/api/v1/auth/switch-tenant")
@@ -480,14 +485,12 @@ if MULTI_TENANT_AVAILABLE:
             import uuid
 
             tenant_uuid = uuid.UUID(new_tenant_id)
-            tokens = await auth_service.switch_tenant_context(
+            return await auth_service.switch_tenant_context(
                 session, current_token, tenant_uuid
             )
 
-            return tokens
-
         except Exception as e:
-            logger.error(f"Tenant switch error: {e}")
+            logger.exception(f"Tenant switch error: {e}")
             raise HTTPException(status_code=403, detail="Tenant switch failed")
 
     @app.get("/api/v1/auth/user-tenants")
@@ -503,15 +506,15 @@ if MULTI_TENANT_AVAILABLE:
             return {"tenants": tenants, "constitutional_hash": CONSTITUTIONAL_HASH}
 
         except Exception as e:
-            logger.error(f"Get user tenants error: {e}")
+            logger.exception(f"Get user tenants error: {e}")
             raise HTTPException(status_code=401, detail="Failed to get user tenants")
 
     @app.post("/api/v1/tenants")
     async def create_tenant(
         organization_id: str,
         name: str,
-        slug: str = None,
-        description: str = None,
+        slug: str | None = None,
+        description: str | None = None,
         tier: str = "basic",
         security_level: str = "basic",
         session: AsyncSession = Depends(get_tenant_db),
@@ -549,7 +552,7 @@ if MULTI_TENANT_AVAILABLE:
             }
 
         except Exception as e:
-            logger.error(f"Tenant creation error: {e}")
+            logger.exception(f"Tenant creation error: {e}")
             raise HTTPException(status_code=400, detail="Tenant creation failed")
 
 

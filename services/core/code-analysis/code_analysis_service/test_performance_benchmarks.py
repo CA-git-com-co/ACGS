@@ -10,8 +10,10 @@ Performance Targets:
 - Cache Hit Rate: >85% for repeated queries
 """
 
+import contextlib
 import json
 import os
+import pathlib
 import statistics
 import sys
 import time
@@ -23,7 +25,7 @@ import numpy as np
 import requests
 
 # Add current directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 
 class PerformanceBenchmarker:
@@ -36,7 +38,6 @@ class PerformanceBenchmarker:
 
     def setup_test_environment(self):
         """Setup environment for performance testing"""
-        print("=== Setting up performance test environment ===")
 
         # Set environment variables
         os.environ["ENVIRONMENT"] = "testing"
@@ -47,22 +48,18 @@ class PerformanceBenchmarker:
 
     def _warmup_service(self):
         """Warm up the service before testing"""
-        print("Warming up service...")
 
         warmup_requests = 50
         for i in range(warmup_requests):
             try:
                 requests.get(f"{self.base_url}/health", timeout=5)
                 if i % 10 == 0:
-                    print(f"Warmup progress: {i}/{warmup_requests}")
+                    pass
             except Exception:
                 pass
 
-        print("✓ Service warmup completed")
-
     def test_latency_performance(self, num_requests: int = 1000) -> dict[str, Any]:
         """Test P99 latency performance with detailed metrics"""
-        print(f"\n=== Testing Latency Performance ({num_requests} requests) ===")
 
         latencies = []
         failed_requests = 0
@@ -83,7 +80,7 @@ class PerformanceBenchmarker:
 
                 # Progress indicator
                 if i % 100 == 0 and i > 0:
-                    print(f"Progress: {i}/{num_requests} requests completed")
+                    pass
 
             except Exception:
                 failed_requests += 1
@@ -110,20 +107,6 @@ class PerformanceBenchmarker:
             # Check targets
             p99_target_met = stats["p99_ms"] < 10.0
 
-            print("✓ Latency Statistics:")
-            print(f"  - Min: {stats['min_ms']:.2f}ms")
-            print(f"  - Mean: {stats['mean_ms']:.2f}ms")
-            print(f"  - Median: {stats['median_ms']:.2f}ms")
-            print(f"  - P90: {stats['p90_ms']:.2f}ms")
-            print(f"  - P95: {stats['p95_ms']:.2f}ms")
-            print(f"  - P99: {stats['p99_ms']:.2f}ms (target: <10ms)")
-            print(f"  - P99.9: {stats['p99_9_ms']:.2f}ms")
-            print(f"  - Max: {stats['max_ms']:.2f}ms")
-            print(f"  - Std Dev: {stats['std_dev_ms']:.2f}ms")
-
-            target_status = "PASS" if p99_target_met else "FAIL"
-            print(f"✓ P99 Target (<10ms): {target_status}")
-
             result = {
                 "status": "ok" if p99_target_met else "failed",
                 "target_met": p99_target_met,
@@ -140,23 +123,17 @@ class PerformanceBenchmarker:
             self.results["latency_performance"] = result
             return result
 
-        else:
-            print("✗ No successful requests for latency testing")
-            return {
-                "status": "failed",
-                "error": "No successful requests",
-                "failed_requests": failed_requests,
-                "timestamp": datetime.now().isoformat(),
-            }
+        return {
+            "status": "failed",
+            "error": "No successful requests",
+            "failed_requests": failed_requests,
+            "timestamp": datetime.now().isoformat(),
+        }
 
     def test_throughput_performance(
         self, duration_seconds: int = 30, max_workers: int = 50
     ) -> dict[str, Any]:
         """Test sustained throughput performance"""
-        print(
-            "\n=== Testing Throughput Performance "
-            f"({duration_seconds}s, {max_workers} workers) ==="
-        )
 
         successful_requests = 0
         failed_requests = 0
@@ -170,8 +147,7 @@ class PerformanceBenchmarker:
 
                 if response.status_code == 200:
                     return True, (end_time - start_time) * 1000
-                else:
-                    return False, 0
+                return False, 0
             except Exception:
                 return False, 0
 
@@ -205,17 +181,6 @@ class PerformanceBenchmarker:
         # Throughput target check
         throughput_target_met = actual_rps >= 100.0
 
-        print("✓ Throughput Results:")
-        print(f"  - Actual RPS: {actual_rps:.1f} (target: >100 RPS)")
-        print(f"  - Success Rate: {success_rate:.1%}")
-        print(f"  - Total Requests: {total_requests}")
-        print(f"  - Successful: {successful_requests}")
-        print(f"  - Failed: {failed_requests}")
-        print(f"  - Duration: {actual_duration:.2f}s")
-
-        target_status = "PASS" if throughput_target_met else "FAIL"
-        print(f"✓ Throughput Target (>100 RPS): {target_status}")
-
         result = {
             "status": "ok" if throughput_target_met else "failed",
             "target_met": throughput_target_met,
@@ -236,7 +201,6 @@ class PerformanceBenchmarker:
 
     def test_cache_performance(self) -> dict[str, Any]:
         """Test cache hit rate performance"""
-        print("\n=== Testing Cache Performance ===")
 
         # This is a placeholder for actual cache testing
         # In a real implementation, this would test actual cache endpoints
@@ -246,13 +210,11 @@ class PerformanceBenchmarker:
         cache_hits = 0
 
         # First request to populate cache
-        try:
+        with contextlib.suppress(Exception):
             requests.get(f"{self.base_url}/health", timeout=5)
-        except Exception:
-            pass
 
         # Test repeated requests (should hit cache)
-        for i in range(cache_test_requests):
+        for _i in range(cache_test_requests):
             try:
                 start_time = time.time()
                 response = requests.get(f"{self.base_url}/health", timeout=5)
@@ -268,14 +230,6 @@ class PerformanceBenchmarker:
 
         cache_hit_rate = cache_hits / cache_test_requests
         cache_target_met = cache_hit_rate >= 0.85
-
-        print("✓ Cache Performance Results:")
-        print(f"  - Cache Hit Rate: {cache_hit_rate:.1%} (target: >85%)")
-        print(f"  - Cache Hits: {cache_hits}")
-        print(f"  - Total Requests: {cache_test_requests}")
-
-        target_status = "PASS" if cache_target_met else "FAIL"
-        print(f"✓ Cache Target (>85%): {target_status}")
 
         result = {
             "status": "ok" if cache_target_met else "failed",
@@ -294,10 +248,6 @@ class PerformanceBenchmarker:
         self, duration_seconds: int = 60, max_workers: int = 100
     ) -> dict[str, Any]:
         """Test service under stress conditions"""
-        print(
-            "\n=== Testing Stress Performance "
-            f"({duration_seconds}s, {max_workers} workers) ==="
-        )
 
         successful_requests = 0
         failed_requests = 0
@@ -314,8 +264,7 @@ class PerformanceBenchmarker:
 
                 if response.status_code == 200:
                     return True, response_time, None
-                else:
-                    return False, response_time, f"HTTP_{response.status_code}"
+                return False, response_time, f"HTTP_{response.status_code}"
 
             except Exception as e:
                 return False, 0, str(type(e).__name__)
@@ -355,16 +304,6 @@ class PerformanceBenchmarker:
         # Stress test passes if service maintains >50% success rate
         stress_target_met = stress_success_rate >= 0.5
 
-        print("✓ Stress Test Results:")
-        print(f"  - Stress RPS: {stress_rps:.1f}")
-        print(f"  - Success Rate: {stress_success_rate:.1%} (target: >50%)")
-        print(f"  - Total Requests: {total_requests}")
-        print(f"  - Duration: {actual_duration:.2f}s")
-        print(f"  - Error Types: {error_types}")
-
-        target_status = "PASS" if stress_target_met else "FAIL"
-        print(f"✓ Stress Target (>50% success): {target_status}")
-
         result = {
             "status": "ok" if stress_target_met else "failed",
             "target_met": stress_target_met,
@@ -385,7 +324,6 @@ class PerformanceBenchmarker:
 
     def generate_performance_report(self) -> dict[str, Any]:
         """Generate comprehensive performance report"""
-        print("\n=== Generating Performance Report ===")
 
         # Calculate overall performance score
         performance_score = self._calculate_performance_score()
@@ -400,7 +338,7 @@ class PerformanceBenchmarker:
         }
 
         # Create detailed report
-        report = {
+        return {
             "summary": summary,
             "detailed_results": self.results,
             "constitutional_hash": self.constitutional_hash,
@@ -409,12 +347,6 @@ class PerformanceBenchmarker:
                 "test_timestamp": datetime.now().isoformat(),
             },
         }
-
-        print(f"✓ Performance Score: {performance_score:.1f}/100")
-        print(f"✓ Performance Grade: {summary['performance_grade']}")
-        print(f"✓ All Targets Met: {summary['targets_met']}")
-
-        return report
 
     def _calculate_performance_score(self) -> float:
         """Calculate overall performance score (0-100)"""
@@ -470,22 +402,22 @@ class PerformanceBenchmarker:
         """Get performance grade based on score"""
         if score >= 90:
             return "A"
-        elif score >= 80:
+        if score >= 80:
             return "B"
-        elif score >= 70:
+        if score >= 70:
             return "C"
-        elif score >= 60:
+        if score >= 60:
             return "D"
-        else:
-            return "F"
+        return "F"
 
     def _check_all_targets(self) -> bool:
         """Check if all performance targets are met"""
-        targets = []
 
-        for test_name, result in self.results.items():
-            if isinstance(result, dict) and "target_met" in result:
-                targets.append(result["target_met"])
+        targets = [
+            result["target_met"]
+            for result in self.results.values()
+            if isinstance(result, dict) and "target_met" in result
+        ]
 
         return all(targets) if targets else False
 
@@ -532,9 +464,6 @@ class PerformanceBenchmarker:
 
     def run_comprehensive_benchmarks(self) -> dict[str, Any]:
         """Run all performance benchmarks"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Performance Benchmarking Suite")
-        print("=" * 80)
 
         start_time = time.time()
 
@@ -554,10 +483,8 @@ class PerformanceBenchmarker:
 
         for test_name, test_function in benchmark_tests:
             try:
-                print(f"\n{'=' * 20} {test_name} {'=' * 20}")
                 test_function()
             except Exception as e:
-                print(f"✗ {test_name} failed: {e}")
                 self.results[test_name.lower().replace(" ", "_")] = {
                     "status": "failed",
                     "error": str(e),
@@ -569,18 +496,9 @@ class PerformanceBenchmarker:
         report = self.generate_performance_report()
         report["total_execution_time_seconds"] = total_time
 
-        print("\n" + "=" * 80)
-        print("PERFORMANCE BENCHMARKING SUMMARY")
-        print("=" * 80)
-        print(f"Total execution time: {total_time:.2f} seconds")
-        print(f"Performance score: {report['summary']['overall_score']:.1f}/100")
-        print(f"Performance grade: {report['summary']['performance_grade']}")
-        print(f"All targets met: {report['summary']['targets_met']}")
-
         if report["summary"]["recommendations"]:
-            print("\nRecommendations:")
-            for i, rec in enumerate(report["summary"]["recommendations"], 1):
-                print(f"{i}. {rec}")
+            for _i, _rec in enumerate(report["summary"]["recommendations"], 1):
+                pass
 
         return report
 
@@ -595,21 +513,16 @@ def main():
 
         # Save results to file
         results_file = "performance_benchmark_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(results, f, indent=2)
-
-        print(f"\n✓ Detailed results saved to: {results_file}")
 
         # Exit with appropriate code
         if results["summary"]["targets_met"]:
-            print("\n🎉 All performance targets met! Service ready for production.")
             sys.exit(0)
         else:
-            print("\n⚠️  Some performance targets not met. Review recommendations.")
             sys.exit(1)
 
-    except Exception as e:
-        print(f"\n💥 Performance benchmarking failed: {e}")
+    except Exception:
         sys.exit(1)
 
 

@@ -6,12 +6,11 @@ This module integrates SuperClaude's MCP tools (Sequential, Context7, Magic, Pup
 with ACGS constitutional compliance and existing MCP services.
 """
 
-import asyncio
 import logging
 import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -42,11 +41,11 @@ class MCPOperationResult(BaseModel):
     tool: MCPTool
     operation: str
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    result: Dict[str, Any]
+    result: dict[str, Any]
     constitutional_validation: ConstitutionalValidationResult
-    persona_context: Optional[SuperClaudePersona] = None
-    performance_metrics: Dict[str, float] = Field(default_factory=dict)
-    audit_trail: List[str] = Field(default_factory=list)
+    persona_context: SuperClaudePersona | None = None
+    performance_metrics: dict[str, float] = Field(default_factory=dict)
+    audit_trail: list[str] = Field(default_factory=list)
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -115,9 +114,9 @@ class ConstitutionalMCPIntegration:
         self,
         tool: MCPTool,
         operation: str,
-        parameters: Dict[str, Any],
-        persona_context: Optional[SuperClaudePersona] = None,
-        constitutional_context: Optional[Dict[str, Any]] = None,
+        parameters: dict[str, Any],
+        persona_context: SuperClaudePersona | None = None,
+        constitutional_context: dict[str, Any] | None = None,
     ) -> MCPOperationResult:
         """Execute MCP operation with constitutional compliance"""
 
@@ -216,10 +215,10 @@ class ConstitutionalMCPIntegration:
             )
 
         except Exception as e:
-            self.logger.error(
-                f"MCP operation failed: {tool.value}/{operation} - {str(e)}"
+            self.logger.exception(
+                f"MCP operation failed: {tool.value}/{operation} - {e!s}"
             )
-            audit_trail.append(f"Operation failed with exception: {str(e)}")
+            audit_trail.append(f"Operation failed with exception: {e!s}")
 
             # Return failed result
             return MCPOperationResult(
@@ -238,10 +237,10 @@ class ConstitutionalMCPIntegration:
     async def _handle_sequential_operation(
         self,
         operation: str,
-        parameters: Dict[str, Any],
-        persona_context: Optional[SuperClaudePersona],
-        constitutional_context: Optional[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        persona_context: SuperClaudePersona | None,
+        constitutional_context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         """Handle Sequential tool operations with constitutional compliance"""
 
         if operation == "multi_step_reasoning":
@@ -277,7 +276,7 @@ class ConstitutionalMCPIntegration:
 
                 if not step_validation.is_valid:
                     return {
-                        "error": f"Step {i+1} failed constitutional validation",
+                        "error": f"Step {i + 1} failed constitutional validation",
                         "step": step,
                     }
 
@@ -285,7 +284,7 @@ class ConstitutionalMCPIntegration:
                 step_result = {
                     "step": i + 1,
                     "content": step,
-                    "result": f"Processed step {i+1} with constitutional compliance",
+                    "result": f"Processed step {i + 1} with constitutional compliance",
                     "constitutional_validated": True,
                 }
                 results.append(step_result)
@@ -298,7 +297,7 @@ class ConstitutionalMCPIntegration:
                 "mcp_integration": "sequential_with_acgs_validation",
             }
 
-        elif operation == "analysis_breakdown":
+        if operation == "analysis_breakdown":
             topic = parameters.get("topic", "")
             depth = parameters.get("depth", "medium")
 
@@ -307,7 +306,7 @@ class ConstitutionalMCPIntegration:
                 return {"error": "Topic required for analysis breakdown"}
 
             # Simulate analysis breakdown with constitutional oversight
-            breakdown_result = {
+            return {
                 "operation": "analysis_breakdown",
                 "topic": topic,
                 "depth": depth,
@@ -315,24 +314,21 @@ class ConstitutionalMCPIntegration:
                     f"Constitutional analysis of {topic}",
                     f"Governance implications of {topic}",
                     f"Compliance requirements for {topic}",
-                    f"Risk assessment with constitutional context",
+                    "Risk assessment with constitutional context",
                 ],
                 "constitutional_compliance": True,
                 "mcp_integration": "sequential_analysis_with_governance",
             }
 
-            return breakdown_result
-
-        else:
-            return {"error": f"Unsupported Sequential operation: {operation}"}
+        return {"error": f"Unsupported Sequential operation: {operation}"}
 
     async def _handle_context7_operation(
         self,
         operation: str,
-        parameters: Dict[str, Any],
-        persona_context: Optional[SuperClaudePersona],
-        constitutional_context: Optional[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        persona_context: SuperClaudePersona | None,
+        constitutional_context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         """Handle Context7 tool operations with constitutional compliance"""
 
         if operation == "fetch_documentation":
@@ -357,7 +353,7 @@ class ConstitutionalMCPIntegration:
                 }
 
             # Simulate documentation fetch with constitutional content review
-            documentation_result = {
+            return {
                 "operation": "fetch_documentation",
                 "source": source,
                 "topic": topic,
@@ -367,9 +363,7 @@ class ConstitutionalMCPIntegration:
                 "allowed_source": True,
             }
 
-            return documentation_result
-
-        elif operation == "search_patterns":
+        if operation == "search_patterns":
             query = parameters.get("query", "")
             framework = parameters.get("framework", "")
 
@@ -378,31 +372,28 @@ class ConstitutionalMCPIntegration:
                 return {"error": "Query and framework required for pattern search"}
 
             # Simulate pattern search with constitutional governance
-            patterns_result = {
+            return {
                 "operation": "search_patterns",
                 "query": query,
                 "framework": framework,
                 "patterns": [
                     f"Constitutional pattern for {query} in {framework}",
                     f"Governance-compliant implementation of {query}",
-                    f"Best practices with constitutional oversight",
+                    "Best practices with constitutional oversight",
                 ],
                 "constitutional_compliance": True,
                 "mcp_integration": "context7_patterns_with_governance",
             }
 
-            return patterns_result
-
-        else:
-            return {"error": f"Unsupported Context7 operation: {operation}"}
+        return {"error": f"Unsupported Context7 operation: {operation}"}
 
     async def _handle_magic_operation(
         self,
         operation: str,
-        parameters: Dict[str, Any],
-        persona_context: Optional[SuperClaudePersona],
-        constitutional_context: Optional[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        persona_context: SuperClaudePersona | None,
+        constitutional_context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         """Handle Magic tool operations with constitutional compliance"""
 
         if operation == "generate_component":
@@ -422,7 +413,7 @@ class ConstitutionalMCPIntegration:
             }
 
             # Simulate component generation with constitutional UI standards
-            component_result = {
+            return {
                 "operation": "generate_component",
                 "component_type": component_type,
                 "requirements": requirements,
@@ -433,9 +424,7 @@ class ConstitutionalMCPIntegration:
                 "mcp_integration": "magic_with_acgs_standards",
             }
 
-            return component_result
-
-        elif operation == "ui_optimization":
+        if operation == "ui_optimization":
             target = parameters.get("target", "")
             optimization_type = parameters.get("optimization_type", "performance")
 
@@ -444,31 +433,28 @@ class ConstitutionalMCPIntegration:
                 return {"error": "Target required for UI optimization"}
 
             # Simulate UI optimization with constitutional standards
-            optimization_result = {
+            return {
                 "operation": "ui_optimization",
                 "target": target,
                 "optimization_type": optimization_type,
                 "optimizations": [
                     f"Constitutional performance optimization for {target}",
-                    f"Accessibility improvements with governance compliance",
-                    f"Security enhancements with constitutional standards",
+                    "Accessibility improvements with governance compliance",
+                    "Security enhancements with constitutional standards",
                 ],
                 "constitutional_compliance": True,
                 "mcp_integration": "magic_optimization_with_governance",
             }
 
-            return optimization_result
-
-        else:
-            return {"error": f"Unsupported Magic operation: {operation}"}
+        return {"error": f"Unsupported Magic operation: {operation}"}
 
     async def _handle_puppeteer_operation(
         self,
         operation: str,
-        parameters: Dict[str, Any],
-        persona_context: Optional[SuperClaudePersona],
-        constitutional_context: Optional[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        parameters: dict[str, Any],
+        persona_context: SuperClaudePersona | None,
+        constitutional_context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         """Handle Puppeteer tool operations with constitutional compliance"""
 
         if operation == "run_tests":
@@ -488,7 +474,7 @@ class ConstitutionalMCPIntegration:
             ]
 
             # Simulate test execution with constitutional standards
-            test_result = {
+            return {
                 "operation": "run_tests",
                 "test_suite": test_suite,
                 "test_type": test_type,
@@ -504,9 +490,7 @@ class ConstitutionalMCPIntegration:
                 "mcp_integration": "puppeteer_with_acgs_testing",
             }
 
-            return test_result
-
-        elif operation == "performance_monitoring":
+        if operation == "performance_monitoring":
             target_url = parameters.get("target_url", "")
             metrics = parameters.get("metrics", ["load_time", "accessibility"])
 
@@ -515,7 +499,7 @@ class ConstitutionalMCPIntegration:
                 return {"error": "Target URL required for performance monitoring"}
 
             # Simulate performance monitoring with constitutional metrics
-            monitoring_result = {
+            return {
                 "operation": "performance_monitoring",
                 "target_url": target_url,
                 "metrics": metrics,
@@ -529,13 +513,10 @@ class ConstitutionalMCPIntegration:
                 "mcp_integration": "puppeteer_monitoring_with_governance",
             }
 
-            return monitoring_result
-
-        else:
-            return {"error": f"Unsupported Puppeteer operation: {operation}"}
+        return {"error": f"Unsupported Puppeteer operation: {operation}"}
 
     async def _validate_result_compliance(
-        self, tool: MCPTool, operation: str, result: Dict[str, Any]
+        self, tool: MCPTool, operation: str, result: dict[str, Any]
     ) -> bool:
         """Validate that MCP operation result meets constitutional compliance"""
 
@@ -547,19 +528,19 @@ class ConstitutionalMCPIntegration:
         if tool == MCPTool.SEQUENTIAL:
             return result.get("constitutional_compliance", False)
 
-        elif tool == MCPTool.CONTEXT7:
+        if tool == MCPTool.CONTEXT7:
             return result.get("allowed_source", False) and result.get(
                 "constitutional_compliance", False
             )
 
-        elif tool == MCPTool.MAGIC:
+        if tool == MCPTool.MAGIC:
             return (
                 result.get("accessibility_compliance", {})
                 and result.get("constitutional_ui_standards", False)
                 and result.get("security_scan_passed", False)
             )
 
-        elif tool == MCPTool.PUPPETEER:
+        if tool == MCPTool.PUPPETEER:
             return result.get("constitutional_compliance", False) and result.get(
                 "privacy_compliance", False
             )
@@ -570,9 +551,9 @@ class ConstitutionalMCPIntegration:
         self,
         tool: MCPTool,
         operation: str,
-        result: Dict[str, Any],
+        result: dict[str, Any],
         constitutional_validation: ConstitutionalValidationResult,
-        persona_context: Optional[SuperClaudePersona],
+        persona_context: SuperClaudePersona | None,
     ) -> None:
         """Log MCP operation to blackboard"""
 
@@ -608,10 +589,10 @@ class ConstitutionalMCPIntegration:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_tool_requirements(self, tool: MCPTool) -> Dict[str, Any]:
+    def get_tool_requirements(self, tool: MCPTool) -> dict[str, Any]:
         """Get constitutional requirements for specific MCP tool"""
         return self.TOOL_CONSTITUTIONAL_REQUIREMENTS.get(tool, {})
 
-    def get_acgs_mcp_services(self) -> Dict[str, str]:
+    def get_acgs_mcp_services(self) -> dict[str, str]:
         """Get ACGS MCP service endpoints"""
         return self.ACGS_MCP_SERVICES.copy()

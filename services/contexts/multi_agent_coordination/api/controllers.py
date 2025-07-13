@@ -6,12 +6,11 @@ FastAPI controllers for multi-agent coordination bounded context.
 """
 
 import logging
-from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import ValidationError
 
-from services.shared.domain.base import EntityId, TenantId
+from services.shared.domain.base import EntityId
 from services.shared.infrastructure.unit_of_work import get_unit_of_work_manager
 from services.shared.middleware.tenant_middleware import get_tenant_context
 
@@ -102,13 +101,13 @@ async def register_agent(
         )
 
     except ValidationError as e:
-        logger.error(f"Validation error in agent registration: {e}")
+        logger.exception(f"Validation error in agent registration: {e}")
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Validation error: {e}",
         )
     except Exception as e:
-        logger.error(f"Error registering agent: {e}")
+        logger.exception(f"Error registering agent: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to register agent",
@@ -138,12 +137,12 @@ async def update_agent_status(
         logger.info(f"Updated agent {agent_id} status to {request.new_status}")
 
     except ValueError as e:
-        logger.error(f"Invalid agent ID or status: {e}")
+        logger.exception(f"Invalid agent ID or status: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid input: {e}"
         )
     except Exception as e:
-        logger.error(f"Error updating agent status: {e}")
+        logger.exception(f"Error updating agent status: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update agent status",
@@ -156,7 +155,7 @@ async def assign_task(
     request: TaskAssignmentRequest,
     tenant_context=Depends(get_tenant_context),
     service: MultiAgentCoordinationService = Depends(get_coordination_service),
-) -> Dict[str, str]:
+) -> dict[str, str]:
     """Assign a task to an agent."""
     try:
         # Convert request to domain objects
@@ -185,12 +184,12 @@ async def assign_task(
         return {"task_id": str(command.task_id), "agent_id": agent_id}
 
     except ValueError as e:
-        logger.error(f"Invalid task assignment request: {e}")
+        logger.exception(f"Invalid task assignment request: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid input: {e}"
         )
     except Exception as e:
-        logger.error(f"Error assigning task: {e}")
+        logger.exception(f"Error assigning task: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to assign task",
@@ -225,12 +224,12 @@ async def complete_task(
         logger.info(f"Completed task {task_id} for agent {agent_id}")
 
     except ValueError as e:
-        logger.error(f"Invalid task completion request: {e}")
+        logger.exception(f"Invalid task completion request: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid input: {e}"
         )
     except Exception as e:
-        logger.error(f"Error completing task: {e}")
+        logger.exception(f"Error completing task: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to complete task",
@@ -285,13 +284,13 @@ async def start_coordination_session(
         )
 
     except ValidationError as e:
-        logger.error(f"Validation error in session creation: {e}")
+        logger.exception(f"Validation error in session creation: {e}")
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Validation error: {e}",
         )
     except Exception as e:
-        logger.error(f"Error starting coordination session: {e}")
+        logger.exception(f"Error starting coordination session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to start coordination session",
@@ -320,12 +319,12 @@ async def complete_coordination_session(
         logger.info(f"Completed coordination session {session_id}")
 
     except ValueError as e:
-        logger.error(f"Invalid session completion request: {e}")
+        logger.exception(f"Invalid session completion request: {e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid input: {e}"
         )
     except Exception as e:
-        logger.error(f"Error completing coordination session: {e}")
+        logger.exception(f"Error completing coordination session: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to complete coordination session",
@@ -369,13 +368,13 @@ async def request_impact_analysis(
         )
 
     except ValidationError as e:
-        logger.error(f"Validation error in impact analysis request: {e}")
+        logger.exception(f"Validation error in impact analysis request: {e}")
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Validation error: {e}",
         )
     except Exception as e:
-        logger.error(f"Error requesting impact analysis: {e}")
+        logger.exception(f"Error requesting impact analysis: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to request impact analysis",
@@ -383,7 +382,7 @@ async def request_impact_analysis(
 
 
 @router.get("/health")
-async def health_check() -> Dict[str, str]:
+async def health_check() -> dict[str, str]:
     """Health check endpoint."""
     return {
         "status": "healthy",

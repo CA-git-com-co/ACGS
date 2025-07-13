@@ -10,7 +10,7 @@ This is a minimal implementation to ensure constitutional compliance.
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, status
@@ -51,9 +51,9 @@ setup_constitutional_validation(
 )
 
 # Constitutional compliance logging
-logger.info(f"✅ Optimized constitutional middleware enabled for coordination")
-logger.info(f"📋 Constitutional Hash: cdd01ef066bc6cf2")
-logger.info(f"🎯 Performance Target: <0.5ms validation")
+logger.info("✅ Optimized constitutional middleware enabled for coordination")
+logger.info("📋 Constitutional Hash: cdd01ef066bc6cf2")
+logger.info("🎯 Performance Target: <0.5ms validation")
 
 
 # Add CORS middleware
@@ -265,7 +265,7 @@ async def get_service_status():
 
 
 @app.get("/constitutional/validate")
-async def validate_constitutional_hash(hash: str = None):
+async def validate_constitutional_hash(hash: str | None = None):
     """Validate constitutional hash compliance."""
     if hash and hash != CONSTITUTIONAL_HASH:
         raise HTTPException(
@@ -288,12 +288,12 @@ async def validate_constitutional_hash(hash: str = None):
 
 
 @app.post("/api/v1/coordinate")
-async def coordinate_agents(coordination_request: Dict[str, Any]):
+async def coordinate_agents(coordination_request: dict[str, Any]):
     """Coordinate multiple agents for a complex task."""
     request_id = f"coord_{int(time.time())}"
 
     # Simulate coordination logic
-    coordination_result = {
+    return {
         "request_id": request_id,
         "status": "coordinated",
         "agents_assigned": coordination_request.get("required_agents", 1),
@@ -302,8 +302,6 @@ async def coordinate_agents(coordination_request: Dict[str, Any]):
         "coordination_strategy": "hierarchical_decomposition",
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
-
-    return coordination_result
 
 
 def main():

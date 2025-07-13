@@ -112,7 +112,7 @@ class WINAConstitutionalPrincipleAnalyzer:
             )
 
         except Exception as e:
-            logger.error(f"Error analyzing principle {principle_id}: {e}")
+            logger.exception(f"Error analyzing principle {principle_id}: {e}")
             analysis["error"] = str(e)
 
         return analysis
@@ -289,7 +289,7 @@ class WINAConstitutionalPrincipleAnalyzer:
         risks = []
 
         category = principle.get("category", "").lower()
-        if category in ["safety", "security"]:
+        if category in {"safety", "security"}:
             risks.append("safety_critical_principle")
 
         policy_code = principle.get("policy_code", "")
@@ -369,9 +369,11 @@ class WINAConstitutionalPrincipleAnalyzer:
                 "Consider principle decomposition before optimization"
             )
 
-        recommendations.append("Monitor constitutional compliance continuously")
-        recommendations.append(
-            "Implement fallback mechanisms for optimization failures"
+        recommendations.extend(
+            (
+                "Monitor constitutional compliance continuously",
+                "Implement fallback mechanisms for optimization failures",
+            )
         )
 
         return recommendations
@@ -469,15 +471,14 @@ allow_wina_optimization {{
             "high_dependency_coupling": "low",
         }
 
-        identified_risks = []
-        for risk in risk_factors:
-            identified_risks.append(
-                {
-                    "risk_type": risk,
-                    "risk_level": risk_levels.get(risk, "low"),
-                    "mitigation_strategy": f"Implement monitoring for {risk}",
-                }
-            )
+        identified_risks = [
+            {
+                "risk_type": risk,
+                "risk_level": risk_levels.get(risk, "low"),
+                "mitigation_strategy": f"Implement monitoring for {risk}",
+            }
+            for risk in risk_factors
+        ]
 
         return {
             "overall_risk_level": "medium" if len(risk_factors) > 2 else "low",
@@ -618,7 +619,7 @@ class WINAConstitutionalUpdateService:
                     )
 
             except Exception as e:
-                logger.error(
+                logger.exception(
                     f"Error proposing update for principle {principle.get('principle_id', 'unknown')}: {e}"
                 )
 
@@ -692,7 +693,7 @@ class WINAConstitutionalUpdateService:
             }
 
         except Exception as e:
-            logger.error(f"Error submitting update for approval: {e}")
+            logger.exception(f"Error submitting update for approval: {e}")
             return {"success": False, "error": str(e)}
 
     async def apply_approved_update(
@@ -754,7 +755,7 @@ class WINAConstitutionalUpdateService:
             return application_result
 
         except Exception as e:
-            logger.error(f"Error applying constitutional update: {e}")
+            logger.exception(f"Error applying constitutional update: {e}")
             return {"success": False, "error": str(e)}
 
     async def monitor_update_performance(
@@ -815,7 +816,7 @@ class WINAConstitutionalUpdateService:
             )
 
         except Exception as e:
-            logger.error(f"Error monitoring update performance: {e}")
+            logger.exception(f"Error monitoring update performance: {e}")
             monitoring_results["error"] = str(e)
             monitoring_results["compliance_status"] = "monitoring_failed"
 
@@ -843,9 +844,8 @@ class WINAConstitutionalUpdateService:
         if (
             update.risk_assessment
             and update.risk_assessment.get("overall_risk_level") == "high"
-        ):
-            if not update.validation_criteria:
-                issues.append("High-risk update requires validation criteria")
+        ) and not update.validation_criteria:
+            issues.append("High-risk update requires validation criteria")
 
         return {"valid": len(issues) == 0, "issues": issues}
 
@@ -1188,7 +1188,7 @@ class ConstitutionalWINASupport:
             )
 
         except Exception as e:
-            logger.error(f"Failed to initialize efficiency principles: {e}")
+            logger.exception(f"Failed to initialize efficiency principles: {e}")
             raise WINAConstitutionalError(f"Principle initialization failed: {e}")
 
     async def propose_principle_update(
@@ -1242,7 +1242,7 @@ class ConstitutionalWINASupport:
             return f"UPDATE_{len(self.proposed_updates)}_{principle_id}"
 
         except Exception as e:
-            logger.error(f"Failed to propose principle update: {e}")
+            logger.exception(f"Failed to propose principle update: {e}")
             raise WINAConstitutionalError(f"Principle update proposal failed: {e}")
 
     async def evaluate_wina_compliance(
@@ -1288,7 +1288,7 @@ class ConstitutionalWINASupport:
             return compliance_results
 
         except Exception as e:
-            logger.error(f"WINA compliance evaluation failed: {e}")
+            logger.exception(f"WINA compliance evaluation failed: {e}")
             raise WINAConstitutionalError(f"Compliance evaluation failed: {e}")
 
     async def generate_governance_recommendation(
@@ -1344,7 +1344,7 @@ class ConstitutionalWINASupport:
             return governance_decision
 
         except Exception as e:
-            logger.error(f"Governance recommendation generation failed: {e}")
+            logger.exception(f"Governance recommendation generation failed: {e}")
             raise WINAConstitutionalError(f"Governance recommendation failed: {e}")
 
     async def _assess_principle_compliance(

@@ -10,7 +10,7 @@ import hashlib
 import logging
 import time
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 try:
     import numpy as np
@@ -66,7 +66,7 @@ class EmbeddingService:
         cache_ttl_hours: int = 24,
         enable_caching: bool = True,
         enable_wina_optimization: bool = True,
-        device: Optional[str] = None,
+        device: str | None = None,
     ):
         """
         Initialize embedding service.
@@ -95,8 +95,8 @@ class EmbeddingService:
             self.device = device
 
         # Model instances
-        self.primary_model: Optional[SentenceTransformer] = None
-        self.fallback_model: Optional[SentenceTransformer] = None
+        self.primary_model: SentenceTransformer | None = None
+        self.fallback_model: SentenceTransformer | None = None
         self.models_loaded = False
 
         # Cache manager
@@ -184,7 +184,7 @@ class EmbeddingService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize embedding service: {e}")
+            logger.exception(f"Failed to initialize embedding service: {e}")
             return False
 
     async def _load_model(self, model_name: str, is_primary: bool = True):
@@ -193,8 +193,7 @@ class EmbeddingService:
             logger.info(f"Loading embedding model: {model_name}")
 
             def load_model():
-                model = SentenceTransformer(model_name, device=self.device)
-                return model
+                return SentenceTransformer(model_name, device=self.device)
 
             # Load model in thread to avoid blocking
             model = await asyncio.to_thread(load_model)
@@ -207,7 +206,7 @@ class EmbeddingService:
             logger.info(f"Successfully loaded model: {model_name}")
 
         except Exception as e:
-            logger.error(f"Failed to load model {model_name}: {e}")
+            logger.exception(f"Failed to load model {model_name}: {e}")
             if is_primary:
                 # Try fallback as primary
                 if self.fallback_model_name != model_name:
@@ -273,7 +272,7 @@ class EmbeddingService:
         model_hash = hashlib.sha256(model_name.encode()).hexdigest()[:8]
         return f"embedding:{model_hash}:{content_hash}"
 
-    async def _get_cached_embedding(self, cache_key: str) -> Optional[list[float]]:
+    async def _get_cached_embedding(self, cache_key: str) -> list[float] | None:
         """Retrieve embedding from cache."""
         if not self.enable_caching or not self.cache_manager:
             return None
@@ -315,7 +314,7 @@ class EmbeddingService:
     async def generate_embedding(
         self,
         text: str,
-        model_name: Optional[str] = None,
+        model_name: str | None = None,
         normalize: bool = True,
         use_cache: bool = True,
     ) -> tuple[list[float], dict[str, Any]]:
@@ -405,7 +404,7 @@ class EmbeddingService:
         except Exception as e:
             total_latency = (time.time() - start_time) * 1000
             self._update_metrics(total_latency, False)
-            logger.error(f"Embedding generation failed: {e}")
+            logger.exception(f"Embedding generation failed: {e}")
             return [], {"error": str(e), "latency_ms": total_latency}
 
     async def _generate_embedding_with_model(
@@ -438,27 +437,27 @@ class EmbeddingService:
                     [text], convert_to_tensor=False, normalize_embeddings=normalize
                 )
                 return embedding[0].tolist()
-            else:
-                # Mock embedding for when libraries are not available
-                return [0.1] * 384
+            # Mock embedding for when libraries are not available
+            return [0.1] * 384
 
         embedding = await asyncio.to_thread(encode_text)
 
         # Additional normalization if requested and not done by model
-        if normalize and not self.model_configs.get(model_name, {}).get(
-            "normalization", False
+        if (
+            normalize
+            and not self.model_configs.get(model_name, {}).get("normalization", False)
+            and EMBEDDING_LIBS_AVAILABLE
         ):
-            if EMBEDDING_LIBS_AVAILABLE:
-                embedding_array = np.array(embedding)
-                norm = np.linalg.norm(embedding_array)
-                if norm > 0:
-                    embedding = (embedding_array / norm).tolist()
+            embedding_array = np.array(embedding)
+            norm = np.linalg.norm(embedding_array)
+            if norm > 0:
+                embedding = (embedding_array / norm).tolist()
 
         return embedding
 
     async def _apply_wina_optimization(
         self, embedding: list[float]
-    ) -> Optional[list[float]]:
+    ) -> list[float] | None:
         """Apply WINA optimization to embedding vector."""
         if not self.enable_wina_optimization or not hasattr(self, "wina_integrator"):
             return None
@@ -510,7 +509,7 @@ class EmbeddingService:
                         # Renormalize to maintain vector properties
                         norm = np.linalg.norm(optimized_embedding)
                         if norm > 0:
-                            optimized_embedding = optimized_embedding / norm
+                            optimized_embedding /= norm
 
                         return optimized_embedding.tolist()
 
@@ -523,7 +522,7 @@ class EmbeddingService:
     async def generate_batch_embeddings(
         self,
         texts: list[str],
-        model_name: Optional[str] = None,
+        model_name: str | None = None,
         normalize: bool = True,
         use_cache: bool = True,
         batch_size: int = 32,
@@ -567,7 +566,7 @@ class EmbeddingService:
 
         return results
 
-    def get_model_info(self, model_name: Optional[str] = None) -> dict[str, Any]:
+    def get_model_info(self, model_name: str | None = None) -> dict[str, Any]:
         """Get information about embedding model."""
         target_model = model_name or self.primary_model_name
         config = self.model_configs.get(target_model, {})
@@ -633,4 +632,4 @@ class EmbeddingService:
             logger.info("Embedding service resources cleaned up")
 
         except Exception as e:
-            logger.error(f"Error during embedding service cleanup: {e}")
+            logger.exception(f"Error during embedding service cleanup: {e}")

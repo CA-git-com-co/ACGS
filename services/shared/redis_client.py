@@ -59,7 +59,7 @@ class ACGSRedisClient:
             logger.info(f"Redis client initialized for service: {self.service_name}")
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to initialize Redis client for {self.service_name}: {e}"
             )
             raise
@@ -84,7 +84,7 @@ class ACGSRedisClient:
         try:
             yield self.redis_client
         except Exception as e:
-            logger.error(f"Redis operation failed: {e}")
+            logger.exception(f"Redis operation failed: {e}")
             raise
 
     async def set_json(self, key: str, value: Any, ttl: int | None = None) -> bool:
@@ -96,7 +96,7 @@ class ACGSRedisClient:
                     return await client.setex(key, ttl, json_value)
                 return await client.set(key, json_value)
         except Exception as e:
-            logger.error(f"Failed to set JSON key {key}: {e}")
+            logger.exception(f"Failed to set JSON key {key}: {e}")
             return False
 
     async def get_json(self, key: str) -> Any | None:
@@ -108,7 +108,7 @@ class ACGSRedisClient:
                     return json.loads(value)
                 return None
         except Exception as e:
-            logger.error(f"Failed to get JSON key {key}: {e}")
+            logger.exception(f"Failed to get JSON key {key}: {e}")
             return None
 
     async def delete(self, key: str) -> bool:
@@ -117,7 +117,7 @@ class ACGSRedisClient:
             async with self.get_client() as client:
                 return bool(await client.delete(key))
         except Exception as e:
-            logger.error(f"Failed to delete key {key}: {e}")
+            logger.exception(f"Failed to delete key {key}: {e}")
             return False
 
     async def exists(self, key: str) -> bool:
@@ -126,7 +126,7 @@ class ACGSRedisClient:
             async with self.get_client() as client:
                 return bool(await client.exists(key))
         except Exception as e:
-            logger.error(f"Failed to check existence of key {key}: {e}")
+            logger.exception(f"Failed to check existence of key {key}: {e}")
             return False
 
     async def increment(self, key: str, amount: int = 1) -> int | None:
@@ -135,7 +135,7 @@ class ACGSRedisClient:
             async with self.get_client() as client:
                 return await client.incrby(key, amount)
         except Exception as e:
-            logger.error(f"Failed to increment key {key}: {e}")
+            logger.exception(f"Failed to increment key {key}: {e}")
             return None
 
     async def set_hash(
@@ -153,7 +153,7 @@ class ACGSRedisClient:
                     await client.expire(key, ttl)
                 return bool(result)
         except Exception as e:
-            logger.error(f"Failed to set hash {key}: {e}")
+            logger.exception(f"Failed to set hash {key}: {e}")
             return False
 
     async def get_hash(self, key: str) -> dict[str, Any] | None:
@@ -165,7 +165,7 @@ class ACGSRedisClient:
                     return {k: json.loads(v) for k, v in hash_data.items()}
                 return None
         except Exception as e:
-            logger.error(f"Failed to get hash {key}: {e}")
+            logger.exception(f"Failed to get hash {key}: {e}")
             return None
 
     async def add_to_list(
@@ -182,7 +182,7 @@ class ACGSRedisClient:
 
                 return True
         except Exception as e:
-            logger.error(f"Failed to add to list {key}: {e}")
+            logger.exception(f"Failed to add to list {key}: {e}")
             return False
 
     async def get_list(self, key: str, start: int = 0, end: int = -1) -> list[Any]:
@@ -192,7 +192,7 @@ class ACGSRedisClient:
                 list_data = await client.lrange(key, start, end)
                 return [json.loads(item) for item in list_data]
         except Exception as e:
-            logger.error(f"Failed to get list {key}: {e}")
+            logger.exception(f"Failed to get list {key}: {e}")
             return []
 
     async def get_ttl(self, key: str) -> int:
@@ -205,10 +205,9 @@ class ACGSRedisClient:
         """
         try:
             async with self.get_client() as client:
-                ttl = await client.ttl(key)
-                return ttl
+                return await client.ttl(key)
         except Exception as e:
-            logger.error(f"Failed to get TTL for key {key}: {e}")
+            logger.exception(f"Failed to get TTL for key {key}: {e}")
             return -2  # Return -2 to indicate error (same as non-existent key)
 
     def generate_key(self, *parts: str) -> str:

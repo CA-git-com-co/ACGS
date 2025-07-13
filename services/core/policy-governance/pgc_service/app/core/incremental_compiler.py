@@ -351,7 +351,7 @@ class IncrementalCompiler:
             return compilation_metrics
 
         except Exception as e:
-            logger.error(f"Policy compilation failed: {e}")
+            logger.exception(f"Policy compilation failed: {e}")
             raise
 
     async def _analyze_policy_changes(
@@ -467,10 +467,10 @@ class IncrementalCompiler:
         )
 
         # Upload to OPA
-        incremental = plan.strategy in [
+        incremental = plan.strategy in {
             CompilationStrategy.INCREMENTAL,
             CompilationStrategy.PARTIAL,
-        ]
+        }
 
         compilation_metrics = await self.opa_client.upload_policy_bundle(
             bundle, incremental=incremental
@@ -544,8 +544,9 @@ class IncrementalCompiler:
             invalidations.add(f"evaluated:{policy_id}")
 
         # Invalidate cache for dependent policies
-        for policy_id in dependencies_affected:
-            invalidations.add(f"evaluated:{policy_id}")
+        invalidations.update(
+            f"evaluated:{policy_id}" for policy_id in dependencies_affected
+        )
 
         return invalidations
 
@@ -733,7 +734,7 @@ class IncrementalCompiler:
                 return deployment_result
 
             except Exception as e:
-                logger.error(f"Policy deployment failed: {e}")
+                logger.exception(f"Policy deployment failed: {e}")
                 self.metrics["deployment_failures"] += 1
                 return {
                     "success": False,
@@ -809,7 +810,7 @@ class IncrementalCompiler:
             return {**rollback_result, "rollback_time_ms": rollback_time}
 
         except Exception as e:
-            logger.error(f"Policy rollback failed: {e}")
+            logger.exception(f"Policy rollback failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -914,7 +915,7 @@ class IncrementalCompiler:
                 validation_results.append(report)
 
             except Exception as e:
-                logger.error(f"Validation failed for policy {policy_id}: {e}")
+                logger.exception(f"Validation failed for policy {policy_id}: {e}")
                 validation_results.append(
                     ValidationReport(
                         policy_id=policy_id,
@@ -983,7 +984,7 @@ class IncrementalCompiler:
             }
 
         except Exception as e:
-            logger.error(f"Hot-swap deployment failed: {e}")
+            logger.exception(f"Hot-swap deployment failed: {e}")
             # Attempt automatic rollback
             await self._attempt_automatic_rollback(deployment_plan, str(e))
             raise
@@ -1040,7 +1041,7 @@ class IncrementalCompiler:
 
         except Exception as e:
             await db.rollback()
-            logger.error(f"Failed to create policy versions: {e}")
+            logger.exception(f"Failed to create policy versions: {e}")
             raise
 
     async def _update_version_tracking(
@@ -1098,7 +1099,7 @@ class IncrementalCompiler:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance check failed: {e}")
+            logger.exception(f"Constitutional compliance check failed: {e}")
             return False
 
     async def _validate_policy_performance(
@@ -1127,7 +1128,7 @@ class IncrementalCompiler:
             }
 
         except Exception as e:
-            logger.error(f"Performance validation failed: {e}")
+            logger.exception(f"Performance validation failed: {e}")
             return {"compilation_time_ms": 999999}  # Fail-safe high value
 
     def _get_next_version_number(self, policy_id: str) -> int:
@@ -1159,7 +1160,7 @@ class IncrementalCompiler:
                 health_status[endpoint] = True
 
             except Exception as e:
-                logger.error(f"Health check failed for {endpoint}: {e}")
+                logger.exception(f"Health check failed for {endpoint}: {e}")
                 health_status[endpoint] = False
 
         return health_status
@@ -1190,15 +1191,14 @@ class IncrementalCompiler:
 
         self.metrics["validation_failures"] += len(failed_policies)
 
-        error_summary = []
-        for result in failed_policies:
-            error_summary.append(
-                {
-                    "policy_id": result.policy_id,
-                    "errors": result.error_messages,
-                    "warnings": result.warnings,
-                }
-            )
+        error_summary = [
+            {
+                "policy_id": result.policy_id,
+                "errors": result.error_messages,
+                "warnings": result.warnings,
+            }
+            for result in failed_policies
+        ]
 
         return {
             "success": False,
@@ -1283,7 +1283,7 @@ class IncrementalCompiler:
             }
 
         except Exception as e:
-            logger.error(f"Policy rollback failed: {e}")
+            logger.exception(f"Policy rollback failed: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -1318,7 +1318,7 @@ class IncrementalCompiler:
             logger.info("Automatic rollback completed")
 
         except Exception as e:
-            logger.error(f"Automatic rollback failed: {e}")
+            logger.exception(f"Automatic rollback failed: {e}")
 
 
 # Global incremental compiler instance

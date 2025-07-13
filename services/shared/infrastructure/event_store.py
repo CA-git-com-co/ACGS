@@ -8,9 +8,10 @@ Event sourcing infrastructure for storing and retrieving domain events.
 import json
 import logging
 from abc import ABC, abstractmethod
+from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, AsyncIterator, Dict, List, Optional
+from typing import Any
 from uuid import UUID
 
 import asyncpg
@@ -23,8 +24,6 @@ logger = logging.getLogger(__name__)
 
 class ConcurrentAppendError(Exception):
     """Raised when there's a concurrent modification conflict during event append."""
-
-    pass
 
 
 @dataclass
@@ -53,7 +52,7 @@ class EventStream:
     stream_id: str
     tenant_id: TenantId
     current_version: StreamVersion
-    events: List[DomainEvent]
+    events: list[DomainEvent]
 
     def append_event(self, event: DomainEvent) -> None:
         """Append an event to the stream."""
@@ -70,8 +69,8 @@ class StoredEvent:
     tenant_id: str
     event_type: str
     event_version: str
-    event_data: Dict[str, Any]
-    metadata: Optional[Dict[str, Any]]
+    event_data: dict[str, Any]
+    metadata: dict[str, Any] | None
     stream_version: int
     created_at: datetime
     constitutional_hash: str
@@ -85,8 +84,8 @@ class EventStore(ABC):
         self,
         stream_id: str,
         tenant_id: TenantId,
-        events: List[DomainEvent],
-        expected_version: Optional[StreamVersion] = None,
+        events: list[DomainEvent],
+        expected_version: StreamVersion | None = None,
     ) -> StreamVersion:
         """
         Append events to a stream with optimistic concurrency control.
@@ -103,16 +102,15 @@ class EventStore(ABC):
         Raises:
             ConcurrentAppendError: If expected version doesn't match current
         """
-        pass
 
     @abstractmethod
     async def get_events(
         self,
         stream_id: str,
         tenant_id: TenantId,
-        from_version: Optional[StreamVersion] = None,
-        to_version: Optional[StreamVersion] = None,
-    ) -> List[DomainEvent]:
+        from_version: StreamVersion | None = None,
+        to_version: StreamVersion | None = None,
+    ) -> list[DomainEvent]:
         """
         Get events from a stream within version range.
 
@@ -125,7 +123,6 @@ class EventStore(ABC):
         Returns:
             List of domain events in order
         """
-        pass
 
     @abstractmethod
     async def get_stream_version(
@@ -141,7 +138,6 @@ class EventStore(ABC):
         Returns:
             Current stream version
         """
-        pass
 
     @abstractmethod
     async def stream_exists(self, stream_id: str, tenant_id: TenantId) -> bool:
@@ -155,14 +151,13 @@ class EventStore(ABC):
         Returns:
             True if stream exists
         """
-        pass
 
     @abstractmethod
     async def get_all_events_since(
         self,
         tenant_id: TenantId,
         since: datetime,
-        event_types: Optional[List[str]] = None,
+        event_types: list[str] | None = None,
     ) -> AsyncIterator[DomainEvent]:
         """
         Get all events since a specific timestamp.
@@ -175,7 +170,6 @@ class EventStore(ABC):
         Yields:
             Domain events in chronological order
         """
-        pass
 
 
 class PostgreSQLEventStore(EventStore):
@@ -202,33 +196,33 @@ class PostgreSQLEventStore(EventStore):
                     stream_version INTEGER NOT NULL,
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     constitutional_hash TEXT NOT NULL DEFAULT 'cdd01ef066bc6cf2',
-                    
+
                     -- Unique constraint for optimistic concurrency
                     UNIQUE(stream_id, tenant_id, stream_version)
                 );
-                
+
                 -- Enable RLS for multi-tenant isolation
                 ALTER TABLE event_store ENABLE ROW LEVEL SECURITY;
-                
+
                 -- RLS policy for tenant isolation
                 DROP POLICY IF EXISTS event_store_tenant_isolation ON event_store;
                 CREATE POLICY event_store_tenant_isolation ON event_store
                     FOR ALL TO application_role
                     USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
-                
+
                 -- Indexes for performance
-                CREATE INDEX IF NOT EXISTS idx_event_store_stream 
+                CREATE INDEX IF NOT EXISTS idx_event_store_stream
                     ON event_store (stream_id, tenant_id, stream_version);
-                
-                CREATE INDEX IF NOT EXISTS idx_event_store_tenant_time 
+
+                CREATE INDEX IF NOT EXISTS idx_event_store_tenant_time
                     ON event_store (tenant_id, created_at);
-                
-                CREATE INDEX IF NOT EXISTS idx_event_store_event_type 
+
+                CREATE INDEX IF NOT EXISTS idx_event_store_event_type
                     ON event_store (tenant_id, event_type, created_at);
-                
+
                 -- Constitutional hash constraint
-                ALTER TABLE event_store 
-                ADD CONSTRAINT constitutional_hash_check 
+                ALTER TABLE event_store
+                ADD CONSTRAINT constitutional_hash_check
                 CHECK (constitutional_hash = 'cdd01ef066bc6cf2');
             """
             )
@@ -237,13 +231,12 @@ class PostgreSQLEventStore(EventStore):
         self,
         stream_id: str,
         tenant_id: TenantId,
-        events: List[DomainEvent],
-        expected_version: Optional[StreamVersion] = None,
+        events: list[DomainEvent],
+        expected_version: StreamVersion | None = None,
     ) -> StreamVersion:
         """Append events with optimistic concurrency control."""
         if not events:
-            current_version = await self.get_stream_version(stream_id, tenant_id)
-            return current_version
+            return await self.get_stream_version(stream_id, tenant_id)
 
         async with self.pool.acquire() as conn:
             async with conn.transaction():
@@ -318,9 +311,9 @@ class PostgreSQLEventStore(EventStore):
         self,
         stream_id: str,
         tenant_id: TenantId,
-        from_version: Optional[StreamVersion] = None,
-        to_version: Optional[StreamVersion] = None,
-    ) -> List[DomainEvent]:
+        from_version: StreamVersion | None = None,
+        to_version: StreamVersion | None = None,
+    ) -> list[DomainEvent]:
         """Get events from stream within version range."""
         async with self.pool.acquire() as conn:
             # Set tenant context for RLS
@@ -330,9 +323,9 @@ class PostgreSQLEventStore(EventStore):
 
             # Build query with version filters
             query = """
-                SELECT event_id, event_type, event_version, event_data, 
+                SELECT event_id, event_type, event_version, event_data,
                        metadata, stream_version, created_at, constitutional_hash
-                FROM event_store 
+                FROM event_store
                 WHERE stream_id = $1 AND tenant_id = $2
             """
             params = [stream_id, str(tenant_id)]
@@ -383,7 +376,7 @@ class PostgreSQLEventStore(EventStore):
         row = await conn.fetchrow(
             """
             SELECT COALESCE(MAX(stream_version), 0) as current_version
-            FROM event_store 
+            FROM event_store
             WHERE stream_id = $1 AND tenant_id = $2
         """,
             stream_id,
@@ -403,7 +396,7 @@ class PostgreSQLEventStore(EventStore):
             row = await conn.fetchrow(
                 """
                 SELECT EXISTS(
-                    SELECT 1 FROM event_store 
+                    SELECT 1 FROM event_store
                     WHERE stream_id = $1 AND tenant_id = $2
                 )
             """,
@@ -417,7 +410,7 @@ class PostgreSQLEventStore(EventStore):
         self,
         tenant_id: TenantId,
         since: datetime,
-        event_types: Optional[List[str]] = None,
+        event_types: list[str] | None = None,
     ) -> AsyncIterator[DomainEvent]:
         """Get all events since timestamp."""
         async with self.pool.acquire() as conn:
@@ -427,9 +420,9 @@ class PostgreSQLEventStore(EventStore):
             )
 
             query = """
-                SELECT event_id, event_type, event_version, event_data, 
+                SELECT event_id, event_type, event_version, event_data,
                        metadata, stream_version, created_at, constitutional_hash
-                FROM event_store 
+                FROM event_store
                 WHERE tenant_id = $1 AND created_at >= $2
             """
             params = [str(tenant_id), since]
@@ -446,7 +439,7 @@ class PostgreSQLEventStore(EventStore):
                     if event:
                         yield event
 
-    async def _row_to_domain_event(self, row) -> Optional[DomainEvent]:
+    async def _row_to_domain_event(self, row) -> DomainEvent | None:
         """Convert database row to domain event."""
         try:
             # This is a simplified conversion - in practice, you'd have
@@ -478,7 +471,7 @@ class PostgreSQLEventStore(EventStore):
             # Create a generic event for reconstruction
             class GenericDomainEvent(DomainEvent):
                 def __init__(
-                    self, event_type: str, event_data: Dict[str, Any], **kwargs
+                    self, event_type: str, event_data: dict[str, Any], **kwargs
                 ):
                     super().__init__(**kwargs)
                     self.event_type = event_type
@@ -487,7 +480,7 @@ class PostgreSQLEventStore(EventStore):
                 def _get_event_version(self) -> str:
                     return "1.0"
 
-                def get_event_data(self) -> Dict[str, Any]:
+                def get_event_data(self) -> dict[str, Any]:
                     return self._event_data
 
             event = GenericDomainEvent(
@@ -516,7 +509,7 @@ class PostgreSQLEventStore(EventStore):
             return event
 
         except Exception as e:
-            logger.error(f"Failed to reconstruct event from row: {e}")
+            logger.exception(f"Failed to reconstruct event from row: {e}")
             return None
 
 
@@ -531,24 +524,23 @@ class EventStoreSnapshot:
         self,
         stream_id: str,
         tenant_id: TenantId,
-        aggregate_data: Dict[str, Any],
+        aggregate_data: dict[str, Any],
         stream_version: StreamVersion,
     ) -> None:
         """Save aggregate snapshot for performance optimization."""
         # Implementation would save aggregate state snapshot
         # to avoid replaying all events
-        pass
 
     async def get_snapshot(
         self, stream_id: str, tenant_id: TenantId
-    ) -> Optional[tuple[Dict[str, Any], StreamVersion]]:
+    ) -> tuple[dict[str, Any], StreamVersion] | None:
         """Get latest snapshot for aggregate."""
         # Implementation would retrieve latest snapshot
         return None
 
 
 # Global event store instance
-_event_store: Optional[EventStore] = None
+_event_store: EventStore | None = None
 
 
 def get_event_store() -> EventStore:

@@ -7,8 +7,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set
-from uuid import uuid4
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -26,14 +25,14 @@ class LegalAnalysisResult(BaseModel):
     approved: bool
     risk_level: str  # 'low', 'medium', 'high', 'critical'
     confidence: float = Field(ge=0.0, le=1.0)
-    regulatory_compliance: Dict[str, Any] = Field(default_factory=dict)
-    jurisdiction_analysis: Dict[str, Any] = Field(default_factory=dict)
-    data_protection_assessment: Dict[str, Any] = Field(default_factory=dict)
-    liability_assessment: Dict[str, Any] = Field(default_factory=dict)
-    contract_compliance: Dict[str, Any] = Field(default_factory=dict)
-    recommendations: List[str] = Field(default_factory=list)
-    constitutional_compliance: Dict[str, Any] = Field(default_factory=dict)
-    analysis_metadata: Dict[str, Any] = Field(default_factory=dict)
+    regulatory_compliance: dict[str, Any] = Field(default_factory=dict)
+    jurisdiction_analysis: dict[str, Any] = Field(default_factory=dict)
+    data_protection_assessment: dict[str, Any] = Field(default_factory=dict)
+    liability_assessment: dict[str, Any] = Field(default_factory=dict)
+    contract_compliance: dict[str, Any] = Field(default_factory=dict)
+    recommendations: list[str] = Field(default_factory=list)
+    constitutional_compliance: dict[str, Any] = Field(default_factory=dict)
+    analysis_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class RegulatoryFrameworkAnalyzer:
@@ -126,10 +125,10 @@ class RegulatoryFrameworkAnalyzer:
     @staticmethod
     async def analyze_framework_compliance(
         framework: str,
-        model_info: Dict[str, Any],
-        data_handling: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        data_handling: dict[str, Any],
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze compliance with a specific regulatory framework"""
 
         if framework not in RegulatoryFrameworkAnalyzer.FRAMEWORKS:
@@ -145,36 +144,35 @@ class RegulatoryFrameworkAnalyzer:
             return await RegulatoryFrameworkAnalyzer._analyze_gdpr_compliance(
                 framework_info, model_info, data_handling, deployment_context
             )
-        elif framework == "CCPA":
+        if framework == "CCPA":
             return await RegulatoryFrameworkAnalyzer._analyze_ccpa_compliance(
                 framework_info, model_info, data_handling, deployment_context
             )
-        elif framework == "AI_Act":
+        if framework == "AI_Act":
             return await RegulatoryFrameworkAnalyzer._analyze_ai_act_compliance(
                 framework_info, model_info, data_handling, deployment_context
             )
-        elif framework == "HIPAA":
+        if framework == "HIPAA":
             return await RegulatoryFrameworkAnalyzer._analyze_hipaa_compliance(
                 framework_info, model_info, data_handling, deployment_context
             )
-        elif framework == "SOX":
+        if framework == "SOX":
             return await RegulatoryFrameworkAnalyzer._analyze_sox_compliance(
                 framework_info, model_info, data_handling, deployment_context
             )
-        else:
-            return {
-                "framework": framework,
-                "compliance_status": "not_implemented",
-                "error": f"Analysis for {framework} not implemented",
-            }
+        return {
+            "framework": framework,
+            "compliance_status": "not_implemented",
+            "error": f"Analysis for {framework} not implemented",
+        }
 
     @staticmethod
     async def _analyze_gdpr_compliance(
-        framework_info: Dict[str, Any],
-        model_info: Dict[str, Any],
-        data_handling: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        framework_info: dict[str, Any],
+        model_info: dict[str, Any],
+        data_handling: dict[str, Any],
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze GDPR compliance"""
 
         compliance_checks = {}
@@ -186,14 +184,14 @@ class RegulatoryFrameworkAnalyzer:
         if not lawful_basis:
             violations.append("No lawful basis specified for data processing")
             risk_score += 0.3
-        elif lawful_basis not in [
+        elif lawful_basis not in {
             "consent",
             "contract",
             "legal_obligation",
             "vital_interests",
             "public_task",
             "legitimate_interests",
-        ]:
+        }:
             violations.append(f"Invalid lawful basis: {lawful_basis}")
             risk_score += 0.2
 
@@ -252,10 +250,9 @@ class RegulatoryFrameworkAnalyzer:
         # Check automated decision making
         automated_decisions = deployment_context.get("automated_decisions", False)
         human_oversight = deployment_context.get("human_oversight", {})
-        if automated_decisions:
-            if not human_oversight.get("enabled", False):
-                violations.append("Automated decision making without human oversight")
-                risk_score += 0.25
+        if automated_decisions and not human_oversight.get("enabled", False):
+            violations.append("Automated decision making without human oversight")
+            risk_score += 0.25
 
         compliance_checks["automated_decision_making"] = {
             "status": (
@@ -313,11 +310,11 @@ class RegulatoryFrameworkAnalyzer:
 
     @staticmethod
     async def _analyze_ccpa_compliance(
-        framework_info: Dict[str, Any],
-        model_info: Dict[str, Any],
-        data_handling: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        framework_info: dict[str, Any],
+        model_info: dict[str, Any],
+        data_handling: dict[str, Any],
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze CCPA compliance"""
 
         compliance_checks = {}
@@ -400,11 +397,11 @@ class RegulatoryFrameworkAnalyzer:
 
     @staticmethod
     async def _analyze_ai_act_compliance(
-        framework_info: Dict[str, Any],
-        model_info: Dict[str, Any],
-        data_handling: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        framework_info: dict[str, Any],
+        model_info: dict[str, Any],
+        data_handling: dict[str, Any],
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze EU AI Act compliance"""
 
         compliance_checks = {}
@@ -526,11 +523,11 @@ class RegulatoryFrameworkAnalyzer:
 
     @staticmethod
     async def _analyze_hipaa_compliance(
-        framework_info: Dict[str, Any],
-        model_info: Dict[str, Any],
-        data_handling: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        framework_info: dict[str, Any],
+        model_info: dict[str, Any],
+        data_handling: dict[str, Any],
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze HIPAA compliance"""
 
         # Check if health data is involved
@@ -640,11 +637,11 @@ class RegulatoryFrameworkAnalyzer:
 
     @staticmethod
     async def _analyze_sox_compliance(
-        framework_info: Dict[str, Any],
-        model_info: Dict[str, Any],
-        data_handling: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        framework_info: dict[str, Any],
+        model_info: dict[str, Any],
+        data_handling: dict[str, Any],
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze SOX compliance"""
 
         # Check if financial reporting is involved
@@ -723,8 +720,8 @@ class RegulatoryFrameworkAnalyzer:
 
     @staticmethod
     def _generate_gdpr_recommendations(
-        violations: List[str], missing_measures: List[str], missing_rights: List[str]
-    ) -> List[str]:
+        violations: list[str], missing_measures: list[str], missing_rights: list[str]
+    ) -> list[str]:
         """Generate GDPR compliance recommendations"""
         recommendations = []
 
@@ -752,7 +749,7 @@ class RegulatoryFrameworkAnalyzer:
         return recommendations
 
     @staticmethod
-    def _generate_ccpa_recommendations(violations: List[str]) -> List[str]:
+    def _generate_ccpa_recommendations(violations: list[str]) -> list[str]:
         """Generate CCPA compliance recommendations"""
         recommendations = []
 
@@ -773,20 +770,20 @@ class RegulatoryFrameworkAnalyzer:
 
     @staticmethod
     def _generate_ai_act_recommendations(
-        violations: List[str], risk_category: str
-    ) -> List[str]:
+        violations: list[str], risk_category: str
+    ) -> list[str]:
         """Generate AI Act compliance recommendations"""
         recommendations = []
 
         if risk_category == "high":
-            recommendations.append(
-                "Implement comprehensive risk management system for high-risk AI"
+            recommendations.extend(
+                (
+                    "Implement comprehensive risk management system for high-risk AI",
+                    "Ensure human oversight and intervention capabilities",
+                    "Conduct thorough robustness and accuracy testing",
+                    "Maintain detailed technical documentation",
+                )
             )
-            recommendations.append(
-                "Ensure human oversight and intervention capabilities"
-            )
-            recommendations.append("Conduct thorough robustness and accuracy testing")
-            recommendations.append("Maintain detailed technical documentation")
 
         if any("disclosure" in v for v in violations):
             recommendations.append("Implement proper AI system disclosure to users")
@@ -797,7 +794,7 @@ class RegulatoryFrameworkAnalyzer:
         return recommendations
 
     @staticmethod
-    def _generate_hipaa_recommendations(violations: List[str]) -> List[str]:
+    def _generate_hipaa_recommendations(violations: list[str]) -> list[str]:
         """Generate HIPAA compliance recommendations"""
         recommendations = []
 
@@ -819,7 +816,7 @@ class RegulatoryFrameworkAnalyzer:
         return recommendations
 
     @staticmethod
-    def _generate_sox_recommendations(violations: List[str]) -> List[str]:
+    def _generate_sox_recommendations(violations: list[str]) -> list[str]:
         """Generate SOX compliance recommendations"""
         recommendations = []
 
@@ -872,10 +869,10 @@ class JurisdictionAnalyzer:
 
     @staticmethod
     async def analyze_jurisdictional_requirements(
-        jurisdictions: List[str],
-        deployment_context: Dict[str, Any],
-        data_handling: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        jurisdictions: list[str],
+        deployment_context: dict[str, Any],
+        data_handling: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze legal requirements across multiple jurisdictions"""
 
         jurisdiction_analysis = {}
@@ -936,8 +933,8 @@ class JurisdictionAnalyzer:
 
     @staticmethod
     def _generate_jurisdictional_recommendations(
-        cross_border_issues: List[str], jurisdiction_analysis: Dict[str, Any]
-    ) -> List[str]:
+        cross_border_issues: list[str], jurisdiction_analysis: dict[str, Any]
+    ) -> list[str]:
         """Generate recommendations for jurisdictional compliance"""
         recommendations = []
 
@@ -971,10 +968,10 @@ class ContractualComplianceAnalyzer:
 
     @staticmethod
     async def analyze_contractual_compliance(
-        contract_terms: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-        model_info: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        contract_terms: dict[str, Any],
+        deployment_context: dict[str, Any],
+        model_info: dict[str, Any],
+    ) -> dict[str, Any]:
         """Analyze compliance with contractual terms and SLAs"""
 
         compliance_checks = {}
@@ -1105,7 +1102,7 @@ class ContractualComplianceAnalyzer:
         }
 
     @staticmethod
-    def _generate_contract_recommendations(violations: List[str]) -> List[str]:
+    def _generate_contract_recommendations(violations: list[str]) -> list[str]:
         """Generate recommendations for contractual compliance"""
         recommendations = []
 
@@ -1146,9 +1143,9 @@ class LegalAgent:
     def __init__(
         self,
         agent_id: str = "legal_agent",
-        blackboard_service: Optional[BlackboardService] = None,
-        constitutional_framework: Optional[ConstitutionalSafetyValidator] = None,
-        ai_model_service: Optional[AIModelService] = None,
+        blackboard_service: BlackboardService | None = None,
+        constitutional_framework: ConstitutionalSafetyValidator | None = None,
+        ai_model_service: AIModelService | None = None,
     ):
         self.agent_id = agent_id
         self.agent_type = "legal_agent"
@@ -1188,8 +1185,8 @@ class LegalAgent:
         ]
 
     async def _analyze_regulatory_compliance(
-        self, model_info: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_info: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze regulatory compliance requirements"""
         return {
             "gdpr_compliance": {
@@ -1219,8 +1216,8 @@ class LegalAgent:
         }
 
     async def _analyze_privacy_law(
-        self, data_processing: Dict[str, Any], jurisdiction: str
-    ) -> Dict[str, Any]:
+        self, data_processing: dict[str, Any], jurisdiction: str
+    ) -> dict[str, Any]:
         """Analyze privacy law compliance"""
         return {
             "ccpa_compliance": {"status": "compliant", "score": 0.8},
@@ -1240,8 +1237,8 @@ class LegalAgent:
         }
 
     async def _assess_liability(
-        self, model_deployment: Dict[str, Any], stakeholders: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_deployment: dict[str, Any], stakeholders: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess liability distribution and requirements"""
         return {
             "liability_distribution": {"developer": 0.4, "deployer": 0.4, "user": 0.2},
@@ -1269,8 +1266,8 @@ class LegalAgent:
         }
 
     async def _analyze_intellectual_property(
-        self, model_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_info: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze intellectual property implications"""
         return {
             "training_data_ip_status": {"status": "licensed", "risk_level": "low"},
@@ -1288,8 +1285,8 @@ class LegalAgent:
         }
 
     async def _analyze_contract_terms(
-        self, contract_terms: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, contract_terms: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze contract terms adequacy"""
         return {
             "term_adequacy": {
@@ -1357,7 +1354,7 @@ class LegalAgent:
                 await asyncio.sleep(5)  # Check for new tasks every 5 seconds
 
             except Exception as e:
-                self.logger.error(f"Error in task claiming loop: {str(e)}")
+                self.logger.exception(f"Error in task claiming loop: {e!s}")
                 await asyncio.sleep(10)  # Wait longer on error
 
     async def process_task(self, task_id: str) -> Any:
@@ -1392,8 +1389,8 @@ class LegalAgent:
             return result
 
         except Exception as e:
-            self.logger.error(f"Error processing task {task_id}: {str(e)}")
-            raise e
+            self.logger.exception(f"Error processing task {task_id}: {e!s}")
+            raise
 
     async def _process_task(self, task: TaskDefinition) -> None:
         """Process a claimed task"""
@@ -1425,7 +1422,7 @@ class LegalAgent:
             )
 
         except Exception as e:
-            self.logger.error(f"Error processing task {task.id}: {str(e)}")
+            self.logger.exception(f"Error processing task {task.id}: {e!s}")
 
             # Mark task as failed
             error_result = {
@@ -1560,7 +1557,7 @@ class LegalAgent:
             all_recommendations.append(
                 "Address all legal compliance violations before deployment"
             )
-        if risk_level in ["high", "critical"]:
+        if risk_level in {"high", "critical"}:
             all_recommendations.append("Conduct legal review with qualified counsel")
 
         # Basic liability assessment
@@ -1627,7 +1624,7 @@ class LegalAgent:
         )
 
         risk_score = framework_analysis.get("risk_score", 0.0)
-        violations = framework_analysis.get("violations", [])
+        framework_analysis.get("violations", [])
 
         # Determine approval and risk level
         approved = framework_analysis.get("compliance_status") == "compliant"
@@ -1819,8 +1816,8 @@ class LegalAgent:
         )
 
     async def _analyze_data_protection(
-        self, data_handling: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, data_handling: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze data protection compliance"""
         protection_assessment = {
             "encryption_status": self._check_encryption_compliance(data_handling),
@@ -1841,7 +1838,7 @@ class LegalAgent:
         )
 
         recommendations = []
-        for category, assessment in protection_assessment.items():
+        for assessment in protection_assessment.values():
             if assessment.get("score", 0.5) < 0.7:
                 recommendations.extend(assessment.get("recommendations", []))
 
@@ -1857,8 +1854,8 @@ class LegalAgent:
         }
 
     def _check_encryption_compliance(
-        self, data_handling: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, data_handling: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check encryption implementation"""
         encryption = data_handling.get("encryption", {})
 
@@ -1890,7 +1887,7 @@ class LegalAgent:
             "recommendations": recommendations,
         }
 
-    def _check_access_controls(self, data_handling: Dict[str, Any]) -> Dict[str, Any]:
+    def _check_access_controls(self, data_handling: dict[str, Any]) -> dict[str, Any]:
         """Check access control implementation"""
         access_controls = data_handling.get("access_controls", {})
 
@@ -1928,7 +1925,7 @@ class LegalAgent:
             "recommendations": recommendations,
         }
 
-    def _check_data_minimization(self, data_handling: Dict[str, Any]) -> Dict[str, Any]:
+    def _check_data_minimization(self, data_handling: dict[str, Any]) -> dict[str, Any]:
         """Check data minimization implementation"""
         data_collection = data_handling.get("data_collection", {})
 
@@ -1961,8 +1958,8 @@ class LegalAgent:
         }
 
     def _check_retention_policies(
-        self, data_handling: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, data_handling: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check data retention policy compliance"""
         retention = data_handling.get("data_retention", {})
 
@@ -1995,8 +1992,8 @@ class LegalAgent:
         }
 
     def _check_breach_response_procedures(
-        self, data_handling: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, data_handling: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check breach response procedure implementation"""
         breach_response = data_handling.get("breach_response", {})
 
@@ -2029,12 +2026,12 @@ class LegalAgent:
         }
 
     async def _analyze_policy_legal_implications(
-        self, policy_document: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, policy_document: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze legal implications of a policy"""
         # Simplified implementation - would be more sophisticated in production
         policy_content = policy_document.get("content", "")
-        policy_scope = policy_document.get("scope", "")
+        policy_document.get("scope", "")
 
         implications = {
             "regulatory_conflicts": [],
@@ -2063,8 +2060,8 @@ class LegalAgent:
         return implications
 
     async def _analyze_enforcement_feasibility(
-        self, enforcement_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, enforcement_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze policy enforcement feasibility"""
         technical_capabilities = enforcement_context.get("technical_capabilities", {})
         resource_availability = enforcement_context.get("resource_availability", {})
@@ -2078,8 +2075,8 @@ class LegalAgent:
         }
 
     async def _extract_compliance_requirements(
-        self, policy_document: Dict[str, Any]
-    ) -> List[str]:
+        self, policy_document: dict[str, Any]
+    ) -> list[str]:
         """Extract compliance requirements from policy"""
         # Simplified implementation
         requirements = []
@@ -2095,8 +2092,8 @@ class LegalAgent:
         return requirements
 
     async def _check_constitutional_compliance(
-        self, required_principles: List[str], analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, required_principles: list[str], analysis_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check constitutional compliance for legal analysis"""
         if not self.constitutional_framework:
             return {
@@ -2135,8 +2132,8 @@ class LegalAgent:
         }
 
     async def _check_principle_compliance(
-        self, principle: str, analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: str, analysis_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check compliance with a specific constitutional principle"""
         if principle == "data_privacy":
             data_protection = analysis_results.get("data_protection", {})
@@ -2151,7 +2148,7 @@ class LegalAgent:
 
             return {"compliant": True, "note": "Data privacy requirements met"}
 
-        elif principle == "consent":
+        if principle == "consent":
             regulatory_compliance = analysis_results.get("regulatory_compliance", {})
             gdpr_analysis = regulatory_compliance.get("GDPR", {})
 
@@ -2160,23 +2157,22 @@ class LegalAgent:
                     "lawful_basis", {}
                 )
                 if (
-                    lawful_basis.get("basis") in ["consent"]
+                    lawful_basis.get("basis") == "consent"
                     or lawful_basis.get("status") == "compliant"
                 ):
                     return {"compliant": True, "note": "Consent requirements met"}
-                else:
-                    return {
-                        "compliant": False,
-                        "violation_reason": "Consent not properly established",
-                        "severity": "medium",
-                    }
+                return {
+                    "compliant": False,
+                    "violation_reason": "Consent not properly established",
+                    "severity": "medium",
+                }
 
             return {
                 "compliant": True,
                 "note": "Consent compliance check not applicable",
             }
 
-        elif principle == "transparency":
+        if principle == "transparency":
             regulatory_compliance = analysis_results.get("regulatory_compliance", {})
 
             # Check if transparency obligations are met across frameworks
@@ -2198,7 +2194,7 @@ class LegalAgent:
 
             return {"compliant": True, "note": "Transparency requirements met"}
 
-        elif principle == "least_privilege":
+        if principle == "least_privilege":
             data_protection = analysis_results.get("data_protection", {})
             access_controls = data_protection.get("assessments", {}).get(
                 "access_controls", {}
@@ -2213,11 +2209,10 @@ class LegalAgent:
 
             return {"compliant": True, "note": "Least privilege requirements met"}
 
-        else:
-            return {
-                "compliant": True,
-                "note": f"Principle {principle} not specifically checked",
-            }
+        return {
+            "compliant": True,
+            "note": f"Principle {principle} not specifically checked",
+        }
 
     async def _add_task_knowledge(
         self, task: TaskDefinition, result: LegalAnalysisResult
@@ -2250,5 +2245,5 @@ class LegalAgent:
                 await self.blackboard.agent_heartbeat(self.agent_id)
                 await asyncio.sleep(30)  # Heartbeat every 30 seconds
             except Exception as e:
-                self.logger.error(f"Error in heartbeat loop: {str(e)}")
+                self.logger.exception(f"Error in heartbeat loop: {e!s}")
                 await asyncio.sleep(60)

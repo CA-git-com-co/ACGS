@@ -220,7 +220,7 @@ class QECConflictResolver:
             )
 
         except Exception as e:
-            logger.error(f"QEC conflict analysis failed: {e}")
+            logger.exception(f"QEC conflict analysis failed: {e}")
             return self._fallback_analysis(conflict, principles)
 
     async def generate_patch(
@@ -307,7 +307,7 @@ class QECConflictResolver:
             )
 
         except Exception as e:
-            logger.error(f"QEC patch generation failed: {e}")
+            logger.exception(f"QEC patch generation failed: {e}")
             return self._fallback_patch_generation(conflict, principles)
 
     def prioritize_conflicts(
@@ -326,7 +326,7 @@ class QECConflictResolver:
             # Sort by priority score (higher score = higher priority)
             return sorted(conflicts, key=lambda x: x[1].priority_score, reverse=True)
         except Exception as e:
-            logger.error(f"Conflict prioritization failed: {e}")
+            logger.exception(f"Conflict prioritization failed: {e}")
             return conflicts
 
     def _convert_to_constitutional_principles(

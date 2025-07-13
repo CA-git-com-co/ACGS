@@ -195,16 +195,6 @@ async def test_semantic_search_latency_target(
     summary = metrics.get_summary()
 
     # Print performance summary
-    print("\n=== Semantic Search Performance Summary ===")
-    print(f"Total Requests: {summary['total_requests']}")
-    print(f"Duration: {summary['duration_seconds']:.2f}s")
-    print(f"RPS: {summary['requests_per_second']:.2f}")
-    print(f"P99 Latency: {summary['p99_latency_ms']:.2f}ms")
-    print(f"P95 Latency: {summary['p95_latency_ms']:.2f}ms")
-    print(f"Mean Latency: {summary['mean_latency_ms']:.2f}ms")
-    print(f"Cache Hit Rate: {summary['cache_hit_rate']:.2%}")
-    print(f"Error Rate: {summary['error_rate']:.2%}")
-    print(f"Max Memory: {summary['max_memory_usage_mb']:.2f}MB")
 
     # Validate performance targets
     target_p99_ms = performance_test_data["target_p99_latency_ms"]
@@ -245,20 +235,16 @@ async def test_symbol_lookup_performance(
             end_time = time.time()
             response_time = end_time - start_time
 
-            is_error = response.status_code not in [
+            is_error = response.status_code not in {
                 200,
                 404,
-            ]  # 404 is acceptable for test
+            }  # 404 is acceptable for test
             cache_hit = response.headers.get("X-Cache-Hit", "false").lower() == "true"
 
             metrics.record_response(response_time, cache_hit, is_error)
 
     metrics.stop_collection()
     summary = metrics.get_summary()
-
-    print("\n=== Symbol Lookup Performance Summary ===")
-    print(f"P99 Latency: {summary['p99_latency_ms']:.2f}ms")
-    print(f"Cache Hit Rate: {summary['cache_hit_rate']:.2%}")
 
     # Symbol lookups should be very fast, especially when cached
     assert (
@@ -302,7 +288,7 @@ async def test_concurrent_load_performance(
                 ("health_check", "/health", {}),
             ]
 
-            for req_type, endpoint, params in request_types:
+            for _req_type, endpoint, params in request_types:
                 start_time = time.time()
 
                 try:
@@ -342,15 +328,6 @@ async def test_concurrent_load_performance(
 
     metrics.stop_collection()
     summary = metrics.get_summary()
-
-    print("\n=== Concurrent Load Performance Summary ===")
-    print(f"Concurrent Users: {concurrent_users}")
-    print(f"Test Duration: {test_duration}s")
-    print(f"Total Requests: {summary['total_requests']}")
-    print(f"RPS: {summary['requests_per_second']:.2f}")
-    print(f"P99 Latency: {summary['p99_latency_ms']:.2f}ms")
-    print(f"Error Rate: {summary['error_rate']:.2%}")
-    print(f"Cache Hit Rate: {summary['cache_hit_rate']:.2%}")
 
     # Validate performance under load
     target_rps = performance_test_data["target_throughput_rps"]
@@ -410,11 +387,6 @@ async def test_cache_performance_validation(
     metrics.stop_collection()
     summary = metrics.get_summary()
 
-    print("\n=== Cache Performance Summary ===")
-    print(f"Cache Hit Rate: {summary['cache_hit_rate']:.2%}")
-    print(f"Cache Hits: {metrics.cache_hits}")
-    print(f"Cache Misses: {metrics.cache_misses}")
-
     target_cache_hit_rate = performance_test_data["target_cache_hit_rate"]
     assert summary["cache_hit_rate"] >= target_cache_hit_rate, (
         f"Cache hit rate {summary['cache_hit_rate']:.2%} below target"
@@ -450,11 +422,6 @@ async def test_memory_usage_validation(
 
     final_memory = psutil.Process().memory_info().rss / 1024 / 1024  # MB
     memory_increase = final_memory - initial_memory
-
-    print("\n=== Memory Usage Summary ===")
-    print(f"Initial Memory: {initial_memory:.2f}MB")
-    print(f"Final Memory: {final_memory:.2f}MB")
-    print(f"Memory Increase: {memory_increase:.2f}MB")
 
     # Memory increase should be reasonable (less than 100MB for this test)
     assert (
@@ -508,14 +475,6 @@ async def test_sustained_load_performance(
 
     metrics.stop_collection()
     summary = metrics.get_summary()
-
-    print("\n=== Sustained Load Performance Summary ===")
-    print(f"Test Duration: {summary['duration_seconds']:.2f}s")
-    print(f"Total Requests: {summary['total_requests']}")
-    print(f"RPS: {summary['requests_per_second']:.2f}")
-    print(f"P99 Latency: {summary['p99_latency_ms']:.2f}ms")
-    print(f"Error Rate: {summary['error_rate']:.2%}")
-    print(f"Max Memory: {summary['max_memory_usage_mb']:.2f}MB")
 
     # Validate sustained performance
     assert (

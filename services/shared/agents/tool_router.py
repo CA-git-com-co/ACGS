@@ -24,7 +24,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 
 from services.shared.monitoring.intelligent_alerting_system import (
     IntelligentAlertingSystem,
@@ -78,7 +78,7 @@ class ToolDefinition:
     output_schema: dict[str, Any]
     rate_limit_per_hour: int
     max_execution_time_seconds: int
-    resource_requirements: dict[str, Union[int, float]]
+    resource_requirements: dict[str, int | float]
     dependencies: list[str]
     tags: list[str]
     version: str
@@ -95,8 +95,8 @@ class ToolExecutionRequest:
     tool_id: str
     parameters: dict[str, Any]
     priority: int  # 1-10, 10 being highest
-    timeout_seconds: Optional[int]
-    callback_url: Optional[str]
+    timeout_seconds: int | None
+    callback_url: str | None
     metadata: dict[str, Any]
     requested_at: datetime
 
@@ -109,12 +109,12 @@ class ToolExecutionResult:
     tool_id: str
     agent_id: str
     status: ToolExecutionStatus
-    result: Optional[dict[str, Any]]
-    error_message: Optional[str]
+    result: dict[str, Any] | None
+    error_message: str | None
     execution_time_seconds: float
-    resource_usage: dict[str, Union[int, float]]
+    resource_usage: dict[str, int | float]
     started_at: datetime
-    completed_at: Optional[datetime]
+    completed_at: datetime | None
     audit_trail: list[dict[str, Any]]
 
 
@@ -126,7 +126,7 @@ class RateLimitInfo:
     tool_id: str
     requests_this_hour: int
     last_request_time: datetime
-    blocked_until: Optional[datetime]
+    blocked_until: datetime | None
     total_requests: int
 
 
@@ -149,7 +149,7 @@ class ToolRegistry:
 
         logger.info(f"Registered tool: {tool_def.tool_id}")
 
-    def get_tool(self, tool_id: str) -> Optional[ToolDefinition]:
+    def get_tool(self, tool_id: str) -> ToolDefinition | None:
         """Get tool definition by ID"""
         return self.tools.get(tool_id)
 
@@ -160,8 +160,8 @@ class ToolRegistry:
 
     def list_tools(
         self,
-        safety_level: Optional[ToolSafetyLevel] = None,
-        required_permissions: Optional[list[PermissionLevel]] = None,
+        safety_level: ToolSafetyLevel | None = None,
+        required_permissions: list[PermissionLevel] | None = None,
     ) -> list[ToolDefinition]:
         """List tools with optional filtering"""
         tools = list(self.tools.values())
@@ -203,7 +203,7 @@ class SafeToolExecutor:
         self.circuit_breaker_state: dict[str, dict[str, Any]] = {}
 
         # Resource monitoring
-        self.resource_usage: dict[str, dict[str, Union[int, float]]] = defaultdict(dict)
+        self.resource_usage: dict[str, dict[str, int | float]] = defaultdict(dict)
 
     async def execute_tool(
         self, tool_def: ToolDefinition, handler: Callable, request: ToolExecutionRequest
@@ -360,15 +360,14 @@ class SafeToolExecutor:
         if (
             "emergency_mode" in request.metadata
             and not request.metadata["emergency_mode"]
-        ):
-            if tool_def.safety_level in [
-                ToolSafetyLevel.HIGH,
-                ToolSafetyLevel.CRITICAL,
-            ]:
-                raise PermissionError(
-                    f"Agent {request.agent_id} lacks permission for"
-                    f" {tool_def.safety_level.value} tool"
-                )
+        ) and tool_def.safety_level in {
+            ToolSafetyLevel.HIGH,
+            ToolSafetyLevel.CRITICAL,
+        }:
+            raise PermissionError(
+                f"Agent {request.agent_id} lacks permission for"
+                f" {tool_def.safety_level.value} tool"
+            )
 
         execution_result.audit_trail.append(
             {
@@ -449,9 +448,8 @@ class SafeToolExecutor:
         if breaker["state"] == "open":
             if current_time < breaker["next_attempt_time"]:
                 raise Exception(f"Circuit breaker open for tool {request.tool_id}")
-            else:
-                # Move to half-open state
-                breaker["state"] = "half_open"
+            # Move to half-open state
+            breaker["state"] = "half_open"
 
         execution_result.audit_trail.append(
             {
@@ -578,7 +576,7 @@ class SafeToolExecutor:
                 breaker["next_attempt_time"] = datetime.utcnow() + timedelta(minutes=5)
 
         # Send alert for critical failures
-        if tool_def.safety_level in [ToolSafetyLevel.HIGH, ToolSafetyLevel.CRITICAL]:
+        if tool_def.safety_level in {ToolSafetyLevel.HIGH, ToolSafetyLevel.CRITICAL}:
             await self.alerting_system.send_alert(
                 {
                     "severity": "high",
@@ -749,7 +747,7 @@ class ToolRouter:
             return await self.executor.execute_tool(tool_def, handler, request)
 
         except Exception as e:
-            logger.error(f"Error routing tool request: {e!s}")
+            logger.exception(f"Error routing tool request: {e!s}")
             await self.alerting_system.send_alert(
                 {
                     "severity": "high",
@@ -774,7 +772,7 @@ class ToolRouter:
             )
 
     def get_available_tools(
-        self, agent_id: str, safety_level: Optional[ToolSafetyLevel] = None
+        self, agent_id: str, safety_level: ToolSafetyLevel | None = None
     ) -> list[ToolDefinition]:
         """Get list of tools available to an agent"""
         return self.registry.list_tools(safety_level=safety_level)

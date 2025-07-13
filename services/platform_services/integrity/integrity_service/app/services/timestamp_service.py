@@ -71,8 +71,7 @@ class RFC3161TimestampService:
         }
 
         # Convert to bytes (simplified - real implementation needs ASN.1)
-        request_json = str(request_data).encode("utf-8")
-        return request_json
+        return str(request_data).encode("utf-8")
 
     def send_timestamp_request(self, message_hash: bytes) -> dict[str, Any] | None:
         """
@@ -120,10 +119,10 @@ class RFC3161TimestampService:
             return None
 
         except requests.RequestException as e:
-            logger.error(f"Timestamp request error: {e}")
+            logger.exception(f"Timestamp request error: {e}")
             return None
         except Exception as e:
-            logger.error(f"Unexpected error in timestamp request: {e}")
+            logger.exception(f"Unexpected error in timestamp request: {e}")
             return None
 
     def verify_timestamp_token(
@@ -157,7 +156,7 @@ class RFC3161TimestampService:
             return True
 
         except Exception as e:
-            logger.error(f"Timestamp verification error: {e}")
+            logger.exception(f"Timestamp verification error: {e}")
             return False
 
     def extract_timestamp_value(self, timestamp_token: bytes) -> datetime | None:
@@ -176,7 +175,7 @@ class RFC3161TimestampService:
             return datetime.now(timezone.utc)
 
         except Exception as e:
-            logger.error(f"Timestamp extraction error: {e}")
+            logger.exception(f"Timestamp extraction error: {e}")
             return None
 
 
@@ -215,7 +214,7 @@ class MockTimestampService(RFC3161TimestampService):
             return result
 
         except Exception as e:
-            logger.error(f"Mock timestamp error: {e}")
+            logger.exception(f"Mock timestamp error: {e}")
             return None
 
     def verify_timestamp_token(

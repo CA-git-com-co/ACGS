@@ -134,7 +134,7 @@ class OPAClient:
             response = await self.client.get(f"{self.server_url}/health")
             return response.status_code == 200
         except Exception as e:
-            logger.error(f"OPA health check failed: {e}")
+            logger.exception(f"OPA health check failed: {e}")
             return False
 
     async def get_server_info(self) -> dict[str, Any]:
@@ -144,7 +144,7 @@ class OPAClient:
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            logger.error(f"Failed to get OPA server info: {e}")
+            logger.exception(f"Failed to get OPA server info: {e}")
             return {}
 
     async def evaluate_policy(
@@ -217,11 +217,11 @@ class OPAClient:
         explanation = ["Fallback policy evaluation - OPA unavailable"]
 
         # Check for sensitive operations that should be denied by default
-        if input_data.get("action", {}).get("type") in [
+        if input_data.get("action", {}).get("type") in {
             "delete",
             "admin",
             "modify_constitution",
-        ]:
+        }:
             allow = False
             explanation.append("Sensitive operation denied in fallback mode")
 
@@ -293,7 +293,7 @@ class OPAClient:
             )
 
         except Exception as e:
-            logger.error(f"Policy bundle upload failed: {e}")
+            logger.exception(f"Policy bundle upload failed: {e}")
             raise
 
     async def delete_policy(self, policy_path: str) -> bool:
@@ -312,7 +312,7 @@ class OPAClient:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to delete policy {policy_path}: {e}")
+            logger.exception(f"Failed to delete policy {policy_path}: {e}")
             return False
 
     async def get_metrics(self) -> dict[str, Any]:
@@ -337,7 +337,7 @@ class OPAClient:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get metrics: {e}")
+            logger.exception(f"Failed to get metrics: {e}")
             return {"client": self._metrics.copy()}
 
     def _detect_policy_changes(self, bundle: PolicyBundle) -> dict[str, str]:
@@ -373,7 +373,7 @@ class OPAClient:
             logger.info(f"Uploaded {len(policies)} incremental policies")
 
         except Exception as e:
-            logger.error(f"Failed to upload incremental policies: {e}")
+            logger.exception(f"Failed to upload incremental policies: {e}")
             raise
 
     async def _upload_full_bundle(self, bundle: PolicyBundle) -> None:
@@ -395,7 +395,7 @@ class OPAClient:
             )
 
         except Exception as e:
-            logger.error(f"Failed to upload full bundle: {e}")
+            logger.exception(f"Failed to upload full bundle: {e}")
             raise
 
     def _update_policy_cache(self, bundle: PolicyBundle) -> None:

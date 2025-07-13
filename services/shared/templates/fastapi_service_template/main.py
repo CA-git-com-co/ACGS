@@ -18,7 +18,6 @@ import os
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Optional
 
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.exceptions import RequestValidationError
@@ -84,16 +83,16 @@ class ServiceConfig(BaseSettings):
     tenant_required: bool = True
 
     # Authentication
-    jwt_secret_key: Optional[str] = None
+    jwt_secret_key: str | None = None
     jwt_algorithm: str = "HS256"
 
     # Database configuration
-    database_url: Optional[str] = None
+    database_url: str | None = None
     database_pool_size: int = 10
     database_max_overflow: int = 20
 
     # Redis configuration
-    redis_url: Optional[str] = None
+    redis_url: str | None = None
 
     # Rate limiting
     rate_limit_requests_per_minute: int = 60
@@ -144,7 +143,7 @@ class ComponentHealthChecker:
                 else:
                     component_status[name] = "not_configured"
             except Exception as e:
-                logger.error(f"Health check failed for {name}: {e}")
+                logger.exception(f"Health check failed for {name}: {e}")
                 component_status[name] = "error"
 
         return component_status
@@ -300,7 +299,7 @@ def setup_error_handlers(app: FastAPI):
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):
         """Handle unexpected exceptions."""
-        logger.error(f"Unhandled exception: {exc}", exc_info=True)
+        logger.error(f"Unhandled exception: {exc}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={
@@ -329,7 +328,7 @@ def setup_core_routes(app: FastAPI):
         # Determine overall health
         overall_health = "healthy"
         if any(
-            status in ["unhealthy", "error"] for status in component_status.values()
+            status in {"unhealthy", "error"} for status in component_status.values()
         ):
             overall_health = "unhealthy"
 

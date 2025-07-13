@@ -259,7 +259,10 @@ class LLMAsJudgeFramework:
         )
 
     async def validate_policy(
-        self, policy_text: str, policy_id: str = None, context: dict[str, Any] = None
+        self,
+        policy_text: str,
+        policy_id: str | None = None,
+        context: dict[str, Any] | None = None,
     ) -> SemanticValidationResult:
         """
         Perform comprehensive semantic validation of a policy.
@@ -338,7 +341,7 @@ class LLMAsJudgeFramework:
             return result
 
         except Exception as e:
-            logger.error(f"Failed to validate policy {policy_id}: {e}")
+            logger.exception(f"Failed to validate policy {policy_id}: {e}")
             return SemanticValidationResult(
                 policy_id=policy_id,
                 policy_text=policy_text,
@@ -399,7 +402,7 @@ class LLMAsJudgeFramework:
             ]
         )
 
-        prompt = f"""
+        return f"""
         You are an expert AI governance evaluator. Evaluate the following policy text on the dimension of {rubric.dimension.value}.
 
         POLICY TEXT:
@@ -425,8 +428,6 @@ class LLMAsJudgeFramework:
         IMPROVEMENTS: [Specific suggestions or "None needed"]
         """
 
-        return prompt
-
     async def _get_judge_evaluation(
         self, prompt: str, judge_model: JudgeModel
     ) -> tuple[float, str]:
@@ -447,7 +448,7 @@ class LLMAsJudgeFramework:
             return score, feedback
 
         except Exception as e:
-            logger.error(f"Failed to get evaluation from {judge_model.value}: {e}")
+            logger.exception(f"Failed to get evaluation from {judge_model.value}: {e}")
             return 0.0, f"Evaluation failed: {e!s}"
 
     def _parse_judge_response(self, response_text: str) -> tuple[float, str]:

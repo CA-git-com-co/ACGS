@@ -6,19 +6,14 @@ Domain services encapsulating complex business logic that doesn't belong to enti
 """
 
 import logging
-from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
-from services.shared.domain.base import EntityId, TenantId
+from services.shared.domain.base import TenantId
 
 from .entities import (
-    Amendment,
     AmendmentProposal,
-    Constitution,
     Principle,
-    PublicConsultation,
-    StakeholderInput,
 )
 from .specifications import (
     ApplicablePrincipleSpec,
@@ -28,11 +23,8 @@ from .specifications import (
     PublicConsultationRequiredSpec,
 )
 from .value_objects import (
-    AmendmentJustification,
     ComplianceScore,
     ConflictAnalysis,
-    ConsultationSummary,
-    PriorityWeight,
     ViolationDetail,
     ViolationSeverity,
 )
@@ -60,7 +52,7 @@ class ConstitutionalComplianceService:
         self.formal_verification = formal_verification_service
 
     async def evaluate_comprehensive_compliance(
-        self, action: Dict[str, Any], context: Dict[str, Any], tenant_id: TenantId
+        self, action: dict[str, Any], context: dict[str, Any], tenant_id: TenantId
     ) -> ComplianceScore:
         """
         Evaluate action against all applicable constitutional principles.
@@ -135,8 +127,8 @@ class ConstitutionalComplianceService:
         )
 
     async def _identify_applicable_principles(
-        self, action: Dict[str, Any], context: Dict[str, Any], tenant_id: TenantId
-    ) -> List[Principle]:
+        self, action: dict[str, Any], context: dict[str, Any], tenant_id: TenantId
+    ) -> list[Principle]:
         """Identify which principles apply to this action in this context."""
 
         # Get all principles for the tenant
@@ -152,8 +144,8 @@ class ConstitutionalComplianceService:
         return applicable_principles
 
     async def _detect_and_resolve_conflicts(
-        self, principles: List[Principle], context: Dict[str, Any], tenant_id: TenantId
-    ) -> List[ConflictAnalysis]:
+        self, principles: list[Principle], context: dict[str, Any], tenant_id: TenantId
+    ) -> list[ConflictAnalysis]:
         """Detect conflicts between principles and resolve using meta-rules."""
 
         conflicts = []
@@ -170,14 +162,13 @@ class ConstitutionalComplianceService:
         if conflicts:
             logger.info(f"Detected {len(conflicts)} conflicts")
             # Apply meta-rules to resolve conflicts
-            resolved_conflicts = await self._apply_meta_rules(conflicts, tenant_id)
-            return resolved_conflicts
+            return await self._apply_meta_rules(conflicts, tenant_id)
 
         return []
 
     async def _apply_meta_rules(
-        self, conflicts: List[ConflictAnalysis], tenant_id: TenantId
-    ) -> List[ConflictAnalysis]:
+        self, conflicts: list[ConflictAnalysis], tenant_id: TenantId
+    ) -> list[ConflictAnalysis]:
         """Apply meta-rules to resolve conflicts."""
 
         meta_rules = await self.meta_rule_repo.find_by_tenant(tenant_id)
@@ -218,8 +209,8 @@ class ConstitutionalComplianceService:
         return bool(conflicting_principle_ids & meta_rule.applicable_principles)
 
     def _apply_conflict_resolutions(
-        self, principle_scores: Dict[str, float], conflicts: List[ConflictAnalysis]
-    ) -> Dict[str, float]:
+        self, principle_scores: dict[str, float], conflicts: list[ConflictAnalysis]
+    ) -> dict[str, float]:
         """Apply conflict resolution adjustments to principle scores."""
 
         adjusted_scores = principle_scores.copy()
@@ -237,7 +228,7 @@ class ConstitutionalComplianceService:
         return adjusted_scores
 
     def _calculate_weighted_score(
-        self, principles: List[Principle], scores: Dict[str, float]
+        self, principles: list[Principle], scores: dict[str, float]
     ) -> float:
         """Calculate weighted average compliance score."""
 
@@ -259,7 +250,7 @@ class ConstitutionalComplianceService:
         return weighted_sum / total_weight
 
     def _requires_formal_verification(
-        self, action: Dict[str, Any], context: Dict[str, Any]
+        self, action: dict[str, Any], context: dict[str, Any]
     ) -> bool:
         """Check if action requires formal verification."""
 
@@ -268,16 +259,13 @@ class ConstitutionalComplianceService:
             return True
 
         # Require for safety-related operations
-        if "safety" in action.get("tags", []):
-            return True
-
-        return False
+        return "safety" in action.get("tags", [])
 
     async def _perform_formal_verification(
         self,
-        action: Dict[str, Any],
-        context: Dict[str, Any],
-        principles: List[Principle],
+        action: dict[str, Any],
+        context: dict[str, Any],
+        principles: list[Principle],
     ) -> float:
         """Perform formal verification and return adjustment factor."""
 
@@ -303,11 +291,11 @@ class ConstitutionalComplianceService:
             return 1.0 if verification_result.is_valid else 0.0
 
         except Exception as e:
-            logger.error(f"Formal verification failed: {e}")
+            logger.exception(f"Formal verification failed: {e}")
             return 0.5  # Conservative score when verification fails
 
     def _calculate_confidence_interval(
-        self, scores: Dict[str, float]
+        self, scores: dict[str, float]
     ) -> tuple[float, float]:
         """Calculate confidence interval for the compliance score."""
 
@@ -376,7 +364,7 @@ class AmendmentOrchestrationService:
 
         return workflow
 
-    def _determine_required_steps(self, proposal: AmendmentProposal) -> List[str]:
+    def _determine_required_steps(self, proposal: AmendmentProposal) -> list[str]:
         """Determine which steps are required for this amendment."""
 
         steps = ["impact_analysis"]  # Always required
@@ -432,38 +420,37 @@ class AmendmentOrchestrationService:
 
         if len(proposal.amendments) == 1:
             return "limited"
-        elif len(proposal.amendments) <= 3:
+        if len(proposal.amendments) <= 3:
             return "moderate"
-        else:
-            return "extensive"
+        return "extensive"
 
-    def _assess_risks(self, proposal: AmendmentProposal) -> List[str]:
+    def _assess_risks(self, proposal: AmendmentProposal) -> list[str]:
         """Assess potential risks of the amendment."""
 
-        risks = []
-
         # Check for high-priority principle modifications
-        high_priority_spec = HighPriorityPrincipleSpec()
-        for amendment in proposal.amendments:
-            if amendment.new_priority and amendment.new_priority.is_high_priority():
-                risks.append("Modification of high-priority principle")
+        HighPriorityPrincipleSpec()
+        risks = [
+            "Modification of high-priority principle"
+            for amendment in proposal.amendments
+            if amendment.new_priority and amendment.new_priority.is_high_priority()
+        ]
 
         # Check for scope expansions
-        for amendment in proposal.amendments:
-            if amendment.new_scope and amendment.new_scope.is_universal():
-                risks.append("Scope expansion to universal application")
+        risks.extend(
+            "Scope expansion to universal application"
+            for amendment in proposal.amendments
+            if amendment.new_scope and amendment.new_scope.is_universal()
+        )
 
         return risks
 
-    def _identify_stakeholders(self, proposal: AmendmentProposal) -> List[str]:
+    def _identify_stakeholders(self, proposal: AmendmentProposal) -> list[str]:
         """Identify relevant stakeholder groups for the amendment."""
 
-        stakeholders = ["general_public"]  # Always include general public
+        return ["general_public"]  # Always include general public
 
         # Add domain-specific stakeholders based on amendment scope
         # This would analyze the amendment content and scope
-
-        return stakeholders
 
     async def _proceed_to_next_step(
         self, proposal: AmendmentProposal, workflow: "AmendmentWorkflow"
@@ -571,7 +558,7 @@ class AmendmentOrchestrationService:
 
         logger.info(f"Amendment {proposal.id} process completed: {approval_decision}")
 
-    def _make_approval_decision(self, approval_package: Dict[str, Any]) -> str:
+    def _make_approval_decision(self, approval_package: dict[str, Any]) -> str:
         """Make final approval decision based on workflow results."""
 
         # Check public consultation results
@@ -647,12 +634,11 @@ class ConflictResolutionService:
         # Fallback to built-in resolution strategies
         if conflict.conflict_type == "priority":
             return self._resolve_priority_conflict(conflict)
-        elif conflict.conflict_type == "scope":
+        if conflict.conflict_type == "scope":
             return self._resolve_scope_conflict(conflict)
-        elif conflict.conflict_type == "logical":
+        if conflict.conflict_type == "logical":
             return self._resolve_logical_conflict(conflict)
-        else:
-            return "escalate_to_human_oversight"
+        return "escalate_to_human_oversight"
 
     def _resolve_priority_conflict(self, conflict: ConflictAnalysis) -> str:
         """Resolve conflicts based on principle priorities."""
@@ -666,8 +652,7 @@ class ConflictResolutionService:
         """Resolve logical contradictions between principles."""
         if conflict.severity == ViolationSeverity.CRITICAL:
             return "escalate_to_constitutional_council"
-        else:
-            return "apply_temporal_precedence"
+        return "apply_temporal_precedence"
 
 
 class PrincipleEvaluationService:
@@ -679,7 +664,7 @@ class PrincipleEvaluationService:
     """
 
     def evaluate_principle_compliance(
-        self, principle: Principle, action: Dict[str, Any], context: Dict[str, Any]
+        self, principle: Principle, action: dict[str, Any], context: dict[str, Any]
     ) -> ComplianceScore:
         """
         Evaluate compliance of an action with a specific principle.
@@ -737,14 +722,14 @@ class PrincipleEvaluationService:
         )
 
     def _principle_applies(
-        self, principle: Principle, action: Dict[str, Any], context: Dict[str, Any]
+        self, principle: Principle, action: dict[str, Any], context: dict[str, Any]
     ) -> bool:
         """Check if principle applies to the given action and context."""
         spec = ApplicablePrincipleSpec(context)
         return spec.is_satisfied_by(principle)
 
     def _evaluate_logical_criteria(
-        self, principle: Principle, action: Dict[str, Any], context: Dict[str, Any]
+        self, principle: Principle, action: dict[str, Any], context: dict[str, Any]
     ) -> float:
         """Evaluate logical validation criteria."""
         # This would parse and evaluate the logical expression
@@ -754,15 +739,15 @@ class PrincipleEvaluationService:
         # Simple keyword-based evaluation
         if "privacy" in expression.lower():
             return 1.0 if action.get("preserves_privacy", True) else 0.0
-        elif "fairness" in expression.lower():
+        if "fairness" in expression.lower():
             return 1.0 if action.get("is_fair", True) else 0.0
-        elif "transparency" in expression.lower():
+        if "transparency" in expression.lower():
             return 1.0 if action.get("is_transparent", True) else 0.0
 
         return 0.8  # Default reasonable compliance
 
     def _evaluate_quantitative_criteria(
-        self, principle: Principle, action: Dict[str, Any], context: Dict[str, Any]
+        self, principle: Principle, action: dict[str, Any], context: dict[str, Any]
     ) -> float:
         """Evaluate quantitative validation criteria."""
         threshold = principle.validation_criteria.threshold
@@ -776,14 +761,14 @@ class PrincipleEvaluationService:
         if "accuracy" in expression:
             accuracy = action.get("accuracy", 0.8)
             return 1.0 if accuracy >= threshold else accuracy / threshold
-        elif "latency" in expression:
+        if "latency" in expression:
             latency = action.get("latency_ms", 100)
             return 1.0 if latency <= threshold else threshold / latency
 
         return 0.8
 
     def _evaluate_qualitative_criteria(
-        self, principle: Principle, action: Dict[str, Any], context: Dict[str, Any]
+        self, principle: Principle, action: dict[str, Any], context: dict[str, Any]
     ) -> float:
         """Evaluate qualitative validation criteria."""
         # This would use NLP or other qualitative assessment methods
@@ -794,7 +779,7 @@ class PrincipleEvaluationService:
         # Simple sentiment-based evaluation
         if "positive" in expression:
             return 0.9
-        elif "negative" in expression:
+        if "negative" in expression:
             return 0.3
 
         return 0.7  # Neutral default
@@ -809,17 +794,17 @@ class AmendmentWorkflow:
         self.steps = []
         self.completed_steps = {}
 
-    def set_required_steps(self, steps: List[str]) -> None:
+    def set_required_steps(self, steps: list[str]) -> None:
         self.steps = steps
 
-    def complete_step(self, step: str, result: Dict[str, Any]) -> None:
+    def complete_step(self, step: str, result: dict[str, Any]) -> None:
         self.completed_steps[step] = result
 
-    def get_next_step(self) -> Optional[str]:
+    def get_next_step(self) -> str | None:
         for step in self.steps:
             if step not in self.completed_steps:
                 return step
         return None
 
-    def compile_approval_package(self) -> Dict[str, Any]:
+    def compile_approval_package(self) -> dict[str, Any]:
         return self.completed_steps

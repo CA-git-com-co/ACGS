@@ -13,13 +13,11 @@ This module provides standardized API route patterns for ACGS services including
 
 import uuid
 from datetime import datetime
-from typing import List, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...schemas import (
-    APIResponse,
     ConstitutionalValidationRequest,
     ConstitutionalValidationResponse,
     ErrorResponse,
@@ -81,12 +79,10 @@ async def get_service_dependencies() -> dict:
     This function provides a standardized way to inject common dependencies
     like database sessions, cache clients, etc. into route handlers.
     """
-    dependencies = {
+    return {
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "multi_tenant_enabled": MULTI_TENANT_AVAILABLE,
     }
-
-    return dependencies
 
 
 # Constitutional compliance routes
@@ -98,7 +94,7 @@ async def get_service_dependencies() -> dict:
 )
 async def validate_constitutional_compliance(
     request: ConstitutionalValidationRequest,
-    tenant_context: Optional[SimpleTenantContext] = (
+    tenant_context: SimpleTenantContext | None = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
     dependencies: dict = Depends(get_service_dependencies),
@@ -135,7 +131,7 @@ async def validate_constitutional_compliance(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Constitutional validation failed: {str(e)}",
+            detail=f"Constitutional validation failed: {e!s}",
         )
 
 
@@ -195,7 +191,7 @@ if MULTI_TENANT_AVAILABLE:
         except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to retrieve tenant information: {str(e)}",
+                detail=f"Failed to retrieve tenant information: {e!s}",
             )
 
 
@@ -209,10 +205,10 @@ if MULTI_TENANT_AVAILABLE:
 )
 async def create_resource(
     request: ExampleCreateRequest,
-    tenant_context: Optional[SimpleTenantContext] = (
+    tenant_context: SimpleTenantContext | None = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
-    db: Optional[AsyncSession] = (
+    db: AsyncSession | None = (
         Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None
     ),
 ):
@@ -258,7 +254,7 @@ async def create_resource(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create resource: {str(e)}",
+            detail=f"Failed to create resource: {e!s}",
         )
 
 
@@ -271,10 +267,10 @@ async def create_resource(
 async def list_resources(
     pagination: PaginationParams = Depends(),
     filters: FilterParams = Depends(),
-    tenant_context: Optional[SimpleTenantContext] = (
+    tenant_context: SimpleTenantContext | None = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
-    db: Optional[AsyncSession] = (
+    db: AsyncSession | None = (
         Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None
     ),
 ):
@@ -326,7 +322,7 @@ async def list_resources(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve resources: {str(e)}",
+            detail=f"Failed to retrieve resources: {e!s}",
         )
 
 
@@ -338,10 +334,10 @@ async def list_resources(
 )
 async def get_resource(
     resource_id: uuid.UUID,
-    tenant_context: Optional[SimpleTenantContext] = (
+    tenant_context: SimpleTenantContext | None = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
-    db: Optional[AsyncSession] = (
+    db: AsyncSession | None = (
         Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None
     ),
 ):
@@ -376,7 +372,7 @@ async def get_resource(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to retrieve resource: {str(e)}",
+            detail=f"Failed to retrieve resource: {e!s}",
         )
 
 
@@ -389,10 +385,10 @@ async def get_resource(
 async def update_resource(
     resource_id: uuid.UUID,
     request: ExampleCreateRequest,
-    tenant_context: Optional[SimpleTenantContext] = (
+    tenant_context: SimpleTenantContext | None = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
-    db: Optional[AsyncSession] = (
+    db: AsyncSession | None = (
         Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None
     ),
 ):
@@ -436,7 +432,7 @@ async def update_resource(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to update resource: {str(e)}",
+            detail=f"Failed to update resource: {e!s}",
         )
 
 
@@ -448,10 +444,10 @@ async def update_resource(
 )
 async def delete_resource(
     resource_id: uuid.UUID,
-    tenant_context: Optional[SimpleTenantContext] = (
+    tenant_context: SimpleTenantContext | None = (
         Depends(get_tenant_context) if MULTI_TENANT_AVAILABLE else None
     ),
-    db: Optional[AsyncSession] = (
+    db: AsyncSession | None = (
         Depends(get_tenant_db) if MULTI_TENANT_AVAILABLE else None
     ),
 ):
@@ -474,7 +470,7 @@ async def delete_resource(
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to delete resource: {str(e)}",
+            detail=f"Failed to delete resource: {e!s}",
         )
 
 
@@ -530,7 +526,7 @@ if MULTI_TENANT_AVAILABLE:
 
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Failed to retrieve admin statistics: {str(e)}",
+                detail=f"Failed to retrieve admin statistics: {e!s}",
             )
 
 

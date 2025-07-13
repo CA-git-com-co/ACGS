@@ -5,11 +5,10 @@ Tests all 7 core services for >80% unit test coverage
 """
 
 import asyncio
-import json
 import logging
-import time
+import sys
 from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -25,8 +24,8 @@ class ServiceTestResult:
     passed_tests: int
     failed_tests: int
     coverage_percentage: float
-    test_categories: List[str]
-    critical_functions_tested: List[str]
+    test_categories: list[str]
+    critical_functions_tested: list[str]
 
 
 class CoreServicesUnitTestCoverage:
@@ -48,7 +47,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_auth_service(self) -> ServiceTestResult:
         """Test Authentication Service (port 8000)."""
-        print("🔍 Testing Authentication Service (port 8000)")
 
         test_categories = [
             "User Authentication",
@@ -128,9 +126,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Authentication Service",
             port=8000,
@@ -144,7 +139,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_ac_service(self) -> ServiceTestResult:
         """Test Access Control Service (port 8001)."""
-        print("🔍 Testing Access Control Service (port 8001)")
 
         test_categories = [
             "Role-Based Access Control",
@@ -210,9 +204,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Access Control Service",
             port=8001,
@@ -226,7 +217,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_integrity_service(self) -> ServiceTestResult:
         """Test Integrity Service (port 8002)."""
-        print("🔍 Testing Integrity Service (port 8002)")
 
         test_categories = [
             "Data Integrity Validation",
@@ -280,9 +270,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Integrity Service",
             port=8002,
@@ -296,7 +283,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_fv_service(self) -> ServiceTestResult:
         """Test Formal Verification Service (port 8003)."""
-        print("🔍 Testing Formal Verification Service (port 8003)")
 
         test_categories = [
             "Policy Formal Verification",
@@ -353,9 +339,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Formal Verification Service",
             port=8003,
@@ -369,7 +352,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_gs_service(self) -> ServiceTestResult:
         """Test Governance Synthesis Service (port 8004)."""
-        print("🔍 Testing Governance Synthesis Service (port 8004)")
 
         test_categories = [
             "Policy Synthesis",
@@ -423,9 +405,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Governance Synthesis Service",
             port=8004,
@@ -439,7 +418,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_pgc_service(self) -> ServiceTestResult:
         """Test Policy Governance & Compliance Service (port 8005)."""
-        print("🔍 Testing Policy Governance & Compliance Service (port 8005)")
 
         test_categories = [
             "Policy Governance",
@@ -494,9 +472,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Policy Governance & Compliance Service",
             port=8005,
@@ -510,7 +485,6 @@ class CoreServicesUnitTestCoverage:
 
     async def test_ec_service(self) -> ServiceTestResult:
         """Test Evolutionary Computation Service (port 8006)."""
-        print("🔍 Testing Evolutionary Computation Service (port 8006)")
 
         test_categories = [
             "Evolutionary Algorithms",
@@ -565,9 +539,6 @@ class CoreServicesUnitTestCoverage:
         total = len(tests)
         coverage = (passed / total) * 100
 
-        print(f"   📊 Tests: {passed}/{total} passed")
-        print(f"   📊 Coverage: {coverage:.1f}%")
-
         return ServiceTestResult(
             service_name="Evolutionary Computation Service",
             port=8006,
@@ -579,77 +550,59 @@ class CoreServicesUnitTestCoverage:
             critical_functions_tested=critical_functions,
         )
 
-    async def run_comprehensive_unit_test_coverage(self) -> Dict[str, Any]:
+    async def run_comprehensive_unit_test_coverage(self) -> dict[str, Any]:
         """Run comprehensive unit test coverage analysis for all core services."""
-        print("🚀 Running Comprehensive Core Services Unit Test Coverage")
-        print("=" * 70)
 
         # Test all services
         service_results = []
 
-        service_results.append(await self.test_auth_service())
-        service_results.append(await self.test_ac_service())
-        service_results.append(await self.test_integrity_service())
-        service_results.append(await self.test_fv_service())
-        service_results.append(await self.test_gs_service())
-        service_results.append(await self.test_pgc_service())
-        service_results.append(await self.test_ec_service())
+        service_results.extend(
+            (
+                await self.test_auth_service(),
+                await self.test_ac_service(),
+                await self.test_integrity_service(),
+                await self.test_fv_service(),
+                await self.test_gs_service(),
+                await self.test_pgc_service(),
+                await self.test_ec_service(),
+            )
+        )
 
         # Calculate overall metrics
         total_tests = sum(result.total_tests for result in service_results)
         total_passed = sum(result.passed_tests for result in service_results)
-        total_failed = sum(result.failed_tests for result in service_results)
+        sum(result.failed_tests for result in service_results)
         overall_coverage = (total_passed / total_tests) * 100 if total_tests > 0 else 0
 
-        print("\n📈 Overall Unit Test Coverage Summary")
-        print("=" * 60)
-        print(f"📊 Total Tests: {total_tests}")
-        print(f"✅ Tests Passed: {total_passed}")
-        print(f"❌ Tests Failed: {total_failed}")
-        print(f"📊 Overall Coverage: {overall_coverage:.1f}%")
-
         # Service-specific results
-        print("\n📋 Service-Specific Coverage:")
         for result in service_results:
-            print(
-                f"   {result.service_name} (port {result.port}): {result.coverage_percentage:.1f}%"
-            )
+            pass
 
         # Test categories summary
         all_categories = set()
         for result in service_results:
             all_categories.update(result.test_categories)
 
-        print(f"\n🧪 Test Categories Covered ({len(all_categories)} total):")
-        for category in sorted(all_categories):
-            print(f"   ✅ {category}")
+        for _category in sorted(all_categories):
+            pass
 
         # Critical functions summary
         all_functions = set()
         for result in service_results:
             all_functions.update(result.critical_functions_tested)
 
-        print(f"\n🔧 Critical Functions Tested ({len(all_functions)} total):")
-        for function in sorted(all_functions):
-            print(f"   ✅ {function}")
+        for _function in sorted(all_functions):
+            pass
 
         # Target validation
         target_coverage = 80.0
         meets_target = overall_coverage >= target_coverage
-
-        print(f"\n🎯 Coverage Target Validation:")
-        print(f"   Target Coverage: ≥{target_coverage}%")
-        print(f"   Achieved Coverage: {overall_coverage:.1f}%")
-        print(f"   Coverage Target: {'✅ MET' if meets_target else '❌ NOT MET'}")
 
         # Service-level target validation
         services_meeting_target = sum(
             1
             for result in service_results
             if result.coverage_percentage >= target_coverage
-        )
-        print(
-            f"   Services Meeting Target: {services_meeting_target}/{len(service_results)}"
         )
 
         return {
@@ -665,31 +618,18 @@ class CoreServicesUnitTestCoverage:
 
 async def main():
     """Main function."""
-    print("🚀 Starting Core Services Unit Test Coverage Analysis")
-    print("=" * 80)
 
     coverage_analyzer = CoreServicesUnitTestCoverage()
     result = await coverage_analyzer.run_comprehensive_unit_test_coverage()
 
     if result["success"]:
-        print("\n🎯 Core Services Unit Test Coverage Summary")
-        print("=" * 70)
-        print(f"📊 Total Tests: {result['total_tests']}")
-        print(f"✅ Tests Passed: {result['total_passed']}")
-        print(f"📊 Overall Coverage: {result['overall_coverage']:.1f}%")
-        print(f"🎯 Coverage Target: {'MET' if result['meets_target'] else 'NOT MET'}")
-        print(f"🎯 Services Meeting Target: {result['services_meeting_target']}/7")
 
         if result["meets_target"]:
-            print("\n🎉 Core services unit test coverage successful!")
-            print("   All coverage targets achieved!")
-            exit(0)
+            sys.exit(0)
         else:
-            print("\n⚠️ Unit test coverage targets not fully met.")
-            exit(1)
+            sys.exit(1)
     else:
-        print("\n❌ Core services unit test coverage analysis failed.")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

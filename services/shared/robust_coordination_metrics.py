@@ -7,26 +7,21 @@ coordination effectiveness from spurious formatting/style correlations. Implemen
 causal robustness in coordination quality assessment.
 """
 
-import asyncio
 import logging
 import statistics
-import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 import numpy as np
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from .blackboard import BlackboardService, KnowledgeItem
 from .causal_coordination_model import (
     CoordinationAttribute,
-    CoordinationQualityMetric,
-    CoordinationScenario,
-    SpuriousCoordinationAttribute,
 )
 
 # Configure logging
@@ -65,12 +60,12 @@ class MetricMeasurement:
     metric_type: CoordinationMetricType
     value: float
     timestamp: datetime
-    scenario_context: Dict[str, Any]
+    scenario_context: dict[str, Any]
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Robustness indicators
-    causal_factors: Dict[str, float] = field(default_factory=dict)
-    spurious_indicators: Dict[str, float] = field(default_factory=dict)
+    causal_factors: dict[str, float] = field(default_factory=dict)
+    spurious_indicators: dict[str, float] = field(default_factory=dict)
     robustness_score: float = Field(ge=0.0, le=1.0, default=0.0)
     confidence_level: float = Field(ge=0.0, le=1.0, default=0.0)
 
@@ -154,7 +149,7 @@ class RobustCoordinationMetrics:
         self.logger = logging.getLogger(__name__)
 
         # Metric storage
-        self.metric_history: Dict[CoordinationMetricType, deque] = {
+        self.metric_history: dict[CoordinationMetricType, deque] = {
             metric_type: deque(maxlen=window_size)
             for metric_type in CoordinationMetricType
         }
@@ -177,9 +172,9 @@ class RobustCoordinationMetrics:
         self,
         metric_type: CoordinationMetricType,
         value: float,
-        scenario_context: Dict[str, Any],
-        causal_factors: Optional[Dict[str, float]] = None,
-        spurious_indicators: Optional[Dict[str, float]] = None,
+        scenario_context: dict[str, Any],
+        causal_factors: dict[str, float] | None = None,
+        spurious_indicators: dict[str, float] | None = None,
     ) -> MetricMeasurement:
         """Record a coordination metric measurement with robustness analysis"""
 
@@ -241,9 +236,9 @@ class RobustCoordinationMetrics:
         self,
         metric_type: CoordinationMetricType,
         value: float,
-        causal_factors: Dict[str, float],
-        spurious_indicators: Dict[str, float],
-    ) -> Tuple[float, float]:
+        causal_factors: dict[str, float],
+        spurious_indicators: dict[str, float],
+    ) -> tuple[float, float]:
         """Analyze robustness of a single measurement"""
 
         robustness_components = []
@@ -288,7 +283,7 @@ class RobustCoordinationMetrics:
         self,
         metric_type: CoordinationMetricType,
         value: float,
-        causal_factors: Dict[str, float],
+        causal_factors: dict[str, float],
     ) -> float:
         """Assess alignment between metric value and causal factors"""
 
@@ -326,14 +321,14 @@ class RobustCoordinationMetrics:
         return statistics.mean(alignment_scores) if alignment_scores else 0.5
 
     def _assess_spurious_resistance(
-        self, metric_type: CoordinationMetricType, spurious_indicators: Dict[str, float]
+        self, metric_type: CoordinationMetricType, spurious_indicators: dict[str, float]
     ) -> float:
         """Assess resistance to spurious correlations"""
 
         threshold = self.SPURIOUS_CORRELATION_THRESHOLDS.get(metric_type, 0.1)
         resistance_scores = []
 
-        for indicator, indicator_value in spurious_indicators.items():
+        for indicator_value in spurious_indicators.values():
             # Higher spurious indicator values should NOT significantly affect robustness
             if indicator_value <= threshold:
                 resistance_scores.append(1.0)  # Good resistance
@@ -374,8 +369,8 @@ class RobustCoordinationMetrics:
     def _calculate_measurement_confidence(
         self,
         metric_type: CoordinationMetricType,
-        causal_factors: Dict[str, float],
-        spurious_indicators: Dict[str, float],
+        causal_factors: dict[str, float],
+        spurious_indicators: dict[str, float],
     ) -> float:
         """Calculate confidence level for measurement"""
 
@@ -405,7 +400,7 @@ class RobustCoordinationMetrics:
     async def generate_robust_metric_summary(
         self,
         metric_type: CoordinationMetricType,
-        time_period: Optional[timedelta] = None,
+        time_period: timedelta | None = None,
     ) -> RobustMetricSummary:
         """Generate robust summary for a specific metric"""
 
@@ -469,7 +464,7 @@ class RobustCoordinationMetrics:
         return summary
 
     async def _calculate_causal_sensitivity(
-        self, measurements: List[MetricMeasurement]
+        self, measurements: list[MetricMeasurement]
     ) -> float:
         """Calculate causal sensitivity from measurements"""
 
@@ -478,14 +473,14 @@ class RobustCoordinationMetrics:
         for measurement in measurements:
             if measurement.causal_factors:
                 # Calculate correlation between causal factors and metric value
-                for factor, factor_value in measurement.causal_factors.items():
+                for factor_value in measurement.causal_factors.values():
                     correlation = min(1.0, factor_value * measurement.value)
                     causal_correlations.append(correlation)
 
         return statistics.mean(causal_correlations) if causal_correlations else 0.5
 
     async def _calculate_spurious_resistance(
-        self, measurements: List[MetricMeasurement]
+        self, measurements: list[MetricMeasurement]
     ) -> float:
         """Calculate spurious correlation resistance from measurements"""
 
@@ -494,10 +489,7 @@ class RobustCoordinationMetrics:
         for measurement in measurements:
             if measurement.spurious_indicators:
                 # Calculate resistance based on spurious indicator levels
-                for (
-                    indicator,
-                    indicator_value,
-                ) in measurement.spurious_indicators.items():
+                for indicator_value in measurement.spurious_indicators.values():
                     threshold = 0.1  # Default threshold
                     if indicator_value <= threshold:
                         resistance_scores.append(1.0)
@@ -518,14 +510,13 @@ class RobustCoordinationMetrics:
 
         if overall_robustness >= self.ROBUSTNESS_THRESHOLDS["highly_robust"]:
             return MetricRobustnessLevel.HIGHLY_ROBUST
-        elif overall_robustness >= self.ROBUSTNESS_THRESHOLDS["moderately_robust"]:
+        if overall_robustness >= self.ROBUSTNESS_THRESHOLDS["moderately_robust"]:
             return MetricRobustnessLevel.MODERATELY_ROBUST
-        elif overall_robustness >= self.ROBUSTNESS_THRESHOLDS["weakly_robust"]:
+        if overall_robustness >= self.ROBUSTNESS_THRESHOLDS["weakly_robust"]:
             return MetricRobustnessLevel.WEAKLY_ROBUST
-        else:
-            return MetricRobustnessLevel.VULNERABLE
+        return MetricRobustnessLevel.VULNERABLE
 
-    def _analyze_trends(self, values: List[float]) -> Tuple[str, float]:
+    def _analyze_trends(self, values: list[float]) -> tuple[str, float]:
         """Analyze trend direction and strength"""
 
         if len(values) < 3:
@@ -541,10 +532,9 @@ class RobustCoordinationMetrics:
 
                 if abs(correlation) < 0.1:
                     return "stable", abs(correlation)
-                elif correlation > 0.1:
+                if correlation > 0.1:
                     return "increasing", correlation
-                else:
-                    return "decreasing", abs(correlation)
+                return "decreasing", abs(correlation)
             except:
                 return "stable", 0.0
 
@@ -583,10 +573,10 @@ class RobustCoordinationMetrics:
             analysis_results[metric_type.value] = summary
 
             # Check for robustness degradation
-            if summary.robustness_level in [
+            if summary.robustness_level in {
                 MetricRobustnessLevel.WEAKLY_ROBUST,
                 MetricRobustnessLevel.VULNERABLE,
-            ]:
+            }:
                 await self._create_robustness_alert(metric_type, summary)
 
         # Log periodic analysis
@@ -723,7 +713,7 @@ class RobustCoordinationMetrics:
         await self.blackboard.add_knowledge(knowledge_item)
 
     async def _log_periodic_analysis(
-        self, analysis_results: Dict[str, RobustMetricSummary]
+        self, analysis_results: dict[str, RobustMetricSummary]
     ) -> None:
         """Log periodic analysis results"""
 
@@ -754,7 +744,7 @@ class RobustCoordinationMetrics:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    async def _log_robustness_alert(self, alert: Dict[str, Any]) -> None:
+    async def _log_robustness_alert(self, alert: dict[str, Any]) -> None:
         """Log robustness alert"""
 
         knowledge_item = KnowledgeItem(
@@ -770,7 +760,7 @@ class RobustCoordinationMetrics:
                 "alert_type": alert["type"],
                 "priority": (
                     "high"
-                    if alert["type"] in ["low_robustness", "robustness_degradation"]
+                    if alert["type"] in {"low_robustness", "robustness_degradation"}
                     else "medium"
                 ),
             },
@@ -779,7 +769,7 @@ class RobustCoordinationMetrics:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    async def _log_spurious_correlation_alert(self, alert: Dict[str, Any]) -> None:
+    async def _log_spurious_correlation_alert(self, alert: dict[str, Any]) -> None:
         """Log spurious correlation alert"""
 
         knowledge_item = KnowledgeItem(
@@ -800,7 +790,7 @@ class RobustCoordinationMetrics:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_robustness_statistics(self) -> Dict[str, Any]:
+    def get_robustness_statistics(self) -> dict[str, Any]:
         """Get robustness statistics for all metrics"""
 
         stats = {

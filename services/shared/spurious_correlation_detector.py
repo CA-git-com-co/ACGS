@@ -7,18 +7,15 @@ Automatically detects when performance metrics correlate with spurious attribute
 should not influence system behavior, enabling robust AI governance monitoring.
 """
 
-import asyncio
 import logging
 import statistics
-import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any
 from uuid import uuid4
 
-import numpy as np
 from pydantic import BaseModel, Field
 
 # Configure logging
@@ -65,11 +62,11 @@ class SpuriousCorrelationAlert:
     # Evidence and context
     sample_size: int = 0
     statistical_significance: float = 0.0
-    confidence_interval: Tuple[float, float] = (0.0, 0.0)
-    recent_examples: List[Dict[str, Any]] = field(default_factory=list)
+    confidence_interval: tuple[float, float] = (0.0, 0.0)
+    recent_examples: list[dict[str, Any]] = field(default_factory=list)
 
     # Mitigation suggestions
-    mitigation_suggestions: List[str] = field(default_factory=list)
+    mitigation_suggestions: list[str] = field(default_factory=list)
     urgency_level: str = "medium"
 
 
@@ -81,7 +78,7 @@ class MetricObservation:
     metric_value: float
     service_name: str
     metric_name: str
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
 
@@ -97,13 +94,13 @@ class SpuriousCorrelationDetectionResult(BaseModel):
     high_correlations: int = 0
 
     # Detailed results
-    alerts: List[SpuriousCorrelationAlert] = Field(default_factory=list)
+    alerts: list[SpuriousCorrelationAlert] = Field(default_factory=list)
     analysis_window: timedelta
     observations_analyzed: int = 0
 
     # System health impact
     system_robustness_impact: float = Field(ge=0.0, le=1.0, default=0.0)
-    recommended_actions: List[str] = Field(default_factory=list)
+    recommended_actions: list[str] = Field(default_factory=list)
 
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -155,7 +152,7 @@ class SpuriousCorrelationDetector:
         self.min_detection_interval = timedelta(seconds=min_detection_interval_seconds)
 
         # Observation storage
-        self.observations: Dict[str, deque] = defaultdict(
+        self.observations: dict[str, deque] = defaultdict(
             lambda: deque(maxlen=max_observations)
         )
         self.last_detection_time = defaultdict(
@@ -164,7 +161,7 @@ class SpuriousCorrelationDetector:
 
         # Detection history
         self.detection_history: deque = deque(maxlen=1000)
-        self.active_alerts: Dict[str, SpuriousCorrelationAlert] = {}
+        self.active_alerts: dict[str, SpuriousCorrelationAlert] = {}
 
         # Statistics
         self.detection_stats = {
@@ -181,7 +178,7 @@ class SpuriousCorrelationDetector:
         service_name: str,
         metric_name: str,
         metric_value: float,
-        context: Optional[Dict[str, Any]] = None,
+        context: dict[str, Any] | None = None,
     ) -> None:
         """
         Record a metric observation for correlation analysis.
@@ -237,11 +234,11 @@ class SpuriousCorrelationDetector:
                 await self._process_alert(alert)
 
         except Exception as e:
-            logger.error(f"Correlation detection failed for {observation_key}: {e}")
+            logger.exception(f"Correlation detection failed for {observation_key}: {e}")
 
     async def _detect_spurious_correlations(
-        self, observations: List[MetricObservation]
-    ) -> List[SpuriousCorrelationAlert]:
+        self, observations: list[MetricObservation]
+    ) -> list[SpuriousCorrelationAlert]:
         """
         Detect spurious correlations in observations.
 
@@ -283,8 +280,8 @@ class SpuriousCorrelationDetector:
 
     async def _calculate_spurious_correlation(
         self,
-        observations: List[MetricObservation],
-        metric_values: List[float],
+        observations: list[MetricObservation],
+        metric_values: list[float],
         spurious_attr: SpuriousAttributeType,
     ) -> float:
         """
@@ -348,12 +345,12 @@ class SpuriousCorrelationDetector:
             # Time-based patterns (hour of day, day of week)
             return float(observation.timestamp.hour)
 
-        elif spurious_attr == SpuriousAttributeType.RESPONSE_LENGTH:
+        if spurious_attr == SpuriousAttributeType.RESPONSE_LENGTH:
             # Response length variations
             response_text = context.get("response_text", "")
             return float(len(str(response_text)))
 
-        elif spurious_attr == SpuriousAttributeType.FORMATTING_STYLE:
+        if spurious_attr == SpuriousAttributeType.FORMATTING_STYLE:
             # Formatting patterns
             text = str(context.get("response_text", ""))
             formatting_score = (
@@ -363,7 +360,7 @@ class SpuriousCorrelationDetector:
             )
             return min(10.0, formatting_score)
 
-        elif spurious_attr == SpuriousAttributeType.TECHNICAL_JARGON:
+        if spurious_attr == SpuriousAttributeType.TECHNICAL_JARGON:
             # Technical language complexity
             text = str(context.get("response_text", "")).lower()
             technical_terms = [
@@ -375,7 +372,7 @@ class SpuriousCorrelationDetector:
             jargon_score = sum(text.count(term) for term in technical_terms)
             return float(jargon_score)
 
-        elif spurious_attr == SpuriousAttributeType.COMMUNICATION_STYLE:
+        if spurious_attr == SpuriousAttributeType.COMMUNICATION_STYLE:
             # Formal vs informal style
             text = str(context.get("response_text", "")).lower()
             formal_indicators = ["furthermore", "therefore", "consequently", "however"]
@@ -386,17 +383,16 @@ class SpuriousCorrelationDetector:
 
             return float(formal_score - informal_score + 5)  # Normalize around 5
 
-        elif spurious_attr == SpuriousAttributeType.AGENT_PERSONALITY:
+        if spurious_attr == SpuriousAttributeType.AGENT_PERSONALITY:
             # Agent personality variations
             agent_id = context.get("agent_id", "default")
             return float(hash(agent_id) % 100) / 100.0
 
-        else:
-            # Default: extract any numeric value from context
-            for key, value in context.items():
-                if isinstance(value, (int, float)):
-                    return float(value)
-            return 0.0
+        # Default: extract any numeric value from context
+        for value in context.values():
+            if isinstance(value, (int, float)):
+                return float(value)
+        return 0.0
 
     def _determine_severity(self, correlation_strength: float) -> CorrelationSeverity:
         """Determine severity level based on correlation strength"""
@@ -405,30 +401,27 @@ class SpuriousCorrelationDetector:
             >= self.CORRELATION_THRESHOLDS[CorrelationSeverity.CRITICAL]
         ):
             return CorrelationSeverity.CRITICAL
-        elif (
+        if (
             correlation_strength
             >= self.CORRELATION_THRESHOLDS[CorrelationSeverity.HIGH]
         ):
             return CorrelationSeverity.HIGH
-        elif (
+        if (
             correlation_strength
             >= self.CORRELATION_THRESHOLDS[CorrelationSeverity.MEDIUM]
         ):
             return CorrelationSeverity.MEDIUM
-        elif (
-            correlation_strength >= self.CORRELATION_THRESHOLDS[CorrelationSeverity.LOW]
-        ):
+        if correlation_strength >= self.CORRELATION_THRESHOLDS[CorrelationSeverity.LOW]:
             return CorrelationSeverity.LOW
-        else:
-            return CorrelationSeverity.NEGLIGIBLE
+        return CorrelationSeverity.NEGLIGIBLE
 
     async def _create_correlation_alert(
         self,
-        observations: List[MetricObservation],
+        observations: list[MetricObservation],
         spurious_attr: SpuriousAttributeType,
         correlation_strength: float,
         severity: CorrelationSeverity,
-    ) -> Optional[SpuriousCorrelationAlert]:
+    ) -> SpuriousCorrelationAlert | None:
         """Create spurious correlation alert"""
 
         if not observations:
@@ -455,7 +448,7 @@ class SpuriousCorrelationDetector:
             else "high" if severity == CorrelationSeverity.HIGH else "medium"
         )
 
-        alert = SpuriousCorrelationAlert(
+        return SpuriousCorrelationAlert(
             alert_id=alert_id,
             service_name=first_obs.service_name,
             metric_name=first_obs.metric_name,
@@ -473,7 +466,7 @@ class SpuriousCorrelationDetector:
                 {
                     "timestamp": obs.timestamp.isoformat(),
                     "metric_value": obs.metric_value,
-                    "context_sample": {k: v for k, v in list(obs.context.items())[:3]},
+                    "context_sample": dict(list(obs.context.items())[:3]),
                 }
                 for obs in observations[-3:]  # Last 3 examples
             ],
@@ -481,25 +474,23 @@ class SpuriousCorrelationDetector:
             urgency_level=urgency_level,
         )
 
-        return alert
-
     def _generate_mitigation_suggestions(
         self,
         spurious_attr: SpuriousAttributeType,
         correlation_strength: float,
         severity: CorrelationSeverity,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate mitigation suggestions for spurious correlation"""
 
         suggestions = []
 
         # General suggestions
-        if severity in [CorrelationSeverity.CRITICAL, CorrelationSeverity.HIGH]:
-            suggestions.append(
-                "Implement CARMA-style neutral augmentations for this attribute"
-            )
-            suggestions.append(
-                "Add regularization to reduce spurious correlation sensitivity"
+        if severity in {CorrelationSeverity.CRITICAL, CorrelationSeverity.HIGH}:
+            suggestions.extend(
+                (
+                    "Implement CARMA-style neutral augmentations for this attribute",
+                    "Add regularization to reduce spurious correlation sensitivity",
+                )
             )
 
         # Attribute-specific suggestions
@@ -550,7 +541,7 @@ class SpuriousCorrelationDetector:
 
         # Add constitutional compliance reminder
         suggestions.append(
-            f"Ensure all mitigation maintains constitutional hash cdd01ef066bc6cf2"
+            "Ensure all mitigation maintains constitutional hash cdd01ef066bc6cf2"
         )
 
         return suggestions
@@ -677,7 +668,7 @@ class SpuriousCorrelationDetector:
 
         return result
 
-    def get_detection_statistics(self) -> Dict[str, Any]:
+    def get_detection_statistics(self) -> dict[str, Any]:
         """Get detection statistics and status"""
 
         active_alerts_by_severity = defaultdict(int)

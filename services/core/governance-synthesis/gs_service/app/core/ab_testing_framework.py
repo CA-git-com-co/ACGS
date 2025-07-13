@@ -177,7 +177,7 @@ class ABTestingFramework:
                 return variant.template_id
 
         # Fallback to first variant
-        return list(test_result.variants.values())[0].template_id
+        return next(iter(test_result.variants.values())).template_id
 
     async def record_result(
         self,
@@ -185,7 +185,7 @@ class ABTestingFramework:
         template_id: str,
         reward: float,
         success: bool,
-        context: dict[str, Any] = None,
+        context: dict[str, Any] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution

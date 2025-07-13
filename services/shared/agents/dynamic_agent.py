@@ -23,12 +23,13 @@ Key Features:
 import asyncio
 import json
 import logging
+import operator
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyFramework,
@@ -100,14 +101,14 @@ class AgentTask:
     parameters: dict[str, Any]
     required_tools: list[str]
     constitutional_constraints: list[str]
-    deadline: Optional[datetime]
+    deadline: datetime | None
     dependencies: list[str]
     status: TaskStatus
-    result: Optional[dict[str, Any]]
-    error_message: Optional[str]
+    result: dict[str, Any] | None
+    error_message: str | None
     created_at: datetime
-    started_at: Optional[datetime]
-    completed_at: Optional[datetime]
+    started_at: datetime | None
+    completed_at: datetime | None
     execution_logs: list[dict[str, Any]]
 
 
@@ -138,7 +139,7 @@ class AgentCommunication:
     content: dict[str, Any]
     priority: TaskPriority
     requires_response: bool
-    response: Optional[dict[str, Any]]
+    response: dict[str, Any] | None
     timestamp: datetime
     resolved: bool
 
@@ -158,7 +159,7 @@ class ExperienceItem:
     action_taken: dict[str, Any]
     outcome: dict[str, Any]
     constitutional_context: dict[str, Any]
-    embedding: Optional[list[float]] = None
+    embedding: list[float] | None = None
     timestamp: datetime = None
     success_score: float = 0.0
     relevance_score: float = 0.0
@@ -267,7 +268,7 @@ class EnhancedMemoryManager:
             return experience_id
 
         except Exception as e:
-            logger.error(f"Failed to store experience: {e!s}")
+            logger.exception(f"Failed to store experience: {e!s}")
             raise
 
     async def retrieve_relevant_experiences(
@@ -310,7 +311,7 @@ class EnhancedMemoryManager:
             return relevant_experiences
 
         except Exception as e:
-            logger.error(f"Failed to retrieve experiences: {e!s}")
+            logger.exception(f"Failed to retrieve experiences: {e!s}")
             self.memory_stats["failed_retrievals"] += 1
             return []
 
@@ -346,7 +347,7 @@ class EnhancedMemoryManager:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get memory insights: {e!s}")
+            logger.exception(f"Failed to get memory insights: {e!s}")
             return {"insights": [], "confidence": 0.0}
 
     async def _generate_semantic_embedding(self, data: dict[str, Any]) -> list[float]:
@@ -358,14 +359,10 @@ class EnhancedMemoryManager:
             hash_value = hash(data_str)
 
             # Create a simple 128-dimensional embedding
-            embedding = []
-            for i in range(128):
-                embedding.append(float((hash_value >> i) & 1))
-
-            return embedding
+            return [float((hash_value >> i) & 1) for i in range(128)]
 
         except Exception as e:
-            logger.error(f"Failed to generate embedding: {e!s}")
+            logger.exception(f"Failed to generate embedding: {e!s}")
             return [0.0] * 128  # Return zero embedding on error
 
     async def _update_memory_clusters(self, experience: ExperienceItem) -> None:
@@ -404,7 +401,7 @@ class EnhancedMemoryManager:
                 self.memory_clusters[cluster_id] = new_cluster
 
         except Exception as e:
-            logger.error(f"Failed to update memory clusters: {e!s}")
+            logger.exception(f"Failed to update memory clusters: {e!s}")
 
     async def _similarity_search_memory(
         self, query_embedding: list[float], limit: int
@@ -421,11 +418,11 @@ class EnhancedMemoryManager:
                     similarities.append((similarity, experience))
 
             # Sort by similarity and return top results
-            similarities.sort(key=lambda x: x[0], reverse=True)
+            similarities.sort(key=operator.itemgetter(0), reverse=True)
             return [exp for _, exp in similarities[:limit]]
 
         except Exception as e:
-            logger.error(f"Failed to perform similarity search: {e!s}")
+            logger.exception(f"Failed to perform similarity search: {e!s}")
             return []
 
     async def _calculate_similarity(
@@ -437,7 +434,9 @@ class EnhancedMemoryManager:
                 return 0.0
 
             # Simple dot product similarity (normalized)
-            dot_product = sum(a * b for a, b in zip(embedding1, embedding2))
+            dot_product = sum(
+                a * b for a, b in zip(embedding1, embedding2, strict=False)
+            )
             norm1 = sum(a * a for a in embedding1) ** 0.5
             norm2 = sum(b * b for b in embedding2) ** 0.5
 
@@ -447,7 +446,7 @@ class EnhancedMemoryManager:
             return dot_product / (norm1 * norm2)
 
         except Exception as e:
-            logger.error(f"Failed to calculate similarity: {e!s}")
+            logger.exception(f"Failed to calculate similarity: {e!s}")
             return 0.0
 
     async def _extract_patterns(self, experiences: list[ExperienceItem]) -> list[str]:
@@ -472,7 +471,7 @@ class EnhancedMemoryManager:
             return patterns
 
         except Exception as e:
-            logger.error(f"Failed to extract patterns: {e!s}")
+            logger.exception(f"Failed to extract patterns: {e!s}")
             return []
 
     def _calculate_compliance_score(self, experiences: list[ExperienceItem]) -> float:
@@ -591,7 +590,9 @@ class DynamicAgent:
 
         except Exception as e:
             self.state = AgentState.ERROR
-            logger.error(f"Failed to initialize agent {self.config.agent_id}: {e!s}")
+            logger.exception(
+                f"Failed to initialize agent {self.config.agent_id}: {e!s}"
+            )
             await self.alerting_system.send_alert(
                 {
                     "severity": "high",
@@ -652,7 +653,7 @@ class DynamicAgent:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to assign task {task.task_id}: {e!s}")
+            logger.exception(f"Failed to assign task {task.task_id}: {e!s}")
             return False
 
     async def send_message(
@@ -692,7 +693,7 @@ class DynamicAgent:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send message: {e!s}")
+            logger.exception(f"Failed to send message: {e!s}")
             return False
 
     async def receive_message(self, message: AgentCommunication) -> None:
@@ -707,7 +708,7 @@ class DynamicAgent:
             self.message_inbox.append(message)
 
             # Process high-priority messages immediately
-            if message.priority in [TaskPriority.CRITICAL, TaskPriority.HIGH]:
+            if message.priority in {TaskPriority.CRITICAL, TaskPriority.HIGH}:
                 await self._process_message(message)
 
             # Log message receipt
@@ -722,7 +723,7 @@ class DynamicAgent:
             )
 
         except Exception as e:
-            logger.error(f"Failed to receive message: {e!s}")
+            logger.exception(f"Failed to receive message: {e!s}")
 
     async def get_status(self) -> dict[str, Any]:
         """Get current agent status and metrics"""
@@ -772,7 +773,7 @@ class DynamicAgent:
             )
 
         except Exception as e:
-            logger.error(f"Error during agent shutdown: {e!s}")
+            logger.exception(f"Error during agent shutdown: {e!s}")
 
     async def _main_execution_loop(self) -> None:
         """Main execution loop for the agent"""
@@ -794,7 +795,7 @@ class DynamicAgent:
                 await asyncio.sleep(1)
 
             except Exception as e:
-                logger.error(f"Error in main execution loop: {e!s}")
+                logger.exception(f"Error in main execution loop: {e!s}")
                 await self.alerting_system.send_alert(
                     {
                         "severity": "medium",
@@ -826,11 +827,11 @@ class DynamicAgent:
         # Check status of active tasks
         completed_tasks = []
         for task_id, task in self.active_tasks.items():
-            if task.status in [
+            if task.status in {
                 TaskStatus.COMPLETED,
                 TaskStatus.FAILED,
                 TaskStatus.CANCELLED,
-            ]:
+            }:
                 completed_tasks.append(task_id)
 
         # Move completed tasks
@@ -868,7 +869,7 @@ class DynamicAgent:
             task.status = TaskStatus.FAILED
             task.error_message = str(e)
             task.completed_at = datetime.utcnow()
-            logger.error(f"Failed to start task {task.task_id}: {e!s}")
+            logger.exception(f"Failed to start task {task.task_id}: {e!s}")
 
     async def _execute_single_task(self, task: AgentTask) -> None:
         """Execute a single task with all safety checks"""
@@ -966,7 +967,7 @@ class DynamicAgent:
                 }
             )
 
-            logger.error(f"Task {task.task_id} execution failed: {e!s}")
+            logger.exception(f"Task {task.task_id} execution failed: {e!s}")
 
     async def _process_messages(self) -> None:
         """Process messages in the inbox"""
@@ -997,9 +998,11 @@ class DynamicAgent:
                 logger.warning(f"Unknown message type: {message.message_type}")
 
         except Exception as e:
-            logger.error(f"Failed to process message {message.communication_id}: {e!s}")
+            logger.exception(
+                f"Failed to process message {message.communication_id}: {e!s}"
+            )
 
-    def _get_next_task(self) -> Optional[AgentTask]:
+    def _get_next_task(self) -> AgentTask | None:
         """Get the next task to execute based on priority"""
         if not self.task_queue:
             return None
@@ -1089,7 +1092,7 @@ class DynamicAgent:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance check failed: {e!s}")
+            logger.exception(f"Constitutional compliance check failed: {e!s}")
             return False
 
     async def _validate_output_compliance(
@@ -1109,7 +1112,7 @@ class DynamicAgent:
             return compliance_score >= 0.7
 
         except Exception as e:
-            logger.error(f"Output compliance check failed: {e!s}")
+            logger.exception(f"Output compliance check failed: {e!s}")
             return False
 
     async def _check_resource_availability(self, task: AgentTask) -> bool:
@@ -1129,10 +1132,7 @@ class DynamicAgent:
 
         current_cpu_usage = len(self.active_tasks) * 10  # Simplified calculation
 
-        if current_cpu_usage + required_cpu > max_cpu:
-            return False
-
-        return True
+        return not current_cpu_usage + required_cpu > max_cpu
 
     async def _validate_communication_constraints(
         self, recipient_id: str, message: AgentCommunication
@@ -1369,7 +1369,7 @@ class DynamicAgent:
             )
 
         except Exception as e:
-            logger.error(f"Failed to store task experience: {e!s}")
+            logger.exception(f"Failed to store task experience: {e!s}")
 
     async def _retrieve_relevant_experiences_for_task(
         self, task: AgentTask
@@ -1398,7 +1398,7 @@ class DynamicAgent:
             return relevant_experiences
 
         except Exception as e:
-            logger.error(f"Failed to retrieve relevant experiences: {e!s}")
+            logger.exception(f"Failed to retrieve relevant experiences: {e!s}")
             return []
 
     async def _apply_memory_insights_to_task(self, task: AgentTask) -> None:
@@ -1437,4 +1437,4 @@ class DynamicAgent:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to apply memory insights: {e!s}")
+            logger.exception(f"Failed to apply memory insights: {e!s}")

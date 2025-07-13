@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # PGC Validation Latency Critical Alert
 
 ## Alert Information

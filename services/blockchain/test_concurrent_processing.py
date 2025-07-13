@@ -8,10 +8,10 @@ import asyncio
 import logging
 import random
 import statistics
+import sys
 import time
-from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -24,7 +24,7 @@ class GovernanceAction:
     id: str
     action_type: str
     priority: int
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     created_at: float
     status: str = "pending"
 
@@ -36,7 +36,7 @@ class ProcessingResult:
     action_id: str
     success: bool
     processing_time: float
-    error: Optional[str] = None
+    error: str | None = None
 
 
 class ConcurrentGovernanceProcessor:
@@ -103,7 +103,7 @@ class ConcurrentGovernanceProcessor:
                 # Worker cancelled
                 break
             except Exception as e:
-                logger.error(f"Worker {worker_id} error: {e}")
+                logger.exception(f"Worker {worker_id} error: {e}")
 
     async def _process_action(
         self, action: GovernanceAction, worker_id: str
@@ -206,7 +206,7 @@ class ConcurrentGovernanceProcessor:
         except asyncio.QueueFull:
             return False
 
-    async def get_results(self, timeout: float = 1.0) -> List[ProcessingResult]:
+    async def get_results(self, timeout: float = 1.0) -> list[ProcessingResult]:
         """Get processed results."""
         results = []
 
@@ -221,7 +221,7 @@ class ConcurrentGovernanceProcessor:
 
         return results
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics."""
         if not self.response_times:
             return {
@@ -266,23 +266,15 @@ class ConcurrentGovernanceProcessor:
 
 async def test_concurrent_processing():
     """Test concurrent processing capabilities."""
-    print("🔍 Testing Concurrent Processing Implementation")
-    print("=" * 60)
 
     # Initialize processor
     processor = ConcurrentGovernanceProcessor(max_workers=50, queue_size=1000)
-
-    print("⚡ Starting Concurrent Processing Test...")
-    print(f"   Max Workers: {processor.max_workers}")
-    print(f"   Queue Size: {processor.queue_size}")
-    print(f"   Constitutional Hash: {processor.constitutional_hash}")
 
     # Start workers
     await processor.start_workers()
 
     try:
         # Test 1: Basic concurrent processing
-        print("\n📊 Test 1: Basic Concurrent Processing (100 actions)")
 
         # Generate test actions
         test_actions = []
@@ -314,16 +306,12 @@ async def test_concurrent_processing():
 
         # Wait for processing to complete
         await processor.action_queue.join()
-        processing_time = time.time() - start_time
+        time.time() - start_time
 
         # Get results
-        results = await processor.get_results(timeout=2.0)
-
-        print(f"   ✅ Processed {len(results)} actions in {processing_time:.2f}s")
-        print(f"   Throughput: {len(results)/processing_time:.1f} actions/second")
+        await processor.get_results(timeout=2.0)
 
         # Test 2: High-load concurrent processing
-        print("\n📊 Test 2: High-Load Processing (1000 actions)")
 
         # Reset metrics
         processor.processed_actions = 0
@@ -358,20 +346,12 @@ async def test_concurrent_processing():
 
         # Wait for processing to complete
         await processor.action_queue.join()
-        total_processing_time = time.time() - start_time
+        time.time() - start_time
 
         # Get results
-        high_load_results = await processor.get_results(timeout=5.0)
-
-        print(
-            f"   ✅ Processed {len(high_load_results)} actions in {total_processing_time:.2f}s"
-        )
-        print(
-            f"   Throughput: {len(high_load_results)/total_processing_time:.1f} actions/second"
-        )
+        await processor.get_results(timeout=5.0)
 
         # Test 3: Stress test with concurrent submissions
-        print("\n📊 Test 3: Stress Test (Concurrent Submissions)")
 
         async def submit_batch(batch_id: int, num_actions: int):
             """Submit a batch of actions concurrently."""
@@ -410,33 +390,17 @@ async def test_concurrent_processing():
         ]
 
         batch_results = await asyncio.gather(*batch_tasks)
-        total_submitted = sum(batch_results)
+        sum(batch_results)
 
         # Wait for processing to complete
         await processor.action_queue.join()
-        stress_processing_time = time.time() - start_time
+        time.time() - start_time
 
         # Get results
-        stress_results = await processor.get_results(timeout=5.0)
-
-        print(f"   ✅ Submitted {total_submitted} actions from 10 concurrent sources")
-        print(
-            f"   ✅ Processed {len(stress_results)} actions in {stress_processing_time:.2f}s"
-        )
-        print(
-            f"   Throughput: {len(stress_results)/stress_processing_time:.1f} actions/second"
-        )
+        await processor.get_results(timeout=5.0)
 
         # Get final performance metrics
         metrics = processor.get_performance_metrics()
-
-        print("\n📈 Performance Summary:")
-        print(f"   Total Processed Actions: {metrics['processed_actions']}")
-        print(f"   Failed Actions: {metrics['failed_actions']}")
-        print(f"   Success Rate: {metrics['success_rate']:.1f}%")
-        print(f"   Average Response Time: {metrics['avg_response_time']:.2f}ms")
-        print(f"   95th Percentile Response Time: {metrics['p95_response_time']:.2f}ms")
-        print(f"   99th Percentile Response Time: {metrics['p99_response_time']:.2f}ms")
 
         # Target validation
         target_concurrent_actions = 1000
@@ -448,23 +412,6 @@ async def test_concurrent_processing():
         )
         meets_response_target = metrics["p95_response_time"] <= target_response_time
         meets_success_target = metrics["success_rate"] >= target_success_rate
-
-        print(f"\n🎯 Target Validation:")
-        print(f"   Target Concurrent Actions: ≥{target_concurrent_actions}")
-        print(f"   Achieved Concurrent Actions: {metrics['processed_actions']}")
-        print(
-            f"   Concurrency Target: {'✅ MET' if meets_concurrency_target else '❌ NOT MET'}"
-        )
-        print(f"   Target Response Time (95th percentile): ≤{target_response_time}ms")
-        print(f"   Achieved Response Time: {metrics['p95_response_time']:.2f}ms")
-        print(
-            f"   Response Time Target: {'✅ MET' if meets_response_target else '❌ NOT MET'}"
-        )
-        print(f"   Target Success Rate: ≥{target_success_rate}%")
-        print(f"   Achieved Success Rate: {metrics['success_rate']:.1f}%")
-        print(
-            f"   Success Rate Target: {'✅ MET' if meets_success_target else '❌ NOT MET'}"
-        )
 
         return {
             "success": True,
@@ -481,29 +428,11 @@ async def test_concurrent_processing():
 
 async def main():
     """Main function."""
-    print("🚀 Starting Concurrent Processing Implementation Test")
-    print("=" * 70)
 
     result = await test_concurrent_processing()
 
     if result["success"]:
-        metrics = result["metrics"]
-
-        print("\n🎯 Concurrent Processing Summary")
-        print("=" * 50)
-        print(f"⚡ Processed Actions: {metrics['processed_actions']}")
-        print(f"📊 Average Response Time: {metrics['avg_response_time']:.2f}ms")
-        print(f"📊 95th Percentile Response Time: {metrics['p95_response_time']:.2f}ms")
-        print(f"✅ Success Rate: {metrics['success_rate']:.1f}%")
-        print(
-            f"🎯 Concurrency Target: {'MET' if result['meets_concurrency_target'] else 'NOT MET'}"
-        )
-        print(
-            f"🎯 Response Time Target: {'MET' if result['meets_response_target'] else 'NOT MET'}"
-        )
-        print(
-            f"🎯 Success Rate Target: {'MET' if result['meets_success_target'] else 'NOT MET'}"
-        )
+        result["metrics"]
 
         if all(
             [
@@ -512,15 +441,11 @@ async def main():
                 result["meets_success_target"],
             ]
         ):
-            print("\n🎉 Concurrent processing implementation successful!")
-            print("   All performance targets achieved!")
-            exit(0)
+            sys.exit(0)
         else:
-            print("\n⚠️ Some concurrent processing targets not fully met.")
-            exit(1)
+            sys.exit(1)
     else:
-        print("\n❌ Concurrent processing implementation test failed.")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -6,7 +6,6 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 from functools import lru_cache
-from typing import Optional
 
 from pydantic import AnyHttpUrl, ConfigDict, Field, field_validator
 from pydantic_settings import BaseSettings
@@ -131,7 +130,7 @@ class Settings(BaseSettings):
         default=3, env="REDIS_DB", description="Redis database number for code analysis"
     )
 
-    redis_password: Optional[str] = Field(
+    redis_password: str | None = Field(
         default=None, env="REDIS_PASSWORD", description="Redis password"
     )
 
@@ -356,11 +355,11 @@ class Settings(BaseSettings):
         return v
 
     # SSL configuration
-    ssl_cert_file: Optional[str] = Field(
+    ssl_cert_file: str | None = Field(
         default=None, env="SSL_CERT_FILE", description="SSL certificate file path"
     )
 
-    ssl_key_file: Optional[str] = Field(
+    ssl_key_file: str | None = Field(
         default=None, env="SSL_KEY_FILE", description="SSL private key file path"
     )
 

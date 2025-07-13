@@ -79,7 +79,7 @@ def upgrade():
         CREATE POLICY simple_access_log_policy ON tenant_access_log
         FOR ALL TO PUBLIC
         USING (
-            tenant_id = current_setting('app.current_tenant_id', true)::uuid 
+            tenant_id = current_setting('app.current_tenant_id', true)::uuid
             OR current_setting('app.bypass_rls', true) = 'true'
             OR current_setting('app.is_admin', true) = 'true'
         )
@@ -103,37 +103,37 @@ def upgrade():
             -- Validate user authorization if not bypassing RLS
             IF p_tenant_id IS NOT NULL AND NOT p_bypass_rls AND p_user_id IS NOT NULL THEN
                 SELECT EXISTS(
-                    SELECT 1 FROM tenant_users 
-                    WHERE user_id = p_user_id 
+                    SELECT 1 FROM tenant_users
+                    WHERE user_id = p_user_id
                     AND tenant_id = p_tenant_id
                     AND is_active = true
                 ) INTO user_authorized;
-                
+
                 IF NOT user_authorized THEN
                     -- Log unauthorized access attempt
                     INSERT INTO tenant_access_log (
                         id, tenant_id, user_id, action, result, ip_address
                     ) VALUES (
-                        gen_random_uuid(), p_tenant_id, p_user_id, 
+                        gen_random_uuid(), p_tenant_id, p_user_id,
                         'set_context', 'denied', p_ip_address
                     );
-                    
+
                     RAISE EXCEPTION 'User % not authorized for tenant %', p_user_id, p_tenant_id;
                 END IF;
             END IF;
-            
+
             -- Set session variables
             PERFORM set_config('app.current_tenant_id', p_tenant_id::text, true);
             PERFORM set_config('app.current_user_id', COALESCE(p_user_id::text, ''), true);
             PERFORM set_config('app.is_admin', p_is_admin::text, true);
             PERFORM set_config('app.bypass_rls', p_bypass_rls::text, true);
             PERFORM set_config('app.constitutional_hash', '{CONSTITUTIONAL_HASH}', true);
-            
+
             -- Log successful context setting
             INSERT INTO tenant_access_log (
                 id, tenant_id, user_id, action, result, ip_address
             ) VALUES (
-                gen_random_uuid(), p_tenant_id, p_user_id, 
+                gen_random_uuid(), p_tenant_id, p_user_id,
                 'set_context', 'success', p_ip_address
             );
         END;
@@ -164,11 +164,11 @@ def upgrade():
                         TG_TABLE_NAME,
                         'error'
                     );
-                    
+
                     RAISE EXCEPTION 'Constitutional hash validation failed for table %', TG_TABLE_NAME;
                 END IF;
             END IF;
-            
+
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
@@ -196,7 +196,7 @@ def upgrade():
             CREATE POLICY simple_tenant_policy ON {table_name}
             FOR ALL TO PUBLIC
             USING (
-                tenant_id = current_setting('app.current_tenant_id', true)::uuid 
+                tenant_id = current_setting('app.current_tenant_id', true)::uuid
                 OR current_setting('app.bypass_rls', true) = 'true'
                 OR current_setting('app.is_admin', true) = 'true'
             )
@@ -225,7 +225,7 @@ def upgrade():
     op.execute(
         """
         CREATE OR REPLACE VIEW simple_tenant_dashboard AS
-        SELECT 
+        SELECT
             t.id as tenant_id,
             t.name as tenant_name,
             t.status,
@@ -249,12 +249,12 @@ def upgrade():
         RETURNS void AS $$
         BEGIN
             -- Clean up old access logs (keep 30 days instead of 90)
-            DELETE FROM tenant_access_log 
+            DELETE FROM tenant_access_log
             WHERE created_at < NOW() - INTERVAL '30 days';
-            
+
             -- Update table statistics
             ANALYZE tenant_access_log;
-            
+
             -- Log maintenance completion
             INSERT INTO tenant_access_log (
                 id, action, result
@@ -281,12 +281,12 @@ def upgrade():
     op.execute(
         """
         -- Optimize tenant queries
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tenants_status_hash 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tenants_status_hash
         ON tenants(status, constitutional_hash);
-        
+
         -- Optimize user-tenant lookups
-        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tenant_users_active_lookup 
-        ON tenant_users(user_id, tenant_id, is_active) 
+        CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_tenant_users_active_lookup
+        ON tenant_users(user_id, tenant_id, is_active)
         WHERE is_active = true;
     """
     )

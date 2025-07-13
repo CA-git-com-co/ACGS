@@ -183,7 +183,7 @@ class CryptographicIntegrityService:
             logger.warning("Signature verification failed")
             return False
         except Exception as e:
-            logger.error(f"Error verifying signature: {e}")
+            logger.exception(f"Error verifying signature: {e}")
             return False
 
 
@@ -285,7 +285,7 @@ class MerkleTreeService:
                 proof.append({"hash": sibling_hash, "position": position})
 
             # Move to parent level
-            current_index = current_index // 2
+            current_index //= 2
 
         return proof
 

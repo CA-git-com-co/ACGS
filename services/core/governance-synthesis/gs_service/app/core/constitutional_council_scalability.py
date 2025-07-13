@@ -141,7 +141,7 @@ class ConstitutionalCouncilScalabilityFramework:
             )
 
         except Exception as e:
-            logger.error(f"Error assessing scalability: {e}")
+            logger.exception(f"Error assessing scalability: {e}")
             return ScalabilityAssessment(
                 current_load=0,
                 capacity_utilization=0.0,
@@ -199,7 +199,7 @@ class ConstitutionalCouncilScalabilityFramework:
             return session
 
         except Exception as e:
-            logger.error(f"Error initiating co-evolution: {e}")
+            logger.exception(f"Error initiating co-evolution: {e}")
             return {"error": str(e), "session_id": None}
 
     async def _setup_rapid_co_evolution(self, session: dict[str, Any]):

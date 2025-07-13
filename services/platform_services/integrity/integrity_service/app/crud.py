@@ -238,10 +238,10 @@ async def update_appeal(
         update_data = appeal_update.model_dump(exclude_unset=True)
 
         # Set resolved_at timestamp if status changes to resolved or rejected
-        if "status" in update_data and update_data["status"] in [
+        if "status" in update_data and update_data["status"] in {
             "resolved",
             "rejected",
-        ]:
+        }:
             db_appeal.resolved_at = datetime.utcnow()
 
         for key, value in update_data.items():

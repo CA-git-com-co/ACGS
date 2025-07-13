@@ -85,7 +85,7 @@ class ACGSStreamingDemo:
             return True
 
         except Exception as e:
-            logger.error(f"Initialization failed: {e}")
+            logger.exception(f"Initialization failed: {e}")
             return False
 
     async def _register_event_handlers(self):
@@ -119,7 +119,7 @@ class ACGSStreamingDemo:
                 return True
 
             except Exception as e:
-                logger.error(f"Constitutional decision handler failed: {e}")
+                logger.exception(f"Constitutional decision handler failed: {e}")
                 return False
 
         # Policy synthesis handler
@@ -136,7 +136,7 @@ class ACGSStreamingDemo:
                 return True
 
             except Exception as e:
-                logger.error(f"Policy synthesis handler failed: {e}")
+                logger.exception(f"Policy synthesis handler failed: {e}")
                 return False
 
         # Audit event handler
@@ -153,7 +153,7 @@ class ACGSStreamingDemo:
                 return True
 
             except Exception as e:
-                logger.error(f"Audit event handler failed: {e}")
+                logger.exception(f"Audit event handler failed: {e}")
                 return False
 
         # Register handlers
@@ -188,7 +188,7 @@ class ACGSStreamingDemo:
         except KeyboardInterrupt:
             logger.info("Demo interrupted by user")
         except Exception as e:
-            logger.error(f"Demo failed: {e}")
+            logger.exception(f"Demo failed: {e}")
         finally:
             self.running = False
             await self._cleanup()
@@ -253,7 +253,7 @@ class ACGSStreamingDemo:
                 await asyncio.sleep(5)  # New decision every 5 seconds
 
             except Exception as e:
-                logger.error(f"Constitutional AI simulation failed: {e}")
+                logger.exception(f"Constitutional AI simulation failed: {e}")
                 await asyncio.sleep(10)
 
     async def _policy_synthesis_simulation(self):
@@ -307,7 +307,7 @@ class ACGSStreamingDemo:
                 await asyncio.sleep(8)  # New policy every 8 seconds
 
             except Exception as e:
-                logger.error(f"Policy synthesis simulation failed: {e}")
+                logger.exception(f"Policy synthesis simulation failed: {e}")
                 await asyncio.sleep(15)
 
     async def _audit_logging_simulation(self):
@@ -351,7 +351,7 @@ class ACGSStreamingDemo:
                 await asyncio.sleep(3)  # Frequent audit events
 
             except Exception as e:
-                logger.error(f"Audit logging simulation failed: {e}")
+                logger.exception(f"Audit logging simulation failed: {e}")
                 await asyncio.sleep(10)
 
     async def _monitoring_simulation(self):
@@ -393,7 +393,7 @@ class ACGSStreamingDemo:
                 await asyncio.sleep(30)  # Metrics every 30 seconds
 
             except Exception as e:
-                logger.error(f"Monitoring simulation failed: {e}")
+                logger.exception(f"Monitoring simulation failed: {e}")
                 await asyncio.sleep(60)
 
     async def _metrics_reporter(self):
@@ -418,7 +418,7 @@ class ACGSStreamingDemo:
                 logger.info("===================================")
 
             except Exception as e:
-                logger.error(f"Metrics reporting failed: {e}")
+                logger.exception(f"Metrics reporting failed: {e}")
 
     async def _process_constitutional_decision(self, decision_data: dict[str, Any]):
         """Process a constitutional decision (simulation)"""
@@ -506,7 +506,7 @@ class ACGSStreamingDemo:
             logger.info("Cleanup completed")
 
         except Exception as e:
-            logger.error(f"Cleanup failed: {e}")
+            logger.exception(f"Cleanup failed: {e}")
 
 
 # Configuration validation example
@@ -563,7 +563,7 @@ async def main():
         demo_task = asyncio.create_task(demo.run_demo())
         timeout_task = asyncio.create_task(asyncio.sleep(300))  # 5 minutes
 
-        done, pending = await asyncio.wait(
+        _done, pending = await asyncio.wait(
             [demo_task, timeout_task], return_when=asyncio.FIRST_COMPLETED
         )
 
@@ -574,7 +574,7 @@ async def main():
         logger.info("Demo completed successfully")
 
     except Exception as e:
-        logger.error(f"Demo failed: {e}")
+        logger.exception(f"Demo failed: {e}")
 
     logger.info("ACGS Enterprise Streaming Infrastructure Demo finished")
 

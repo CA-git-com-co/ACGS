@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # High Response Time Runbook - ACGS-1 Constitutional Governance System
 
 ## Alert: HighResponseTime / ACGSHighResponseTime

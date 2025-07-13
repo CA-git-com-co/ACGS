@@ -372,7 +372,7 @@ class WINAOptimizedLLMClient:
             return result
 
         except Exception as e:
-            logger.error(f"WINA-optimized structured interpretation failed: {e}")
+            logger.exception(f"WINA-optimized structured interpretation failed: {e}")
             # Fallback to original implementation
             original_result = await query_llm_for_structured_output(query)
             return WINAOptimizedSynthesisResult(
@@ -519,7 +519,7 @@ class WINAOptimizedLLMClient:
             return result
 
         except Exception as e:
-            logger.error(f"WINA-optimized constitutional synthesis failed: {e}")
+            logger.exception(f"WINA-optimized constitutional synthesis failed: {e}")
             # Fallback to original implementation
             original_result = await query_llm_for_constitutional_synthesis(
                 synthesis_input
@@ -579,7 +579,7 @@ class WINAOptimizedLLMClient:
         else:
             model_type = self._detect_model_type(model_identifier)
 
-        if model_type == "unknown" or model_type == "real_other":
+        if model_type in {"unknown", "real_other"}:
             logger.warning(
                 f"WINA SVD optimization may not be fully compatible with model_identifier '{model_identifier}' and client type {type(llm_client)}. Proceeding with model_type '{model_type}'."
             )
@@ -719,7 +719,7 @@ class WINAOptimizedLLMClient:
             return all(compliance_checks) if compliance_checks else True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance verification failed: {e}")
+            logger.exception(f"Constitutional compliance verification failed: {e}")
             return False
 
     async def _update_performance_tracking(
@@ -761,7 +761,7 @@ class WINAOptimizedLLMClient:
             )
 
         except Exception as e:
-            logger.error(f"Failed to update performance tracking: {e}")
+            logger.exception(f"Failed to update performance tracking: {e}")
 
     def get_performance_summary(self) -> dict[str, Any]:
         """Get performance summary of WINA-optimized operations."""
@@ -790,7 +790,7 @@ class WINAOptimizedLLMClient:
                 model_identifier, test_cases
             )
         except Exception as e:
-            logger.error(f"Batch computational invariance verification failed: {e}")
+            logger.exception(f"Batch computational invariance verification failed: {e}")
             return {"invariance_maintained": False, "error": str(e)}
 
     def clear_optimization_cache(self) -> None:

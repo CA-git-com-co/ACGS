@@ -8,16 +8,14 @@ using Context Engineering principles with constitutional compliance validation.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import json
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Union
-from unittest.mock import AsyncMock, MagicMock, patch
-from uuid import UUID, uuid4
+from typing import Any
+from unittest.mock import AsyncMock, MagicMock
+from uuid import uuid4
 
 import pytest
-import redis.asyncio as redis
 import requests
 from fastapi.testclient import TestClient
 
@@ -67,9 +65,7 @@ class ConstitutionalTestCase:
 
     # Constitutional Compliance Validation Methods
 
-    def validate_constitutional_hash(
-        self, data: Optional[Dict[str, Any]] = None
-    ) -> bool:
+    def validate_constitutional_hash(self, data: dict[str, Any] | None = None) -> bool:
         """
         Validate constitutional hash in response data.
 
@@ -94,7 +90,7 @@ class ConstitutionalTestCase:
         return True
 
     def validate_constitutional_compliance_response(
-        self, response: Dict[str, Any]
+        self, response: dict[str, Any]
     ) -> bool:
         """
         Validate complete constitutional compliance in response.
@@ -124,7 +120,7 @@ class ConstitutionalTestCase:
 
         return True
 
-    def generate_constitutional_request(self, **kwargs) -> Dict[str, Any]:
+    def generate_constitutional_request(self, **kwargs) -> dict[str, Any]:
         """
         Generate a request with constitutional compliance fields.
 
@@ -134,14 +130,12 @@ class ConstitutionalTestCase:
         Returns:
             Dict: Constitutional request data
         """
-        request = {
+        return {
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "tenant_id": str(uuid4()),
             **kwargs,
         }
-
-        return request
 
     # Performance Validation Methods
 
@@ -149,7 +143,7 @@ class ConstitutionalTestCase:
         self,
         latency_ms: float,
         target_type: str = "p99",
-        max_p99_ms: Optional[float] = None,
+        max_p99_ms: float | None = None,
     ) -> bool:
         """
         Validate latency against performance targets.
@@ -228,7 +222,7 @@ class ConstitutionalTestCase:
         return latency_ms
 
     def validate_throughput_target(
-        self, actual_rps: float, min_rps: Optional[float] = None
+        self, actual_rps: float, min_rps: float | None = None
     ) -> bool:
         """
         Validate throughput against performance targets.
@@ -362,7 +356,7 @@ class ConstitutionalTestCase:
     # Audit Logging Validation Methods
 
     def validate_audit_event_generation(
-        self, audit_events: List[Dict[str, Any]], expected_event_types: List[str]
+        self, audit_events: list[dict[str, Any]], expected_event_types: list[str]
     ) -> bool:
         """
         Validate that required audit events were generated.
@@ -392,7 +386,7 @@ class ConstitutionalTestCase:
 
     def capture_audit_events(
         self, redis_url: str = "redis://localhost:6389/0"
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """
         Capture audit events from Redis for validation.
 
@@ -427,7 +421,7 @@ class ConstitutionalTestCase:
     # Security and Isolation Testing Methods
 
     def validate_tenant_isolation(
-        self, tenant_a_data: Dict[str, Any], tenant_b_data: Dict[str, Any]
+        self, tenant_a_data: dict[str, Any], tenant_b_data: dict[str, Any]
     ) -> bool:
         """
         Validate that tenant data is properly isolated.
@@ -455,7 +449,7 @@ class ConstitutionalTestCase:
 
         return True
 
-    def validate_security_headers(self, response_headers: Dict[str, str]) -> bool:
+    def validate_security_headers(self, response_headers: dict[str, str]) -> bool:
         """
         Validate security headers in HTTP responses.
 
@@ -472,7 +466,7 @@ class ConstitutionalTestCase:
         ]
 
         for header in required_headers:
-            if header.lower() not in [h.lower() for h in response_headers.keys()]:
+            if header.lower() not in [h.lower() for h in response_headers]:
                 pytest.fail(f"Required security header missing: {header}")
 
         return True

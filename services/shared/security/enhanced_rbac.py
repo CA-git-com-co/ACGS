@@ -5,16 +5,13 @@ This module provides fine-grained permission management with hierarchical roles,
 dynamic permissions, and constitutional compliance validation.
 """
 
-import asyncio
-import json
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 
 import structlog
-from pydantic import BaseModel
 
 logger = structlog.get_logger(__name__)
 
@@ -70,9 +67,9 @@ class Permission:
     resource: ResourceType
     action: ActionType
     level: PermissionLevel
-    conditions: Dict[str, Any] = field(default_factory=dict)
-    expires_at: Optional[datetime] = None
-    granted_by: Optional[str] = None
+    conditions: dict[str, Any] = field(default_factory=dict)
+    expires_at: datetime | None = None
+    granted_by: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -82,8 +79,8 @@ class Role:
 
     name: str
     description: str
-    permissions: Set[Permission] = field(default_factory=set)
-    parent_roles: Set[str] = field(default_factory=set)
+    permissions: set[Permission] = field(default_factory=set)
+    parent_roles: set[str] = field(default_factory=set)
     is_system_role: bool = False
     created_at: datetime = field(default_factory=datetime.now)
     constitutional_hash: str = CONSTITUTIONAL_HASH
@@ -94,11 +91,11 @@ class UserPermissions:
     """User's effective permissions combining role and direct permissions."""
 
     user_id: str
-    roles: Set[str] = field(default_factory=set)
-    direct_permissions: Set[Permission] = field(default_factory=set)
-    effective_permissions: Set[Permission] = field(default_factory=set)
+    roles: set[str] = field(default_factory=set)
+    direct_permissions: set[Permission] = field(default_factory=set)
+    effective_permissions: set[Permission] = field(default_factory=set)
     last_calculated: datetime = field(default_factory=datetime.now)
-    context: Dict[str, Any] = field(default_factory=dict)
+    context: dict[str, Any] = field(default_factory=dict)
 
 
 class PermissionEvaluationContext:
@@ -107,11 +104,11 @@ class PermissionEvaluationContext:
     def __init__(
         self,
         user_id: str,
-        resource_id: Optional[str] = None,
-        resource_owner: Optional[str] = None,
-        request_time: Optional[datetime] = None,
-        client_ip: Optional[str] = None,
-        additional_context: Optional[Dict[str, Any]] = None,
+        resource_id: str | None = None,
+        resource_owner: str | None = None,
+        request_time: datetime | None = None,
+        client_ip: str | None = None,
+        additional_context: dict[str, Any] | None = None,
     ):
         self.user_id = user_id
         self.resource_id = resource_id
@@ -130,7 +127,6 @@ class PermissionConditionEvaluator(ABC):
         self, permission: Permission, context: PermissionEvaluationContext
     ) -> bool:
         """Evaluate if permission conditions are met."""
-        pass
 
 
 class TimeBasedConditionEvaluator(PermissionConditionEvaluator):
@@ -228,10 +224,10 @@ class EnhancedRBACManager:
     """Enhanced RBAC manager with fine-grained permissions."""
 
     def __init__(self):
-        self.roles: Dict[str, Role] = {}
-        self.user_permissions: Dict[str, UserPermissions] = {}
-        self.permission_cache: Dict[str, Dict[str, bool]] = {}
-        self.condition_evaluators: Dict[str, PermissionConditionEvaluator] = {
+        self.roles: dict[str, Role] = {}
+        self.user_permissions: dict[str, UserPermissions] = {}
+        self.permission_cache: dict[str, dict[str, bool]] = {}
+        self.condition_evaluators: dict[str, PermissionConditionEvaluator] = {
             "time": TimeBasedConditionEvaluator(),
             "ownership": OwnershipConditionEvaluator(),
             "constitutional": ConstitutionalConditionEvaluator(),
@@ -387,7 +383,7 @@ class EnhancedRBACManager:
         user_id: str,
         role_name: str,
         granted_by: str,
-        expires_at: Optional[datetime] = None,
+        expires_at: datetime | None = None,
     ) -> bool:
         """Assign a role to a user."""
         try:
@@ -415,7 +411,7 @@ class EnhancedRBACManager:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Failed to assign role to user",
                 user_id=user_id,
                 role=role_name,
@@ -451,7 +447,7 @@ class EnhancedRBACManager:
             return True
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Failed to grant direct permission to user",
                 user_id=user_id,
                 error=str(e),
@@ -463,7 +459,7 @@ class EnhancedRBACManager:
         user_id: str,
         resource: ResourceType,
         action: ActionType,
-        context: Optional[PermissionEvaluationContext] = None,
+        context: PermissionEvaluationContext | None = None,
     ) -> bool:
         """Check if user has permission for a specific action on a resource."""
         try:
@@ -530,7 +526,7 @@ class EnhancedRBACManager:
             return result
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Permission check failed",
                 user_id=user_id,
                 resource=resource.value,
@@ -583,8 +579,8 @@ class EnhancedRBACManager:
     async def _add_role_permissions(
         self,
         role_name: str,
-        effective_permissions: Set[Permission],
-        processed_roles: Set[str],
+        effective_permissions: set[Permission],
+        processed_roles: set[str],
     ):
         """Recursively add permissions from role and parent roles."""
         if role_name in processed_roles or role_name not in self.roles:
@@ -609,7 +605,7 @@ class EnhancedRBACManager:
         if not permission.conditions:
             return True
 
-        for condition_type, evaluator in self.condition_evaluators.items():
+        for evaluator in self.condition_evaluators.values():
             if not await evaluator.evaluate(permission, context):
                 return False
 
@@ -626,13 +622,13 @@ class EnhancedRBACManager:
         # Recalculate if older than 1 hour
         return (datetime.now() - user_perms.last_calculated) > timedelta(hours=1)
 
-    def get_user_roles(self, user_id: str) -> Set[str]:
+    def get_user_roles(self, user_id: str) -> set[str]:
         """Get user's assigned roles."""
         if user_id not in self.user_permissions:
             return {"user"}  # Default role
         return self.user_permissions[user_id].roles.copy()
 
-    def get_role_permissions(self, role_name: str) -> Set[Permission]:
+    def get_role_permissions(self, role_name: str) -> set[Permission]:
         """Get permissions for a specific role."""
         if role_name not in self.roles:
             return set()
@@ -642,8 +638,8 @@ class EnhancedRBACManager:
         self,
         name: str,
         description: str,
-        permissions: List[Permission],
-        parent_roles: Optional[List[str]] = None,
+        permissions: list[Permission],
+        parent_roles: list[str] | None = None,
         created_by: str = "system",
     ) -> bool:
         """Create a custom role."""
@@ -673,7 +669,9 @@ class EnhancedRBACManager:
             return True
 
         except Exception as e:
-            logger.error("Failed to create custom role", role_name=name, error=str(e))
+            logger.exception(
+                "Failed to create custom role", role_name=name, error=str(e)
+            )
             return False
 
 
@@ -683,7 +681,7 @@ async def check_user_permission(
     user_id: str,
     resource: str,
     action: str,
-    context: Optional[Dict[str, Any]] = None,
+    context: dict[str, Any] | None = None,
 ) -> bool:
     """Utility function to check user permission with string parameters."""
     try:
@@ -698,7 +696,7 @@ async def check_user_permission(
             user_id, resource_type, action_type, evaluation_context
         )
     except ValueError as e:
-        logger.error(f"Invalid resource or action type: {e}")
+        logger.exception(f"Invalid resource or action type: {e}")
         return False
 
 
@@ -706,8 +704,8 @@ def create_permission(
     resource: str,
     action: str,
     level: str = "read",
-    conditions: Optional[Dict[str, Any]] = None,
-    expires_at: Optional[datetime] = None,
+    conditions: dict[str, Any] | None = None,
+    expires_at: datetime | None = None,
 ) -> Permission:
     """Utility function to create permission with string parameters."""
     return Permission(

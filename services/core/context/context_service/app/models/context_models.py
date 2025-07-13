@@ -7,7 +7,7 @@ providing hierarchical context management with TTL-based lifecycle management.
 
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, ConfigDict, Field, validator
@@ -50,7 +50,7 @@ class ContextMetadata(BaseModel):
     model_config = ConfigDict(extra="allow")
 
     source_service: str = Field(description="Service that created this context")
-    created_by: Optional[str] = Field(
+    created_by: str | None = Field(
         None, description="User or agent that created context"
     )
     constitutional_compliant: bool = Field(
@@ -97,7 +97,7 @@ class BaseContext(BaseModel):
     updated_at: datetime = Field(
         default_factory=datetime.utcnow, description="Last update timestamp"
     )
-    expires_at: Optional[datetime] = Field(None, description="Expiration timestamp")
+    expires_at: datetime | None = Field(None, description="Expiration timestamp")
     accessed_at: datetime = Field(
         default_factory=datetime.utcnow, description="Last access timestamp"
     )
@@ -107,13 +107,13 @@ class BaseContext(BaseModel):
     )
 
     # Hierarchical relationships
-    parent_context_id: Optional[UUID] = Field(None, description="Parent context ID")
+    parent_context_id: UUID | None = Field(None, description="Parent context ID")
     child_context_ids: list[UUID] = Field(
         default_factory=list, description="Child context IDs"
     )
 
     # Search and retrieval
-    embedding_vector: Optional[list[float]] = Field(
+    embedding_vector: list[float] | None = Field(
         None, description="Vector embedding for semantic search"
     )
     keywords: list[str] = Field(
@@ -121,7 +121,7 @@ class BaseContext(BaseModel):
     )
 
     @validator("expires_at", pre=True, always=True)
-    def set_expiration(cls, v, values):
+    def set_expiration(self, v, values):
         """Set default expiration based on context type."""
         if v is not None:
             return v
@@ -131,11 +131,11 @@ class BaseContext(BaseModel):
 
         if context_type == ContextType.CONVERSATION:
             return created_at + timedelta(minutes=10)
-        elif context_type == ContextType.DOMAIN:
+        if context_type == ContextType.DOMAIN:
             return created_at + timedelta(hours=24)
-        elif context_type == ContextType.CONSTITUTIONAL:
+        if context_type == ContextType.CONSTITUTIONAL:
             return created_at + timedelta(weeks=4)
-        elif context_type == ContextType.AGENT:
+        if context_type == ContextType.AGENT:
             return created_at + timedelta(hours=48)
         # POLICY type has no expiration (None)
         return None
@@ -162,12 +162,10 @@ class ConversationContext(BaseContext):
     dialogue_state: dict[str, Any] = Field(
         default_factory=dict, description="Current dialogue state"
     )
-    intent_classification: Optional[str] = Field(
+    intent_classification: str | None = Field(
         None, description="Classified user intent"
     )
-    sentiment_score: Optional[float] = Field(
-        None, description="Sentiment analysis score"
-    )
+    sentiment_score: float | None = Field(None, description="Sentiment analysis score")
 
 
 class DomainContext(BaseContext):
@@ -178,7 +176,7 @@ class DomainContext(BaseContext):
     domain: str = Field(
         description="Domain identifier (e.g., legal, medical, financial)"
     )
-    subdomain: Optional[str] = Field(None, description="Subdomain specification")
+    subdomain: str | None = Field(None, description="Subdomain specification")
     expertise_level: str = Field(
         default="general", description="Required expertise level"
     )
@@ -249,7 +247,7 @@ class PolicyContext(BaseContext):
     exceptions: list[dict[str, Any]] = Field(
         default_factory=list, description="Policy exceptions"
     )
-    review_schedule: Optional[str] = Field(None, description="Policy review schedule")
+    review_schedule: str | None = Field(None, description="Policy review schedule")
 
 
 class ContextSearchQuery(BaseModel):
@@ -265,15 +263,11 @@ class ContextSearchQuery(BaseModel):
     keyword_search: bool = Field(default=True, description="Enable keyword search")
 
     # Filtering options
-    priority_filter: Optional[ContextPriority] = Field(
+    priority_filter: ContextPriority | None = Field(
         None, description="Filter by priority"
     )
-    created_after: Optional[datetime] = Field(
-        None, description="Filter by creation date"
-    )
-    created_before: Optional[datetime] = Field(
-        None, description="Filter by creation date"
-    )
+    created_after: datetime | None = Field(None, description="Filter by creation date")
+    created_before: datetime | None = Field(None, description="Filter by creation date")
     tags_filter: list[str] = Field(default_factory=list, description="Filter by tags")
 
     # Search options
@@ -300,7 +294,7 @@ class ContextSearchResult(BaseModel):
     matched_keywords: list[str] = Field(
         default_factory=list, description="Matched keywords"
     )
-    relevance_explanation: Optional[str] = Field(
+    relevance_explanation: str | None = Field(
         None, description="Explanation of relevance"
     )
 

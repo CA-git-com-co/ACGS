@@ -152,7 +152,7 @@ class Layer1_Sandboxing:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to create sandbox {sandbox_id}: {e}")
+            logger.exception(f"Failed to create sandbox {sandbox_id}: {e}")
             return False
 
     def validate_sandbox_config(self, config: dict[str, Any]) -> bool:
@@ -214,7 +214,7 @@ class Layer1_Sandboxing:
             self.sandbox_executions_total.labels(result="failure").inc()
             self.sandbox_execution_time.observe(execution_time)
 
-            logger.error(f"Sandbox execution failed for {sandbox_id}: {e}")
+            logger.exception(f"Sandbox execution failed for {sandbox_id}: {e}")
             return {"success": False, "error": str(e), "execution_time": execution_time}
 
     async def simulate_sandbox_execution(
@@ -345,7 +345,7 @@ class Layer2_PolicyEngine:
                 policy_type=policy_name, result="error"
             ).inc()
 
-            logger.error(f"Policy evaluation failed for {policy_name}: {e}")
+            logger.exception(f"Policy evaluation failed for {policy_name}: {e}")
             return {
                 "policy_name": policy_name,
                 "allowed": False,
@@ -358,7 +358,7 @@ class Layer2_PolicyEngine:
     ) -> dict[str, Any]:
         """Evaluate policy rules against context."""
         # Constitutional compliance check
-        if rules.get("constitutional_compliance_required", False):
+        if rules.get("constitutional_compliance_required"):
             compliance_score = context.get("constitutional_compliance_score", 0.0)
             min_score = rules.get("minimum_compliance_score", 0.95)
 
@@ -433,7 +433,7 @@ class Layer3_Authentication:
             return None
 
         except Exception as e:
-            logger.error(f"Authentication failed: {e}")
+            logger.exception(f"Authentication failed: {e}")
             self.authentication_attempts_total.labels(
                 method=credentials.get("method", "unknown"), result="failure"
             ).inc()
@@ -474,7 +474,7 @@ class Layer3_Authentication:
             return context
 
         except jwt.InvalidTokenError as e:
-            logger.error(f"Invalid JWT token: {e}")
+            logger.exception(f"Invalid JWT token: {e}")
             self.authentication_attempts_total.labels(
                 method="jwt_token", result="failure"
             ).inc()
@@ -529,10 +529,7 @@ class Layer3_Authentication:
 
         # Check wildcard permissions
         wildcard_permission = f"{operation}:*"
-        if wildcard_permission in context.permissions:
-            return True
-
-        return False
+        return wildcard_permission in context.permissions
 
 
 class Layer4_AuditLayer:
@@ -570,7 +567,7 @@ class Layer4_AuditLayer:
             logger.info(f"Audit event logged: {event.event_id}")
 
         except Exception as e:
-            logger.error(f"Failed to log audit event: {e}")
+            logger.exception(f"Failed to log audit event: {e}")
 
     def create_audit_event(
         self,
@@ -602,18 +599,22 @@ class AnomalyDetector:
 
     def __init__(self):
         # Pre-fit the model with baseline data for better performance
-        self.anomaly_model = IsolationForest(contamination=0.1, n_estimators=50, random_state=42)
-        
+        self.anomaly_model = IsolationForest(
+            contamination=0.1, n_estimators=50, random_state=42
+        )
+
         # Pre-train with baseline data to avoid fitting on every call
-        baseline_data = np.array([
-            [100, 0.01],  # Normal: 100 req/s, 1% error
-            [150, 0.02],  # Normal: 150 req/s, 2% error  
-            [200, 0.015], # Normal: 200 req/s, 1.5% error
-            [80, 0.005],  # Normal: 80 req/s, 0.5% error
-            [120, 0.025], # Normal: 120 req/s, 2.5% error
-        ])
+        baseline_data = np.array(
+            [
+                [100, 0.01],  # Normal: 100 req/s, 1% error
+                [150, 0.02],  # Normal: 150 req/s, 2% error
+                [200, 0.015],  # Normal: 200 req/s, 1.5% error
+                [80, 0.005],  # Normal: 80 req/s, 0.5% error
+                [120, 0.025],  # Normal: 120 req/s, 2.5% error
+            ]
+        )
         self.anomaly_model.fit(baseline_data)
-        
+
         # Thresholds for simple rule-based detection (faster)
         self.max_request_rate = 1000
         self.max_error_rate = 0.1
@@ -625,10 +626,12 @@ class AnomalyDetector:
         error_rate = metrics.get("error_rate", 0)
 
         # Fast rule-based detection first (sub-1ms)
-        if (request_rate > self.max_request_rate or 
-            error_rate > self.max_error_rate or 
-            request_rate < self.min_request_rate):
-            
+        if (
+            request_rate > self.max_request_rate
+            or error_rate > self.max_error_rate
+            or request_rate < self.min_request_rate
+        ):
+
             try:
                 anomalies_detected.inc()
             except Exception:
@@ -639,10 +642,10 @@ class AnomalyDetector:
         if request_rate > 500 or error_rate > 0.05:
             # Prepare data for model
             data = np.array([[request_rate, error_rate]])
-            
+
             # Use predict (not fit_predict) since model is pre-trained
             prediction = self.anomaly_model.predict(data)
-            
+
             if prediction[0] == -1:
                 try:
                     anomalies_detected.inc()

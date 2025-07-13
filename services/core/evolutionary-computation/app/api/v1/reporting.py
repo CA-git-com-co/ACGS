@@ -265,7 +265,7 @@ async def get_oversight_summary(
         return report
 
     except Exception as e:
-        logger.error(f"Failed to generate oversight summary: {e}")
+        logger.exception(f"Failed to generate oversight summary: {e}")
         raise HTTPException(status_code=500, detail=f"Report generation failed: {e!s}")
 
 
@@ -288,9 +288,9 @@ async def get_constitutional_compliance_report(
         fidelity_metrics = await ac_service_client.get_fidelity_metrics()
 
         # Calculate compliance rates by principle
-        principle_compliance = {}
-        for principle_id, score in fidelity_metrics.get("principle_scores", {}).items():
-            principle_compliance[principle_id] = score
+        principle_compliance = dict(
+            fidelity_metrics.get("principle_scores", {}).items()
+        )
 
         # Violation summary
         violation_summary = {
@@ -348,7 +348,7 @@ async def get_constitutional_compliance_report(
         return report
 
     except Exception as e:
-        logger.error(f"Failed to generate compliance report: {e}")
+        logger.exception(f"Failed to generate compliance report: {e}")
         raise HTTPException(
             status_code=500, detail=f"Compliance report generation failed: {e!s}"
         )
@@ -436,7 +436,7 @@ async def get_wina_optimization_report(
         return report
 
     except Exception as e:
-        logger.error(f"Failed to generate WINA optimization report: {e}")
+        logger.exception(f"Failed to generate WINA optimization report: {e}")
         raise HTTPException(
             status_code=500, detail=f"WINA report generation failed: {e!s}"
         )
@@ -483,7 +483,7 @@ async def reporting_health_check():
         }
 
     except Exception as e:
-        logger.error(f"Reporting health check failed: {e}")
+        logger.exception(f"Reporting health check failed: {e}")
         raise HTTPException(
             status_code=503, detail=f"Reporting system unhealthy: {e!s}"
         )

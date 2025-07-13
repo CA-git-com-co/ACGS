@@ -20,7 +20,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -70,7 +70,7 @@ class SHAPExplanation:
     confidence: float
     computation_time: float
     timestamp: datetime
-    instance_id: Optional[str] = None
+    instance_id: str | None = None
 
 
 @dataclass
@@ -90,7 +90,7 @@ class SHAPExplainer:
     Production-ready SHAP explainer with optimization and caching
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -119,8 +119,8 @@ class SHAPExplainer:
         self,
         model: Any,
         explainer_type: ExplainerType,
-        training_data: Optional[np.ndarray] = None,
-        feature_names: Optional[list[str]] = None,
+        training_data: np.ndarray | None = None,
+        feature_names: list[str] | None = None,
     ) -> bool:
         """
         Initialize SHAP explainer for a given model
@@ -200,7 +200,7 @@ class SHAPExplainer:
             return True
 
         except Exception as e:
-            logger.error(f"SHAP explainer initialization failed: {e}")
+            logger.exception(f"SHAP explainer initialization failed: {e}")
             return await self._initialize_fallback_explainer(model, explainer_type)
 
     async def _initialize_fallback_explainer(
@@ -228,7 +228,7 @@ class SHAPExplainer:
             return True
 
         except Exception as e:
-            logger.error(f"Fallback explainer initialization failed: {e}")
+            logger.exception(f"Fallback explainer initialization failed: {e}")
             return False
 
     def _get_cache_key(self, instance_data: np.ndarray, explainer_key: str) -> str:
@@ -279,8 +279,7 @@ class SHAPExplainer:
                     cached_explanation = self.explanation_cache[cache_key]
                     logger.debug(f"Cache hit for explanation: {cache_key}")
                     return cached_explanation
-                else:
-                    self.metrics["cache_misses"] += 1
+                self.metrics["cache_misses"] += 1
 
             # Get explainer
             if explainer_key not in self.explainers:
@@ -307,11 +306,11 @@ class SHAPExplainer:
                 if isinstance(expected_value, (list, np.ndarray)):
                     expected_value = expected_value[0]
 
-            elif explainer_type in [
+            elif explainer_type in {
                 ExplainerType.LINEAR,
                 ExplainerType.KERNEL,
                 ExplainerType.PERMUTATION,
-            ]:
+            }:
                 shap_values = explainer.shap_values(instance.reshape(1, -1))
                 expected_value = explainer.expected_value
 
@@ -323,10 +322,7 @@ class SHAPExplainer:
                 raise ValueError(f"Explanation not implemented for {explainer_type}")
 
             # Extract values for single instance
-            if shap_values.ndim > 1:
-                shap_values_single = shap_values[0]
-            else:
-                shap_values_single = shap_values
+            shap_values_single = shap_values[0] if shap_values.ndim > 1 else shap_values
 
             # Create feature importance dictionary
             feature_importance = {
@@ -374,7 +370,7 @@ class SHAPExplainer:
             return explanation
 
         except Exception as e:
-            logger.error(f"SHAP explanation failed: {e}")
+            logger.exception(f"SHAP explanation failed: {e}")
             self.metrics["failed_explanations"] += 1
 
             # Return fallback explanation
@@ -435,7 +431,7 @@ class SHAPExplainer:
             )
 
         except Exception as e:
-            logger.error(f"Fallback explanation failed: {e}")
+            logger.exception(f"Fallback explanation failed: {e}")
             return SHAPExplanation(
                 feature_importance={"fallback_error": 1.0},
                 shap_values=np.array([0.0]),
@@ -548,7 +544,7 @@ class SHAPExplainer:
             return result
 
         except Exception as e:
-            logger.error(f"Batch explanation failed: {e}")
+            logger.exception(f"Batch explanation failed: {e}")
             return BatchExplanationResult(
                 explanations=[],
                 summary_statistics={"error": str(e)},
@@ -651,7 +647,7 @@ class SHAPExplainer:
             "active_explainers": len(self.explainers),
         }
 
-    async def cleanup_cache(self, max_age_hours: Optional[int] = None):
+    async def cleanup_cache(self, max_age_hours: int | None = None):
         """Clean up expired cache entries"""
         if max_age_hours is None:
             max_age_hours = self.cache_ttl_hours
@@ -671,7 +667,7 @@ class SHAPExplainer:
             logger.info(f"Cleaned up {len(expired_keys)} expired cache entries")
 
         except Exception as e:
-            logger.error(f"Cache cleanup failed: {e}")
+            logger.exception(f"Cache cleanup failed: {e}")
 
 
 # Example usage
@@ -702,16 +698,10 @@ async def example_usage():
 
     if success:
         # Generate explanation
-        explanation = await explainer.explain_instance(
-            model, test_instance, ExplainerType.KERNEL
-        )
-
-        print(f"Feature importance: {explanation.feature_importance}")
-        print(f"Confidence: {explanation.confidence}")
+        await explainer.explain_instance(model, test_instance, ExplainerType.KERNEL)
 
         # Get performance summary
-        summary = explainer.get_performance_summary()
-        print(f"Performance: {summary}")
+        explainer.get_performance_summary()
 
 
 if __name__ == "__main__":

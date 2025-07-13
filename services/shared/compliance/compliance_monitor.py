@@ -21,7 +21,7 @@ import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.monitoring.intelligent_alerting_system import AlertingSystem
 from services.shared.security.enhanced_audit_logging import AuditLogger
@@ -69,10 +69,10 @@ class ComplianceViolation:
     evidence: dict[str, Any]
     remediation_status: str
     remediation_actions: list[str]
-    assigned_to: Optional[str]
-    resolution_deadline: Optional[datetime]
-    resolved_at: Optional[datetime]
-    root_cause: Optional[str]
+    assigned_to: str | None
+    resolution_deadline: datetime | None
+    resolved_at: datetime | None
+    root_cause: str | None
 
 
 @dataclass
@@ -116,7 +116,7 @@ class ComplianceMonitor:
     def __init__(
         self,
         compliance_engine: EUAIActCompliance,
-        config: Optional[dict[str, Any]] = None,
+        config: dict[str, Any] | None = None,
     ):
         self.compliance_engine = compliance_engine
         self.config = config or {}
@@ -247,7 +247,7 @@ class ComplianceMonitor:
             await asyncio.gather(*monitoring_tasks)
 
         except Exception as e:
-            logger.error(f"Compliance monitoring failed: {e}")
+            logger.exception(f"Compliance monitoring failed: {e}")
             self.running = False
             raise
         finally:
@@ -270,7 +270,7 @@ class ComplianceMonitor:
                 await asyncio.sleep(self.monitoring_interval_seconds)
 
             except Exception as e:
-                logger.error(f"Continuous monitoring error: {e}")
+                logger.exception(f"Continuous monitoring error: {e}")
                 await asyncio.sleep(60)  # Wait before retrying
 
     async def _execute_monitoring_rule(self, rule_id: str, rule: dict[str, Any]):
@@ -305,7 +305,7 @@ class ComplianceMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Monitoring rule execution failed for {rule_id}: {e}")
+            logger.exception(f"Monitoring rule execution failed for {rule_id}: {e}")
 
     async def _handle_violation(
         self, rule: dict[str, Any], check_result: dict[str, Any]
@@ -371,7 +371,7 @@ class ComplianceMonitor:
                 await self._attempt_auto_remediation(violation)
 
         except Exception as e:
-            logger.error(f"Violation handling failed: {e}")
+            logger.exception(f"Violation handling failed: {e}")
 
     async def _attempt_auto_remediation(self, violation: ComplianceViolation):
         """Attempt automatic remediation of compliance violation"""
@@ -406,7 +406,9 @@ class ComplianceMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Auto-remediation failed for {violation.violation_id}: {e}")
+            logger.exception(
+                f"Auto-remediation failed for {violation.violation_id}: {e}"
+            )
 
     async def _remediate_record_keeping(self) -> bool:
         """Attempt to remediate record keeping violations"""
@@ -442,16 +444,15 @@ class ComplianceMonitor:
 
             if oversight_operational:
                 return {"compliant": True}
-            else:
-                return {
-                    "compliant": False,
-                    "description": "Human oversight system not operational",
-                    "evidence": {"oversight_status": "failed"},
-                    "remediation_actions": [
-                        "Verify human oversight system",
-                        "Check reviewer availability",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": "Human oversight system not operational",
+                "evidence": {"oversight_status": "failed"},
+                "remediation_actions": [
+                    "Verify human oversight system",
+                    "Check reviewer availability",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -472,25 +473,24 @@ class ComplianceMonitor:
 
             if data_quality_ok and bias_monitoring_active:
                 return {"compliant": True}
-            else:
-                issues = []
-                if not data_quality_ok:
-                    issues.append("Data quality issues detected")
-                if not bias_monitoring_active:
-                    issues.append("Bias monitoring not active")
+            issues = []
+            if not data_quality_ok:
+                issues.append("Data quality issues detected")
+            if not bias_monitoring_active:
+                issues.append("Bias monitoring not active")
 
-                return {
-                    "compliant": False,
-                    "description": f'Data governance issues: {"; ".join(issues)}',
-                    "evidence": {
-                        "data_quality_ok": data_quality_ok,
-                        "bias_monitoring_active": bias_monitoring_active,
-                    },
-                    "remediation_actions": [
-                        "Review data governance procedures",
-                        "Activate bias monitoring",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": f'Data governance issues: {"; ".join(issues)}',
+                "evidence": {
+                    "data_quality_ok": data_quality_ok,
+                    "bias_monitoring_active": bias_monitoring_active,
+                },
+                "remediation_actions": [
+                    "Review data governance procedures",
+                    "Activate bias monitoring",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -509,19 +509,18 @@ class ComplianceMonitor:
 
             if logging_operational and retention_compliant:
                 return {"compliant": True}
-            else:
-                return {
-                    "compliant": False,
-                    "description": "Record keeping system issues detected",
-                    "evidence": {
-                        "logging_operational": logging_operational,
-                        "retention_compliant": retention_compliant,
-                    },
-                    "remediation_actions": [
-                        "Check logging systems",
-                        "Verify retention policies",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": "Record keeping system issues detected",
+                "evidence": {
+                    "logging_operational": logging_operational,
+                    "retention_compliant": retention_compliant,
+                },
+                "remediation_actions": [
+                    "Check logging systems",
+                    "Verify retention policies",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -540,22 +539,21 @@ class ComplianceMonitor:
 
             if current_accuracy >= required_accuracy:
                 return {"compliant": True}
-            else:
-                return {
-                    "compliant": False,
-                    "description": (
-                        f"System accuracy below threshold: {current_accuracy:.2%} <"
-                        f" {required_accuracy:.2%}"
-                    ),
-                    "evidence": {
-                        "current_accuracy": current_accuracy,
-                        "required_accuracy": required_accuracy,
-                    },
-                    "remediation_actions": [
-                        "Review model performance",
-                        "Consider model retraining",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": (
+                    f"System accuracy below threshold: {current_accuracy:.2%} <"
+                    f" {required_accuracy:.2%}"
+                ),
+                "evidence": {
+                    "current_accuracy": current_accuracy,
+                    "required_accuracy": required_accuracy,
+                },
+                "remediation_actions": [
+                    "Review model performance",
+                    "Consider model retraining",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -574,19 +572,18 @@ class ComplianceMonitor:
 
             if bias_detection_active and recent_bias_assessment:
                 return {"compliant": True}
-            else:
-                return {
-                    "compliant": False,
-                    "description": "Bias detection system issues",
-                    "evidence": {
-                        "bias_detection_active": bias_detection_active,
-                        "recent_bias_assessment": recent_bias_assessment,
-                    },
-                    "remediation_actions": [
-                        "Activate bias detection",
-                        "Conduct bias assessment",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": "Bias detection system issues",
+                "evidence": {
+                    "bias_detection_active": bias_detection_active,
+                    "recent_bias_assessment": recent_bias_assessment,
+                },
+                "remediation_actions": [
+                    "Activate bias detection",
+                    "Conduct bias assessment",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -605,19 +602,18 @@ class ComplianceMonitor:
 
             if documentation_complete and documentation_current:
                 return {"compliant": True}
-            else:
-                return {
-                    "compliant": False,
-                    "description": "Technical documentation issues",
-                    "evidence": {
-                        "documentation_complete": documentation_complete,
-                        "documentation_current": documentation_current,
-                    },
-                    "remediation_actions": [
-                        "Update technical documentation",
-                        "Complete missing documentation",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": "Technical documentation issues",
+                "evidence": {
+                    "documentation_complete": documentation_complete,
+                    "documentation_current": documentation_current,
+                },
+                "remediation_actions": [
+                    "Update technical documentation",
+                    "Complete missing documentation",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -636,19 +632,18 @@ class ComplianceMonitor:
 
             if transparency_measures_active and user_information_provided:
                 return {"compliant": True}
-            else:
-                return {
-                    "compliant": False,
-                    "description": "Transparency requirements not met",
-                    "evidence": {
-                        "transparency_measures_active": transparency_measures_active,
-                        "user_information_provided": user_information_provided,
-                    },
-                    "remediation_actions": [
-                        "Implement transparency measures",
-                        "Provide user information",
-                    ],
-                }
+            return {
+                "compliant": False,
+                "description": "Transparency requirements not met",
+                "evidence": {
+                    "transparency_measures_active": transparency_measures_active,
+                    "user_information_provided": user_information_provided,
+                },
+                "remediation_actions": [
+                    "Implement transparency measures",
+                    "Provide user information",
+                ],
+            }
 
         except Exception as e:
             return {
@@ -693,7 +688,7 @@ class ComplianceMonitor:
                     )
 
             except Exception as e:
-                logger.error(f"Periodic assessment failed: {e}")
+                logger.exception(f"Periodic assessment failed: {e}")
 
     async def _run_metrics_collection(self):
         """Collect and update compliance metrics"""
@@ -723,7 +718,7 @@ class ComplianceMonitor:
                 self.last_metrics_update = datetime.utcnow()
 
             except Exception as e:
-                logger.error(f"Metrics collection failed: {e}")
+                logger.exception(f"Metrics collection failed: {e}")
 
     async def _calculate_compliance_metrics(self) -> ComplianceMetrics:
         """Calculate current compliance metrics"""
@@ -784,7 +779,7 @@ class ComplianceMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Metrics calculation failed: {e}")
+            logger.exception(f"Metrics calculation failed: {e}")
             # Return default metrics
             return ComplianceMetrics(
                 compliance_score=0.0,
@@ -821,7 +816,7 @@ class ComplianceMonitor:
                         await self._escalate_violation(violation)
 
             except Exception as e:
-                logger.error(f"Violation resolution tracking failed: {e}")
+                logger.exception(f"Violation resolution tracking failed: {e}")
 
     async def _escalate_violation(self, violation: ComplianceViolation):
         """Escalate overdue compliance violation"""
@@ -847,7 +842,7 @@ class ComplianceMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Violation escalation failed: {e}")
+            logger.exception(f"Violation escalation failed: {e}")
 
     async def generate_compliance_report(
         self, report_type: str = "periodic"
@@ -894,7 +889,7 @@ class ComplianceMonitor:
             # Identify trending issues
             trending_issues = self._identify_trending_issues(period_violations)
 
-            report = ComplianceReport(
+            return ComplianceReport(
                 report_id=report_id,
                 report_type=report_type,
                 generation_date=current_time,
@@ -908,10 +903,8 @@ class ComplianceMonitor:
                 next_review_date=current_time + timedelta(days=7),
             )
 
-            return report
-
         except Exception as e:
-            logger.error(f"Compliance report generation failed: {e}")
+            logger.exception(f"Compliance report generation failed: {e}")
             raise
 
     async def _generate_monitoring_recommendations(
@@ -949,7 +942,6 @@ class ComplianceMonitor:
         self, violations: list[ComplianceViolation]
     ) -> list[str]:
         """Generate action items based on monitoring results"""
-        action_items = []
 
         # Unresolved critical violations
         critical_unresolved = [
@@ -958,10 +950,10 @@ class ComplianceMonitor:
             if v.severity == ViolationSeverity.CRITICAL and v.resolved_at is None
         ]
 
-        for violation in critical_unresolved:
-            action_items.append(
-                f"URGENT: Resolve critical violation {violation.violation_id}"
-            )
+        action_items = [
+            f"URGENT: Resolve critical violation {violation.violation_id}"
+            for violation in critical_unresolved
+        ]
 
         # Overdue violations
         overdue_violations = [
@@ -974,8 +966,10 @@ class ComplianceMonitor:
             )
         ]
 
-        for violation in overdue_violations:
-            action_items.append(f"Resolve overdue violation {violation.violation_id}")
+        action_items.extend(
+            f"Resolve overdue violation {violation.violation_id}"
+            for violation in overdue_violations
+        )
 
         return action_items
 

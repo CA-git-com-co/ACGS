@@ -217,7 +217,7 @@ class WorkflowManager:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to update workflow {workflow_id}: {e}")
+            logger.exception(f"Failed to update workflow {workflow_id}: {e}")
             return False
 
     async def list_active_workflows(
@@ -265,11 +265,11 @@ class WorkflowManager:
         for workflow_id, workflow in self.active_workflows.items():
             if (
                 workflow["status"]
-                in [
+                in {
                     WorkflowStatus.COMPLETED,
                     WorkflowStatus.FAILED,
                     WorkflowStatus.CANCELLED,
-                ]
+                }
                 and workflow["created_at"] < cutoff_time
             ):
                 workflows_to_remove.append(workflow_id)

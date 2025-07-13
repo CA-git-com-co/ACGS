@@ -70,7 +70,7 @@ class TransactionOptimizer:
     def _load_config(self) -> dict[str, Any]:
         """Load optimization configuration"""
         try:
-            with open(self.config_path) as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 return json.load(f)
         except FileNotFoundError:
             logger.warning(f"Config file {self.config_path} not found, using defaults")
@@ -178,8 +178,7 @@ class TransactionOptimizer:
         compute_units = transaction_data.get("compute_units", 200000)
         compute_cost = compute_units * 0.000000001  # Approximate CU cost
 
-        total_cost = base_fee + account_costs + compute_cost
-        return total_cost
+        return base_fee + account_costs + compute_cost
 
     def _optimize_account_sizes(
         self, transaction_data: dict[str, Any]
@@ -255,12 +254,10 @@ class TransactionOptimizer:
             if (
                 len(current_batch) >= max_batch_size
                 or current_batch_cost + tx_cost > cost_target
-            ):
-
-                if current_batch:
-                    batches.append(current_batch)
-                    current_batch = []
-                    current_batch_cost = 0
+            ) and current_batch:
+                batches.append(current_batch)
+                current_batch = []
+                current_batch_cost = 0
 
             current_batch.append(transaction)
             current_batch_cost += tx_cost
@@ -341,7 +338,7 @@ class TransactionOptimizer:
             action: sum(costs) / len(costs) for action, costs in action_costs.items()
         }
 
-        report = {
+        return {
             "summary": {
                 "total_transactions": total_transactions,
                 "total_cost_sol": total_cost_sol,
@@ -357,8 +354,6 @@ class TransactionOptimizer:
             ),
         }
 
-        return report
-
     def _generate_recommendations(
         self, avg_cost: float, target_cost: float
     ) -> list[str]:
@@ -368,20 +363,20 @@ class TransactionOptimizer:
         recommendations = []
 
         if avg_cost > target_cost:
-            recommendations.append(
-                f"Average cost ({avg_cost:.6f} SOL) exceeds target ({target_cost:.6f} SOL)"
-            )
-            recommendations.append(
-                "Consider enabling additional optimization techniques"
-            )
-            recommendations.append(
-                "Increase transaction batching to reduce per-transaction costs"
+            recommendations.extend(
+                (
+                    f"Average cost ({avg_cost:.6f} SOL) exceeds target ({target_cost:.6f} SOL)",
+                    "Consider enabling additional optimization techniques",
+                    "Increase transaction batching to reduce per-transaction costs",
+                )
             )
 
         if avg_cost <= target_cost * 0.5:
-            recommendations.append("Excellent cost optimization achieved")
-            recommendations.append(
-                "Consider increasing batch sizes for even better efficiency"
+            recommendations.extend(
+                (
+                    "Excellent cost optimization achieved",
+                    "Consider increasing batch sizes for even better efficiency",
+                )
             )
 
         return recommendations

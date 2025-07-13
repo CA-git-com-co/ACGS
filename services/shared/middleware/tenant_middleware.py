@@ -12,22 +12,20 @@ import logging
 import uuid
 from collections.abc import Callable
 from contextlib import asynccontextmanager
-from typing import Optional
 
 import jwt
 from fastapi import HTTPException, Request, Response, status
 from fastapi.security import HTTPBearer
-from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.responses import JSONResponse
-
-from ..database import AsyncSessionLocal
-from ..repositories.tenant_repository import (
+from shared.database import AsyncSessionLocal
+from shared.repositories.tenant_repository import (
     ConstitutionalComplianceError,
     TenantContext,
     TenantIsolationError,
     validate_tenant_context,
 )
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.responses import JSONResponse
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -52,9 +50,9 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
         app,
         jwt_secret_key: str,
         jwt_algorithm: str = "HS256",
-        exclude_paths: Optional[list] = None,
+        exclude_paths: list | None = None,
         require_tenant: bool = True,
-        bypass_paths: Optional[list] = None,
+        bypass_paths: list | None = None,
     ):
         super().__init__(app)
         self.jwt_secret_key = jwt_secret_key
@@ -122,7 +120,7 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
             )
 
         except ConstitutionalComplianceError as e:
-            logger.error(f"Constitutional compliance error: {e}")
+            logger.exception(f"Constitutional compliance error: {e}")
             return JSONResponse(
                 status_code=status.HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS,
                 content={
@@ -136,7 +134,7 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
             raise
 
         except Exception as e:
-            logger.error(f"Tenant middleware error: {e}")
+            logger.exception(f"Tenant middleware error: {e}")
             return JSONResponse(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 content={
@@ -154,9 +152,7 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
         """Check if path should bypass tenant requirement."""
         return any(path.startswith(bypass) for bypass in self.bypass_paths)
 
-    async def _extract_tenant_context(
-        self, request: Request
-    ) -> Optional[TenantContext]:
+    async def _extract_tenant_context(self, request: Request) -> TenantContext | None:
         """Extract tenant context from request headers and JWT token."""
 
         # Check if tenant requirement can be bypassed
@@ -203,11 +199,9 @@ class TenantContextMiddleware(BaseHTTPMiddleware):
 
             # Validate tenant context with database
             async with AsyncSessionLocal() as session:
-                tenant_context = await validate_tenant_context(
+                return await validate_tenant_context(
                     session=session, tenant_id=tenant_uuid, user_id=int(user_id)
                 )
-
-            return tenant_context
 
         except jwt.ExpiredSignatureError:
             raise TenantIsolationError("Token has expired")
@@ -263,7 +257,7 @@ async def get_tenant_context(request: Request) -> TenantContext:
     return tenant_context
 
 
-async def get_optional_tenant_context(request: Request) -> Optional[TenantContext]:
+async def get_optional_tenant_context(request: Request) -> TenantContext | None:
     """
     FastAPI dependency to get the current tenant context (optional).
 
@@ -416,7 +410,7 @@ class TenantSecurityMiddleware(BaseHTTPMiddleware):
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation error: {e}")
+            logger.exception(f"Constitutional compliance validation error: {e}")
             return False
 
     async def _check_rate_limit(
@@ -470,7 +464,7 @@ class TenantSecurityMiddleware(BaseHTTPMiddleware):
             return True
 
         except Exception as e:
-            logger.error(f"Rate limiting check failed: {e}")
+            logger.exception(f"Rate limiting check failed: {e}")
             # Fail open - allow request if rate limiting fails
             return True
 
@@ -486,23 +480,23 @@ class TenantSecurityMiddleware(BaseHTTPMiddleware):
         high_security_paths = ["/admin", "/constitutional", "/governance"]
 
         if any(request.url.path.startswith(path) for path in high_security_paths):
-            return security_level in ["strict", "maximum"]
+            return security_level in {"strict", "maximum"}
 
         return True
 
 
 # Utility functions for tenant context management
-def get_current_tenant_id(request: Request) -> Optional[uuid.UUID]:
+def get_current_tenant_id(request: Request) -> uuid.UUID | None:
     """Get the current tenant ID from request state."""
     return getattr(request.state, "tenant_id", None)
 
 
-def get_current_user_id(request: Request) -> Optional[int]:
+def get_current_user_id(request: Request) -> int | None:
     """Get the current user ID from request state."""
     return getattr(request.state, "user_id", None)
 
 
-def get_current_organization_id(request: Request) -> Optional[uuid.UUID]:
+def get_current_organization_id(request: Request) -> uuid.UUID | None:
     """Get the current organization ID from request state."""
     return getattr(request.state, "organization_id", None)
 

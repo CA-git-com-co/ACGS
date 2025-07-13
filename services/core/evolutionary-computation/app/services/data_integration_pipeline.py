@@ -109,7 +109,7 @@ class DataIntegrationPipeline:
         except asyncio.CancelledError:
             logger.info("Pipeline tasks cancelled")
         except Exception as e:
-            logger.error(f"Pipeline error: {e}")
+            logger.exception(f"Pipeline error: {e}")
         finally:
             self.pipeline_active = False
 
@@ -156,7 +156,7 @@ class DataIntegrationPipeline:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Collection loop error: {e}")
+                logger.exception(f"Collection loop error: {e}")
                 await asyncio.sleep(5)  # Brief pause before retry
 
     async def _processing_loop(self):
@@ -176,7 +176,7 @@ class DataIntegrationPipeline:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Processing loop error: {e}")
+                logger.exception(f"Processing loop error: {e}")
                 await asyncio.sleep(5)
 
     async def _collect_from_gs_service(self):
@@ -324,7 +324,7 @@ class DataIntegrationPipeline:
             logger.debug(f"Processed batch of {len(batch)} data points")
 
         except Exception as e:
-            logger.error(f"Data batch processing failed: {e}")
+            logger.exception(f"Data batch processing failed: {e}")
 
     async def _process_source_data(
         self, source: DataSourceType, data_points: list[DataPoint]
@@ -361,7 +361,7 @@ class DataIntegrationPipeline:
                         pass
 
         except Exception as e:
-            logger.error(f"Source data processing failed for {source.value}: {e}")
+            logger.exception(f"Source data processing failed for {source.value}: {e}")
 
     def _update_metrics(self, source: DataSourceType, success: bool, latency_ms: float):
         """Update integration metrics for a data source."""
@@ -382,7 +382,7 @@ class DataIntegrationPipeline:
             metrics.last_update = datetime.now()
 
         except Exception as e:
-            logger.error(f"Metrics update failed for {source.value}: {e}")
+            logger.exception(f"Metrics update failed for {source.value}: {e}")
 
     async def _cleanup_old_data(self):
         """Remove old data points from buffer."""
@@ -394,7 +394,7 @@ class DataIntegrationPipeline:
             ]
 
         except Exception as e:
-            logger.error(f"Data cleanup failed: {e}")
+            logger.exception(f"Data cleanup failed: {e}")
 
     def get_integration_summary(self) -> dict[str, Any]:
         """Get summary of data integration performance."""
@@ -428,5 +428,5 @@ class DataIntegrationPipeline:
             return summary
 
         except Exception as e:
-            logger.error(f"Integration summary generation failed: {e}")
+            logger.exception(f"Integration summary generation failed: {e}")
             return {"error": str(e)}

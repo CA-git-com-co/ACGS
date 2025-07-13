@@ -25,6 +25,7 @@ Enhanced Phase 1 Features:
 
 import asyncio
 import logging
+import operator
 import statistics
 import sys
 import time
@@ -465,7 +466,7 @@ class PhaseA3MultiModelConsensus:
             return result
 
         except Exception as e:
-            logger.error(f"Consensus {consensus_id} failed: {e}")
+            logger.exception(f"Consensus {consensus_id} failed: {e}")
             raise
 
     async def _query_all_models(
@@ -565,7 +566,7 @@ class PhaseA3MultiModelConsensus:
 
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
-            logger.error(f"Model {model_id} query failed: {e}")
+            logger.exception(f"Model {model_id} query failed: {e}")
 
             return ModelResponse(
                 model_id=model_id,
@@ -680,7 +681,7 @@ class PhaseA3MultiModelConsensus:
             total_weight += combined_weight
 
         # Select response with highest weight
-        best_response = max(weighted_responses, key=lambda x: x[1])
+        best_response = max(weighted_responses, key=operator.itemgetter(1))
 
         # Calculate agreement level
         agreement_level = self._calculate_agreement_level(responses)
@@ -797,7 +798,7 @@ class PhaseA3MultiModelConsensus:
         return (
             consensus_result["confidence"] < 0.7
             or consensus_result["agreement_level"]
-            in [ModelAgreementLevel.NO_CONSENSUS, ModelAgreementLevel.WEAK_CONSENSUS]
+            in {ModelAgreementLevel.NO_CONSENSUS, ModelAgreementLevel.WEAK_CONSENSUS}
             or consensus_result["constitutional_compliance"] < 0.8
             or len([r for r in responses if r.error is None]) < 2
         )
@@ -912,7 +913,7 @@ class PhaseA3MultiModelConsensus:
                 )
                 red_teaming_results.append(result)
             except Exception as e:
-                logger.error(f"Red-teaming strategy {strategy.value} failed: {e}")
+                logger.exception(f"Red-teaming strategy {strategy.value} failed: {e}")
                 # Add failed result
                 red_teaming_results.append(
                     RedTeamingResult(
@@ -1041,14 +1042,14 @@ class PhaseA3MultiModelConsensus:
                 [
                     word
                     for word in content.split()
-                    if word.lower() in ["he", "his", "him"]
+                    if word.lower() in {"he", "his", "him"}
                 ]
             )
             > len(
                 [
                     word
                     for word in content.split()
-                    if word.lower() in ["she", "her", "hers"]
+                    if word.lower() in {"she", "her", "hers"}
                 ]
             )
             * 2,

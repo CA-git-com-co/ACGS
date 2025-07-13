@@ -6,12 +6,13 @@ Reliable event publishing using the transactional outbox pattern.
 """
 
 import asyncio
+import contextlib
 import json
 import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 import asyncpg
@@ -30,14 +31,14 @@ class OutboxEntry:
     tenant_id: TenantId
     event_id: str
     event_type: str
-    event_data: Dict[str, Any]
-    metadata: Optional[Dict[str, Any]]
+    event_data: dict[str, Any]
+    metadata: dict[str, Any] | None
     created_at: datetime
     processed: bool = False
-    processed_at: Optional[datetime] = None
+    processed_at: datetime | None = None
     retry_count: int = 0
     max_retries: int = 3
-    last_error: Optional[str] = None
+    last_error: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
     @classmethod
@@ -89,9 +90,9 @@ class OutboxPattern(ABC):
     @abstractmethod
     async def add_events(
         self,
-        events: List[DomainEvent],
+        events: list[DomainEvent],
         tenant_id: TenantId,
-        transaction_context: Optional[Any] = None,
+        transaction_context: Any | None = None,
     ) -> None:
         """
         Add events to outbox within a transaction.
@@ -101,12 +102,11 @@ class OutboxPattern(ABC):
             tenant_id: Tenant owning the events
             transaction_context: Optional transaction context
         """
-        pass
 
     @abstractmethod
     async def get_unprocessed_entries(
-        self, tenant_id: Optional[TenantId] = None, limit: int = 100
-    ) -> List[OutboxEntry]:
+        self, tenant_id: TenantId | None = None, limit: int = 100
+    ) -> list[OutboxEntry]:
         """
         Get unprocessed outbox entries.
 
@@ -117,17 +117,15 @@ class OutboxPattern(ABC):
         Returns:
             List of unprocessed outbox entries
         """
-        pass
 
     @abstractmethod
-    async def mark_as_processed(self, entry_ids: List[str]) -> None:
+    async def mark_as_processed(self, entry_ids: list[str]) -> None:
         """
         Mark entries as processed.
 
         Args:
             entry_ids: List of outbox entry IDs to mark as processed
         """
-        pass
 
     @abstractmethod
     async def update_retry_info(self, entry_id: str, error: str) -> None:
@@ -138,7 +136,6 @@ class OutboxPattern(ABC):
             entry_id: Outbox entry ID
             error: Error message
         """
-        pass
 
     @abstractmethod
     async def cleanup_old_entries(self, older_than_days: int = 30) -> int:
@@ -151,7 +148,6 @@ class OutboxPattern(ABC):
         Returns:
             Number of entries cleaned up
         """
-        pass
 
 
 class PostgreSQLOutboxPattern(OutboxPattern):
@@ -181,41 +177,41 @@ class PostgreSQLOutboxPattern(OutboxPattern):
                     last_error TEXT,
                     constitutional_hash TEXT NOT NULL DEFAULT 'cdd01ef066bc6cf2'
                 );
-                
+
                 -- Enable RLS for multi-tenant isolation
                 ALTER TABLE outbox ENABLE ROW LEVEL SECURITY;
-                
+
                 -- RLS policy for tenant isolation
                 DROP POLICY IF EXISTS outbox_tenant_isolation ON outbox;
                 CREATE POLICY outbox_tenant_isolation ON outbox
                     FOR ALL TO application_role
                     USING (tenant_id = current_setting('app.current_tenant_id')::uuid);
-                
+
                 -- Indexes for performance
-                CREATE INDEX IF NOT EXISTS idx_outbox_unprocessed 
-                    ON outbox (tenant_id, processed, created_at) 
+                CREATE INDEX IF NOT EXISTS idx_outbox_unprocessed
+                    ON outbox (tenant_id, processed, created_at)
                     WHERE NOT processed;
-                
-                CREATE INDEX IF NOT EXISTS idx_outbox_retry 
-                    ON outbox (tenant_id, retry_count, created_at) 
+
+                CREATE INDEX IF NOT EXISTS idx_outbox_retry
+                    ON outbox (tenant_id, retry_count, created_at)
                     WHERE NOT processed AND retry_count < max_retries;
-                
-                CREATE INDEX IF NOT EXISTS idx_outbox_cleanup 
-                    ON outbox (processed, processed_at) 
+
+                CREATE INDEX IF NOT EXISTS idx_outbox_cleanup
+                    ON outbox (processed, processed_at)
                     WHERE processed;
-                
+
                 -- Constitutional hash constraint
-                ALTER TABLE outbox 
-                ADD CONSTRAINT outbox_constitutional_hash_check 
+                ALTER TABLE outbox
+                ADD CONSTRAINT outbox_constitutional_hash_check
                 CHECK (constitutional_hash = 'cdd01ef066bc6cf2');
             """
             )
 
     async def add_events(
         self,
-        events: List[DomainEvent],
+        events: list[DomainEvent],
         tenant_id: TenantId,
-        transaction_context: Optional[asyncpg.Connection] = None,
+        transaction_context: asyncpg.Connection | None = None,
     ) -> None:
         """Add events to outbox within transaction."""
         if not events:
@@ -228,12 +224,11 @@ class PostgreSQLOutboxPattern(OutboxPattern):
         if transaction_context:
             await self._insert_entries(transaction_context, entries, tenant_id)
         else:
-            async with self.pool.acquire() as conn:
-                async with conn.transaction():
-                    await self._insert_entries(conn, entries, tenant_id)
+            async with self.pool.acquire() as conn, conn.transaction():
+                await self._insert_entries(conn, entries, tenant_id)
 
     async def _insert_entries(
-        self, conn: asyncpg.Connection, entries: List[OutboxEntry], tenant_id: TenantId
+        self, conn: asyncpg.Connection, entries: list[OutboxEntry], tenant_id: TenantId
     ) -> None:
         """Insert outbox entries using provided connection."""
         # Set tenant context for RLS
@@ -242,25 +237,24 @@ class PostgreSQLOutboxPattern(OutboxPattern):
         )
 
         # Prepare data for batch insert
-        entry_data = []
-        for entry in entries:
-            entry_data.append(
-                (
-                    UUID(entry.id),
-                    UUID(str(tenant_id)),
-                    UUID(entry.event_id),
-                    entry.event_type,
-                    json.dumps(entry.event_data),
-                    json.dumps(entry.metadata) if entry.metadata else None,
-                    entry.created_at,
-                    entry.processed,
-                    entry.processed_at,
-                    entry.retry_count,
-                    entry.max_retries,
-                    entry.last_error,
-                    entry.constitutional_hash,
-                )
+        entry_data = [
+            (
+                UUID(entry.id),
+                UUID(str(tenant_id)),
+                UUID(entry.event_id),
+                entry.event_type,
+                json.dumps(entry.event_data),
+                json.dumps(entry.metadata) if entry.metadata else None,
+                entry.created_at,
+                entry.processed,
+                entry.processed_at,
+                entry.retry_count,
+                entry.max_retries,
+                entry.last_error,
+                entry.constitutional_hash,
             )
+            for entry in entries
+        ]
 
         # Batch insert
         await conn.executemany(
@@ -277,8 +271,8 @@ class PostgreSQLOutboxPattern(OutboxPattern):
         logger.debug(f"Added {len(entries)} events to outbox for tenant {tenant_id}")
 
     async def get_unprocessed_entries(
-        self, tenant_id: Optional[TenantId] = None, limit: int = 100
-    ) -> List[OutboxEntry]:
+        self, tenant_id: TenantId | None = None, limit: int = 100
+    ) -> list[OutboxEntry]:
         """Get unprocessed outbox entries."""
         async with self.pool.acquire() as conn:
             # Build query based on tenant filter
@@ -293,8 +287,8 @@ class PostgreSQLOutboxPattern(OutboxPattern):
                     SELECT id, tenant_id, event_id, event_type, event_data, metadata,
                            created_at, processed, processed_at, retry_count, max_retries,
                            last_error, constitutional_hash
-                    FROM outbox 
-                    WHERE tenant_id = $1 AND NOT processed 
+                    FROM outbox
+                    WHERE tenant_id = $1 AND NOT processed
                           AND retry_count < max_retries
                     ORDER BY created_at ASC
                     LIMIT $2
@@ -306,7 +300,7 @@ class PostgreSQLOutboxPattern(OutboxPattern):
                     SELECT id, tenant_id, event_id, event_type, event_data, metadata,
                            created_at, processed, processed_at, retry_count, max_retries,
                            last_error, constitutional_hash
-                    FROM outbox 
+                    FROM outbox
                     WHERE NOT processed AND retry_count < max_retries
                     ORDER BY created_at ASC
                     LIMIT $1
@@ -337,7 +331,7 @@ class PostgreSQLOutboxPattern(OutboxPattern):
 
             return entries
 
-    async def mark_as_processed(self, entry_ids: List[str]) -> None:
+    async def mark_as_processed(self, entry_ids: list[str]) -> None:
         """Mark entries as processed."""
         if not entry_ids:
             return
@@ -345,7 +339,7 @@ class PostgreSQLOutboxPattern(OutboxPattern):
         async with self.pool.acquire() as conn:
             await conn.execute(
                 """
-                UPDATE outbox 
+                UPDATE outbox
                 SET processed = TRUE, processed_at = NOW()
                 WHERE id = ANY($1::uuid[])
             """,
@@ -359,8 +353,8 @@ class PostgreSQLOutboxPattern(OutboxPattern):
         async with self.pool.acquire() as conn:
             await conn.execute(
                 """
-                UPDATE outbox 
-                SET retry_count = retry_count + 1, 
+                UPDATE outbox
+                SET retry_count = retry_count + 1,
                     last_error = $2
                 WHERE id = $1
             """,
@@ -377,8 +371,8 @@ class PostgreSQLOutboxPattern(OutboxPattern):
         async with self.pool.acquire() as conn:
             result = await conn.execute(
                 """
-                DELETE FROM outbox 
-                WHERE processed = TRUE 
+                DELETE FROM outbox
+                WHERE processed = TRUE
                       AND processed_at < $1
             """,
                 cutoff_date,
@@ -414,14 +408,14 @@ class OutboxEventPublisher:
         self.event_publisher = event_publisher
         self.batch_size = batch_size
         self.processing_interval = processing_interval
-        self._processing_task: Optional[asyncio.Task] = None
+        self._processing_task: asyncio.Task | None = None
         self._shutdown_event = asyncio.Event()
 
     async def publish_events_via_outbox(
         self,
-        events: List[DomainEvent],
+        events: list[DomainEvent],
         tenant_id: TenantId,
-        transaction_context: Optional[Any] = None,
+        transaction_context: Any | None = None,
     ) -> None:
         """
         Publish events via outbox pattern.
@@ -454,10 +448,8 @@ class OutboxEventPublisher:
         except asyncio.TimeoutError:
             logger.warning("Background processing shutdown timed out, canceling task")
             self._processing_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._processing_task
-            except asyncio.CancelledError:
-                pass
 
         logger.info("Stopped outbox background processing")
 
@@ -509,9 +501,7 @@ class OutboxEventPublisher:
             await self.outbox.mark_as_processed(successful_ids)
             logger.debug(f"Marked {len(successful_ids)} entries as processed")
 
-    async def _reconstruct_domain_event(
-        self, entry: OutboxEntry
-    ) -> Optional[DomainEvent]:
+    async def _reconstruct_domain_event(self, entry: OutboxEntry) -> DomainEvent | None:
         """Reconstruct domain event from outbox entry."""
         try:
             # This is simplified - in practice, you'd have a registry
@@ -541,28 +531,26 @@ class OutboxEventPublisher:
                 def _get_event_version(self) -> str:
                     return "1.0"
 
-                def get_event_data(self) -> Dict[str, Any]:
+                def get_event_data(self) -> dict[str, Any]:
                     return self._event_data
 
             from services.shared.domain.base import EntityId
 
-            event = ReconstructedEvent(
+            return ReconstructedEvent(
                 entry=entry,
                 aggregate_id=EntityId(UUID(entry.event_id)),
                 occurred_at=entry.created_at,
                 metadata=metadata,
             )
 
-            return event
-
         except Exception as e:
-            logger.error(f"Failed to reconstruct event from outbox entry: {e}")
+            logger.exception(f"Failed to reconstruct event from outbox entry: {e}")
             return None
 
 
 # Global outbox instances
-_outbox_pattern: Optional[OutboxPattern] = None
-_outbox_publisher: Optional[OutboxEventPublisher] = None
+_outbox_pattern: OutboxPattern | None = None
+_outbox_publisher: OutboxEventPublisher | None = None
 
 
 def get_outbox_pattern() -> OutboxPattern:

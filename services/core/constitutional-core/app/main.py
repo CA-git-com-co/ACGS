@@ -6,13 +6,11 @@ Unified service combining constitutional AI reasoning with formal verification
 to provide mathematically proven constitutional compliance and governance.
 """
 
-import asyncio
-import hashlib
 import logging
 import time
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # ACGS Standardized Error Handling
 try:
@@ -37,9 +35,7 @@ try:
     )
 
     ACGS_ERROR_HANDLING_AVAILABLE = True
-    print(f"✅ ACGS Error handling loaded for {service_name}")
-except ImportError as e:
-    print(f"⚠️ ACGS Error handling not available for {service_name}: {e}")
+except ImportError:
     ACGS_ERROR_HANDLING_AVAILABLE = False
 
 
@@ -63,9 +59,7 @@ try:
     )
 
     ACGS_SECURITY_AVAILABLE = True
-    print(f"✅ ACGS Security middleware loaded for {service_name}")
-except ImportError as e:
-    print(f"⚠️ ACGS Security middleware not available for {service_name}: {e}")
+except ImportError:
     ACGS_SECURITY_AVAILABLE = False
 
 
@@ -76,10 +70,10 @@ try:
     from pathlib import Path
 
     # Add project root to path
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = Path(Path(__file__).resolve()).parent
     project_root = os.path.join(current_dir, "..", "..", "..", "..")
     shared_path = os.path.join(project_root, "services", "shared")
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, Path(shared_path).resolve())
 
     from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
@@ -91,19 +85,15 @@ try:
     )
 
     MULTI_TENANT_AVAILABLE = True
-    print("✅ Multi-tenant components loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Multi-tenant components not available: {e}")
+except ImportError:
     MULTI_TENANT_AVAILABLE = False
 
-from typing import Union
 
 # FastAPI and core imports
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException, Request, status
+from fastapi import FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
 # Z3 for formal verification
@@ -111,9 +101,7 @@ try:
     from z3 import And, Bool, Implies, Int, Not, Or, Real, Solver, sat, unknown, unsat
 
     Z3_AVAILABLE = True
-    print("✅ Z3 SMT solver loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Z3 SMT solver not available: {e}")
+except ImportError:
     Z3_AVAILABLE = False
 
 # Service imports
@@ -148,7 +136,7 @@ class ConstitutionalPrinciple(BaseModel):
     description: str
     category: str
     priority: int = Field(ge=1, le=10)
-    formal_specification: Optional[str] = None
+    formal_specification: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -156,7 +144,7 @@ class VerificationRequest(BaseModel):
     """Formal verification request model."""
 
     specification: str
-    context: Dict[str, Any]
+    context: dict[str, Any]
     verification_type: str = "smt"  # smt, proof, compliance
     timeout_seconds: int = Field(default=30, ge=1, le=300)
 
@@ -165,20 +153,20 @@ class VerificationResult(BaseModel):
     """Formal verification result model."""
 
     verified: bool
-    proof: Optional[str] = None
-    counterexample: Optional[Dict[str, Any]] = None
+    proof: str | None = None
+    counterexample: dict[str, Any] | None = None
     verification_time_ms: int
     solver_result: str  # sat, unsat, unknown, timeout
     constitutional_compliance: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class ConstitutionalValidationRequest(BaseModel):
     """Constitutional validation request model."""
 
     content: str
-    context: Dict[str, Any]
-    principles: List[str] = []  # Specific principles to check
+    context: dict[str, Any]
+    principles: list[str] = []  # Specific principles to check
     require_formal_proof: bool = False
 
 
@@ -187,21 +175,21 @@ class ConstitutionalValidationResult(BaseModel):
 
     compliant: bool
     score: float = Field(ge=0.0, le=1.0)
-    violated_principles: List[str] = []
-    reasoning: List[str] = []
-    formal_proof: Optional[str] = None
-    recommendations: List[str] = []
+    violated_principles: list[str] = []
+    reasoning: list[str] = []
+    formal_proof: str | None = None
+    recommendations: list[str] = []
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
 
 
 class UnifiedComplianceRequest(BaseModel):
     """Unified constitutional and formal compliance request."""
 
     content: str
-    context: Dict[str, Any]
-    principles: List[str] = []
-    formal_specifications: List[str] = []
+    context: dict[str, Any]
+    principles: list[str] = []
+    formal_specifications: list[str] = []
     require_mathematical_proof: bool = True
 
 
@@ -212,7 +200,7 @@ class UnifiedComplianceResult(BaseModel):
     constitutional_compliance: ConstitutionalValidationResult
     formal_verification: VerificationResult
     unified_score: float = Field(ge=0.0, le=1.0)
-    mathematical_proof: Optional[str] = None
+    mathematical_proof: str | None = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
@@ -291,7 +279,7 @@ class FormalVerificationEngine:
                         "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
                 )
-            elif result == unsat:
+            if result == unsat:
                 return VerificationResult(
                     verified=False,
                     verification_time_ms=verification_time,
@@ -302,17 +290,16 @@ class FormalVerificationEngine:
                         "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
                 )
-            else:
-                return VerificationResult(
-                    verified=False,
-                    verification_time_ms=verification_time,
-                    solver_result="unknown",
-                    constitutional_compliance=0.5,
-                    metadata={
-                        "reason": "Solver timeout or unknown result",
-                        "constitutional_hash": CONSTITUTIONAL_HASH,
-                    },
-                )
+            return VerificationResult(
+                verified=False,
+                verification_time_ms=verification_time,
+                solver_result="unknown",
+                constitutional_compliance=0.5,
+                metadata={
+                    "reason": "Solver timeout or unknown result",
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                },
+            )
 
         except Exception as e:
             verification_time = int((time.time() - start_time) * 1000)
@@ -322,12 +309,12 @@ class FormalVerificationEngine:
                     context={
                         "operation": "formal_verification",
                         "verification_time_ms": verification_time,
-                        "constitutional_hash": CONSTITUTIONAL_HASH
+                        "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
-                    service_name="constitutional-core"
+                    service_name="constitutional-core",
                 )
             else:
-                logger.error(f"Formal verification failed: {e}")
+                logger.exception(f"Formal verification failed: {e}")
             return VerificationResult(
                 verified=False,
                 verification_time_ms=verification_time,
@@ -386,11 +373,7 @@ class ConstitutionalReasoningEngine:
             recommendations = []
 
             # Check specific principles or all if none specified
-            principles_to_check = (
-                request.principles
-                if request.principles
-                else list(self.principles_db.keys())
-            )
+            principles_to_check = request.principles or list(self.principles_db.keys())
 
             total_score = 0.0
             principle_count = 0
@@ -453,24 +436,24 @@ class ConstitutionalReasoningEngine:
                     error=e,
                     context={
                         "operation": "constitutional_validation",
-                        "constitutional_hash": CONSTITUTIONAL_HASH
+                        "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
-                    service_name="constitutional-core"
+                    service_name="constitutional-core",
                 )
             else:
-                logger.error(f"Constitutional validation failed: {e}")
+                logger.exception(f"Constitutional validation failed: {e}")
             return ConstitutionalValidationResult(
                 compliant=False,
                 score=0.0,
                 violated_principles=[],
-                reasoning=[f"Validation error: {str(e)}"],
+                reasoning=[f"Validation error: {e!s}"],
                 recommendations=["Review input and try again"],
                 constitutional_hash=CONSTITUTIONAL_HASH,
                 metadata={"error": str(e)},
             )
 
     async def _evaluate_principle_compliance(
-        self, content: str, context: Dict[str, Any], principle: ConstitutionalPrinciple
+        self, content: str, context: dict[str, Any], principle: ConstitutionalPrinciple
     ) -> float:
         """Evaluate compliance with a specific constitutional principle."""
         # Simplified scoring logic (in practice, use LLM reasoning)
@@ -500,7 +483,7 @@ class ConstitutionalReasoningEngine:
                 score -= 0.4
 
         # Context adjustments
-        if context.get("high_risk", False):
+        if context.get("high_risk"):
             score -= 0.1  # Higher standards for high-risk applications
 
         return max(0.0, min(1.0, score))
@@ -646,15 +629,15 @@ Timestamp: {datetime.now(timezone.utc).isoformat()}
                     error=e,
                     context={
                         "operation": "unified_compliance_evaluation",
-                        "constitutional_hash": CONSTITUTIONAL_HASH
+                        "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
-                    service_name="constitutional-core"
+                    service_name="constitutional-core",
                 )
             else:
-                logger.error(f"Unified compliance evaluation failed: {e}")
+                logger.exception(f"Unified compliance evaluation failed: {e}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Unified compliance evaluation failed: {str(e)}",
+                detail=f"Unified compliance evaluation failed: {e!s}",
             )
 
 
@@ -693,10 +676,10 @@ async def lifespan(app: FastAPI):
                     error=e,
                     context={
                         "operation": "service_client_initialization",
-                        "constitutional_hash": CONSTITUTIONAL_HASH
+                        "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
                     service_name="constitutional-core",
-                    level="warning"
+                    level="warning",
                 )
             else:
                 logger.warning(f"Service client initialization failed: {e}")
@@ -723,10 +706,10 @@ async def lifespan(app: FastAPI):
                     error=e,
                     context={
                         "operation": "service_client_cleanup",
-                        "constitutional_hash": CONSTITUTIONAL_HASH
+                        "constitutional_hash": CONSTITUTIONAL_HASH,
                     },
                     service_name="constitutional-core",
-                    level="warning"
+                    level="warning",
                 )
             else:
                 logger.warning(f"Service client cleanup failed: {e}")
@@ -846,8 +829,7 @@ async def root():
 async def validate_constitutional_compliance(request: ConstitutionalValidationRequest):
     """Validate constitutional compliance using AI reasoning."""
     try:
-        result = await constitutional_engine.validate_constitutional_compliance(request)
-        return result
+        return await constitutional_engine.validate_constitutional_compliance(request)
 
     except Exception as e:
         if ACGS_ERROR_HANDLING_AVAILABLE:
@@ -855,15 +837,15 @@ async def validate_constitutional_compliance(request: ConstitutionalValidationRe
                 error=e,
                 context={
                     "operation": "constitutional_validation_endpoint",
-                    "constitutional_hash": CONSTITUTIONAL_HASH
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
                 },
-                service_name="constitutional-core"
+                service_name="constitutional-core",
             )
         else:
-            logger.error(f"Constitutional validation failed: {e}")
+            logger.exception(f"Constitutional validation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Constitutional validation failed: {str(e)}",
+            detail=f"Constitutional validation failed: {e!s}",
         )
 
 
@@ -900,8 +882,7 @@ async def get_constitutional_principle(principle_id: str):
 async def verify_formal_specification(request: VerificationRequest):
     """Verify a formal specification using Z3 SMT solver."""
     try:
-        result = await formal_engine.verify_specification(request)
-        return result
+        return await formal_engine.verify_specification(request)
 
     except Exception as e:
         if ACGS_ERROR_HANDLING_AVAILABLE:
@@ -909,15 +890,15 @@ async def verify_formal_specification(request: VerificationRequest):
                 error=e,
                 context={
                     "operation": "formal_verification_endpoint",
-                    "constitutional_hash": CONSTITUTIONAL_HASH
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
                 },
-                service_name="constitutional-core"
+                service_name="constitutional-core",
             )
         else:
-            logger.error(f"Formal verification failed: {e}")
+            logger.exception(f"Formal verification failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Formal verification failed: {str(e)}",
+            detail=f"Formal verification failed: {e!s}",
         )
 
 
@@ -942,8 +923,7 @@ async def get_verification_capabilities():
 async def evaluate_unified_compliance(request: UnifiedComplianceRequest):
     """Evaluate both constitutional and formal compliance."""
     try:
-        result = await unified_engine.evaluate_unified_compliance(request)
-        return result
+        return await unified_engine.evaluate_unified_compliance(request)
 
     except Exception as e:
         if ACGS_ERROR_HANDLING_AVAILABLE:
@@ -951,15 +931,15 @@ async def evaluate_unified_compliance(request: UnifiedComplianceRequest):
                 error=e,
                 context={
                     "operation": "unified_compliance_evaluation_endpoint",
-                    "constitutional_hash": CONSTITUTIONAL_HASH
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
                 },
-                service_name="constitutional-core"
+                service_name="constitutional-core",
             )
         else:
-            logger.error(f"Unified compliance evaluation failed: {e}")
+            logger.exception(f"Unified compliance evaluation failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Unified compliance evaluation failed: {str(e)}",
+            detail=f"Unified compliance evaluation failed: {e!s}",
         )
 
 

@@ -5,7 +5,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 Adds comprehensive security headers to all responses.
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 from fastapi import Request, Response
 from starlette.middleware.base import BaseHTTPMiddleware

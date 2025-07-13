@@ -1,10 +1,9 @@
 # acgspcp-main/auth_service/app/crud/crud_refresh_token.py
 from datetime import datetime, timezone
 
+from app.models import RefreshToken  # Import from local models
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ..models import RefreshToken  # Import from local models
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -44,9 +43,7 @@ async def is_valid_refresh_token(db: AsyncSession, user_id: int, jti: str) -> bo
     expires_at = token.expires_at
     if expires_at.tzinfo is None:
         expires_at = expires_at.replace(tzinfo=timezone.utc)
-    if expires_at < datetime.now(timezone.utc):
-        return False
-    return True
+    return not expires_at < datetime.now(timezone.utc)
 
 
 async def revoke_refresh_token(db: AsyncSession, jti: str, user_id: int | None = None):

@@ -1122,7 +1122,7 @@ class ContextEngine:
     def _extract_keywords(self, text: str) -> list[str]:
         """Extract keywords from query text."""
         import re
-        
+
         # Basic keyword extraction
         # Remove special characters and split
         clean_text = re.sub(r'[^\w\s]', ' ', text.lower())

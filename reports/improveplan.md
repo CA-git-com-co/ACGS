@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 ACGS 项目代码综合分析报告
 宪法 AI 模块（Constitutional AI）
 

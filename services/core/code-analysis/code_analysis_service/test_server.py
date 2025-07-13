@@ -6,6 +6,7 @@ Test server for ACGS Code Analysis Engine - Minimal version for testing
 
 import logging
 import os
+import pathlib
 import sys
 from contextlib import asynccontextmanager
 
@@ -14,7 +15,7 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 # Add the service directory to Python path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 from app.utils.constitutional import CONSTITUTIONAL_HASH
 from config.settings import get_settings
@@ -79,7 +80,7 @@ async def health_check():
         return JSONResponse(status_code=200, content=health_status)
 
     except Exception as e:
-        logger.error(f"Health check failed: {e}")
+        logger.exception(f"Health check failed: {e}")
         return JSONResponse(
             status_code=503,
             content={

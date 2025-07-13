@@ -6,12 +6,11 @@ This module provides comprehensive constitutional validation for all SuperClaude
 within the ACGS system, ensuring 100% constitutional compliance across all agent interactions.
 """
 
-import asyncio
 import logging
 import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -41,17 +40,17 @@ class ConstitutionalValidationResult(BaseModel):
 
     is_valid: bool
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    persona: Optional[SuperClaudePersona] = None
+    persona: SuperClaudePersona | None = None
     operation_type: str
     validation_timestamp: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
-    validation_details: Dict[str, Any] = Field(default_factory=dict)
-    violations: List[ConstitutionalViolationType] = Field(default_factory=list)
+    validation_details: dict[str, Any] = Field(default_factory=dict)
+    violations: list[ConstitutionalViolationType] = Field(default_factory=list)
     compliance_score: float = Field(ge=0.0, le=1.0, default=0.0)
-    audit_trail: List[str] = Field(default_factory=list)
+    audit_trail: list[str] = Field(default_factory=list)
     escalation_required: bool = False
-    performance_metrics: Dict[str, float] = Field(default_factory=dict)
+    performance_metrics: dict[str, float] = Field(default_factory=dict)
 
 
 class ConstitutionalPersonaValidator:
@@ -85,10 +84,10 @@ class ConstitutionalPersonaValidator:
 
     async def validate_persona_operation(
         self,
-        persona: Optional[SuperClaudePersona],
+        persona: SuperClaudePersona | None,
         operation_type: str,
-        operation_data: Dict[str, Any],
-        context: Optional[Dict[str, Any]] = None,
+        operation_data: dict[str, Any],
+        context: dict[str, Any] | None = None,
     ) -> ConstitutionalValidationResult:
         """Perform comprehensive constitutional validation for persona operation"""
 
@@ -232,7 +231,7 @@ class ConstitutionalPersonaValidator:
             return result
 
         except Exception as e:
-            self.logger.error(f"Constitutional validation failed: {str(e)}")
+            self.logger.exception(f"Constitutional validation failed: {e!s}")
             # Return failed validation on exception
             return ConstitutionalValidationResult(
                 is_valid=False,
@@ -240,12 +239,12 @@ class ConstitutionalPersonaValidator:
                 operation_type=operation_type,
                 violations=[ConstitutionalViolationType.OPERATION_NON_COMPLIANT],
                 escalation_required=True,
-                audit_trail=[f"Validation exception: {str(e)}"],
+                audit_trail=[f"Validation exception: {e!s}"],
             )
 
     async def _validate_constitutional_hash(
-        self, operation_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, operation_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate constitutional hash presence and integrity"""
 
         provided_hash = operation_data.get("constitutional_hash")
@@ -283,8 +282,8 @@ class ConstitutionalPersonaValidator:
         self,
         persona: SuperClaudePersona,
         operation_type: str,
-        operation_data: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        operation_data: dict[str, Any],
+    ) -> dict[str, Any]:
         """Validate persona authorization for specific operation"""
 
         # Define persona-operation authorization matrix
@@ -332,9 +331,9 @@ class ConstitutionalPersonaValidator:
     async def _validate_operation_compliance(
         self,
         operation_type: str,
-        operation_data: Dict[str, Any],
-        context: Optional[Dict[str, Any]],
-    ) -> Dict[str, Any]:
+        operation_data: dict[str, Any],
+        context: dict[str, Any] | None,
+    ) -> dict[str, Any]:
         """Validate operation compliance with constitutional requirements"""
 
         # Use the existing constitutional validator
@@ -362,8 +361,8 @@ class ConstitutionalPersonaValidator:
         }
 
     async def _validate_audit_requirements(
-        self, operation_data: Dict[str, Any], context: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, operation_data: dict[str, Any], context: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Validate audit trail requirements"""
 
         required_audit_fields = [
@@ -394,11 +393,11 @@ class ConstitutionalPersonaValidator:
 
     async def _validate_performance_compliance(
         self, operation_type: str
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate performance compliance requirements"""
 
         # Check current validation latency against P99 target
-        current_time = time.time()
+        time.time()
 
         # Performance requirements for different operation types
         PERFORMANCE_REQUIREMENTS = {
@@ -429,8 +428,8 @@ class ConstitutionalPersonaValidator:
         }
 
     async def _validate_security_compliance(
-        self, operation_data: Dict[str, Any], context: Optional[Dict[str, Any]]
-    ) -> Dict[str, Any]:
+        self, operation_data: dict[str, Any], context: dict[str, Any] | None
+    ) -> dict[str, Any]:
         """Validate security compliance requirements"""
 
         security_checks = {
@@ -451,7 +450,7 @@ class ConstitutionalPersonaValidator:
             "security_score": sum(security_checks.values()) / len(security_checks),
         }
 
-    def _check_input_validation(self, operation_data: Dict[str, Any]) -> bool:
+    def _check_input_validation(self, operation_data: dict[str, Any]) -> bool:
         """Check input validation compliance"""
         # Basic input validation check
         if not isinstance(operation_data, dict):
@@ -459,7 +458,7 @@ class ConstitutionalPersonaValidator:
 
         # Check for potentially dangerous inputs
         dangerous_patterns = ["<script>", "javascript:", "$(", "eval("]
-        for key, value in operation_data.items():
+        for value in operation_data.values():
             if isinstance(value, str) and any(
                 pattern in value.lower() for pattern in dangerous_patterns
             ):
@@ -467,7 +466,7 @@ class ConstitutionalPersonaValidator:
 
         return True
 
-    def _check_authentication(self, context: Optional[Dict[str, Any]]) -> bool:
+    def _check_authentication(self, context: dict[str, Any] | None) -> bool:
         """Check authentication compliance"""
         if not context:
             return False
@@ -476,7 +475,7 @@ class ConstitutionalPersonaValidator:
         return context.get("authenticated", False) or context.get("user_id") is not None
 
     def _check_authorization(
-        self, operation_data: Dict[str, Any], context: Optional[Dict[str, Any]]
+        self, operation_data: dict[str, Any], context: dict[str, Any] | None
     ) -> bool:
         """Check authorization compliance"""
         if not context:
@@ -487,25 +486,25 @@ class ConstitutionalPersonaValidator:
             context.get("authorized", False) or context.get("permissions") is not None
         )
 
-    def _check_data_protection(self, operation_data: Dict[str, Any]) -> bool:
+    def _check_data_protection(self, operation_data: dict[str, Any]) -> bool:
         """Check data protection compliance"""
         # Check for sensitive data exposure
         sensitive_keys = ["password", "secret", "token", "private_key"]
-        for key in operation_data.keys():
+        for key in operation_data:
             if any(sensitive in key.lower() for sensitive in sensitive_keys):
                 return False
 
         return True
 
-    def _check_constitutional_integrity(self, operation_data: Dict[str, Any]) -> bool:
+    def _check_constitutional_integrity(self, operation_data: dict[str, Any]) -> bool:
         """Check constitutional integrity"""
         # Verify constitutional hash is present and not tampered with
         constitutional_hash = operation_data.get("constitutional_hash")
         return constitutional_hash == self.REQUIRED_CONSTITUTIONAL_HASH
 
     async def _validate_governance_compliance(
-        self, operation_type: str, operation_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, operation_type: str, operation_data: dict[str, Any]
+    ) -> dict[str, Any]:
         """Validate governance compliance and detect bypass attempts"""
 
         # Check for governance bypass indicators
@@ -554,7 +553,7 @@ class ConstitutionalPersonaValidator:
             / len(governance_checks),
         }
 
-    def _calculate_compliance_score(self, validation_details: Dict[str, Any]) -> float:
+    def _calculate_compliance_score(self, validation_details: dict[str, Any]) -> float:
         """Calculate overall compliance score"""
 
         scores = []
@@ -594,7 +593,7 @@ class ConstitutionalPersonaValidator:
         return sum(scores) / len(scores) if scores else 0.0
 
     async def _log_validation_result(
-        self, result: ConstitutionalValidationResult, operation_data: Dict[str, Any]
+        self, result: ConstitutionalValidationResult, operation_data: dict[str, Any]
     ) -> None:
         """Log validation result to blackboard"""
 
@@ -625,7 +624,7 @@ class ConstitutionalPersonaValidator:
         await self.blackboard.add_knowledge(knowledge_item)
 
     async def _trigger_constitutional_escalation(
-        self, result: ConstitutionalValidationResult, operation_data: Dict[str, Any]
+        self, result: ConstitutionalValidationResult, operation_data: dict[str, Any]
     ) -> None:
         """Trigger constitutional escalation for violations"""
 
@@ -640,11 +639,11 @@ class ConstitutionalPersonaValidator:
             "human_oversight_required": True,
             "immediate_response_required": any(
                 v
-                in [
+                in {
                     ConstitutionalViolationType.HASH_VALIDATION_FAILURE,
                     ConstitutionalViolationType.SECURITY_BREACH,
                     ConstitutionalViolationType.GOVERNANCE_BYPASS,
-                ]
+                }
                 for v in result.violations
             ),
         }
@@ -675,7 +674,7 @@ class ConstitutionalPersonaValidator:
             f"for operation {result.operation_type} with persona {result.persona}"
         )
 
-    def get_validation_statistics(self) -> Dict[str, Any]:
+    def get_validation_statistics(self) -> dict[str, Any]:
         """Get validation statistics"""
         total = self.validation_stats["total_validations"]
         if total == 0:

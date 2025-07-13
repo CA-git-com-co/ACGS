@@ -5,25 +5,19 @@ Service for managing human oversight and intervention in evolutionary computatio
 processes with constitutional compliance and ACGS integration.
 """
 
-import asyncio
 import logging
 import time
-import uuid
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
 
 import redis.asyncio as aioredis
 from prometheus_client import Counter, Gauge, Histogram
 
-from ..models.evolution import EvolutionRequest, EvolutionStatus
 from ..models.oversight import (
     DecisionStatus,
     HumanReviewTask,
     OversightDecision,
     OversightLevel,
     OversightRequest,
-    RiskAssessment,
-    RiskLevel,
 )
 
 # Constitutional compliance hash for ACGS
@@ -40,15 +34,15 @@ class HITLService:
     sub-5ms P99 latency targets for ACGS integration.
     """
 
-    def __init__(self, redis_client: Optional[aioredis.Redis] = None):
+    def __init__(self, redis_client: aioredis.Redis | None = None):
         """Initialize HITL service."""
         self.redis = redis_client
         self.setup_metrics()
 
         # HITL tracking with O(1) lookups
-        self.active_oversight_requests: Dict[str, OversightRequest] = {}
-        self.pending_reviews: Dict[str, HumanReviewTask] = {}
-        self.oversight_decisions: Dict[str, OversightDecision] = {}
+        self.active_oversight_requests: dict[str, OversightRequest] = {}
+        self.pending_reviews: dict[str, HumanReviewTask] = {}
+        self.oversight_decisions: dict[str, OversightDecision] = {}
 
         # Configuration
         self.default_review_timeout_hours = 24
@@ -144,10 +138,10 @@ class HITLService:
                 )
 
             # Create human review task if needed
-            if oversight_level in [
+            if oversight_level in {
                 OversightLevel.HUMAN_REVIEW,
                 OversightLevel.EXPERT_PANEL,
-            ]:
+            }:
                 review_task = await self._create_review_task(oversight_request)
                 self.pending_reviews[review_task.task_id] = review_task
                 self.pending_reviews_gauge.set(len(self.pending_reviews))
@@ -161,7 +155,7 @@ class HITLService:
             return oversight_request
 
         except Exception as e:
-            logger.error(f"Failed to create oversight request: {e}")
+            logger.exception(f"Failed to create oversight request: {e}")
             self.oversight_requests_total.labels(
                 oversight_level=oversight_level.value, status="error"
             ).inc()
@@ -177,9 +171,7 @@ class HITLService:
                     f"Create oversight request took {duration:.2f}ms (>5ms target)"
                 )
 
-    async def get_oversight_request(
-        self, request_id: str
-    ) -> Optional[OversightRequest]:
+    async def get_oversight_request(self, request_id: str) -> OversightRequest | None:
         """
         Get oversight request with O(1) lookup performance.
 
@@ -309,7 +301,7 @@ class HITLService:
             return oversight_decision
 
         except Exception as e:
-            logger.error(f"Failed to submit oversight decision: {e}")
+            logger.exception(f"Failed to submit oversight decision: {e}")
             raise
 
         finally:
@@ -317,8 +309,8 @@ class HITLService:
             self.hitl_operation_duration.labels(operation=operation).observe(duration)
 
     async def get_pending_reviews(
-        self, reviewer_id: Optional[str] = None
-    ) -> List[HumanReviewTask]:
+        self, reviewer_id: str | None = None
+    ) -> list[HumanReviewTask]:
         """
         Get pending review tasks, optionally filtered by reviewer.
 
@@ -424,7 +416,7 @@ class HITLService:
             return
 
         # Create new oversight request at higher level
-        escalated_request = await self.create_oversight_request(
+        await self.create_oversight_request(
             evolution_id=oversight_request.evolution_id,
             oversight_level=new_level,
             reason=f"Escalated from {current_level.value}: {oversight_request.reason}",

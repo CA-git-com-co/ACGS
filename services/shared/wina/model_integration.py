@@ -413,7 +413,7 @@ class WINAModelIntegrator:
             return result
 
         except Exception as e:
-            logger.error(f"WINA optimization failed for {model_identifier}: {e}")
+            logger.exception(f"WINA optimization failed for {model_identifier}: {e}")
             raise WINAOptimizationError(f"Model optimization failed: {e}")
 
     def _estimate_layer_gflops(self, weight_info: ModelWeightInfo) -> float:
@@ -477,7 +477,7 @@ class WINAModelIntegrator:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance verification failed: {e}")
+            logger.exception(f"Constitutional compliance verification failed: {e}")
             return False
 
     async def _estimate_accuracy_preservation(
@@ -503,7 +503,7 @@ class WINAModelIntegrator:
             total_weight = 0
             weighted_preservation = 0
 
-            for _layer_name, result in transformed_layers.items():
+            for result in transformed_layers.values():
                 # Higher compression typically means lower accuracy preservation
                 layer_preservation = 1.0 - (1.0 - result.compression_ratio) * 0.1
                 layer_preservation = max(
@@ -533,7 +533,7 @@ class WINAModelIntegrator:
             return overall_preservation
 
         except Exception as e:
-            logger.error(f"Accuracy preservation estimation failed: {e}")
+            logger.exception(f"Accuracy preservation estimation failed: {e}")
             return 0.95  # Conservative fallback
 
     async def _update_performance_metrics(self, result: WINAOptimizationResult) -> None:
@@ -565,7 +565,7 @@ class WINAModelIntegrator:
             logger.debug(f"Performance metrics updated for {result.model_id}")
 
         except Exception as e:
-            logger.error(f"Failed to update performance metrics: {e}")
+            logger.exception(f"Failed to update performance metrics: {e}")
 
     async def verify_computational_invariance(
         self, model_identifier: str, test_inputs: list[Any], tolerance: float = 1e-6
@@ -632,7 +632,7 @@ class WINAModelIntegrator:
             return verification_result
 
         except Exception as e:
-            logger.error(f"Computational invariance verification failed: {e}")
+            logger.exception(f"Computational invariance verification failed: {e}")
             return {
                 "invariance_maintained": False,
                 "error": str(e),

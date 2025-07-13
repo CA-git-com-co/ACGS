@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # MCP Inspector
 
 The MCP inspector is a developer tool for testing and debugging MCP servers.

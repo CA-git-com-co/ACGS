@@ -7,14 +7,12 @@ for creating robust ethical training data and testing scenarios. Generates causa
 and neutral ethical variations for training ethics-aware AI systems.
 """
 
-import asyncio
 import json
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -22,10 +20,7 @@ from pydantic import BaseModel, Field
 from .ai_model_service import AIModelService
 from .blackboard import BlackboardService, KnowledgeItem
 from .causal_bias_detector import (
-    BiasType,
-    CausalBiasAttribute,
     EthicalAttribute,
-    SpuriousBiasAttribute,
     SpuriousEthicalAttribute,
 )
 
@@ -84,13 +79,13 @@ class EthicalCounterfactual:
     """Single ethical counterfactual scenario"""
 
     scenario_id: str
-    original_scenario: Dict[str, Any]
-    counterfactual_scenario: Dict[str, Any]
+    original_scenario: dict[str, Any]
+    counterfactual_scenario: dict[str, Any]
     intervention_type: EthicalInterventionType
-    target_attribute: Union[EthicalAttribute, SpuriousEthicalAttribute]
+    target_attribute: EthicalAttribute | SpuriousEthicalAttribute
     expected_ethical_change: str  # "improvement", "degradation", "neutral"
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
     generation_timestamp: datetime = field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
@@ -101,13 +96,13 @@ class EthicalAugmentationPair:
     """Pair of ethical scenarios for training"""
 
     pair_id: str
-    scenario_a: Dict[str, Any]
-    scenario_b: Dict[str, Any]
+    scenario_a: dict[str, Any]
+    scenario_b: dict[str, Any]
     preference_label: str  # "a_preferred", "b_preferred", "equivalent"
-    ethical_focus: List[str]  # List of ethical attributes being tested
+    ethical_focus: list[str]  # List of ethical attributes being tested
     augmentation_type: str  # "causal", "neutral", "adversarial"
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class EthicalScenarioGenerationResult(BaseModel):
@@ -117,13 +112,13 @@ class EthicalScenarioGenerationResult(BaseModel):
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Generated scenarios
-    counterfactuals: List[EthicalCounterfactual] = Field(default_factory=list)
-    augmentation_pairs: List[EthicalAugmentationPair] = Field(default_factory=list)
+    counterfactuals: list[EthicalCounterfactual] = Field(default_factory=list)
+    augmentation_pairs: list[EthicalAugmentationPair] = Field(default_factory=list)
 
     # Generation statistics
     scenarios_generated: int = 0
-    ethical_attributes_covered: List[str] = Field(default_factory=list)
-    scenario_types_covered: List[str] = Field(default_factory=list)
+    ethical_attributes_covered: list[str] = Field(default_factory=list)
+    scenario_types_covered: list[str] = Field(default_factory=list)
 
     # Quality metrics
     average_quality_score: float = Field(ge=0.0, le=1.0, default=0.0)
@@ -208,65 +203,65 @@ class EthicalScenarioGenerator:
         EthicalInterventionType.IMPROVE_FAIRNESS: """
         Enhance the fairness aspects of this ethical scenario:
         {scenario}
-        
+
         Focus on:
         - Ensuring equal treatment across different groups
         - Eliminating discriminatory factors
         - Promoting equitable outcomes
         - Addressing systemic biases
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve other ethical considerations while improving fairness.
         """,
         EthicalInterventionType.REDUCE_HARM: """
         Reduce potential harm in this ethical scenario:
         {scenario}
-        
+
         Focus on:
         - Minimizing risks to all stakeholders
         - Implementing safety measures
         - Preventing negative consequences
         - Protecting vulnerable populations
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve other aspects while reducing harm potential.
         """,
         EthicalInterventionType.INCREASE_TRANSPARENCY: """
         Improve transparency in this ethical scenario:
         {scenario}
-        
+
         Focus on:
         - Making decision processes clearer
         - Providing better explanations
         - Increasing information accessibility
         - Enhancing accountability mechanisms
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve other elements while increasing transparency.
         """,
         EthicalInterventionType.DEGRADE_FAIRNESS: """
         Introduce fairness issues into this ethical scenario:
         {scenario}
-        
+
         Focus on:
         - Creating disparate treatment across groups
         - Introducing discriminatory factors
         - Generating inequitable outcomes
         - Adding systemic biases
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve other ethical considerations while degrading fairness.
         """,
         EthicalInterventionType.INCREASE_HARM: """
         Increase potential harm in this ethical scenario:
         {scenario}
-        
+
         Focus on:
         - Introducing additional risks
         - Reducing safety measures
         - Creating negative consequences
         - Affecting vulnerable populations
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve other aspects while increasing harm potential.
         """,
@@ -291,9 +286,9 @@ class EthicalScenarioGenerator:
 
     async def generate_ethical_training_scenarios(
         self,
-        base_scenarios: List[Dict[str, Any]],
-        scenario_types: Optional[List[EthicalScenarioType]] = None,
-        ethical_attributes: Optional[List[EthicalAttribute]] = None,
+        base_scenarios: list[dict[str, Any]],
+        scenario_types: list[EthicalScenarioType] | None = None,
+        ethical_attributes: list[EthicalAttribute] | None = None,
         include_spurious_variations: bool = True,
         adversarial_testing: bool = True,
     ) -> EthicalScenarioGenerationResult:
@@ -383,11 +378,11 @@ class EthicalScenarioGenerator:
 
     async def _generate_scenario_variations(
         self,
-        base_scenario: Dict[str, Any],
-        ethical_attributes: List[EthicalAttribute],
+        base_scenario: dict[str, Any],
+        ethical_attributes: list[EthicalAttribute],
         include_spurious: bool,
         adversarial: bool,
-    ) -> Tuple[List[EthicalCounterfactual], List[EthicalAugmentationPair]]:
+    ) -> tuple[list[EthicalCounterfactual], list[EthicalAugmentationPair]]:
         """Generate variations for a single base scenario"""
 
         counterfactuals = []
@@ -462,10 +457,10 @@ class EthicalScenarioGenerator:
 
     async def _create_ethical_counterfactual(
         self,
-        base_scenario: Dict[str, Any],
+        base_scenario: dict[str, Any],
         attribute: EthicalAttribute,
         direction: str,  # "improve" or "degrade"
-    ) -> Optional[EthicalCounterfactual]:
+    ) -> EthicalCounterfactual | None:
         """Create counterfactual for specific ethical attribute"""
 
         try:
@@ -524,14 +519,14 @@ class EthicalScenarioGenerator:
             )
 
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Failed to create ethical counterfactual for {attribute.value}: {e}"
             )
             return None
 
     async def _create_spurious_ethical_variation(
-        self, base_scenario: Dict[str, Any], spurious_attr: SpuriousEthicalAttribute
-    ) -> Optional[EthicalCounterfactual]:
+        self, base_scenario: dict[str, Any], spurious_attr: SpuriousEthicalAttribute
+    ) -> EthicalCounterfactual | None:
         """Create spurious variation that preserves ethical content"""
 
         try:
@@ -591,7 +586,7 @@ class EthicalScenarioGenerator:
             )
 
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Failed to create spurious variation for {spurious_attr.value}: {e}"
             )
             return None
@@ -599,8 +594,8 @@ class EthicalScenarioGenerator:
     async def _generate_domain_specific_scenarios(
         self,
         scenario_type: EthicalScenarioType,
-        ethical_attributes: List[EthicalAttribute],
-    ) -> List[EthicalCounterfactual]:
+        ethical_attributes: list[EthicalAttribute],
+    ) -> list[EthicalCounterfactual]:
         """Generate domain-specific ethical scenarios"""
 
         counterfactuals = []
@@ -632,15 +627,15 @@ class EthicalScenarioGenerator:
                         counterfactuals.append(cf)
 
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Failed to generate domain scenarios for {scenario_type.value}: {e}"
             )
 
         return counterfactuals
 
     async def _generate_from_template(
-        self, scenario_type: EthicalScenarioType, template_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario_type: EthicalScenarioType, template_info: dict[str, Any]
+    ) -> dict[str, Any]:
         """Generate scenario from template"""
 
         # Simplified template filling - in production this would be more sophisticated
@@ -694,8 +689,8 @@ class EthicalScenarioGenerator:
         }
 
     async def _generate_adversarial_scenarios(
-        self, base_scenario: Dict[str, Any]
-    ) -> List[EthicalCounterfactual]:
+        self, base_scenario: dict[str, Any]
+    ) -> list[EthicalCounterfactual]:
         """Generate adversarial scenarios for robustness testing"""
 
         # Simplified adversarial generation
@@ -783,11 +778,11 @@ class EthicalScenarioGenerator:
             quality_score += 0.15
 
         # Check expected change alignment
-        if counterfactual.expected_ethical_change in [
+        if counterfactual.expected_ethical_change in {
             "improvement",
             "degradation",
             "neutral",
-        ]:
+        }:
             quality_score += 0.15
 
         return min(1.0, quality_score)
@@ -841,10 +836,10 @@ class EthicalScenarioGenerator:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_generation_statistics(self) -> Dict[str, Any]:
+    def get_generation_statistics(self) -> dict[str, Any]:
         """Get generation statistics"""
 
-        stats = {
+        return {
             "total_scenarios_generated": self.generation_stats[
                 "total_scenarios_generated"
             ],
@@ -861,5 +856,3 @@ class EthicalScenarioGenerator:
             "constitutional_hash": "cdd01ef066bc6cf2",
             "generator_version": "1.0.0_carma_inspired",
         }
-
-        return stats

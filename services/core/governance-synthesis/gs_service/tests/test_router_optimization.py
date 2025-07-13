@@ -8,9 +8,10 @@ with router optimization, targeting 97.2% consensus success rate and performance
 # Constitutional Hash: cdd01ef066bc6cf2
 
 import asyncio
-import json
 import logging
+import pathlib
 import statistics
+import sys
 import time
 from typing import Any
 
@@ -69,13 +70,15 @@ class RouterOptimizationTester:
         import os
         import sys
 
-        sys.path.append(os.path.join(os.path.dirname(__file__), "..", "app"))
+        sys.path.append(os.path.join(pathlib.Path(__file__).parent, "..", "app"))
         try:
             from core.multi_model_coordinator import MultiModelCoordinator
         except ImportError:
             # Fallback for direct execution
             sys.path.append(
-                os.path.join(os.path.dirname(__file__), "..", "..", "..", "..", "..")
+                os.path.join(
+                    pathlib.Path(__file__).parent, "..", "..", "..", "..", ".."
+                )
             )
             from services.core.governance_synthesis.gs_service.app.core.multi_model_coordinator import (
                 MultiModelCoordinator,
@@ -144,7 +147,7 @@ class RouterOptimizationTester:
 
         except Exception as e:
             execution_time = (time.time() - start_time) * 1000
-            self.logger.error(f"Request {request_id} failed: {e}")
+            self.logger.exception(f"Request {request_id} failed: {e}")
 
             return {
                 "request_id": request_id,
@@ -197,7 +200,7 @@ class RouterOptimizationTester:
         # Performance summary from coordinator
         coordinator_summary = coordinator.get_performance_summary()
 
-        report = {
+        return {
             "status": (
                 "PASSED"
                 if consensus_success_rate >= self.config["target_consensus_rate"]
@@ -240,8 +243,6 @@ class RouterOptimizationTester:
                 consensus_success_rate, statistics.mean(response_times), cache_hit_rate
             ),
         }
-
-        return report
 
     def _percentile(self, data: list[float], percentile: int) -> float:
         """Calculate percentile of data."""
@@ -288,15 +289,9 @@ async def main():
     tester = RouterOptimizationTester(TEST_CONFIG)
     report = await tester.run_load_test()
 
-    print("\n" + "=" * 80)
-    print("ROUTER OPTIMIZATION LOAD TEST REPORT")
-    print("=" * 80)
-    print(json.dumps(report, indent=2))
-    print("=" * 80)
-
     return report["status"] == "PASSED"
 
 
 if __name__ == "__main__":
     success = asyncio.run(main())
-    exit(0 if success else 1)
+    sys.exit(0 if success else 1)

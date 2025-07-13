@@ -8,7 +8,7 @@ and constitutional proof generation with ACGS integration.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -46,11 +46,11 @@ class ConstitutionalVerificationRequest(BaseModel):
     verification_type: str = Field(default="constitutional_compliance")
 
     # Target for verification
-    target_policy: Dict[str, Any] = Field(..., description="Policy to verify")
-    target_system: Optional[str] = Field(None, description="Target system identifier")
+    target_policy: dict[str, Any] = Field(..., description="Policy to verify")
+    target_system: str | None = Field(None, description="Target system identifier")
 
     # Constitutional requirements
-    required_principles: List[ConstitutionalPrincipleType] = Field(
+    required_principles: list[ConstitutionalPrincipleType] = Field(
         default_factory=list, description="Required constitutional principles"
     )
     compliance_threshold: float = Field(
@@ -66,7 +66,7 @@ class ConstitutionalVerificationRequest(BaseModel):
     include_transparency_check: bool = Field(default=True)
 
     # Context
-    verification_context: Dict[str, Any] = Field(
+    verification_context: dict[str, Any] = Field(
         default_factory=dict, description="Verification context"
     )
     requester_id: str = Field(..., description="Requester ID")
@@ -88,7 +88,7 @@ class PolicyValidationRequest(BaseModel):
     # Policy details
     policy_content: str = Field(..., description="Policy content to validate")
     policy_format: str = Field(default="rego", description="Policy format")
-    policy_metadata: Dict[str, Any] = Field(
+    policy_metadata: dict[str, Any] = Field(
         default_factory=dict, description="Policy metadata"
     )
 
@@ -99,12 +99,12 @@ class PolicyValidationRequest(BaseModel):
     validate_safety: bool = Field(default=True)
 
     # Constitutional requirements
-    constitutional_principles: List[ConstitutionalPrincipleType] = Field(
+    constitutional_principles: list[ConstitutionalPrincipleType] = Field(
         default_factory=list
     )
 
     # Context
-    validation_context: Dict[str, Any] = Field(default_factory=dict)
+    validation_context: dict[str, Any] = Field(default_factory=dict)
     requester_id: str = Field(..., description="Requester ID")
 
     # Metadata
@@ -130,8 +130,8 @@ class ConstitutionalProof(BaseModel):
 
     # Proof content
     formal_proof: str = Field(..., description="Formal proof content")
-    proof_steps: List[str] = Field(default_factory=list, description="Proof steps")
-    assumptions: List[str] = Field(
+    proof_steps: list[str] = Field(default_factory=list, description="Proof steps")
+    assumptions: list[str] = Field(
         default_factory=list, description="Proof assumptions"
     )
 
@@ -171,24 +171,24 @@ class ConstitutionalVerificationResult(BaseModel):
     )
 
     # Principle-specific results
-    principle_scores: Dict[str, float] = Field(
+    principle_scores: dict[str, float] = Field(
         default_factory=dict, description="Scores per constitutional principle"
     )
-    principle_proofs: List[ConstitutionalProof] = Field(
+    principle_proofs: list[ConstitutionalProof] = Field(
         default_factory=list, description="Constitutional proofs"
     )
 
     # Compliance analysis
-    compliant_principles: List[ConstitutionalPrincipleType] = Field(
+    compliant_principles: list[ConstitutionalPrincipleType] = Field(
         default_factory=list
     )
-    non_compliant_principles: List[ConstitutionalPrincipleType] = Field(
+    non_compliant_principles: list[ConstitutionalPrincipleType] = Field(
         default_factory=list
     )
-    violations: List[str] = Field(
+    violations: list[str] = Field(
         default_factory=list, description="Constitutional violations"
     )
-    recommendations: List[str] = Field(
+    recommendations: list[str] = Field(
         default_factory=list, description="Improvement recommendations"
     )
 
@@ -201,8 +201,8 @@ class ConstitutionalVerificationResult(BaseModel):
     completeness_score: float = Field(default=0.0, ge=0.0, le=1.0)
 
     # Error handling
-    errors: List[str] = Field(default_factory=list)
-    warnings: List[str] = Field(default_factory=list)
+    errors: list[str] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
 
     # Metadata
     completed_at: datetime = Field(default_factory=datetime.utcnow)
@@ -236,10 +236,10 @@ class PolicyValidationResult(BaseModel):
     )
 
     # Detailed results
-    syntax_errors: List[str] = Field(default_factory=list)
-    semantic_errors: List[str] = Field(default_factory=list)
-    constitutional_violations: List[str] = Field(default_factory=list)
-    safety_issues: List[str] = Field(default_factory=list)
+    syntax_errors: list[str] = Field(default_factory=list)
+    semantic_errors: list[str] = Field(default_factory=list)
+    constitutional_violations: list[str] = Field(default_factory=list)
+    safety_issues: list[str] = Field(default_factory=list)
 
     # Compliance scores
     constitutional_compliance_score: float = Field(default=0.0, ge=0.0, le=1.0)
@@ -247,8 +247,8 @@ class PolicyValidationResult(BaseModel):
     overall_quality_score: float = Field(default=0.0, ge=0.0, le=1.0)
 
     # Recommendations
-    improvement_suggestions: List[str] = Field(default_factory=list)
-    required_fixes: List[str] = Field(default_factory=list)
+    improvement_suggestions: list[str] = Field(default_factory=list)
+    required_fixes: list[str] = Field(default_factory=list)
 
     # Metadata
     validation_time_ms: float = Field(..., description="Validation time")

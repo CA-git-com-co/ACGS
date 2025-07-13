@@ -27,7 +27,7 @@ def perform_svd(matrix: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]
 
 
 def reconstruct_from_svd(
-    U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int = None
+    U: np.ndarray, s: np.ndarray, Vh: np.ndarray, k: int | None = None
 ) -> np.ndarray:
     """
     Reconstructs a matrix from its SVD components, optionally reducing dimensionality.
@@ -59,8 +59,7 @@ def reconstruct_from_svd(
     Vh_k = Vh[:k, :]
 
     # Reconstruct the matrix
-    reconstructed_matrix = U_k @ Sigma_k @ Vh_k
-    return reconstructed_matrix
+    return U_k @ Sigma_k @ Vh_k
 
 
 def apply_svd_transformation(matrix: np.ndarray, k: int) -> np.ndarray:
@@ -99,8 +98,7 @@ def apply_svd_transformation(matrix: np.ndarray, k: int) -> np.ndarray:
     # The actual application (e.g., replacing original weights or using components)
     # will depend on how WINA integrates this.
 
-    transformed_matrix = reconstruct_from_svd(U, s, Vh, k)
-    return transformed_matrix
+    return reconstruct_from_svd(U, s, Vh, k)
 
 
 # Placeholder for a function that might return the components for further use

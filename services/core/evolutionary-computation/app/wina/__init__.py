@@ -27,6 +27,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 __version__ = "1.0.0"
 __all__ = [
+    "CONSTITUTIONAL_HASH",
     "ConstitutionalWINASupport",
     "FeedbackSignal",
     "FeedbackType",
@@ -44,5 +45,4 @@ __all__ = [
     "WINASystemHealthMetrics",
     "get_wina_learning_system",
     "load_wina_config_from_env",
-    "CONSTITUTIONAL_HASH",
 ]

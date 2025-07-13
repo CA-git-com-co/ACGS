@@ -8,11 +8,9 @@ Constitutional Hash: cdd01ef066bc6cf2
 import time
 import uuid
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
-
-from ...models.schemas import (
+from app.models.schemas import (
     AnalysisRequest,
     AnalysisResponse,
     CodeSymbol,
@@ -22,11 +20,12 @@ from ...models.schemas import (
     SemanticSearchRequest,
     SemanticSearchResponse,
 )
-from ...utils.constitutional import (
+from app.utils.constitutional import (
     CONSTITUTIONAL_HASH,
     ensure_constitutional_compliance,
 )
-from ...utils.logging import get_logger, log_api_request, log_api_response
+from app.utils.logging import get_logger, log_api_request, log_api_response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 
 logger = get_logger("api.v1")
 
@@ -88,12 +87,12 @@ async def health_check(request: Request):
 
 
 # Dependency to get current user from request state
-def get_current_user(request: Request) -> Optional[dict[str, Any]]:
+def get_current_user(request: Request) -> dict[str, Any] | None:
     """Get current user from request state (set by auth middleware)."""
     return getattr(request.state, "user", None)
 
 
-def get_user_id(request: Request) -> Optional[str]:
+def get_user_id(request: Request) -> str | None:
     """Get user ID from request state."""
     return getattr(request.state, "user_id", None)
 
@@ -115,17 +114,17 @@ async def semantic_search(
     min_confidence: float = Query(
         default=0.7, ge=0.0, le=1.0, description="Minimum confidence score"
     ),
-    symbol_types: Optional[str] = Query(
+    symbol_types: str | None = Query(
         default=None, description="Comma-separated symbol types"
     ),
-    file_paths: Optional[str] = Query(
+    file_paths: str | None = Query(
         default=None, description="Comma-separated file paths"
     ),
     include_embeddings: bool = Query(
         default=False, description="Include embedding vectors"
     ),
-    current_user: Optional[dict[str, Any]] = Depends(get_current_user),
-    user_id: Optional[str] = Depends(get_user_id),
+    current_user: dict[str, Any] | None = Depends(get_current_user),
+    user_id: str | None = Depends(get_user_id),
     request_id: str = Depends(get_request_id),
 ):
     """
@@ -156,7 +155,7 @@ async def semantic_search(
             file_path_list = [p.strip() for p in file_paths.split(",")]
 
         # Create search request
-        search_request = SemanticSearchRequest(
+        SemanticSearchRequest(
             query=query,
             limit=limit,
             min_confidence=min_confidence,
@@ -235,8 +234,8 @@ async def semantic_search(
 async def get_symbol(
     symbol_id: str,
     request: Request,
-    current_user: Optional[dict[str, Any]] = Depends(get_current_user),
-    user_id: Optional[str] = Depends(get_user_id),
+    current_user: dict[str, Any] | None = Depends(get_current_user),
+    user_id: str | None = Depends(get_user_id),
     request_id: str = Depends(get_request_id),
 ):
     """
@@ -320,8 +319,8 @@ async def get_symbol(
 async def trigger_analysis(
     analysis_request: AnalysisRequest,
     request: Request,
-    current_user: Optional[dict[str, Any]] = Depends(get_current_user),
-    user_id: Optional[str] = Depends(get_user_id),
+    current_user: dict[str, Any] | None = Depends(get_current_user),
+    user_id: str | None = Depends(get_user_id),
     request_id: str = Depends(get_request_id),
 ):
     """
@@ -419,8 +418,8 @@ async def trigger_analysis(
 async def enrich_context(
     enrichment_request: ContextEnrichmentRequest,
     request: Request,
-    current_user: Optional[dict[str, Any]] = Depends(get_current_user),
-    user_id: Optional[str] = Depends(get_user_id),
+    current_user: dict[str, Any] | None = Depends(get_current_user),
+    user_id: str | None = Depends(get_user_id),
     request_id: str = Depends(get_request_id),
 ):
     """

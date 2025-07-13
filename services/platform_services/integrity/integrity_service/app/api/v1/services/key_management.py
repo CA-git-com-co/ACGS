@@ -6,7 +6,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import logging
 import uuid
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -19,7 +19,7 @@ class KeyManager:
 
     def __init__(self):
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self.keys: Dict[str, Dict[str, Any]] = {}
+        self.keys: dict[str, dict[str, Any]] = {}
         self.supported_key_types = ["RSA", "ECDSA", "EdDSA"]
         self.supported_key_sizes = {
             "RSA": [2048, 3072, 4096],
@@ -32,8 +32,8 @@ class KeyManager:
         key_type: str = "RSA",
         key_size: int = 2048,
         purpose: str = "signing",
-        expires_in_days: Optional[int] = None,
-    ) -> Dict[str, Any]:
+        expires_in_days: int | None = None,
+    ) -> dict[str, Any]:
         """Create a new cryptographic key."""
         try:
             if key_type not in self.supported_key_types:
@@ -87,12 +87,12 @@ class KeyManager:
             }
 
         except Exception as e:
-            logger.error(f"Key creation failed: {e}")
+            logger.exception(f"Key creation failed: {e}")
             raise
 
     async def get_key(
         self, key_id: str, include_private: bool = False
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Get key information."""
         try:
             if key_id not in self.keys:
@@ -106,15 +106,15 @@ class KeyManager:
             return key_info
 
         except Exception as e:
-            logger.error(f"Key retrieval failed: {e}")
+            logger.exception(f"Key retrieval failed: {e}")
             raise
 
     async def list_keys(
         self,
-        key_type: Optional[str] = None,
-        purpose: Optional[str] = None,
+        key_type: str | None = None,
+        purpose: str | None = None,
         active_only: bool = True,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """List keys with optional filtering."""
         try:
             filtered_keys = []
@@ -148,10 +148,10 @@ class KeyManager:
             }
 
         except Exception as e:
-            logger.error(f"Key listing failed: {e}")
+            logger.exception(f"Key listing failed: {e}")
             raise
 
-    async def deactivate_key(self, key_id: str) -> Dict[str, Any]:
+    async def deactivate_key(self, key_id: str) -> dict[str, Any]:
         """Deactivate a key."""
         try:
             if key_id not in self.keys:
@@ -168,12 +168,12 @@ class KeyManager:
             }
 
         except Exception as e:
-            logger.error(f"Key deactivation failed: {e}")
+            logger.exception(f"Key deactivation failed: {e}")
             raise
 
     async def rotate_key(
-        self, old_key_id: str, expires_in_days: Optional[int] = None
-    ) -> Dict[str, Any]:
+        self, old_key_id: str, expires_in_days: int | None = None
+    ) -> dict[str, Any]:
         """Rotate a key by creating a new one and deactivating the old one."""
         try:
             if old_key_id not in self.keys:
@@ -200,7 +200,7 @@ class KeyManager:
             }
 
         except Exception as e:
-            logger.error(f"Key rotation failed: {e}")
+            logger.exception(f"Key rotation failed: {e}")
             raise
 
     async def update_key_usage(self, key_id: str) -> None:
@@ -211,9 +211,9 @@ class KeyManager:
                 self.keys[key_id]["last_used"] = datetime.now(timezone.utc)
 
         except Exception as e:
-            logger.error(f"Key usage update failed: {e}")
+            logger.exception(f"Key usage update failed: {e}")
 
-    async def get_key_statistics(self) -> Dict[str, Any]:
+    async def get_key_statistics(self) -> dict[str, Any]:
         """Get key management statistics."""
         try:
             total_keys = len(self.keys)
@@ -238,7 +238,7 @@ class KeyManager:
             }
 
         except Exception as e:
-            logger.error(f"Key statistics retrieval failed: {e}")
+            logger.exception(f"Key statistics retrieval failed: {e}")
             raise
 
 

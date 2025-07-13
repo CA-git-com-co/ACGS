@@ -8,7 +8,7 @@ in the evolutionary computation framework.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -67,10 +67,10 @@ class RiskAssessment(BaseModel):
     )
 
     # Risk factors details
-    risk_factors: List[str] = Field(
+    risk_factors: list[str] = Field(
         default_factory=list, description="Identified risk factors"
     )
-    mitigation_strategies: List[str] = Field(
+    mitigation_strategies: list[str] = Field(
         default_factory=list, description="Recommended mitigations"
     )
 
@@ -96,15 +96,15 @@ class OversightRequest(BaseModel):
     # Request details
     reason: str = Field(..., description="Reason for oversight request")
     urgency: str = Field(default="normal", description="Urgency level")
-    deadline: Optional[datetime] = None
+    deadline: datetime | None = None
 
     # Context
-    risk_assessment: Optional[RiskAssessment] = None
-    context_data: Dict[str, Any] = Field(default_factory=dict)
+    risk_assessment: RiskAssessment | None = None
+    context_data: dict[str, Any] = Field(default_factory=dict)
 
     # Assignment
-    assigned_to: Optional[str] = None
-    assigned_at: Optional[datetime] = None
+    assigned_to: str | None = None
+    assigned_at: datetime | None = None
 
     # Metadata
     requested_by: str = Field(..., description="Requester ID")
@@ -128,10 +128,10 @@ class OversightDecision(BaseModel):
     reasoning: str = Field(..., description="Decision reasoning")
 
     # Conditions and requirements
-    conditions: List[str] = Field(
+    conditions: list[str] = Field(
         default_factory=list, description="Approval conditions"
     )
-    requirements: List[str] = Field(
+    requirements: list[str] = Field(
         default_factory=list, description="Additional requirements"
     )
 
@@ -166,25 +166,25 @@ class HumanReviewTask(BaseModel):
     priority: str = Field(default="medium", description="Task priority")
 
     # Review context
-    review_data: Dict[str, Any] = Field(
+    review_data: dict[str, Any] = Field(
         default_factory=dict, description="Data for review"
     )
-    evaluation_criteria: List[str] = Field(
+    evaluation_criteria: list[str] = Field(
         default_factory=list, description="Evaluation criteria"
     )
 
     # Assignment and status
-    assigned_to: Optional[str] = None
+    assigned_to: str | None = None
     status: str = Field(default="pending", description="Task status")
 
     # Timeline
     created_at: datetime = Field(default_factory=datetime.utcnow)
-    assigned_at: Optional[datetime] = None
-    due_date: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
+    assigned_at: datetime | None = None
+    due_date: datetime | None = None
+    completed_at: datetime | None = None
 
     # Results
-    review_decision: Optional[OversightDecision] = None
+    review_decision: OversightDecision | None = None
     reviewer_notes: str = Field(default="", description="Reviewer notes")
 
     # Constitutional compliance

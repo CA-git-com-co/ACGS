@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS-1 Monitoring Infrastructure Performance Validation Guide
 
 ## Subtask 13.7: Performance Validation and Testing

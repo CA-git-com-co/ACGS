@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 **Purpose**: SuperClaude Commands Reference
 
 @include shared/universal-constants.yml#Universal_Legend

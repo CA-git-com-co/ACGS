@@ -6,14 +6,15 @@ Implements operation_reversibility constitutional principle.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
-import json
 import logging
 import uuid
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -49,11 +50,11 @@ class OperationSnapshot:
     operation_id: str
     operation_type: OperationType
     timestamp: datetime
-    state_before: Dict[str, Any]
-    state_after: Optional[Dict[str, Any]]
+    state_before: dict[str, Any]
+    state_after: dict[str, Any] | None
     rollback_procedure: str
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 @dataclass
@@ -67,7 +68,7 @@ class RollbackResult:
     message: str
     timestamp: datetime
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    details: Optional[Dict[str, Any]] = None
+    details: dict[str, Any] | None = None
 
 
 class OperationRollbackManager:
@@ -78,8 +79,8 @@ class OperationRollbackManager:
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.snapshots: Dict[str, OperationSnapshot] = {}
-        self.rollback_procedures: Dict[str, Callable] = {}
+        self.snapshots: dict[str, OperationSnapshot] = {}
+        self.rollback_procedures: dict[str, Callable] = {}
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self._register_default_procedures()
 
@@ -101,9 +102,9 @@ class OperationRollbackManager:
         self,
         operation_id: str,
         operation_type: OperationType,
-        state_before: Dict[str, Any],
+        state_before: dict[str, Any],
         rollback_procedure: str,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> bool:
         """Create a snapshot before operation execution."""
         try:
@@ -134,13 +135,13 @@ class OperationRollbackManager:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to create operation snapshot: {e}")
+            self.logger.exception(f"Failed to create operation snapshot: {e}")
             return False
 
     async def update_operation_snapshot(
         self,
         operation_id: str,
-        state_after: Dict[str, Any],
+        state_after: dict[str, Any],
     ) -> bool:
         """Update snapshot with post-operation state."""
         try:
@@ -162,7 +163,7 @@ class OperationRollbackManager:
             return True
 
         except Exception as e:
-            self.logger.error(f"Failed to update operation snapshot: {e}")
+            self.logger.exception(f"Failed to update operation snapshot: {e}")
             return False
 
     async def rollback_operation(
@@ -249,13 +250,13 @@ class OperationRollbackManager:
             return result
 
         except Exception as e:
-            self.logger.error(f"Error during rollback: {e}")
+            self.logger.exception(f"Error during rollback: {e}")
             return RollbackResult(
                 operation_id=operation_id,
                 rollback_id=rollback_id,
                 status=RollbackStatus.FAILED,
                 success=False,
-                message=f"Rollback error: {str(e)}",
+                message=f"Rollback error: {e!s}",
                 timestamp=datetime.now(timezone.utc),
                 constitutional_hash=self.constitutional_hash,
             )
@@ -304,11 +305,11 @@ class OperationRollbackManager:
         )
         return True
 
-    def get_operation_snapshot(self, operation_id: str) -> Optional[OperationSnapshot]:
+    def get_operation_snapshot(self, operation_id: str) -> OperationSnapshot | None:
         """Get operation snapshot by ID."""
         return self.snapshots.get(operation_id)
 
-    def list_snapshots(self) -> List[OperationSnapshot]:
+    def list_snapshots(self) -> list[OperationSnapshot]:
         """List all operation snapshots."""
         return list(self.snapshots.values())
 
@@ -318,7 +319,7 @@ class OperationRollbackManager:
 
 
 # Global rollback manager instance
-_rollback_manager: Optional[OperationRollbackManager] = None
+_rollback_manager: OperationRollbackManager | None = None
 
 
 def get_rollback_manager() -> OperationRollbackManager:

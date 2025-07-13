@@ -10,7 +10,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import Any, Generic, Optional, TypeVar, Union
+from typing import Any, Generic, TypeVar
 
 from sqlalchemy import and_, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -37,9 +37,9 @@ class TenantContext:
     """
 
     tenant_id: uuid.UUID
-    user_id: Optional[int] = None
-    organization_id: Optional[uuid.UUID] = None
-    security_level: Optional[str] = None
+    user_id: int | None = None
+    organization_id: uuid.UUID | None = None
+    security_level: str | None = None
     constitutional_compliance_required: bool = True
 
     def __post_init__(self):
@@ -70,7 +70,7 @@ class BaseTenantRepository(Generic[TenantModelType]):
     def __init__(self, model_class: type[TenantModelType], session: AsyncSession):
         self.model_class = model_class
         self.session = session
-        self._tenant_context: Optional[TenantContext] = None
+        self._tenant_context: TenantContext | None = None
 
     def set_tenant_context(self, context: TenantContext) -> None:
         """Set the tenant context for all subsequent operations."""
@@ -148,7 +148,7 @@ class BaseTenantRepository(Generic[TenantModelType]):
         await self.session.refresh(instance)
         return instance
 
-    async def get_by_id(self, id: Union[int, uuid.UUID]) -> Optional[TenantModelType]:
+    async def get_by_id(self, id: int | uuid.UUID) -> TenantModelType | None:
         """Get an instance by ID with tenant filtering."""
         query = select(self.model_class).where(self.model_class.id == id)
         query = self._apply_tenant_filter(query)
@@ -157,7 +157,7 @@ class BaseTenantRepository(Generic[TenantModelType]):
         return result.scalar_one_or_none()
 
     async def get_all(
-        self, offset: int = 0, limit: int = 100, order_by: Optional[str] = None
+        self, offset: int = 0, limit: int = 100, order_by: str | None = None
     ) -> list[TenantModelType]:
         """Get all instances for the current tenant."""
         query = select(self.model_class)
@@ -167,10 +167,9 @@ class BaseTenantRepository(Generic[TenantModelType]):
         if order_by:
             if hasattr(self.model_class, order_by):
                 query = query.order_by(getattr(self.model_class, order_by))
-        else:
-            # Default ordering by created_at if available
-            if hasattr(self.model_class, "created_at"):
-                query = query.order_by(self.model_class.created_at.desc())
+        # Default ordering by created_at if available
+        elif hasattr(self.model_class, "created_at"):
+            query = query.order_by(self.model_class.created_at.desc())
 
         # Apply pagination
         query = query.offset(offset).limit(limit)
@@ -215,9 +214,7 @@ class BaseTenantRepository(Generic[TenantModelType]):
         result = await self.session.execute(query)
         return result.scalars().all()
 
-    async def update(
-        self, id: Union[int, uuid.UUID], **updates
-    ) -> Optional[TenantModelType]:
+    async def update(self, id: int | uuid.UUID, **updates) -> TenantModelType | None:
         """Update an instance with tenant validation."""
         # First, get the instance to ensure it belongs to the tenant
         instance = await self.get_by_id(id)
@@ -240,7 +237,7 @@ class BaseTenantRepository(Generic[TenantModelType]):
         await self.session.refresh(instance)
         return instance
 
-    async def soft_delete(self, id: Union[int, uuid.UUID]) -> bool:
+    async def soft_delete(self, id: int | uuid.UUID) -> bool:
         """Soft delete an instance (if model supports it)."""
         instance = await self.get_by_id(id)
         if not instance:
@@ -258,11 +255,10 @@ class BaseTenantRepository(Generic[TenantModelType]):
 
             await self.session.flush()
             return True
-        else:
-            # Model doesn't support soft delete, perform hard delete
-            return await self.hard_delete(id)
+        # Model doesn't support soft delete, perform hard delete
+        return await self.hard_delete(id)
 
-    async def hard_delete(self, id: Union[int, uuid.UUID]) -> bool:
+    async def hard_delete(self, id: int | uuid.UUID) -> bool:
         """Hard delete an instance."""
         instance = await self.get_by_id(id)
         if not instance:
@@ -301,7 +297,7 @@ class TenantRepository(BaseTenantRepository[Tenant]):
     def __init__(self, session: AsyncSession):
         super().__init__(Tenant, session)
 
-    async def get_by_slug(self, org_id: uuid.UUID, slug: str) -> Optional[Tenant]:
+    async def get_by_slug(self, org_id: uuid.UUID, slug: str) -> Tenant | None:
         """Get a tenant by organization and slug."""
         query = select(Tenant).where(
             and_(
@@ -346,7 +342,7 @@ class TenantRepository(BaseTenantRepository[Tenant]):
             and_(
                 TenantUser.tenant_id == tenant_id,
                 TenantUser.user_id == user_id,
-                TenantUser.is_active == True,
+                TenantUser.is_active,
             )
         )
 
@@ -378,7 +374,7 @@ class TenantRepository(BaseTenantRepository[Tenant]):
             .where(
                 and_(
                     TenantUser.user_id == user_id,
-                    TenantUser.is_active == True,
+                    TenantUser.is_active,
                     Tenant.deleted_at.is_(None),
                     Tenant.status == "active",
                 )
@@ -483,20 +479,17 @@ class CrossTenantRepository:
         result = await self.session.execute(query)
         tenants = result.scalars().all()
 
-        violations = []
-        for tenant in tenants:
-            violations.append(
-                {
-                    "tenant_id": tenant.id,
-                    "tenant_name": tenant.name,
-                    "organization_id": tenant.organization_id,
-                    "compliance_score": tenant.constitutional_compliance_score,
-                    "security_level": tenant.security_level,
-                    "status": tenant.status,
-                }
-            )
-
-        return violations
+        return [
+            {
+                "tenant_id": tenant.id,
+                "tenant_name": tenant.name,
+                "organization_id": tenant.organization_id,
+                "compliance_score": tenant.constitutional_compliance_score,
+                "security_level": tenant.security_level,
+                "status": tenant.status,
+            }
+            for tenant in tenants
+        ]
 
 
 # Utility functions for repository management
@@ -508,7 +501,7 @@ def create_tenant_repository(
 
 
 async def validate_tenant_context(
-    session: AsyncSession, tenant_id: uuid.UUID, user_id: Optional[int] = None
+    session: AsyncSession, tenant_id: uuid.UUID, user_id: int | None = None
 ) -> TenantContext:
     """
     Validate and create a tenant context for database operations.

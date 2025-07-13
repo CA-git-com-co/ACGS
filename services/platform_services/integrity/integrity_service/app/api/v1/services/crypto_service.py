@@ -6,7 +6,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import hashlib
 import logging
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -43,12 +43,12 @@ class CryptoService:
             return hash_obj.hexdigest()
 
         except Exception as e:
-            logger.error(f"Hash generation failed: {e}")
+            logger.exception(f"Hash generation failed: {e}")
             raise
 
     async def sign_data(
         self, data: str, key_id: str, algorithm: str = "SHA-256"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Sign data with specified key."""
         try:
             # Generate content hash
@@ -68,12 +68,12 @@ class CryptoService:
             }
 
         except Exception as e:
-            logger.error(f"Data signing failed: {e}")
+            logger.exception(f"Data signing failed: {e}")
             raise
 
     async def verify_signature(
         self, data: str, signature: str, key_id: str, algorithm: str = "SHA-256"
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify signature of data."""
         try:
             # Generate content hash
@@ -95,7 +95,7 @@ class CryptoService:
             }
 
         except Exception as e:
-            logger.error(f"Signature verification failed: {e}")
+            logger.exception(f"Signature verification failed: {e}")
             raise
 
 
@@ -104,11 +104,11 @@ class MerkleService:
 
     def __init__(self):
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self.trees: Dict[str, Dict[str, Any]] = {}
+        self.trees: dict[str, dict[str, Any]] = {}
 
     async def build_tree(
-        self, data_items: List[str], algorithm: str = "SHA-256"
-    ) -> Dict[str, Any]:
+        self, data_items: list[str], algorithm: str = "SHA-256"
+    ) -> dict[str, Any]:
         """Build Merkle tree from data items."""
         try:
             if not data_items:
@@ -123,7 +123,7 @@ class MerkleService:
                 leaves.append(leaf_hash)
 
             # Build tree bottom-up
-            current_level = leaves[:]
+            current_level = leaves.copy()
             tree_levels = [current_level[:]]
 
             while len(current_level) > 1:
@@ -138,7 +138,7 @@ class MerkleService:
                     )
                     next_level.append(parent_hash)
 
-                tree_levels.append(next_level[:])
+                tree_levels.append(next_level.copy())
                 current_level = next_level
 
             root_hash = current_level[0]
@@ -171,10 +171,10 @@ class MerkleService:
             }
 
         except Exception as e:
-            logger.error(f"Merkle tree building failed: {e}")
+            logger.exception(f"Merkle tree building failed: {e}")
             raise
 
-    async def generate_proof(self, tree_id: str, leaf_data: str) -> Dict[str, Any]:
+    async def generate_proof(self, tree_id: str, leaf_data: str) -> dict[str, Any]:
         """Generate Merkle proof for leaf data."""
         try:
             if tree_id not in self.trees:
@@ -215,7 +215,7 @@ class MerkleService:
                 else:
                     proof_path.append(current_level[current_index])
 
-                current_index = current_index // 2
+                current_index //= 2
 
             return {
                 "is_valid": True,
@@ -226,17 +226,17 @@ class MerkleService:
             }
 
         except Exception as e:
-            logger.error(f"Merkle proof generation failed: {e}")
+            logger.exception(f"Merkle proof generation failed: {e}")
             raise
 
     async def verify_proof(
         self,
         leaf_data: str,
-        proof_path: List[str],
+        proof_path: list[str],
         root_hash: str,
         leaf_index: int,
         algorithm: str = "SHA-256",
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Verify Merkle proof."""
         try:
             crypto_service = CryptoService()
@@ -255,7 +255,7 @@ class MerkleService:
                     combined = sibling_hash + current_hash
 
                 current_hash = await crypto_service.generate_hash(combined, algorithm)
-                current_index = current_index // 2
+                current_index //= 2
 
             is_valid = current_hash == root_hash
 
@@ -267,7 +267,7 @@ class MerkleService:
             }
 
         except Exception as e:
-            logger.error(f"Merkle proof verification failed: {e}")
+            logger.exception(f"Merkle proof verification failed: {e}")
             raise
 
 

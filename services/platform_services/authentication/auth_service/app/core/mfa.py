@@ -5,10 +5,9 @@ import secrets
 
 import pyotp
 import qrcode
+from app.crud import crud_user
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ..crud import crud_user
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -64,7 +63,7 @@ class MFAService:
 
     def hash_backup_codes(self, codes: list[str]) -> list[str]:
         """Hash backup codes for secure storage."""
-        from ..core.password import get_password_hash
+        from app.core.password import get_password_hash
 
         return [get_password_hash(code) for code in codes]
 
@@ -72,7 +71,7 @@ class MFAService:
         self, hashed_codes: list[str], provided_code: str
     ) -> tuple[bool, int | None]:
         """Verify backup code and return index if valid."""
-        from ..core.password import verify_password
+        from app.core.password import verify_password
 
         for i, hashed_code in enumerate(hashed_codes):
             if verify_password(provided_code, hashed_code):

@@ -23,23 +23,23 @@ from .repositories import (
 from .unit_of_work import PostgreSQLUnitOfWork, UnitOfWork, UnitOfWorkManager
 
 __all__ = [
+    "ConcurrentAppendError",
+    "EventSourcedRepository",
     # Event Store
     "EventStore",
-    "PostgreSQLEventStore",
     "EventStream",
-    "StreamVersion",
-    "ConcurrentAppendError",
-    # Unit of Work
-    "UnitOfWork",
-    "PostgreSQLUnitOfWork",
-    "UnitOfWorkManager",
-    # Repositories
-    "Repository",
-    "EventSourcedRepository",
-    "PostgreSQLRepository",
-    "RepositoryRegistry",
     # Outbox Pattern
     "OutboxEntry",
     "OutboxPattern",
+    "PostgreSQLEventStore",
     "PostgreSQLOutboxPattern",
+    "PostgreSQLRepository",
+    "PostgreSQLUnitOfWork",
+    # Repositories
+    "Repository",
+    "RepositoryRegistry",
+    "StreamVersion",
+    # Unit of Work
+    "UnitOfWork",
+    "UnitOfWorkManager",
 ]

@@ -8,15 +8,15 @@ constitutional compliance across all ACGS services and coordination patterns.
 """
 
 import asyncio
-import json
 import logging
 import statistics
 import time
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -72,9 +72,9 @@ class BenchmarkScenario:
     test_type: RobustnessTestType
 
     # Test configuration
-    scenario_data: Dict[str, Any] = field(default_factory=dict)
-    expected_outcomes: Dict[str, Any] = field(default_factory=dict)
-    evaluation_criteria: Dict[str, float] = field(default_factory=dict)
+    scenario_data: dict[str, Any] = field(default_factory=dict)
+    expected_outcomes: dict[str, Any] = field(default_factory=dict)
+    evaluation_criteria: dict[str, float] = field(default_factory=dict)
 
     # Robustness targets
     causal_sensitivity_target: float = 0.8
@@ -109,9 +109,9 @@ class BenchmarkResult:
     error_count: int = 0
 
     # Detailed results
-    test_details: Dict[str, Any] = field(default_factory=dict)
-    failure_modes: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
+    test_details: dict[str, Any] = field(default_factory=dict)
+    failure_modes: list[str] = field(default_factory=list)
+    recommendations: list[str] = field(default_factory=list)
 
     # Pass/fail status
     passed: bool = False
@@ -126,8 +126,8 @@ class ACGSRobustnessBenchmarkSuite(BaseModel):
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Suite configuration
-    benchmark_scenarios: List[BenchmarkScenario] = Field(default_factory=list)
-    execution_results: List[BenchmarkResult] = Field(default_factory=list)
+    benchmark_scenarios: list[BenchmarkScenario] = Field(default_factory=list)
+    execution_results: list[BenchmarkResult] = Field(default_factory=list)
 
     # Suite statistics
     total_scenarios: int = 0
@@ -144,8 +144,8 @@ class ACGSRobustnessBenchmarkSuite(BaseModel):
     execution_start: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
     )
-    execution_end: Optional[datetime] = None
-    total_execution_time: Optional[timedelta] = None
+    execution_end: datetime | None = None
+    total_execution_time: timedelta | None = None
 
 
 class ACGSRobustnessBenchmarks:
@@ -443,7 +443,7 @@ class ACGSRobustnessBenchmarks:
     async def execute_benchmark_suite(
         self,
         target_service: Callable,
-        scenarios: Optional[List[str]] = None,
+        scenarios: list[str] | None = None,
         timeout_minutes: int = 30,
     ) -> ACGSRobustnessBenchmarkSuite:
         """
@@ -491,7 +491,7 @@ class ACGSRobustnessBenchmarks:
                 )
 
             except Exception as e:
-                self.logger.error(f"Benchmark {scenario_id} failed: {e}")
+                self.logger.exception(f"Benchmark {scenario_id} failed: {e}")
                 # Create failure result
                 failure_result = BenchmarkResult(
                     result_id=str(uuid4()),
@@ -503,7 +503,7 @@ class ACGSRobustnessBenchmarks:
                     constitutional_compliance_score=0.0,
                     overall_robustness_score=0.0,
                     error_count=1,
-                    failure_modes=[f"Execution error: {str(e)}"],
+                    failure_modes=[f"Execution error: {e!s}"],
                     passed=False,
                 )
                 results.append(failure_result)
@@ -608,9 +608,9 @@ class ACGSRobustnessBenchmarks:
 
         except Exception as e:
             result.error_count = 1
-            result.failure_modes.append(f"Execution error: {str(e)}")
+            result.failure_modes.append(f"Execution error: {e!s}")
             result.passed = False
-            self.logger.error(f"Benchmark execution failed: {e}")
+            self.logger.exception(f"Benchmark execution failed: {e}")
 
         finally:
             result.execution_time_ms = (time.time() - start_time) * 1000
@@ -619,7 +619,7 @@ class ACGSRobustnessBenchmarks:
 
     async def _test_causal_sensitivity(
         self, scenario: BenchmarkScenario, target_service: Callable
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test causal sensitivity for a scenario"""
 
         # Extract quality variations from scenario
@@ -659,7 +659,7 @@ class ACGSRobustnessBenchmarks:
 
     async def _test_spurious_invariance(
         self, scenario: BenchmarkScenario, target_service: Callable
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test spurious invariance for a scenario"""
 
         # Extract format variations from scenario
@@ -692,7 +692,7 @@ class ACGSRobustnessBenchmarks:
 
     async def _test_constitutional_compliance(
         self, scenario: BenchmarkScenario, target_service: Callable
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test constitutional compliance for a scenario"""
 
         test_requests = scenario.scenario_data.get("test_requests", [])
@@ -713,7 +713,7 @@ class ACGSRobustnessBenchmarks:
                 )
                 compliance_scores.append(compliance_score)
 
-            except Exception as e:
+            except Exception:
                 # Constitutional violations should raise exceptions
                 if request.get("constitutional_hash") == "cdd01ef066bc6cf2":
                     compliance_scores.append(0.0)  # Should not have failed
@@ -727,7 +727,7 @@ class ACGSRobustnessBenchmarks:
 
     async def _test_coordination_robustness(
         self, scenario: BenchmarkScenario, target_service: Callable
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test coordination robustness for a scenario"""
 
         # Simplified coordination test
@@ -764,7 +764,7 @@ class ACGSRobustnessBenchmarks:
 
     async def _test_general_robustness(
         self, scenario: BenchmarkScenario, target_service: Callable
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """Test general robustness for a scenario"""
 
         # Default general robustness test
@@ -812,7 +812,7 @@ class ACGSRobustnessBenchmarks:
         return 0.5
 
     def _evaluate_constitutional_compliance(
-        self, request: Dict[str, Any], response: Any
+        self, request: dict[str, Any], response: Any
     ) -> float:
         """Evaluate constitutional compliance of response"""
 
@@ -823,10 +823,9 @@ class ACGSRobustnessBenchmarks:
             return 1.0 if response is not None else 0.0
 
         # Invalid hash should be rejected
-        else:
-            return 0.0 if response is not None else 1.0
+        return 0.0 if response is not None else 1.0
 
-    def get_benchmark_statistics(self) -> Dict[str, Any]:
+    def get_benchmark_statistics(self) -> dict[str, Any]:
         """Get comprehensive benchmark statistics"""
 
         if not self.execution_history:

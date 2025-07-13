@@ -5,10 +5,10 @@ from typing import Any
 from urllib.parse import urlencode
 
 import httpx
+from app.crud import crud_user
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..crud import crud_user
 from .security import create_access_token, create_refresh_token
 
 # Constitutional compliance hash for ACGS
@@ -38,7 +38,7 @@ class OAuthProvider:
         self.userinfo_url = userinfo_url
 
     def generate_authorization_url(
-        self, redirect_uri: str, state: str, scopes: list = None
+        self, redirect_uri: str, state: str, scopes: list | None = None
     ) -> str:
         """Generate OAuth authorization URL"""
         if scopes is None:
@@ -190,7 +190,7 @@ class OAuthService:
         return state_data
 
     def get_authorization_url(
-        self, provider_name: str, redirect_uri: str, scopes: list = None
+        self, provider_name: str, redirect_uri: str, scopes: list | None = None
     ) -> str:
         """Get OAuth authorization URL"""
         provider = self.providers.get(provider_name)
@@ -275,11 +275,11 @@ class OAuthService:
             await db.commit()
 
             # Create tokens
-            access_token_str, access_jti = create_access_token(
+            access_token_str, _access_jti = create_access_token(
                 subject=user.username, user_id=user.id, roles=[user.role]
             )
 
-            refresh_token_str, refresh_jti, refresh_expires_at = create_refresh_token(
+            refresh_token_str, _refresh_jti, _refresh_expires_at = create_refresh_token(
                 subject=user.username, user_id=user.id, roles=[user.role]
             )
 

@@ -24,8 +24,6 @@ class QuantumagiAdvancedDemo:
 
     def demonstrate_cross_program_invocation(self):
         """Demonstrate CPI between Quantumagi programs"""
-        print("\n🔗 CROSS-PROGRAM INVOCATION (CPI) DEMONSTRATION")
-        print("=" * 60)
 
         # Simulate CPI between core, appeals, and logging programs
         scenarios = [
@@ -46,18 +44,11 @@ class QuantumagiAdvancedDemo:
             },
         ]
 
-        for i, scenario in enumerate(scenarios, 1):
-            print(f"\n  🔄 CPI Scenario {i}: {scenario['action']}")
-            print(f"    📋 Programs: {' → '.join(scenario['programs'])}")
-            print(f"    🔗 Flow: {scenario['flow']}")
-            print("    ✅ CPI execution successful")
-
-        print(f"\n🎯 CPI Integration: {len(scenarios)} scenarios validated")
+        for _scenario in scenarios:
+            pass
 
     def demonstrate_advanced_policy_synthesis(self):
         """Demonstrate enhanced policy synthesis algorithms"""
-        print("\n🧠 ADVANCED POLICY SYNTHESIS ALGORITHMS")
-        print("=" * 60)
 
         # Advanced synthesis techniques
         techniques = [
@@ -83,31 +74,13 @@ class QuantumagiAdvancedDemo:
             },
         ]
 
-        for technique in techniques:
-            print(f"\n  🔬 {technique['name']}")
-            print(f"    📋 {technique['description']}")
-            print(f"    💡 Example: {technique['example']}")
-            print("    ✅ Algorithm validated")
+        for _technique in techniques:
+            pass
 
         # Demonstrate synthesis pipeline
-        print("\n  🔄 Running Advanced Synthesis Pipeline...")
-        principle = "Ensure system resilience under adversarial conditions"
-
-        print(f"    📥 Input: {principle}")
-        print(
-            "    🔍 Decomposition: [Threat Detection, Response Protocols, Recovery Mechanisms]"
-        )
-        print(
-            "    🧠 Context Analysis: Current threat level, system capacity, historical patterns"
-        )
-        print("    ⚖️  Conflict Check: No conflicts with existing policies")
-        print("    📤 Output: 3 synthesized policies with 94.2% confidence")
-        print("    ✅ Advanced synthesis complete")
 
     def demonstrate_enhanced_frontend(self):
         """Demonstrate enhanced frontend user experience"""
-        print("\n🖥️  ENHANCED FRONTEND USER EXPERIENCE")
-        print("=" * 60)
 
         features = [
             {
@@ -148,24 +121,13 @@ class QuantumagiAdvancedDemo:
             },
         ]
 
-        for feature in features:
-            print(f"\n  🎨 {feature['component']}")
-            print(f"    🔧 Capabilities: {', '.join(feature['capabilities'])}")
-            print(f"    💻 Technology: {feature['tech']}")
-            print("    ✅ Component operational")
+        for _feature in features:
+            pass
 
         # Simulate user interaction
-        print("\n  👤 User Interaction Simulation:")
-        print("    🔐 User connects wallet → Authentication successful")
-        print("    📊 Dashboard loads → 15 active policies, 3 pending votes")
-        print("    🗳️  User votes on policy → Transaction submitted to Solana")
-        print("    📱 Real-time update → Vote counted, progress updated")
-        print("    ✅ Enhanced UX validated")
 
     def demonstrate_external_protocol_integration(self):
         """Demonstrate integration with external governance protocols"""
-        print("\n🌐 EXTERNAL GOVERNANCE PROTOCOL INTEGRATION")
-        print("=" * 60)
 
         integrations = [
             {
@@ -190,24 +152,13 @@ class QuantumagiAdvancedDemo:
             },
         ]
 
-        for integration in integrations:
-            print(f"\n  🔗 {integration['protocol']}")
-            print(f"    🤝 Integration: {integration['integration']}")
-            print(f"    📊 Status: {integration['status']}")
-            print("    ✅ Protocol compatibility confirmed")
+        for _integration in integrations:
+            pass
 
         # Demonstrate cross-protocol governance
-        print("\n  🌍 Cross-Protocol Governance Scenario:")
-        print("    📋 Multi-DAO proposal affects 4 protocols")
-        print("    🔄 Quantumagi coordinates constitutional compliance")
-        print("    🗳️  Synchronized voting across all protocols")
-        print("    ⚖️  Constitutional validation for all participants")
-        print("    ✅ Cross-protocol governance successful")
 
     def demonstrate_performance_optimization(self):
         """Demonstrate performance optimization features"""
-        print("\n⚡ PERFORMANCE OPTIMIZATION FEATURES")
-        print("=" * 60)
 
         optimizations = [
             {
@@ -244,21 +195,10 @@ class QuantumagiAdvancedDemo:
             },
         ]
 
-        for opt in optimizations:
-            print(f"\n  🚀 {opt['area']}")
-            print(f"    🔧 Techniques: {', '.join(opt['techniques'])}")
-            print(f"    📈 Improvement: {opt['improvement']}")
-            print("    ✅ Optimization validated")
+        for _opt in optimizations:
+            pass
 
         # Performance benchmarks
-        print("\n  📊 Performance Benchmarks:")
-        print("    ⏱️  Policy synthesis: 0.3s average")
-        print("    ⏱️  Compliance check: 0.1s average")
-        print("    ⏱️  Vote processing: 0.2s average")
-        print("    ⏱️  Appeal resolution: 2.5s average")
-        print("    💾 Memory usage: 85MB average")
-        print("    🔋 CPU utilization: 12% average")
-        print("    ✅ Performance targets exceeded")
 
     def generate_advanced_report(self):
         """Generate comprehensive advanced features report"""
@@ -304,17 +244,13 @@ class QuantumagiAdvancedDemo:
         }
 
         filename = f"quantumagi_advanced_features_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        with open(filename, "w") as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         return filename, report
 
 
 def main():
-    print("🚀 QUANTUMAGI ADVANCED FEATURES DEMONSTRATION")
-    print("=" * 80)
-    print("Showcasing production-ready enhanced capabilities")
-    print("=" * 80)
 
     demo = QuantumagiAdvancedDemo()
 
@@ -326,15 +262,8 @@ def main():
     demo.demonstrate_performance_optimization()
 
     # Generate comprehensive report
-    print("\n📋 GENERATING ADVANCED FEATURES REPORT")
-    print("=" * 60)
 
-    filename, report = demo.generate_advanced_report()
-
-    print("\n✅ ADVANCED FEATURES DEMONSTRATION COMPLETE!")
-    print(f"📄 Report saved: {filename}")
-    print("🎯 All advanced features validated and production-ready")
-    print("🚀 Quantumagi: Next-generation on-chain governance framework")
+    _filename, _report = demo.generate_advanced_report()
 
 
 if __name__ == "__main__":

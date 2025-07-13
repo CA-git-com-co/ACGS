@@ -10,7 +10,7 @@ import logging
 import statistics
 import time
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, NamedTuple, Optional, Tuple
+from typing import Any, NamedTuple
 
 import numpy as np
 import redis.asyncio as aioredis
@@ -53,8 +53,8 @@ class RegressionDetector:
         """
         self.lookback_days = lookback_days
         self.alert_threshold = alert_threshold
-        self.fitness_history: Dict[str, List[Tuple[datetime, float]]] = {}
-        self.alerts: List[RegressionAlert] = []
+        self.fitness_history: dict[str, list[tuple[datetime, float]]] = {}
+        self.alerts: list[RegressionAlert] = []
 
         logger.info(
             f"RegressionDetector initialized with {lookback_days}d lookback, {alert_threshold} threshold"
@@ -77,7 +77,7 @@ class RegressionDetector:
 
     def detect_regression(
         self, metric_name: str, current_value: float
-    ) -> Optional[RegressionAlert]:
+    ) -> RegressionAlert | None:
         """
         Detect regression in fitness metrics.
 
@@ -99,9 +99,7 @@ class RegressionDetector:
         # Calculate historical statistics
         historical_values = [val for _, val in history]
         historical_mean = statistics.mean(historical_values)
-        historical_std = (
-            statistics.stdev(historical_values) if len(historical_values) > 1 else 0
-        )
+        (statistics.stdev(historical_values) if len(historical_values) > 1 else 0)
 
         # Check for regression
         degradation = (
@@ -131,7 +129,7 @@ class RegressionDetector:
 
         return None
 
-    def get_recent_alerts(self, hours: int = 24) -> List[RegressionAlert]:
+    def get_recent_alerts(self, hours: int = 24) -> list[RegressionAlert]:
         """Get alerts from the last N hours."""
         cutoff = datetime.utcnow() - timedelta(hours=hours)
         return [alert for alert in self.alerts if alert.timestamp > cutoff]
@@ -146,13 +144,13 @@ class MLFitnessPredictor:
 
     def __init__(self):
         """Initialize ML fitness predictor."""
-        self.training_data: List[Tuple[Dict[str, Any], float]] = []
-        self.model_weights: Dict[str, float] = {}
+        self.training_data: list[tuple[dict[str, Any], float]] = []
+        self.model_weights: dict[str, float] = {}
         self.is_trained = False
 
         logger.info("MLFitnessPredictor initialized")
 
-    def add_training_data(self, genotype: Dict[str, Any], fitness: float) -> None:
+    def add_training_data(self, genotype: dict[str, Any], fitness: float) -> None:
         """Add training data for the ML model."""
         self.training_data.append((genotype.copy(), fitness))
 
@@ -205,9 +203,9 @@ class MLFitnessPredictor:
             logger.info(f"ML model trained with {len(self.training_data)} samples")
 
         except np.linalg.LinAlgError:
-            logger.error("Failed to train ML model - singular matrix")
+            logger.exception("Failed to train ML model - singular matrix")
 
-    def predict_fitness(self, genotype: Dict[str, Any]) -> Optional[float]:
+    def predict_fitness(self, genotype: dict[str, Any]) -> float | None:
         """Predict fitness score using the trained model."""
         if not self.is_trained:
             return None
@@ -223,7 +221,7 @@ class MLFitnessPredictor:
         # Clamp to valid range
         return min(1.0, max(0.0, prediction))
 
-    def suggest_improvements(self, genotype: Dict[str, Any]) -> Dict[str, float]:
+    def suggest_improvements(self, genotype: dict[str, Any]) -> dict[str, float]:
         """Suggest improvements to genotype for better fitness."""
         if not self.is_trained:
             return {}
@@ -249,7 +247,7 @@ class FitnessService:
     sub-5ms P99 latency targets for optimal ACGS performance.
     """
 
-    def __init__(self, redis_client: Optional[aioredis.Redis] = None):
+    def __init__(self, redis_client: aioredis.Redis | None = None):
         """Initialize fitness service."""
         self.redis = redis_client
         self.constitutional_validator = ConstitutionalValidator()
@@ -261,8 +259,8 @@ class FitnessService:
         self.setup_metrics()
 
         # Fitness evaluation cache for O(1) lookups
-        self.fitness_cache: Dict[str, FitnessMetrics] = {}
-        self.evaluation_cache: Dict[str, Dict[str, float]] = {}
+        self.fitness_cache: dict[str, FitnessMetrics] = {}
+        self.evaluation_cache: dict[str, dict[str, float]] = {}
 
         # Fitness evaluation weights (configurable)
         self.fitness_weights = {
@@ -375,7 +373,9 @@ class FitnessService:
                 "user_satisfaction",
             ]
 
-            for i, (component, result) in enumerate(zip(component_names, results)):
+            for _i, (component, result) in enumerate(
+                zip(component_names, results, strict=False)
+            ):
                 if isinstance(result, Exception):
                     logger.warning(
                         f"Fitness evaluation failed for {component}: {result}"
@@ -467,7 +467,7 @@ class FitnessService:
             return fitness_metrics
 
         except Exception as e:
-            logger.error(f"Comprehensive fitness evaluation failed: {e}")
+            logger.exception(f"Comprehensive fitness evaluation failed: {e}")
             self.fitness_evaluations_total.labels(
                 evaluation_type="comprehensive", status="error"
             ).inc()
@@ -532,7 +532,7 @@ class FitnessService:
             return quick_fitness
 
         except Exception as e:
-            logger.error(f"Quick fitness evaluation failed: {e}")
+            logger.exception(f"Quick fitness evaluation failed: {e}")
             self.fitness_evaluations_total.labels(
                 evaluation_type="quick", status="error"
             ).inc()
@@ -551,8 +551,7 @@ class FitnessService:
         start_time = time.time()
 
         try:
-            score = await self.constitutional_validator.validate_individual(individual)
-            return score
+            return await self.constitutional_validator.validate_individual(individual)
 
         finally:
             duration = (time.time() - start_time) * 1000
@@ -655,7 +654,7 @@ class FitnessService:
         satisfaction_score = (usability + user_experience) / 2
         return min(1.0, max(0.0, satisfaction_score))
 
-    def _get_fitness_cache_key(self, genotype: Dict[str, Any]) -> str:
+    def _get_fitness_cache_key(self, genotype: dict[str, Any]) -> str:
         """Generate cache key for fitness evaluation."""
         import hashlib
         import json
@@ -663,7 +662,7 @@ class FitnessService:
         genotype_str = json.dumps(genotype, sort_keys=True)
         return hashlib.md5(genotype_str.encode()).hexdigest()
 
-    async def predict_fitness_ml(self, individual: Individual) -> Optional[float]:
+    async def predict_fitness_ml(self, individual: Individual) -> float | None:
         """
         Predict fitness using ML model.
 
@@ -684,13 +683,13 @@ class FitnessService:
             return prediction
 
         except Exception as e:
-            logger.error(f"ML fitness prediction failed: {e}")
+            logger.exception(f"ML fitness prediction failed: {e}")
             self.ml_predictions_total.labels(status="error").inc()
             return None
 
     def get_fitness_improvement_suggestions(
         self, individual: Individual
-    ) -> Dict[str, float]:
+    ) -> dict[str, float]:
         """
         Get suggestions for improving individual fitness.
 
@@ -703,10 +702,10 @@ class FitnessService:
         try:
             return self.ml_predictor.suggest_improvements(individual.genotype)
         except Exception as e:
-            logger.error(f"Failed to generate improvement suggestions: {e}")
+            logger.exception(f"Failed to generate improvement suggestions: {e}")
             return {}
 
-    def get_regression_alerts(self, hours: int = 24) -> List[RegressionAlert]:
+    def get_regression_alerts(self, hours: int = 24) -> list[RegressionAlert]:
         """
         Get recent regression alerts.
 
@@ -718,7 +717,7 @@ class FitnessService:
         """
         return self.regression_detector.get_recent_alerts(hours)
 
-    def get_fitness_trends(self, metric_name: str, days: int = 7) -> Dict[str, Any]:
+    def get_fitness_trends(self, metric_name: str, days: int = 7) -> dict[str, Any]:
         """
         Get fitness trends for a specific metric.
 
@@ -762,7 +761,7 @@ class FitnessService:
                 n = len(values)
                 sum_x = sum(time_diffs)
                 sum_y = sum(values)
-                sum_xy = sum(x * y for x, y in zip(time_diffs, values))
+                sum_xy = sum(x * y for x, y in zip(time_diffs, values, strict=False))
                 sum_x2 = sum(x * x for x in time_diffs)
 
                 if n * sum_x2 - sum_x * sum_x != 0:
@@ -792,12 +791,12 @@ class FitnessService:
             }
 
         except Exception as e:
-            logger.error(f"Failed to analyze fitness trends for {metric_name}: {e}")
+            logger.exception(f"Failed to analyze fitness trends for {metric_name}: {e}")
             return {"status": "error", "error": str(e)}
 
     async def evaluate_with_prediction_comparison(
         self, individual: Individual
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
         Evaluate fitness and compare with ML prediction for model validation.
 
@@ -845,5 +844,5 @@ class FitnessService:
             return result
 
         except Exception as e:
-            logger.error(f"Failed to evaluate with prediction comparison: {e}")
+            logger.exception(f"Failed to evaluate with prediction comparison: {e}")
             return {"status": "error", "error": str(e)}

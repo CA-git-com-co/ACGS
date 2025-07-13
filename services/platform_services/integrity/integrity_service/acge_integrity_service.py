@@ -5,6 +5,7 @@ Cryptographic integrity verification with ACGE constitutional compliance integra
 
 import logging
 import os
+import pathlib
 
 # Import existing integrity service components
 import sys
@@ -18,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, Histogram
 from pydantic import BaseModel, Field
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 from app.api.v1.crypto import SignatureVerification
 from app.services.crypto_service import CryptographicIntegrityService
@@ -166,7 +167,7 @@ class ACGEIntegrityService:
             )
 
         except Exception as e:
-            logger.error(f"Integrity validation failed: {e}")
+            logger.exception(f"Integrity validation failed: {e}")
             processing_time = (time.time() - start_time) * 1000
 
             return ACGEIntegrityResponse(
@@ -192,7 +193,7 @@ class ACGEIntegrityService:
             return hash_valid
 
         except Exception as e:
-            logger.error(f"Constitutional hash verification failed: {e}")
+            logger.exception(f"Constitutional hash verification failed: {e}")
             CONSTITUTIONAL_HASH_VALIDATIONS.labels(
                 result="error", hash_type="constitutional"
             ).inc()
@@ -210,7 +211,7 @@ class ACGEIntegrityService:
             signature_valid = False
             if request.signature and request.public_key:
                 # Create verification request
-                verification_request = SignatureVerification(
+                SignatureVerification(
                     data=request.data,
                     signature=request.signature,
                     key_id="provided_key",  # Simplified for ACGE integration
@@ -236,7 +237,7 @@ class ACGEIntegrityService:
             }
 
         except Exception as e:
-            logger.error(f"Cryptographic verification failed: {e}")
+            logger.exception(f"Cryptographic verification failed: {e}")
             CRYPTOGRAPHIC_OPERATIONS.labels(
                 operation="signature_verification", algorithm="unknown", status="error"
             ).inc()
@@ -295,7 +296,7 @@ class ACGEIntegrityService:
             }
 
         except Exception as e:
-            logger.error(f"ACGE validation error: {e}")
+            logger.exception(f"ACGE validation error: {e}")
             return {
                 "compliance_score": 0.5,
                 "compliant": False,
@@ -312,7 +313,7 @@ class ACGEIntegrityService:
         """Calculate overall integrity score."""
         try:
             # Base cryptographic score
-            crypto_score = 1.0 if crypto_result.get("valid", False) else 0.0
+            crypto_score = 1.0 if crypto_result.get("valid") else 0.0
 
             # Constitutional compliance score
             compliance_score = acge_result.get("compliance_score", 0.0)
@@ -328,7 +329,7 @@ class ACGEIntegrityService:
             return round(overall_score, 3)
 
         except Exception as e:
-            logger.error(f"Integrity score calculation failed: {e}")
+            logger.exception(f"Integrity score calculation failed: {e}")
             return 0.0
 
     async def get_service_status(self) -> dict[str, Any]:
@@ -370,7 +371,7 @@ class ACGEIntegrityService:
             }
 
         except Exception as e:
-            logger.error(f"Status check failed: {e}")
+            logger.exception(f"Status check failed: {e}")
             return {"service": SERVICE_NAME, "status": "error", "error": str(e)}
 
 
@@ -397,7 +398,7 @@ app.add_middleware(
 @app.middleware("http")
 async def constitutional_compliance_middleware(request: Request, call_next):
     """Add constitutional headers and metrics."""
-    start_time = time.time()
+    time.time()
 
     response = await call_next(request)
 

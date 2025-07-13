@@ -79,9 +79,6 @@ class Settings(BaseSettings):
                 validated_origins.append(origin)
             else:
                 # Log warning but don't fail - allow for development flexibility
-                print(
-                    f"Warning: CORS origin '{origin}' does not start with http:// or https://"
-                )
                 validated_origins.append(origin)
         return validated_origins
 

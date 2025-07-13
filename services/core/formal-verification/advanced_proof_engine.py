@@ -20,7 +20,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import z3
 
@@ -70,7 +70,7 @@ class ConstitutionalPrinciple:
     temporal_properties: list[str] = field(default_factory=list)
     dependencies: list[str] = field(default_factory=list)
 
-    def to_z3_constraint(self) -> Optional[z3.BoolRef]:
+    def to_z3_constraint(self) -> z3.BoolRef | None:
         """Convert principle to Z3 constraint."""
         # This would be implemented based on the formal specification
         # For now, return a boolean variable
@@ -103,7 +103,7 @@ class ProofStep:
     premises: list[str]
     conclusion: str
     justification: str
-    z3_constraint: Optional[z3.BoolRef] = None
+    z3_constraint: z3.BoolRef | None = None
 
 
 @dataclass
@@ -114,7 +114,7 @@ class ProofCertificate:
     obligation_id: str
     strategy_used: ProofStrategy
     steps: list[ProofStep]
-    z3_model: Optional[str] = None
+    z3_model: str | None = None
     verification_time_ms: float = 0.0
     constitutional_compliance_score: float = 0.0
     certificate_hash: str = ""
@@ -157,36 +157,35 @@ class AdvancedProofEngine:
                 return await self._generate_constitutional_proof(
                     obligation, policy_constraints, policy_content
                 )
-            elif obligation.property_type == PropertyType.SAFETY:
+            if obligation.property_type == PropertyType.SAFETY:
                 system_model = kwargs.get("system_model", {})
                 bounds = kwargs.get("bounds", 10)
                 return await self._generate_safety_proof(
                     obligation, system_model, bounds
                 )
-            elif obligation.property_type == PropertyType.LIVENESS:
+            if obligation.property_type == PropertyType.LIVENESS:
                 system_model = kwargs.get("system_model", {})
                 fairness_constraints = kwargs.get("fairness_constraints", [])
                 return await self._generate_liveness_proof(
                     obligation, system_model, fairness_constraints
                 )
-            elif obligation.property_type == PropertyType.INVARIANT:
+            if obligation.property_type == PropertyType.INVARIANT:
                 base_case = kwargs.get("base_case", "")
                 inductive_step = kwargs.get("inductive_step", "")
                 return await self._generate_inductive_proof(
                     obligation, base_case, inductive_step
                 )
-            else:
-                # Default to constitutional proof
-                return await self._generate_constitutional_proof(obligation, [], "")
+            # Default to constitutional proof
+            return await self._generate_constitutional_proof(obligation, [], "")
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to generate proof for obligation {obligation.id}: {e}"
             )
             # Return a failed proof certificate
             return ProofCertificate(
                 proof_id=str(uuid.uuid4()),
                 obligation_id=obligation.id,
-                steps=[f"Proof generation failed: {str(e)}"],
+                steps=[f"Proof generation failed: {e!s}"],
                 is_valid=False,
                 verification_time_ms=0.0,
                 constitutional_compliance_score=0.0,
@@ -194,7 +193,7 @@ class AdvancedProofEngine:
 
     def _initialize_constitutional_principles(self) -> list[ConstitutionalPrinciple]:
         """Initialize comprehensive constitutional principles."""
-        principles = [
+        return [
             ConstitutionalPrinciple(
                 name="human_dignity",
                 description="Human dignity is inviolable and must be respected",
@@ -264,7 +263,6 @@ class AdvancedProofEngine:
                 dependencies=["accountability"],
             ),
         ]
-        return principles
 
     def _setup_constitutional_framework(self):
         """Setup Z3 variables and constraints for constitutional framework."""
@@ -335,7 +333,7 @@ class AdvancedProofEngine:
         self.solver.add(z3.Implies(self.constitutional_compliant, self.policy_valid))
 
     async def verify_constitutional_policy(
-        self, policy_content: str, additional_constraints: list[str] = None
+        self, policy_content: str, additional_constraints: list[str] | None = None
     ) -> ProofCertificate:
         """Verify constitutional compliance of a policy using formal methods."""
 
@@ -400,7 +398,7 @@ class AdvancedProofEngine:
         self,
         property_statement: str,
         system_model: dict[str, Any],
-        fairness_constraints: list[str] = None,
+        fairness_constraints: list[str] | None = None,
     ) -> ProofCertificate:
         """Prove liveness properties using temporal logic verification."""
 
@@ -757,7 +755,7 @@ class AdvancedProofEngine:
 
         # Step 2: Add fairness constraints
         if fairness_constraints:
-            for i, constraint in enumerate(fairness_constraints):
+            for i in range(len(fairness_constraints)):
                 fairness_var = z3.Bool(f"fairness_{i}")
                 local_solver.add(fairness_var)
 
@@ -845,7 +843,7 @@ class AdvancedProofEngine:
         local_solver = z3.Solver()
 
         # Variables for inductive proof
-        n = z3.Int("n")
+        z3.Int("n")
         property_n = z3.Bool("property_n")
         property_n_plus_1 = z3.Bool("property_n_plus_1")
 
@@ -973,13 +971,15 @@ class AdvancedProofEngine:
             "due process",
         ]
 
-        for keyword in constitutional_keywords:
-            if keyword in content:
-                constraints.append(f"constitutional_principle({keyword})")
+        constraints.extend(
+            f"constitutional_principle({keyword})"
+            for keyword in constitutional_keywords
+            if keyword in content
+        )
 
         return constraints
 
-    def _parse_constraint_advanced(self, constraint: str) -> Optional[z3.BoolRef]:
+    def _parse_constraint_advanced(self, constraint: str) -> z3.BoolRef | None:
         """Advanced constraint parsing with support for complex logical expressions."""
 
         try:
@@ -1200,7 +1200,7 @@ class AdvancedProofEngine:
 
 
 # Global proof engine instance
-_proof_engine: Optional[AdvancedProofEngine] = None
+_proof_engine: AdvancedProofEngine | None = None
 
 
 def get_proof_engine() -> AdvancedProofEngine:

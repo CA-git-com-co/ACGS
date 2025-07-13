@@ -15,13 +15,14 @@ import asyncio
 import logging
 import time
 import traceback
+from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from typing import Any
 
 import aioredis
 import asyncpg
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from prometheus_client import Counter, Gauge, Histogram
 
@@ -68,9 +69,9 @@ class HealthCheckConfig:
         check_timeout: float = 5.0,
         enable_dependency_checks: bool = True,
         enable_performance_metrics: bool = True,
-        redis_url: Optional[str] = None,
-        postgres_dsn: Optional[str] = None,
-        custom_checks: Optional[List[Callable[[], Awaitable[Dict[str, Any]]]]] = None,
+        redis_url: str | None = None,
+        postgres_dsn: str | None = None,
+        custom_checks: list[Callable[[], Awaitable[dict[str, Any]]]] | None = None,
     ):
         self.service_name = service_name
         self.service_version = service_version
@@ -94,8 +95,8 @@ class HealthCheckManager:
         self.cache_ttl = 30  # seconds
 
         # Connection pools
-        self.redis_client: Optional[aioredis.Redis] = None
-        self.postgres_pool: Optional[asyncpg.Pool] = None
+        self.redis_client: aioredis.Redis | None = None
+        self.postgres_pool: asyncpg.Pool | None = None
 
         # Metrics
         self.health_check_counter = Counter(
@@ -164,12 +165,12 @@ class HealthCheckManager:
             )
 
         except Exception as e:
-            logger.error(f"Health check manager initialization failed: {e}")
+            logger.exception(f"Health check manager initialization failed: {e}")
             raise
 
     async def get_health_status(
-        self, level: Optional[HealthCheckLevel] = None
-    ) -> Dict[str, Any]:
+        self, level: HealthCheckLevel | None = None
+    ) -> dict[str, Any]:
         """Get comprehensive health status."""
         check_level = level or self.config.check_level
         start_time = time.time()
@@ -205,7 +206,7 @@ class HealthCheckManager:
             return health_status
 
         except Exception as e:
-            logger.error(f"Health check failed for {self.config.service_name}: {e}")
+            logger.exception(f"Health check failed for {self.config.service_name}: {e}")
             duration = time.time() - start_time
             self.health_check_duration.labels(
                 service=self.config.service_name, check_type="error"
@@ -221,7 +222,7 @@ class HealthCheckManager:
                 "traceback": traceback.format_exc(),
             }
 
-    async def _perform_health_check(self, level: HealthCheckLevel) -> Dict[str, Any]:
+    async def _perform_health_check(self, level: HealthCheckLevel) -> dict[str, Any]:
         """Perform the actual health check."""
         health_status = {
             "service": self.config.service_name,
@@ -245,7 +246,7 @@ class HealthCheckManager:
         health_status["constitutional_compliance"] = True
 
         # Standard and comprehensive checks
-        if level in [HealthCheckLevel.STANDARD, HealthCheckLevel.COMPREHENSIVE]:
+        if level in {HealthCheckLevel.STANDARD, HealthCheckLevel.COMPREHENSIVE}:
             if self.config.enable_dependency_checks:
                 dependencies = await self._check_dependencies()
                 health_status["dependencies"] = dependencies
@@ -283,12 +284,14 @@ class HealthCheckManager:
                 health_status["custom_checks"] = custom_results
 
                 # Check if any custom checks failed
-                if any(
-                    not result.get("healthy", True)
-                    for result in custom_results.values()
+                if (
+                    any(
+                        not result.get("healthy", True)
+                        for result in custom_results.values()
+                    )
+                    and health_status["status"] == HealthStatus.HEALTHY
                 ):
-                    if health_status["status"] == HealthStatus.HEALTHY:
-                        health_status["status"] = HealthStatus.DEGRADED
+                    health_status["status"] = HealthStatus.DEGRADED
 
         return health_status
 
@@ -303,10 +306,10 @@ class HealthCheckManager:
             return True
 
         except Exception as e:
-            logger.error(f"Constitutional compliance validation error: {e}")
+            logger.exception(f"Constitutional compliance validation error: {e}")
             return False
 
-    async def _check_dependencies(self) -> Dict[str, Any]:
+    async def _check_dependencies(self) -> dict[str, Any]:
         """Check dependency health."""
         dependencies = {}
 
@@ -323,12 +326,12 @@ class HealthCheckManager:
             dependencies["service_registry"] = await self._check_service_registry()
 
         except Exception as e:
-            logger.error(f"Dependency health check error: {e}")
+            logger.exception(f"Dependency health check error: {e}")
             dependencies["error"] = str(e)
 
         return dependencies
 
-    async def _check_redis_health(self) -> Dict[str, Any]:
+    async def _check_redis_health(self) -> dict[str, Any]:
         """Check Redis connectivity and health."""
         try:
             if not self.redis_client:
@@ -368,7 +371,7 @@ class HealthCheckManager:
                 "message": "Redis health check failed",
             }
 
-    async def _check_postgres_health(self) -> Dict[str, Any]:
+    async def _check_postgres_health(self) -> dict[str, Any]:
         """Check PostgreSQL connectivity and health."""
         try:
             if not self.postgres_pool:
@@ -407,7 +410,7 @@ class HealthCheckManager:
                 "message": "PostgreSQL health check failed",
             }
 
-    async def _check_service_registry(self) -> Dict[str, Any]:
+    async def _check_service_registry(self) -> dict[str, Any]:
         """Check service registry connectivity."""
         try:
             # Try to import service registry
@@ -438,7 +441,7 @@ class HealthCheckManager:
                 "message": "Service registry health check failed",
             }
 
-    async def _check_performance_metrics(self) -> Dict[str, Any]:
+    async def _check_performance_metrics(self) -> dict[str, Any]:
         """Check performance metrics."""
         try:
             import gc
@@ -481,7 +484,7 @@ class HealthCheckManager:
         except Exception as e:
             return {"error": str(e), "message": "Performance metrics collection failed"}
 
-    async def _run_custom_checks(self) -> Dict[str, Any]:
+    async def _run_custom_checks(self) -> dict[str, Any]:
         """Run custom health checks."""
         results = {}
 
@@ -516,7 +519,7 @@ class HealthCheckManager:
             logger.info(f"Health check manager closed for {self.config.service_name}")
 
         except Exception as e:
-            logger.error(f"Error closing health check manager: {e}")
+            logger.exception(f"Error closing health check manager: {e}")
 
 
 def setup_health_check_endpoints(
@@ -556,7 +559,7 @@ def setup_health_check_endpoints(
         )
         status_code = (
             200
-            if health_status["status"] in [HealthStatus.HEALTHY, HealthStatus.DEGRADED]
+            if health_status["status"] in {HealthStatus.HEALTHY, HealthStatus.DEGRADED}
             else 503
         )
         return JSONResponse(content=health_status, status_code=status_code)
@@ -570,7 +573,7 @@ def setup_health_check_endpoints(
         )
         status_code = (
             200
-            if health_status["status"] in [HealthStatus.HEALTHY, HealthStatus.DEGRADED]
+            if health_status["status"] in {HealthStatus.HEALTHY, HealthStatus.DEGRADED}
             else 503
         )
         return JSONResponse(content=health_status, status_code=status_code)
@@ -582,16 +585,15 @@ def setup_health_check_endpoints(
         health_status = await health_manager.get_health_status(
             HealthCheckLevel.STANDARD
         )
-        if health_status["status"] in [HealthStatus.HEALTHY, HealthStatus.DEGRADED]:
+        if health_status["status"] in {HealthStatus.HEALTHY, HealthStatus.DEGRADED}:
             return JSONResponse(content={"ready": True}, status_code=200)
-        else:
-            return JSONResponse(
-                content={
-                    "ready": False,
-                    "reason": health_status.get("error", "Service not ready"),
-                },
-                status_code=503,
-            )
+        return JSONResponse(
+            content={
+                "ready": False,
+                "reason": health_status.get("error", "Service not ready"),
+            },
+            status_code=503,
+        )
 
     # Liveness probe (Kubernetes)
     @app.get("/health/live")
@@ -600,14 +602,13 @@ def setup_health_check_endpoints(
         health_status = await health_manager.get_health_status(HealthCheckLevel.BASIC)
         if health_status["status"] != HealthStatus.UNHEALTHY:
             return JSONResponse(content={"alive": True}, status_code=200)
-        else:
-            return JSONResponse(
-                content={
-                    "alive": False,
-                    "reason": health_status.get("error", "Service not alive"),
-                },
-                status_code=503,
-            )
+        return JSONResponse(
+            content={
+                "alive": False,
+                "reason": health_status.get("error", "Service not alive"),
+            },
+            status_code=503,
+        )
 
     # Startup events
     @app.on_event("startup")

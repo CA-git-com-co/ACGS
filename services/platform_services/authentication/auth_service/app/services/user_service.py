@@ -9,15 +9,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 import bcrypt
+from app.models.user import User
+from app.schemas.user import UserCreate, UserUpdate
 from sqlalchemy import and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-
-from ..models.user import User
-from ..schemas.user import UserCreate, UserUpdate
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +34,7 @@ class UserService:
 
     async def authenticate_user(
         self, session: AsyncSession, username: str, password: str
-    ) -> Optional[User]:
+    ) -> User | None:
         """
         Authenticate a user with username/email and password.
         Returns None if authentication fails.
@@ -45,7 +44,7 @@ class UserService:
             query = select(User).where(
                 and_(
                     or_(User.username == username, User.email == username),
-                    User.is_active == True,
+                    User.is_active,
                 )
             )
             result = await session.execute(query)
@@ -81,52 +80,44 @@ class UserService:
             return user
 
         except Exception as e:
-            logger.error(f"Error authenticating user {username}: {e}")
+            logger.exception(f"Error authenticating user {username}: {e}")
             return None
 
-    async def get_user_by_id(
-        self, session: AsyncSession, user_id: int
-    ) -> Optional[User]:
+    async def get_user_by_id(self, session: AsyncSession, user_id: int) -> User | None:
         """Get user by ID."""
         try:
-            query = select(User).where(and_(User.id == user_id, User.is_active == True))
+            query = select(User).where(and_(User.id == user_id, User.is_active))
             result = await session.execute(query)
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error fetching user {user_id}: {e}")
+            logger.exception(f"Error fetching user {user_id}: {e}")
             return None
 
     async def get_user_by_username(
         self, session: AsyncSession, username: str
-    ) -> Optional[User]:
+    ) -> User | None:
         """Get user by username."""
         try:
-            query = select(User).where(
-                and_(User.username == username, User.is_active == True)
-            )
+            query = select(User).where(and_(User.username == username, User.is_active))
             result = await session.execute(query)
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error fetching user by username {username}: {e}")
+            logger.exception(f"Error fetching user by username {username}: {e}")
             return None
 
-    async def get_user_by_email(
-        self, session: AsyncSession, email: str
-    ) -> Optional[User]:
+    async def get_user_by_email(self, session: AsyncSession, email: str) -> User | None:
         """Get user by email."""
         try:
-            query = select(User).where(
-                and_(User.email == email, User.is_active == True)
-            )
+            query = select(User).where(and_(User.email == email, User.is_active))
             result = await session.execute(query)
             return result.scalar_one_or_none()
         except Exception as e:
-            logger.error(f"Error fetching user by email {email}: {e}")
+            logger.exception(f"Error fetching user by email {email}: {e}")
             return None
 
     async def create_user(
         self, session: AsyncSession, user_data: UserCreate
-    ) -> Optional[User]:
+    ) -> User | None:
         """Create a new user."""
         try:
             # Check if username or email already exists
@@ -163,13 +154,13 @@ class UserService:
             return db_user
 
         except Exception as e:
-            logger.error(f"Error creating user {user_data.username}: {e}")
+            logger.exception(f"Error creating user {user_data.username}: {e}")
             await session.rollback()
             return None
 
     async def update_user(
         self, session: AsyncSession, user_id: int, user_data: UserUpdate
-    ) -> Optional[User]:
+    ) -> User | None:
         """Update user information."""
         try:
             user = await self.get_user_by_id(session, user_id)
@@ -192,7 +183,7 @@ class UserService:
             return user
 
         except Exception as e:
-            logger.error(f"Error updating user {user_id}: {e}")
+            logger.exception(f"Error updating user {user_id}: {e}")
             await session.rollback()
             return None
 
@@ -211,7 +202,7 @@ class UserService:
             return True
 
         except Exception as e:
-            logger.error(f"Error deleting user {user_id}: {e}")
+            logger.exception(f"Error deleting user {user_id}: {e}")
             await session.rollback()
             return False
 
@@ -233,12 +224,12 @@ class UserService:
             return all(perm in user_permissions for perm in required_permissions)
 
         except Exception as e:
-            logger.error(f"Error validating permissions for user {user_id}: {e}")
+            logger.exception(f"Error validating permissions for user {user_id}: {e}")
             return False
 
     async def get_user_profile(
         self, session: AsyncSession, user_id: int
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Get complete user profile information."""
         try:
             user = await self.get_user_by_id(session, user_id)
@@ -265,7 +256,7 @@ class UserService:
             }
 
         except Exception as e:
-            logger.error(f"Error getting user profile {user_id}: {e}")
+            logger.exception(f"Error getting user profile {user_id}: {e}")
             return None
 
     def _hash_password(self, password: str) -> str:
@@ -303,7 +294,7 @@ class UserServiceClient:
 
     async def authenticate_user(
         self, username: str, password: str
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Authenticate user via HTTP API."""
         try:
             response = await self.client.post(
@@ -313,12 +304,12 @@ class UserServiceClient:
                 return response.json()
             return None
         except Exception as e:
-            logger.error(f"Error calling auth service: {e}")
+            logger.exception(f"Error calling auth service: {e}")
             return None
 
     async def get_user_by_id(
-        self, user_id: int, auth_token: Optional[str] = None
-    ) -> Optional[dict[str, Any]]:
+        self, user_id: int, auth_token: str | None = None
+    ) -> dict[str, Any] | None:
         """Get user by ID via HTTP API."""
         try:
             headers = {}
@@ -330,12 +321,12 @@ class UserServiceClient:
                 return response.json()
             return None
         except Exception as e:
-            logger.error(f"Error fetching user {user_id}: {e}")
+            logger.exception(f"Error fetching user {user_id}: {e}")
             return None
 
     async def get_user_profile(
-        self, user_id: int, auth_token: Optional[str] = None
-    ) -> Optional[dict[str, Any]]:
+        self, user_id: int, auth_token: str | None = None
+    ) -> dict[str, Any] | None:
         """Get user profile via HTTP API."""
         try:
             headers = {}
@@ -349,7 +340,7 @@ class UserServiceClient:
                 return response.json()
             return None
         except Exception as e:
-            logger.error(f"Error fetching user profile {user_id}: {e}")
+            logger.exception(f"Error fetching user profile {user_id}: {e}")
             return None
 
     async def close(self):
@@ -364,6 +355,6 @@ def get_user_service() -> UserService:
 
 
 # Factory function for creating user service client
-def get_user_service_client(base_url: str = None) -> UserServiceClient:
+def get_user_service_client(base_url: str | None = None) -> UserServiceClient:
     """Factory function to create a user service client."""
     return UserServiceClient(base_url) if base_url else UserServiceClient()

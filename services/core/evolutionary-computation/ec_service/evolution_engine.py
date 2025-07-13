@@ -176,7 +176,7 @@ class EvolutionEngine:
 
     async def submit_evolution_request(self, request: EvolutionRequest) -> str:
         """Submit a new evolution request."""
-        start_time = time.time()
+        time.time()
 
         try:
             # Validate request
@@ -198,7 +198,7 @@ class EvolutionEngine:
             return request.evolution_id
 
         except Exception as e:
-            logger.error(f"Failed to submit evolution request: {e}")
+            logger.exception(f"Failed to submit evolution request: {e}")
             raise
 
     async def validate_evolution_request(self, request: EvolutionRequest):
@@ -214,7 +214,7 @@ class EvolutionEngine:
             raise ValueError("Proposed changes are required")
 
         # Validate target service
-        if request.target_service not in [
+        if request.target_service not in {
             "auth-service",
             "ac-service",
             "integrity-service",
@@ -222,7 +222,7 @@ class EvolutionEngine:
             "gs-service",
             "pgc-service",
             "ec-service",
-        ]:
+        }:
             raise ValueError(f"Invalid target service: {request.target_service}")
 
     async def process_evolution_request(self, request: EvolutionRequest):
@@ -255,7 +255,7 @@ class EvolutionEngine:
             ).observe(processing_time)
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to process evolution request {request.evolution_id}: {e}"
             )
             await self.handle_processing_error(request, str(e))
@@ -349,7 +349,7 @@ class EvolutionEngine:
                         request.constitutional_validation_score = 0.0
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Constitutional validation error for {request.evolution_id}: {e}"
             )
             request.constitutional_validation_score = 0.0
@@ -471,7 +471,7 @@ class EvolutionEngine:
             await self.trigger_evolution_deployment(request, evaluation)
 
         except Exception as e:
-            logger.error(f"Auto-approval failed for {request.evolution_id}: {e}")
+            logger.exception(f"Auto-approval failed for {request.evolution_id}: {e}")
             await self.escalate_to_human_review(request, evaluation)
 
     async def escalate_to_human_review(
@@ -512,7 +512,7 @@ class EvolutionEngine:
             )
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to escalate {request.evolution_id} to human review: {e}"
             )
 
@@ -544,7 +544,7 @@ class EvolutionEngine:
             logger.info(f"Evolution {request.evolution_id} rejected")
 
         except Exception as e:
-            logger.error(f"Failed to reject evolution {request.evolution_id}: {e}")
+            logger.exception(f"Failed to reject evolution {request.evolution_id}: {e}")
 
     async def trigger_evolution_deployment(
         self, request: EvolutionRequest, evaluation: EvolutionEvaluation

@@ -300,7 +300,7 @@ class EvolutionOversightEngine:
         ):
             total_checks += 1
             # This could be a conflict - check if properly balanced
-            if not policy_data.get("balance_safety_efficiency", False):
+            if not policy_data.get("balance_safety_efficiency"):
                 inconsistencies += 1
 
         total_checks = max(1, total_checks)  # Avoid division by zero

@@ -113,7 +113,7 @@ class BiasDetector:
         overall_bias_score = self._calculate_overall_bias_score(all_results)
         risk_level = self._determine_risk_level(overall_bias_score)
         # Human review required if risk level is high/critical OR any individual result requires review
-        human_review_required = risk_level in ["high", "critical"] or any(
+        human_review_required = risk_level in {"high", "critical"} or any(
             r.requires_human_review for r in all_results
         )
 
@@ -552,14 +552,22 @@ class BiasDetector:
         """Generate recommendations based on bias detection results."""
         recommendations = []
 
-        if risk_level in ["high", "critical"]:
-            recommendations.append("Immediate human review required")
-            recommendations.append("Consider rewriting rules to be attribute-neutral")
-            recommendations.append("Implement additional fairness constraints")
+        if risk_level in {"high", "critical"}:
+            recommendations.extend(
+                (
+                    "Immediate human review required",
+                    "Consider rewriting rules to be attribute-neutral",
+                    "Implement additional fairness constraints",
+                )
+            )
 
-        if risk_level in ["medium", "high", "critical"]:
-            recommendations.append("Test rules with diverse datasets")
-            recommendations.append("Monitor outcomes for disparate impact")
+        if risk_level in {"medium", "high", "critical"}:
+            recommendations.extend(
+                (
+                    "Test rules with diverse datasets",
+                    "Monitor outcomes for disparate impact",
+                )
+            )
 
         # Add specific recommendations from individual results
         for result in results:

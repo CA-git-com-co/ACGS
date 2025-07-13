@@ -16,6 +16,7 @@ import asyncio
 import hashlib
 import json
 import logging
+import operator
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -250,7 +251,7 @@ class MultiModelCoordinator:
                     self.cache_enabled = False
 
             # Initialize enhanced model performance metrics
-            all_models = [self.primary_model] + self.fallback_models
+            all_models = [self.primary_model, *self.fallback_models]
             for model_id in all_models:
                 model_config = self.model_configs.get(model_id, {})
 
@@ -280,7 +281,7 @@ class MultiModelCoordinator:
             logger.info(f"Cache enabled: {self.cache_enabled}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize multi-model coordinator: {e}")
+            logger.exception(f"Failed to initialize multi-model coordinator: {e}")
             raise
 
     async def coordinate_synthesis(
@@ -366,7 +367,7 @@ class MultiModelCoordinator:
             return ensemble_result
 
         except Exception as e:
-            logger.error(f"Multi-model synthesis failed: {e}")
+            logger.exception(f"Multi-model synthesis failed: {e}")
             # Return fallback result
             return EnsembleResult(
                 synthesized_policy="# Synthesis failed - fallback policy",
@@ -525,7 +526,7 @@ class MultiModelCoordinator:
             }
 
         except Exception as e:
-            logger.error(f"Synthesis with model {model_id} failed: {e}")
+            logger.exception(f"Synthesis with model {model_id} failed: {e}")
             raise
 
     async def _apply_ensemble_strategy(
@@ -573,7 +574,7 @@ class MultiModelCoordinator:
 
         # Select policy with highest weight
         if weighted_policies:
-            best_policy = max(weighted_policies, key=lambda x: x[1])
+            best_policy = max(weighted_policies, key=operator.itemgetter(1))
 
             return EnsembleResult(
                 synthesized_policy=best_policy[0],

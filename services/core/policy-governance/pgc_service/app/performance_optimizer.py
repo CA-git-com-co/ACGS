@@ -8,20 +8,19 @@ This module implements comprehensive performance optimizations including:
 - Constitutional compliance hash validation in cached responses
 """
 
-import asyncio
 import hashlib
 import json
 import logging
 import time
 from functools import wraps
-from typing import Any, Dict, Optional
+from typing import Any
 
 import redis.asyncio as aioredis
 
 logger = logging.getLogger(__name__)
 
 # Global Redis connection pool
-redis_pool: Optional[aioredis.ConnectionPool] = None
+redis_pool: aioredis.ConnectionPool | None = None
 
 # Performance metrics
 performance_metrics = {
@@ -54,7 +53,7 @@ async def initialize_redis_pool() -> aioredis.ConnectionPool:
             )
             logger.info("✅ Redis connection pool initialized for PGC service")
         except Exception as e:
-            logger.error(f"❌ Failed to initialize Redis pool: {e}")
+            logger.exception(f"❌ Failed to initialize Redis pool: {e}")
             raise
 
     return redis_pool
@@ -158,7 +157,7 @@ def cache_response(
                 return result
 
             except Exception as e:
-                logger.error(f"Cache operation failed for {func.__name__}: {e}")
+                logger.exception(f"Cache operation failed for {func.__name__}: {e}")
                 # Fallback to direct execution
                 result = await func(*args, **kwargs)
                 response_time_ms = (time.time() - start_time) * 1000
@@ -195,7 +194,7 @@ def update_performance_metrics(response_time_ms: float):
         performance_metrics["p99_response_time_ms"] = sorted_times[p99_index]
 
 
-async def get_performance_metrics() -> Dict[str, Any]:
+async def get_performance_metrics() -> dict[str, Any]:
     """Get current performance metrics"""
     cache_hit_rate = 0.0
     total_cache_requests = (
@@ -243,7 +242,7 @@ async def clear_cache(pattern: str = "pgc:*") -> int:
             return deleted_count
         return 0
     except Exception as e:
-        logger.error(f"Failed to clear cache: {e}")
+        logger.exception(f"Failed to clear cache: {e}")
         return 0
 
 
@@ -290,10 +289,9 @@ class DatabaseOptimizer:
         # - Query optimization hints
         # - Index recommendations
         # - Prepared statement caching
-        pass
 
     @staticmethod
-    async def health_check() -> Dict[str, Any]:
+    async def health_check() -> dict[str, Any]:
         """Database health check with performance metrics"""
         return {
             "status": "healthy",

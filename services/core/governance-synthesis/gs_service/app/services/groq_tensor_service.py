@@ -185,7 +185,7 @@ class GroqTensorService:
             return result
 
         except Exception as e:
-            logger.error(f"Tensor decomposition generation failed: {e!s}")
+            logger.exception(f"Tensor decomposition generation failed: {e!s}")
             self._update_metrics((time.time() - start_time) * 1000, success=False)
             self._handle_failure()
 
@@ -264,19 +264,19 @@ class GroqTensorService:
             "top_p": 0.95,
         }
 
-        async with aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=self.timeout_seconds)
-        ) as session:
-            async with session.post(
-                self.base_url, headers=headers, json=payload
-            ) as response:
-                if response.status != 200:
-                    raise Exception(
-                        f"Groq API error: {response.status} - {await response.text()}"
-                    )
+        async with (
+            aiohttp.ClientSession(
+                timeout=aiohttp.ClientTimeout(total=self.timeout_seconds)
+            ) as session,
+            session.post(self.base_url, headers=headers, json=payload) as response,
+        ):
+            if response.status != 200:
+                raise Exception(
+                    f"Groq API error: {response.status} - {await response.text()}"
+                )
 
-                result = await response.json()
-                return self._parse_algorithm_response(result)
+            result = await response.json()
+            return self._parse_algorithm_response(result)
 
     def _create_algorithm_prompt(
         self,
@@ -347,7 +347,7 @@ class GroqTensorService:
             raise ValueError("Could not parse JSON from response")
 
         except Exception as e:
-            logger.error(f"Failed to parse Groq response: {e!s}")
+            logger.exception(f"Failed to parse Groq response: {e!s}")
             # Return fallback algorithm
             return self._get_fallback_algorithm()
 

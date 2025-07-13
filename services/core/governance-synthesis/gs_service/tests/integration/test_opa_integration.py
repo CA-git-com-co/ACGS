@@ -65,8 +65,7 @@ def opa_client(mock_opa_config):
         "src.backend.gs_service.app.core.opa_integration.get_opa_config",
         return_value=mock_opa_config,
     ):
-        client = OPAClient()
-        return client
+        return OPAClient()
 
 
 @pytest.fixture
@@ -100,25 +99,25 @@ class TestOPAClientInitialization:
         """Test OPA client initialization in embedded mode."""
         mock_opa_config.mode = OPAMode.EMBEDDED
 
-        with patch(
-            "src.backend.gs_service.app.core.opa_integration.get_opa_config",
-            return_value=mock_opa_config,
-        ):
-            with patch(
+        with (
+            patch(
+                "src.backend.gs_service.app.core.opa_integration.get_opa_config",
+                return_value=mock_opa_config,
+            ),
+            patch(
                 "src.backend.gs_service.app.core.opa_integration.OPA_CLIENT_AVAILABLE",
                 True,
-            ):
-                with patch(
-                    "src.backend.gs_service.app.core.opa_integration.OPA"
-                ) as mock_opa:
-                    mock_opa.return_value = MagicMock()
+            ),
+            patch("src.backend.gs_service.app.core.opa_integration.OPA") as mock_opa,
+        ):
+            mock_opa.return_value = MagicMock()
 
-                    client = OPAClient()
-                    await client.initialize()
+            client = OPAClient()
+            await client.initialize()
 
-                    assert client._initialized
-                    assert client.opa_client is not None
-                    mock_opa.assert_called_once()
+            assert client._initialized
+            assert client.opa_client is not None
+            mock_opa.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_server_mode_initialization(self, mock_opa_config):
@@ -128,27 +127,29 @@ class TestOPAClientInitialization:
         """Test OPA client initialization in server mode."""
         mock_opa_config.mode = OPAMode.SERVER
 
-        with patch(
-            "src.backend.gs_service.app.core.opa_integration.get_opa_config",
-            return_value=mock_opa_config,
+        with (
+            patch(
+                "src.backend.gs_service.app.core.opa_integration.get_opa_config",
+                return_value=mock_opa_config,
+            ),
+            patch("aiohttp.ClientSession") as mock_session,
         ):
-            with patch("aiohttp.ClientSession") as mock_session:
-                mock_session_instance = AsyncMock()
-                mock_session.return_value = mock_session_instance
+            mock_session_instance = AsyncMock()
+            mock_session.return_value = mock_session_instance
 
-                # Mock health check response
-                mock_response = AsyncMock()
-                mock_response.status = 200
-                mock_session_instance.get.return_value.__aenter__.return_value = (
-                    mock_response
-                )
+            # Mock health check response
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_session_instance.get.return_value.__aenter__.return_value = (
+                mock_response
+            )
 
-                client = OPAClient()
-                await client.initialize()
+            client = OPAClient()
+            await client.initialize()
 
-                assert client._initialized
-                assert client.session is not None
-                mock_session.assert_called_once()
+            assert client._initialized
+            assert client.session is not None
+            mock_session.assert_called_once()
 
     @pytest.mark.asyncio
     async def test_hybrid_mode_initialization(self, mock_opa_config):
@@ -158,35 +159,35 @@ class TestOPAClientInitialization:
         """Test OPA client initialization in hybrid mode."""
         mock_opa_config.mode = OPAMode.HYBRID
 
-        with patch(
-            "src.backend.gs_service.app.core.opa_integration.get_opa_config",
-            return_value=mock_opa_config,
-        ):
-            with patch(
+        with (
+            patch(
+                "src.backend.gs_service.app.core.opa_integration.get_opa_config",
+                return_value=mock_opa_config,
+            ),
+            patch(
                 "src.backend.gs_service.app.core.opa_integration.OPA_CLIENT_AVAILABLE",
                 True,
-            ):
-                with patch(
-                    "src.backend.gs_service.app.core.opa_integration.OPA"
-                ) as mock_opa:
-                    with patch("aiohttp.ClientSession") as mock_session:
-                        mock_opa.return_value = MagicMock()
-                        mock_session_instance = AsyncMock()
-                        mock_session.return_value = mock_session_instance
+            ),
+            patch("src.backend.gs_service.app.core.opa_integration.OPA") as mock_opa,
+            patch("aiohttp.ClientSession") as mock_session,
+        ):
+            mock_opa.return_value = MagicMock()
+            mock_session_instance = AsyncMock()
+            mock_session.return_value = mock_session_instance
 
-                        # Mock health check response
-                        mock_response = AsyncMock()
-                        mock_response.status = 200
-                        mock_session_instance.get.return_value.__aenter__.return_value = (
-                            mock_response
-                        )
+            # Mock health check response
+            mock_response = AsyncMock()
+            mock_response.status = 200
+            mock_session_instance.get.return_value.__aenter__.return_value = (
+                mock_response
+            )
 
-                        client = OPAClient()
-                        await client.initialize()
+            client = OPAClient()
+            await client.initialize()
 
-                        assert client._initialized
-                        assert client.opa_client is not None
-                        assert client.session is not None
+            assert client._initialized
+            assert client.opa_client is not None
+            assert client.session is not None
 
     @pytest.mark.asyncio
     async def test_initialization_failure(self, mock_opa_config):
@@ -196,20 +197,22 @@ class TestOPAClientInitialization:
         """Test OPA client initialization failure handling."""
         mock_opa_config.mode = OPAMode.EMBEDDED
 
-        with patch(
-            "src.backend.gs_service.app.core.opa_integration.get_opa_config",
-            return_value=mock_opa_config,
-        ):
-            with patch(
+        with (
+            patch(
+                "src.backend.gs_service.app.core.opa_integration.get_opa_config",
+                return_value=mock_opa_config,
+            ),
+            patch(
                 "src.backend.gs_service.app.core.opa_integration.OPA_CLIENT_AVAILABLE",
                 False,
-            ):
-                client = OPAClient()
+            ),
+        ):
+            client = OPAClient()
 
-                with pytest.raises(OPAIntegrationError):
-                    await client.initialize()
+            with pytest.raises(OPAIntegrationError):
+                await client.initialize()
 
-                assert not client._initialized
+            assert not client._initialized
 
 
 class TestPolicyEvaluation:

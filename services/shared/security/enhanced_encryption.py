@@ -6,18 +6,17 @@ secure key management, key rotation, and constitutional compliance validation.
 """
 
 import base64
-import hashlib
 import json
 import os
+import pathlib
 import secrets
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 import structlog
-from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
@@ -69,12 +68,12 @@ class EncryptionKey:
     usage: KeyUsage
     key_material: bytes
     created_at: datetime
-    expires_at: Optional[datetime] = None
+    expires_at: datetime | None = None
     rotation_period_days: int = 90
     version: int = 1
     is_active: bool = True
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -84,9 +83,9 @@ class EncryptionResult:
     ciphertext: bytes
     key_id: str
     algorithm: str
-    nonce: Optional[bytes] = None
-    tag: Optional[bytes] = None
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    nonce: bytes | None = None
+    tag: bytes | None = None
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
@@ -97,7 +96,7 @@ class DecryptionResult:
     key_id: str
     algorithm: str
     verified: bool = True
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class KeyStore(ABC):
@@ -106,32 +105,27 @@ class KeyStore(ABC):
     @abstractmethod
     async def store_key(self, key: EncryptionKey) -> bool:
         """Store an encryption key."""
-        pass
 
     @abstractmethod
-    async def retrieve_key(self, key_id: str) -> Optional[EncryptionKey]:
+    async def retrieve_key(self, key_id: str) -> EncryptionKey | None:
         """Retrieve an encryption key by ID."""
-        pass
 
     @abstractmethod
     async def list_keys(
         self,
-        key_type: Optional[KeyType] = None,
-        usage: Optional[KeyUsage] = None,
+        key_type: KeyType | None = None,
+        usage: KeyUsage | None = None,
         active_only: bool = True,
-    ) -> List[EncryptionKey]:
+    ) -> list[EncryptionKey]:
         """List encryption keys."""
-        pass
 
     @abstractmethod
     async def delete_key(self, key_id: str) -> bool:
         """Delete an encryption key."""
-        pass
 
     @abstractmethod
-    async def rotate_key(self, key_id: str) -> Optional[EncryptionKey]:
+    async def rotate_key(self, key_id: str) -> EncryptionKey | None:
         """Rotate an encryption key."""
-        pass
 
 
 class FileKeyStore(KeyStore):
@@ -140,7 +134,7 @@ class FileKeyStore(KeyStore):
     def __init__(
         self,
         storage_path: str = "/var/lib/acgs/keys",
-        master_key: Optional[bytes] = None,
+        master_key: bytes | None = None,
     ):
         self.storage_path = storage_path
         self.master_key = master_key or self._derive_master_key()
@@ -216,15 +210,15 @@ class FileKeyStore(KeyStore):
             return True
 
         except Exception as e:
-            logger.error("Failed to store key", key_id=key.key_id, error=str(e))
+            logger.exception("Failed to store key", key_id=key.key_id, error=str(e))
             return False
 
-    async def retrieve_key(self, key_id: str) -> Optional[EncryptionKey]:
+    async def retrieve_key(self, key_id: str) -> EncryptionKey | None:
         """Retrieve and decrypt key."""
         try:
             key_file_path = os.path.join(self.storage_path, f"{key_id}.key")
 
-            if not os.path.exists(key_file_path):
+            if not pathlib.Path(key_file_path).exists():
                 return None
 
             # Read encrypted data
@@ -236,7 +230,7 @@ class FileKeyStore(KeyStore):
             key_data = json.loads(decrypted_data.decode())
 
             # Reconstruct key object
-            key = EncryptionKey(
+            return EncryptionKey(
                 key_id=key_data["key_id"],
                 key_type=KeyType(key_data["key_type"]),
                 algorithm=EncryptionAlgorithm(key_data["algorithm"]),
@@ -255,18 +249,16 @@ class FileKeyStore(KeyStore):
                 metadata=key_data["metadata"],
             )
 
-            return key
-
         except Exception as e:
-            logger.error("Failed to retrieve key", key_id=key_id, error=str(e))
+            logger.exception("Failed to retrieve key", key_id=key_id, error=str(e))
             return None
 
     async def list_keys(
         self,
-        key_type: Optional[KeyType] = None,
-        usage: Optional[KeyUsage] = None,
+        key_type: KeyType | None = None,
+        usage: KeyUsage | None = None,
         active_only: bool = True,
-    ) -> List[EncryptionKey]:
+    ) -> list[EncryptionKey]:
         """List keys matching criteria."""
         keys = []
 
@@ -288,7 +280,7 @@ class FileKeyStore(KeyStore):
                         keys.append(key)
 
         except Exception as e:
-            logger.error(f"Failed to list keys: {e}")
+            logger.exception(f"Failed to list keys: {e}")
 
         return keys
 
@@ -297,13 +289,13 @@ class FileKeyStore(KeyStore):
         try:
             key_file_path = os.path.join(self.storage_path, f"{key_id}.key")
 
-            if os.path.exists(key_file_path):
+            if pathlib.Path(key_file_path).exists():
                 # Secure deletion by overwriting with random data
-                file_size = os.path.getsize(key_file_path)
+                file_size = pathlib.Path(key_file_path).stat().st_size
                 with open(key_file_path, "wb") as f:
                     f.write(secrets.token_bytes(file_size))
 
-                os.remove(key_file_path)
+                pathlib.Path(key_file_path).unlink()
 
                 logger.info(
                     "Key deleted successfully",
@@ -316,10 +308,10 @@ class FileKeyStore(KeyStore):
             return False
 
         except Exception as e:
-            logger.error("Failed to delete key", key_id=key_id, error=str(e))
+            logger.exception("Failed to delete key", key_id=key_id, error=str(e))
             return False
 
-    async def rotate_key(self, key_id: str) -> Optional[EncryptionKey]:
+    async def rotate_key(self, key_id: str) -> EncryptionKey | None:
         """Rotate a key by creating a new version."""
         try:
             old_key = await self.retrieve_key(key_id)
@@ -361,19 +353,19 @@ class FileKeyStore(KeyStore):
             return new_key
 
         except Exception as e:
-            logger.error("Failed to rotate key", key_id=key_id, error=str(e))
+            logger.exception("Failed to rotate key", key_id=key_id, error=str(e))
             return None
 
     def _generate_key_material(self, algorithm: EncryptionAlgorithm) -> bytes:
         """Generate key material for the specified algorithm."""
-        if algorithm == EncryptionAlgorithm.AES_256_GCM:
+        if algorithm in {
+            EncryptionAlgorithm.AES_256_GCM,
+            EncryptionAlgorithm.AES_256_CBC,
+        }:
             return secrets.token_bytes(32)  # 256 bits
-        elif algorithm == EncryptionAlgorithm.AES_256_CBC:
+        if algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
             return secrets.token_bytes(32)  # 256 bits
-        elif algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
-            return secrets.token_bytes(32)  # 256 bits
-        else:
-            raise ValueError(f"Unsupported algorithm: {algorithm}")
+        raise ValueError(f"Unsupported algorithm: {algorithm}")
 
     def _encrypt_with_master_key(self, data: bytes) -> bytes:
         """Encrypt data with master key using AES-256-GCM."""
@@ -405,7 +397,7 @@ class FileKeyStore(KeyStore):
 class EnhancedEncryptionManager:
     """Enhanced encryption manager with key rotation and constitutional compliance."""
 
-    def __init__(self, key_store: Optional[KeyStore] = None):
+    def __init__(self, key_store: KeyStore | None = None):
         self.key_store = key_store or FileKeyStore()
         self.default_algorithm = EncryptionAlgorithm.AES_256_GCM
         self._initialize_constitutional_keys()
@@ -413,7 +405,6 @@ class EnhancedEncryptionManager:
     def _initialize_constitutional_keys(self):
         """Initialize constitutional validation keys."""
         # This would be called during system initialization
-        pass
 
     async def create_key(
         self,
@@ -421,20 +412,21 @@ class EnhancedEncryptionManager:
         algorithm: EncryptionAlgorithm = None,
         usage: KeyUsage = KeyUsage.ENCRYPTION,
         rotation_period_days: int = 90,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> Optional[EncryptionKey]:
+        metadata: dict[str, Any] | None = None,
+    ) -> EncryptionKey | None:
         """Create a new encryption key."""
         try:
             algorithm = algorithm or self.default_algorithm
 
             # Generate key material
-            if algorithm in [
-                EncryptionAlgorithm.AES_256_GCM,
-                EncryptionAlgorithm.AES_256_CBC,
-            ]:
-                key_material = secrets.token_bytes(32)  # 256 bits
-                key_type = KeyType.SYMMETRIC
-            elif algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
+            if (
+                algorithm
+                in {
+                    EncryptionAlgorithm.AES_256_GCM,
+                    EncryptionAlgorithm.AES_256_CBC,
+                }
+                or algorithm == EncryptionAlgorithm.CHACHA20_POLY1305
+            ):
                 key_material = secrets.token_bytes(32)  # 256 bits
                 key_type = KeyType.SYMMETRIC
             elif algorithm == EncryptionAlgorithm.RSA_OAEP:
@@ -477,15 +469,17 @@ class EnhancedEncryptionManager:
             return None
 
         except Exception as e:
-            logger.error("Failed to create encryption key", key_id=key_id, error=str(e))
+            logger.exception(
+                "Failed to create encryption key", key_id=key_id, error=str(e)
+            )
             return None
 
     async def encrypt(
         self,
-        data: Union[str, bytes],
+        data: str | bytes,
         key_id: str,
-        additional_data: Optional[bytes] = None,
-    ) -> Optional[EncryptionResult]:
+        additional_data: bytes | None = None,
+    ) -> EncryptionResult | None:
         """Encrypt data with specified key."""
         try:
             # Convert string to bytes if necessary
@@ -507,24 +501,23 @@ class EnhancedEncryptionManager:
             # Encrypt based on algorithm
             if key.algorithm == EncryptionAlgorithm.AES_256_GCM:
                 return await self._encrypt_aes_gcm(data, key, additional_data)
-            elif key.algorithm == EncryptionAlgorithm.AES_256_CBC:
+            if key.algorithm == EncryptionAlgorithm.AES_256_CBC:
                 return await self._encrypt_aes_cbc(data, key)
-            elif key.algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
+            if key.algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
                 return await self._encrypt_chacha20_poly1305(data, key, additional_data)
-            elif key.algorithm == EncryptionAlgorithm.RSA_OAEP:
+            if key.algorithm == EncryptionAlgorithm.RSA_OAEP:
                 return await self._encrypt_rsa_oaep(data, key)
-            else:
-                raise ValueError(f"Unsupported algorithm: {key.algorithm}")
+            raise ValueError(f"Unsupported algorithm: {key.algorithm}")
 
         except Exception as e:
-            logger.error("Encryption failed", key_id=key_id, error=str(e))
+            logger.exception("Encryption failed", key_id=key_id, error=str(e))
             return None
 
     async def decrypt(
         self,
         encryption_result: EncryptionResult,
-        additional_data: Optional[bytes] = None,
-    ) -> Optional[DecryptionResult]:
+        additional_data: bytes | None = None,
+    ) -> DecryptionResult | None:
         """Decrypt data using encryption result."""
         try:
             # Retrieve key
@@ -539,25 +532,24 @@ class EnhancedEncryptionManager:
                 return await self._decrypt_aes_gcm(
                     encryption_result, key, additional_data
                 )
-            elif algorithm == EncryptionAlgorithm.AES_256_CBC:
+            if algorithm == EncryptionAlgorithm.AES_256_CBC:
                 return await self._decrypt_aes_cbc(encryption_result, key)
-            elif algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
+            if algorithm == EncryptionAlgorithm.CHACHA20_POLY1305:
                 return await self._decrypt_chacha20_poly1305(
                     encryption_result, key, additional_data
                 )
-            elif algorithm == EncryptionAlgorithm.RSA_OAEP:
+            if algorithm == EncryptionAlgorithm.RSA_OAEP:
                 return await self._decrypt_rsa_oaep(encryption_result, key)
-            else:
-                raise ValueError(f"Unsupported algorithm: {algorithm}")
+            raise ValueError(f"Unsupported algorithm: {algorithm}")
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Decryption failed", key_id=encryption_result.key_id, error=str(e)
             )
             return None
 
     async def _encrypt_aes_gcm(
-        self, data: bytes, key: EncryptionKey, additional_data: Optional[bytes] = None
+        self, data: bytes, key: EncryptionKey, additional_data: bytes | None = None
     ) -> EncryptionResult:
         """Encrypt with AES-256-GCM."""
         nonce = secrets.token_bytes(12)  # 96-bit nonce
@@ -585,7 +577,7 @@ class EnhancedEncryptionManager:
         self,
         encryption_result: EncryptionResult,
         key: EncryptionKey,
-        additional_data: Optional[bytes] = None,
+        additional_data: bytes | None = None,
     ) -> DecryptionResult:
         """Decrypt with AES-256-GCM."""
         cipher = Cipher(
@@ -660,7 +652,7 @@ class EnhancedEncryptionManager:
         )
 
     async def _encrypt_chacha20_poly1305(
-        self, data: bytes, key: EncryptionKey, additional_data: Optional[bytes] = None
+        self, data: bytes, key: EncryptionKey, additional_data: bytes | None = None
     ) -> EncryptionResult:
         """Encrypt with ChaCha20-Poly1305."""
         from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
@@ -680,7 +672,7 @@ class EnhancedEncryptionManager:
         self,
         encryption_result: EncryptionResult,
         key: EncryptionKey,
-        additional_data: Optional[bytes] = None,
+        additional_data: bytes | None = None,
     ) -> DecryptionResult:
         """Decrypt with ChaCha20-Poly1305."""
         from cryptography.hazmat.primitives.ciphers.aead import ChaCha20Poly1305
@@ -743,7 +735,7 @@ class EnhancedEncryptionManager:
             verified=True,
         )
 
-    async def rotate_key(self, key_id: str) -> Optional[EncryptionKey]:
+    async def rotate_key(self, key_id: str) -> EncryptionKey | None:
         """Rotate an encryption key."""
         return await self.key_store.rotate_key(key_id)
 
@@ -764,7 +756,7 @@ class EnhancedEncryptionManager:
 
         return False
 
-    async def get_constitutional_compliance_status(self) -> Dict[str, Any]:
+    async def get_constitutional_compliance_status(self) -> dict[str, Any]:
         """Get constitutional compliance status for encryption system."""
         keys = await self.key_store.list_keys()
 
@@ -778,7 +770,7 @@ class EnhancedEncryptionManager:
             [key for key in keys if key.expires_at and datetime.now() > key.expires_at]
         )
 
-        compliance_status = {
+        return {
             "total_keys": total_keys,
             "active_keys": active_keys,
             "expired_keys": expired_keys,
@@ -798,12 +790,10 @@ class EnhancedEncryptionManager:
             ],
         }
 
-        return compliance_status
-
 
 # Utility functions for easy integration
 async def create_encryption_manager(
-    storage_path: Optional[str] = None, master_key: Optional[str] = None
+    storage_path: str | None = None, master_key: str | None = None
 ) -> EnhancedEncryptionManager:
     """Create encryption manager with specified configuration."""
     key_store = FileKeyStore(
@@ -816,9 +806,9 @@ async def create_encryption_manager(
 
 async def encrypt_constitutional_data(
     manager: EnhancedEncryptionManager,
-    data: Union[str, bytes],
-    context: Optional[str] = None,
-) -> Optional[EncryptionResult]:
+    data: str | bytes,
+    context: str | None = None,
+) -> EncryptionResult | None:
     """Encrypt data with constitutional validation key."""
     constitutional_key_id = "constitutional_master_key"
 
@@ -851,14 +841,12 @@ def generate_secure_password(length: int = 32) -> str:
     chars = string.ascii_letters + string.digits + "!@#$%^&*()_+-=[]{}|;:,.<>?"
 
     # Generate password
-    password = "".join(secrets.choice(chars) for _ in range(length))
-
-    return password
+    return "".join(secrets.choice(chars) for _ in range(length))
 
 
 def derive_key_from_password(
-    password: str, salt: Optional[bytes] = None, key_length: int = 32
-) -> Tuple[bytes, bytes]:
+    password: str, salt: bytes | None = None, key_length: int = 32
+) -> tuple[bytes, bytes]:
     """Derive encryption key from password using Scrypt."""
     if salt is None:
         salt = secrets.token_bytes(32)

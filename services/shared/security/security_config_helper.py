@@ -6,9 +6,9 @@ with constitutional compliance validation.
 """
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, Optional, Set
+from typing import Any
 
 from .csrf_protection import CSRFConfig
 from .unified_input_validation import SecurityConfig, SecurityLevel
@@ -38,17 +38,17 @@ class ServiceSecurityProfile:
     max_string_length: int
     max_json_size: int
     max_file_size: int
-    allowed_file_types: Set[str]
+    allowed_file_types: set[str]
     rate_limit_requests: int
     rate_limit_window: int
     csrf_enabled: bool
     strict_csp: bool
-    allowed_origins: Set[str]
-    excluded_paths: Set[str]
+    allowed_origins: set[str]
+    excluded_paths: set[str]
 
 
 # Pre-defined security profiles for different service types
-SECURITY_PROFILES: Dict[ServiceType, ServiceSecurityProfile] = {
+SECURITY_PROFILES: dict[ServiceType, ServiceSecurityProfile] = {
     ServiceType.AUTHENTICATION: ServiceSecurityProfile(
         name="Authentication Service",
         security_level=SecurityLevel.CRITICAL,
@@ -227,7 +227,7 @@ class ACGSSecurityConfigHelper:
     def create_security_config(
         service_type: ServiceType,
         environment: str = "production",
-        custom_overrides: Optional[Dict[str, Any]] = None,
+        custom_overrides: dict[str, Any] | None = None,
     ) -> SecurityConfig:
         """
         Create SecurityConfig for a specific service type.
@@ -245,16 +245,13 @@ class ACGSSecurityConfigHelper:
         # Adjust settings based on environment
         if environment == "development":
             # More lenient in development
-            security_level = SecurityLevel.MEDIUM
             rate_limit_requests = profile.rate_limit_requests * 2
             strict_csp = False
         elif environment == "staging":
             # Similar to production but slightly more lenient
-            security_level = profile.security_level
             rate_limit_requests = profile.rate_limit_requests
             strict_csp = profile.strict_csp
         else:  # production
-            security_level = profile.security_level
             rate_limit_requests = profile.rate_limit_requests
             strict_csp = profile.strict_csp
 
@@ -282,9 +279,9 @@ class ACGSSecurityConfigHelper:
     @staticmethod
     def create_csrf_config(
         service_type: ServiceType,
-        secret_key: Optional[str] = None,
+        secret_key: str | None = None,
         environment: str = "production",
-        custom_overrides: Optional[Dict[str, Any]] = None,
+        custom_overrides: dict[str, Any] | None = None,
     ) -> CSRFConfig:
         """
         Create CSRFConfig for a specific service type.
@@ -351,11 +348,11 @@ class ACGSSecurityConfigHelper:
     @staticmethod
     def create_service_security_bundle(
         service_type: ServiceType,
-        csrf_secret_key: Optional[str] = None,
+        csrf_secret_key: str | None = None,
         environment: str = "production",
-        custom_security_overrides: Optional[Dict[str, Any]] = None,
-        custom_csrf_overrides: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
+        custom_security_overrides: dict[str, Any] | None = None,
+        custom_csrf_overrides: dict[str, Any] | None = None,
+    ) -> dict[str, Any]:
         """
         Create complete security bundle for a service.
 
@@ -375,14 +372,14 @@ class ACGSSecurityConfigHelper:
 
 
 # Utility functions for easy integration
-def get_auth_service_security() -> Dict[str, Any]:
+def get_auth_service_security() -> dict[str, Any]:
     """Get security configuration for authentication service."""
     return ACGSSecurityConfigHelper.create_service_security_bundle(
         ServiceType.AUTHENTICATION, environment=os.getenv("ENVIRONMENT", "production")
     )
 
 
-def get_constitutional_ai_security() -> Dict[str, Any]:
+def get_constitutional_ai_security() -> dict[str, Any]:
     """Get security configuration for constitutional AI service."""
     return ACGSSecurityConfigHelper.create_service_security_bundle(
         ServiceType.CONSTITUTIONAL_AI,
@@ -390,7 +387,7 @@ def get_constitutional_ai_security() -> Dict[str, Any]:
     )
 
 
-def get_platform_service_security() -> Dict[str, Any]:
+def get_platform_service_security() -> dict[str, Any]:
     """Get security configuration for platform services."""
     return ACGSSecurityConfigHelper.create_service_security_bundle(
         ServiceType.PLATFORM, environment=os.getenv("ENVIRONMENT", "production")
@@ -402,7 +399,7 @@ def create_custom_service_security(
     security_level: SecurityLevel = SecurityLevel.HIGH,
     csrf_enabled: bool = True,
     **kwargs,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Create custom security configuration for specialized services."""
 
     # Create custom profile

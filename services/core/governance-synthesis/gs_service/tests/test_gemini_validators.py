@@ -56,11 +56,11 @@ class TestGeminiProValidator(unittest.TestCase):
 
     def test_validator_initialization(self):
         """Test validator initialization and configuration."""
-        self.assertEqual(self.validator.name, "gemini_pro")
-        self.assertEqual(self.validator.weight, 0.1)
-        self.assertIsNotNone(self.validator.base_url)
-        self.assertEqual(self.validator.max_retries, 3)
-        self.assertEqual(self.validator.retry_delay, 1.0)
+        assert self.validator.name == "gemini_pro"
+        assert self.validator.weight == 0.1
+        assert self.validator.base_url is not None
+        assert self.validator.max_retries == 3
+        assert self.validator.retry_delay == 1.0
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -106,12 +106,12 @@ class TestGeminiProValidator(unittest.TestCase):
         result = await validator.validate(self.test_policy_data, self.test_context)
 
         # Assertions
-        self.assertIsInstance(result, ValidationResult)
-        self.assertEqual(result.score, 0.96)
-        self.assertEqual(result.confidence, 0.92)
-        self.assertIsNone(result.error_message)
-        self.assertIn("constitutional_compliance", result.details)
-        self.assertEqual(result.details["validator"], "gemini_pro")
+        assert isinstance(result, ValidationResult)
+        assert result.score == 0.96
+        assert result.confidence == 0.92
+        assert result.error_message is None
+        assert "constitutional_compliance" in result.details
+        assert result.details["validator"] == "gemini_pro"
 
     @patch.dict(os.environ, {}, clear=True)
     async def test_missing_api_key(self):
@@ -120,10 +120,10 @@ class TestGeminiProValidator(unittest.TestCase):
 
         result = await validator.validate(self.test_policy_data, self.test_context)
 
-        self.assertEqual(result.score, 0.0)
-        self.assertEqual(result.confidence, 0.0)
-        self.assertIsNotNone(result.error_message)
-        self.assertIn("API key not available", result.error_message)
+        assert result.score == 0.0
+        assert result.confidence == 0.0
+        assert result.error_message is not None
+        assert "API key not available" in result.error_message
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -140,10 +140,10 @@ class TestGeminiProValidator(unittest.TestCase):
 
         result = await validator.validate(self.test_policy_data, self.test_context)
 
-        self.assertEqual(result.score, 0.0)
-        self.assertEqual(result.confidence, 0.0)
-        self.assertIsNotNone(result.error_message)
-        self.assertIn("Validation failed", result.error_message)
+        assert result.score == 0.0
+        assert result.confidence == 0.0
+        assert result.error_message is not None
+        assert "Validation failed" in result.error_message
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -165,31 +165,31 @@ class TestGeminiProValidator(unittest.TestCase):
         result = await validator.validate(self.test_policy_data, self.test_context)
 
         # Should fallback to default score
-        self.assertEqual(result.score, 0.7)
-        self.assertEqual(result.confidence, 0.6)
-        self.assertIn("parsing_note", result.details)
+        assert result.score == 0.7
+        assert result.confidence == 0.6
+        assert "parsing_note" in result.details
 
     def test_metrics_tracking(self):
         """Test that metrics are properly tracked."""
         validator = GeminiProValidator()
 
         # Initial metrics
-        self.assertEqual(validator.metrics["total_validations"], 0)
-        self.assertEqual(validator.metrics["average_latency_ms"], 0.0)
-        self.assertEqual(validator.metrics["error_rate"], 0.0)
+        assert validator.metrics["total_validations"] == 0
+        assert validator.metrics["average_latency_ms"] == 0.0
+        assert validator.metrics["error_rate"] == 0.0
 
         # Test metrics update
         validator._update_metrics(150.0, success=True)
         validator.metrics["total_validations"] = 1  # Simulate validation count
 
-        self.assertEqual(validator.metrics["average_latency_ms"], 150.0)
+        assert validator.metrics["average_latency_ms"] == 150.0
 
         # Test error tracking
         validator._update_metrics(200.0, success=False)
         validator.metrics["total_validations"] = 2
 
-        self.assertEqual(validator.metrics["total_errors"], 1)
-        self.assertEqual(validator.metrics["error_rate"], 0.5)
+        assert validator.metrics["total_errors"] == 1
+        assert validator.metrics["error_rate"] == 0.5
 
 
 class TestGeminiFlashValidator(unittest.TestCase):
@@ -211,10 +211,10 @@ class TestGeminiFlashValidator(unittest.TestCase):
 
     def test_validator_initialization(self):
         """Test GeminiFlash validator initialization."""
-        self.assertEqual(self.validator.name, "gemini_flash")
-        self.assertEqual(self.validator.weight, 0.05)
-        self.assertEqual(self.validator.max_retries, 2)  # Fewer retries for speed
-        self.assertEqual(self.validator.retry_delay, 0.5)
+        assert self.validator.name == "gemini_flash"
+        assert self.validator.weight == 0.05
+        assert self.validator.max_retries == 2  # Fewer retries for speed
+        assert self.validator.retry_delay == 0.5
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -243,10 +243,10 @@ class TestGeminiFlashValidator(unittest.TestCase):
 
         result = await validator.validate(self.test_policy_data, self.test_context)
 
-        self.assertEqual(result.score, 0.85)
-        self.assertEqual(result.confidence, 0.8)
-        self.assertTrue(result.details["screening_mode"])
-        self.assertEqual(result.details["validator"], "gemini_flash")
+        assert result.score == 0.85
+        assert result.confidence == 0.8
+        assert result.details["screening_mode"]
+        assert result.details["validator"] == "gemini_flash"
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -261,9 +261,9 @@ class TestGeminiFlashValidator(unittest.TestCase):
         result = await validator.validate(self.test_policy_data, self.test_context)
 
         # Should return neutral score on timeout
-        self.assertEqual(result.score, 0.5)
-        self.assertEqual(result.confidence, 0.0)
-        self.assertIsNotNone(result.error_message)
+        assert result.score == 0.5
+        assert result.confidence == 0.0
+        assert result.error_message is not None
 
     def test_prompt_truncation(self):
         """Test that prompts are truncated for speed."""
@@ -275,8 +275,8 @@ class TestGeminiFlashValidator(unittest.TestCase):
         prompt = validator._create_screening_prompt(long_policy, self.test_context)
 
         # Should truncate to 500 characters
-        self.assertIn("A" * 500, prompt)
-        self.assertNotIn("A" * 600, prompt)
+        assert "A" * 500 in prompt
+        assert "A" * 600 not in prompt
 
 
 class TestHeterogeneousValidatorIntegration(unittest.TestCase):
@@ -292,12 +292,12 @@ class TestHeterogeneousValidatorIntegration(unittest.TestCase):
         validator = HeterogeneousValidator()
 
         # Check that Gemini validators are included
-        self.assertIn("gemini_pro", validator.validators)
-        self.assertIn("gemini_flash", validator.validators)
+        assert "gemini_pro" in validator.validators
+        assert "gemini_flash" in validator.validators
 
         # Check weights are properly set
-        self.assertEqual(validator.weights["gemini_pro"], 0.1)
-        self.assertEqual(validator.weights["gemini_flash"], 0.05)
+        assert validator.weights["gemini_pro"] == 0.1
+        assert validator.weights["gemini_flash"] == 0.05
 
     @patch.dict(os.environ, {}, clear=True)
     def test_graceful_degradation_without_api_key(self):
@@ -311,9 +311,9 @@ class TestHeterogeneousValidatorIntegration(unittest.TestCase):
 
         # Gemini validators should still be registered but with 0 weight
         if "gemini_pro" in validator.validators:
-            self.assertEqual(validator.weights.get("gemini_pro", 0), 0.0)
+            assert validator.weights.get("gemini_pro", 0) == 0.0
         if "gemini_flash" in validator.validators:
-            self.assertEqual(validator.weights.get("gemini_flash", 0), 0.0)
+            assert validator.weights.get("gemini_flash", 0) == 0.0
 
 
 class TestPerformanceRequirements(unittest.TestCase):
@@ -360,8 +360,8 @@ class TestPerformanceRequirements(unittest.TestCase):
         result = await validator.validate({}, context)
 
         # Should meet >95% accuracy target
-        self.assertGreaterEqual(result.score, 0.95)
-        self.assertGreaterEqual(result.confidence, 0.9)
+        assert result.score >= 0.95
+        assert result.confidence >= 0.9
 
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     @patch("aiohttp.ClientSession.post")
@@ -402,12 +402,12 @@ class TestPerformanceRequirements(unittest.TestCase):
 
         # Response time should be reasonable (allowing for mocking overhead)
         response_time_ms = (end_time - start_time) * 1000
-        self.assertLess(response_time_ms, 1000)  # Generous limit for testing
+        assert response_time_ms < 1000  # Generous limit for testing
 
         # Should return valid result
-        self.assertIsInstance(result, ValidationResult)
-        self.assertGreaterEqual(result.score, 0.0)
-        self.assertLessEqual(result.score, 1.0)
+        assert isinstance(result, ValidationResult)
+        assert result.score >= 0.0
+        assert result.score <= 1.0
 
 
 if __name__ == "__main__":

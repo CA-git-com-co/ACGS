@@ -1,14 +1,13 @@
 # Enterprise Multi-Factor Authentication API Endpoints
 
+from app.core.mfa import mfa_service
+from app.core.security import get_current_active_user
+from app.core.security_audit import security_audit
+from app.db.session import get_async_db
+from app.models import User
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from ...core.mfa import mfa_service
-from ...core.security import get_current_active_user
-from ...core.security_audit import security_audit
-from ...db.session import get_async_db
-from ...models import User
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

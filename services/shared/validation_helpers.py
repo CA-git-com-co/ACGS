@@ -8,7 +8,8 @@ Provides validation decorators and utilities for all ACGS services.
 import functools
 import logging
 import traceback
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
+from typing import Any
 
 from fastapi import HTTPException, Request, status
 from pydantic import ValidationError
@@ -88,8 +89,8 @@ def handle_validation_errors(service_name: str):
                 raise
 
             except Exception as e:
-                logger.error(f"Unexpected error in {service_name}: {e}")
-                logger.error(f"Traceback: {traceback.format_exc()}")
+                logger.exception(f"Unexpected error in {service_name}: {e}")
+                logger.exception(f"Traceback: {traceback.format_exc()}")
 
                 response = create_error_response(
                     message="Internal server error",
@@ -108,7 +109,7 @@ def handle_validation_errors(service_name: str):
     return decorator
 
 
-def validate_constitutional_compliance(data: Dict[str, Any]) -> bool:
+def validate_constitutional_compliance(data: dict[str, Any]) -> bool:
     """
     Validate that data includes proper constitutional compliance.
 
@@ -122,8 +123,8 @@ def validate_constitutional_compliance(data: Dict[str, Any]) -> bool:
 
 
 def validate_required_fields(
-    data: Dict[str, Any], required_fields: List[str]
-) -> List[str]:
+    data: dict[str, Any], required_fields: list[str]
+) -> list[str]:
     """
     Validate that all required fields are present in data.
 
@@ -134,17 +135,14 @@ def validate_required_fields(
     Returns:
         List of missing field names
     """
-    missing_fields = []
-    for field in required_fields:
-        if field not in data or data[field] is None:
-            missing_fields.append(field)
-
-    return missing_fields
+    return [
+        field for field in required_fields if field not in data or data[field] is None
+    ]
 
 
 def validate_field_types(
-    data: Dict[str, Any], field_types: Dict[str, type]
-) -> List[str]:
+    data: dict[str, Any], field_types: dict[str, type]
+) -> list[str]:
     """
     Validate that fields have the correct types.
 
@@ -166,7 +164,7 @@ def validate_field_types(
     return errors
 
 
-def sanitize_string_input(value: str, max_length: Optional[int] = None) -> str:
+def sanitize_string_input(value: str, max_length: int | None = None) -> str:
     """
     Sanitize string input for security.
 
@@ -195,7 +193,7 @@ def sanitize_string_input(value: str, max_length: Optional[int] = None) -> str:
     return sanitized
 
 
-def validate_correlation_id(correlation_id: Optional[str]) -> bool:
+def validate_correlation_id(correlation_id: str | None) -> bool:
     """
     Validate correlation ID format.
 
@@ -230,7 +228,7 @@ def create_correlation_id() -> str:
     return str(uuid.uuid4())
 
 
-def validate_service_response(response: Dict[str, Any]) -> bool:
+def validate_service_response(response: dict[str, Any]) -> bool:
     """
     Validate that a service response has the expected structure.
 
@@ -247,17 +245,14 @@ def validate_service_response(response: Dict[str, Any]) -> bool:
             return False
 
     # Validate constitutional compliance
-    if response.get("constitutional_hash") != CONSTITUTIONAL_HASH:
-        return False
-
-    return True
+    return response.get("constitutional_hash") == CONSTITUTIONAL_HASH
 
 
 def log_validation_error(
     service_name: str,
     error_type: str,
-    details: Dict[str, Any],
-    correlation_id: Optional[str] = None,
+    details: dict[str, Any],
+    correlation_id: str | None = None,
 ) -> None:
     """
     Log validation errors with structured information.
@@ -283,7 +278,7 @@ def log_validation_error(
 
 def validate_pagination_params(
     page: int, size: int, max_size: int = 100
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Validate pagination parameters.
 
@@ -315,11 +310,11 @@ def validate_pagination_params(
 class ValidationContext:
     """Context for validation operations."""
 
-    def __init__(self, service_name: str, correlation_id: Optional[str] = None):
+    def __init__(self, service_name: str, correlation_id: str | None = None):
         self.service_name = service_name
         self.correlation_id = correlation_id or create_correlation_id()
-        self.errors: List[str] = []
-        self.warnings: List[str] = []
+        self.errors: list[str] = []
+        self.warnings: list[str] = []
 
     def add_error(self, message: str) -> None:
         """Add a validation error."""
@@ -340,7 +335,7 @@ class ValidationContext:
         """Check if validation passed."""
         return len(self.errors) == 0
 
-    def get_error_response(self) -> Dict[str, Any]:
+    def get_error_response(self) -> dict[str, Any]:
         """Get standardized error response."""
         return create_validation_error_response(
             validation_errors=[

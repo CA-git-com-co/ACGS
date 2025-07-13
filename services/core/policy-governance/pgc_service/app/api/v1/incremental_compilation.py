@@ -113,7 +113,7 @@ async def deploy_policy_update(
     """
     try:
         # Validate user permissions
-        if current_user.role not in ["admin", "policy_manager"]:
+        if current_user.role not in {"admin", "policy_manager"}:
             raise HTTPException(
                 status_code=403, detail="Insufficient permissions for policy deployment"
             )
@@ -143,7 +143,7 @@ async def deploy_policy_update(
         return DeploymentStatusResponse(**result)
 
     except Exception as e:
-        logger.error(f"Policy deployment failed: {e}")
+        logger.exception(f"Policy deployment failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -163,7 +163,7 @@ async def rollback_policy(
     """
     try:
         # Validate user permissions
-        if current_user.role not in ["admin", "policy_manager"]:
+        if current_user.role not in {"admin", "policy_manager"}:
             raise HTTPException(
                 status_code=403, detail="Insufficient permissions for policy rollback"
             )
@@ -184,7 +184,7 @@ async def rollback_policy(
         return RollbackStatusResponse(**result)
 
     except Exception as e:
-        logger.error(f"Policy rollback failed: {e}")
+        logger.exception(f"Policy rollback failed: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -204,7 +204,7 @@ async def get_compilation_metrics(
     """
     try:
         # Validate user permissions
-        if current_user.role not in ["admin", "policy_manager", "auditor"]:
+        if current_user.role not in {"admin", "policy_manager", "auditor"}:
             raise HTTPException(
                 status_code=403, detail="Insufficient permissions to view metrics"
             )
@@ -214,7 +214,7 @@ async def get_compilation_metrics(
         return CompilationMetricsResponse(**metrics)
 
     except Exception as e:
-        logger.error(f"Failed to retrieve compilation metrics: {e}")
+        logger.exception(f"Failed to retrieve compilation metrics: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -228,7 +228,7 @@ async def get_deployment_status(
     """
     try:
         # Validate user permissions
-        if current_user.role not in ["admin", "policy_manager", "auditor"]:
+        if current_user.role not in {"admin", "policy_manager", "auditor"}:
             raise HTTPException(
                 status_code=403,
                 detail="Insufficient permissions to view deployment status",
@@ -248,7 +248,7 @@ async def get_deployment_status(
         }
 
     except Exception as e:
-        logger.error(f"Failed to retrieve deployment status: {e}")
+        logger.exception(f"Failed to retrieve deployment status: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 

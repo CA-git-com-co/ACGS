@@ -8,18 +8,17 @@ Constitutional Hash: cdd01ef066bc6cf2
 import json
 import time
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
-from fastapi import HTTPException, Request, Response, status
-from starlette.middleware.base import BaseHTTPMiddleware
-
-from ..utils.constitutional import (
+from app.utils.constitutional import (
     CONSTITUTIONAL_HASH,
     ConstitutionalValidator,
     get_constitutional_headers,
     validate_constitutional_hash,
 )
-from ..utils.logging import get_logger, security_logger
+from app.utils.logging import get_logger, security_logger
+from fastapi import HTTPException, Request, Response, status
+from starlette.middleware.base import BaseHTTPMiddleware
 
 logger = get_logger("middleware.constitutional")
 
@@ -35,7 +34,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
         self,
         app,
         strict_mode: bool = True,
-        bypass_paths: Optional[list[str]] = None,
+        bypass_paths: list[str] | None = None,
         enable_request_validation: bool = True,
         enable_response_validation: bool = True,
     ):
@@ -142,11 +141,10 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                     "Constitutional compliance validation failed",
                     [f"Internal validation error: {e!s}"],
                 )
-            else:
-                # In non-strict mode, continue with request but log the error
-                response = await call_next(request)
-                self._add_constitutional_headers(response, error=str(e))
-                return response
+            # In non-strict mode, continue with request but log the error
+            response = await call_next(request)
+            self._add_constitutional_headers(response, error=str(e))
+            return response
 
     def _should_bypass_validation(self, path: str) -> bool:
         """Check if path should bypass constitutional validation."""
@@ -187,7 +185,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                 )
 
             # Validate request body if present
-            if request.method in ["POST", "PUT", "PATCH"]:
+            if request.method in {"POST", "PUT", "PATCH"}:
                 # Note: We can't easily read the body here without consuming it
                 # This would require more complex middleware setup
                 pass
@@ -270,7 +268,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             return validation_result
 
     def _add_constitutional_headers(
-        self, response: Response, bypassed: bool = False, error: Optional[str] = None
+        self, response: Response, bypassed: bool = False, error: str | None = None
     ) -> None:
         """Add constitutional compliance headers to response."""
         headers = get_constitutional_headers()
@@ -310,7 +308,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             details={"message": message, "issues": issues},
         )
 
-        response = Response(
+        return Response(
             content=json.dumps(error_response),
             status_code=status.HTTP_403_FORBIDDEN,
             headers={
@@ -319,8 +317,6 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                 "X-Constitutional-Status": "violation",
             },
         )
-
-        return response
 
     def _log_compliance_validation(
         self, request: Request, response: Response, duration_ms: float

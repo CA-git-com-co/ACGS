@@ -11,7 +11,6 @@ This module provides standardized infrastructure configuration for ACGS services
 
 import logging
 import os
-from typing import Optional
 from urllib.parse import urlparse
 
 # Optional imports for runtime dependencies
@@ -81,7 +80,9 @@ class ACGSConfig:
         self.POSTGRES_DB = os.getenv("ACGS_POSTGRES_DB", "acgs_db")
 
         # Enhanced Connection Pool Settings (asyncpg) - Optimized for >200 connections
-        self.POSTGRES_POOL_MIN_SIZE = int(os.getenv("ACGS_POSTGRES_POOL_MIN_SIZE", "20"))  # Increased from 5
+        self.POSTGRES_POOL_MIN_SIZE = int(
+            os.getenv("ACGS_POSTGRES_POOL_MIN_SIZE", "20")
+        )  # Increased from 5
         self.POSTGRES_POOL_MAX_SIZE = int(
             os.getenv("ACGS_POSTGRES_POOL_MAX_SIZE", "50")  # Increased from 20
         )
@@ -185,7 +186,7 @@ class DatabaseManager:
             return self.pool
 
         except Exception as e:
-            logger.error(f"Failed to create database pool: {e}")
+            logger.exception(f"Failed to create database pool: {e}")
             raise
 
     async def close_pool(self):
@@ -212,7 +213,7 @@ class DatabaseManager:
                 return result == 1
 
         except Exception as e:
-            logger.error(f"Database health check failed: {e}")
+            logger.exception(f"Database health check failed: {e}")
             return False
 
 
@@ -262,7 +263,7 @@ class RedisManager:
             return self.redis
 
         except Exception as e:
-            logger.error(f"Failed to create Redis connection: {e}")
+            logger.exception(f"Failed to create Redis connection: {e}")
             raise
 
     async def close_connection(self):
@@ -282,7 +283,7 @@ class RedisManager:
             return True
 
         except Exception as e:
-            logger.error(f"Redis health check failed: {e}")
+            logger.exception(f"Redis health check failed: {e}")
             return False
 
 
@@ -339,16 +340,16 @@ async def cleanup_infrastructure():
 
 # Export key components
 __all__ = [
+    "CONSTITUTIONAL_HASH",
     "ACGSConfig",
     "DatabaseManager",
     "RedisManager",
     "acgs_config",
+    "cleanup_infrastructure",
     "database_manager",
-    "redis_manager",
     "get_acgs_config",
     "get_database_manager",
     "get_redis_manager",
     "initialize_infrastructure",
-    "cleanup_infrastructure",
-    "CONSTITUTIONAL_HASH",
+    "redis_manager",
 ]

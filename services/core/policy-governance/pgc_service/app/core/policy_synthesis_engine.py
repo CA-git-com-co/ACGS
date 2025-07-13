@@ -233,7 +233,7 @@ class PolicySynthesisEngine:
             )
 
         except Exception as e:
-            logger.error(f"Failed to initialize constitutional corpus: {e}")
+            logger.exception(f"Failed to initialize constitutional corpus: {e}")
             self.constitutional_corpus = {
                 "principles": [],
                 "hash": self.constitutional_hash,
@@ -293,11 +293,13 @@ class PolicySynthesisEngine:
                 relevant_principles, request
             )
 
-            reasoning_chain.append(
-                f"Identified {len(invariant_conditions)} invariant conditions"
+            reasoning_chain.extend(
+                (
+                    f"Identified {len(invariant_conditions)} invariant conditions",
+                    f"Scope: {scope_analysis}",
+                    f"Severity: {severity_assessment}",
+                )
             )
-            reasoning_chain.append(f"Scope: {scope_analysis}")
-            reasoning_chain.append(f"Severity: {severity_assessment}")
 
             return ConstitutionalPrincipleDecomposition(
                 principle_id=f"DECOMP-{int(time.time())}",
@@ -311,7 +313,7 @@ class PolicySynthesisEngine:
             )
 
         except Exception as e:
-            logger.error(f"Chain-of-thought analysis failed: {e}")
+            logger.exception(f"Chain-of-thought analysis failed: {e}")
             return self._create_basic_constitutional_analysis(request)
 
     def _identify_relevant_principles(
@@ -483,7 +485,7 @@ class PolicySynthesisEngine:
             }
 
         except Exception as e:
-            logger.error(f"RAG analysis failed: {e}")
+            logger.exception(f"RAG analysis failed: {e}")
             return {"rag_enabled": False, "error": str(e)}
 
     async def _apply_enhanced_risk_strategy(
@@ -769,7 +771,7 @@ class PolicySynthesisEngine:
             )
 
         except Exception as e:
-            logger.error(f"Validation pipeline failed: {e}")
+            logger.exception(f"Validation pipeline failed: {e}")
             return ValidationPipelineResult(
                 llm_generation_result={"error": str(e), "passed": False, "score": 0.0},
                 static_validation_result={
@@ -1206,7 +1208,7 @@ class PolicySynthesisEngine:
             )
 
             # Update success rate
-            if result.get("success", False):
+            if result.get("success"):
                 current_success = self.synthesis_metrics.get("success_rate", 0.0)
                 total = self.synthesis_metrics["total_syntheses"]
                 self.synthesis_metrics["success_rate"] = (
@@ -1242,7 +1244,7 @@ class PolicySynthesisEngine:
             )
 
         except Exception as e:
-            logger.error(f"Failed to update enhanced metrics: {e}")
+            logger.exception(f"Failed to update enhanced metrics: {e}")
 
     # Legacy synthesis methods for compatibility
     async def _initialize_synthesis_models(self):
@@ -1450,10 +1452,10 @@ class PolicySynthesisEngine:
                         "rag": enhanced_request.enable_rag,
                         "validation_pipeline": True,
                         "multi_model_consensus": risk_strategy
-                        in [
+                        in {
                             RiskStrategy.MULTI_MODEL_CONSENSUS,
                             RiskStrategy.HUMAN_REVIEW,
-                        ],
+                        },
                     },
                     "performance_targets_met": {
                         "accuracy": final_result.get("accuracy_score", 0.0)
@@ -1474,7 +1476,7 @@ class PolicySynthesisEngine:
 
         except Exception as e:
             processing_time = (time.time() - start_time) * 1000
-            logger.error(f"Enhanced policy synthesis failed: {e}")
+            logger.exception(f"Enhanced policy synthesis failed: {e}")
 
             return {
                 "synthesis_id": synthesis_id,

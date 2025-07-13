@@ -5,6 +5,8 @@ title: 'Improve error messages in Anchor programs'
 labels: good first issue, blockchain, documentation
 assignees: ''
 ---
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Description
 Add descriptive error messages to Solana program error codes

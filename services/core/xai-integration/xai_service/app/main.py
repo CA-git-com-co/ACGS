@@ -7,16 +7,14 @@ Provides constitutional AI capabilities with formal verification and performance
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
 import os
 import time
 from contextlib import asynccontextmanager
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import uvicorn
-from fastapi import FastAPI, HTTPException, Depends, BackgroundTasks
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 from xai_grok_sdk import XAI
 
@@ -31,29 +29,35 @@ TARGET_THROUGHPUT_RPS = 50  # Conservative for LLM operations
 
 class XAIRequest(BaseModel):
     """Request model for XAI chat completion."""
+
     message: str = Field(..., description="The user message to send to Grok")
-    system_prompt: Optional[str] = Field(None, description="Optional system prompt")
+    system_prompt: str | None = Field(None, description="Optional system prompt")
     model: str = Field("grok-4-0709", description="Grok model to use")
     temperature: float = Field(0.7, ge=0.0, le=1.0, description="Sampling temperature")
-    max_tokens: int = Field(1000, ge=1, le=4000, description="Maximum tokens in response")
-    constitutional_validation: bool = Field(True, description="Enable constitutional validation")
+    max_tokens: int = Field(
+        1000, ge=1, le=4000, description="Maximum tokens in response"
+    )
+    constitutional_validation: bool = Field(
+        True, description="Enable constitutional validation"
+    )
 
 
 class XAIResponse(BaseModel):
     """Response model for XAI chat completion."""
+
     success: bool
-    content: Optional[str] = None
+    content: str | None = None
     model: str
     constitutional_hash_valid: bool
     response_time_ms: float
-    error: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    error: str | None = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class ConstitutionalXAIClient:
     """Enhanced XAI client with ACGS-2 constitutional governance integration."""
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """Initialize the constitutional XAI client.
 
         Args:
@@ -61,71 +65,67 @@ class ConstitutionalXAIClient:
         """
         self.api_key = api_key or os.getenv("XAI_API_KEY")
         if not self.api_key:
-            raise ValueError("X.AI API key not provided and XAI_API_KEY not found in environment")
+            raise ValueError(
+                "X.AI API key not provided and XAI_API_KEY not found in environment"
+            )
 
         # Use grok-beta as default model (available in the SDK)
-        self.client = XAI(
-            api_key=self.api_key,
-            model="grok-beta"
-        )
+        self.client = XAI(api_key=self.api_key, model="grok-beta")
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        
+
         # Performance tracking
         self.request_count = 0
         self.total_response_time = 0.0
         self.cache_hits = 0
         self.cache_misses = 0
-        
+
         # Simple in-memory cache for constitutional validation
-        self.response_cache: Dict[str, Dict[str, Any]] = {}
+        self.response_cache: dict[str, dict[str, Any]] = {}
         self.max_cache_size = 1000
-    
-    def _generate_cache_key(self, message: str, system_prompt: str, model: str, temperature: float) -> str:
+
+    def _generate_cache_key(
+        self, message: str, system_prompt: str, model: str, temperature: float
+    ) -> str:
         """Generate cache key for request."""
         import hashlib
+
         content = f"{message}|{system_prompt}|{model}|{temperature}"
         return hashlib.md5(content.encode()).hexdigest()
-    
+
     def _validate_constitutional_compliance(self, content: str) -> bool:
         """Validate response for constitutional compliance."""
         # Basic constitutional validation - can be enhanced with formal verification
-        forbidden_patterns = [
-            "discriminat", "bias", "harmful", "illegal", "unethical"
-        ]
-        
+        forbidden_patterns = ["discriminat", "bias", "harmful", "illegal", "unethical"]
+
         content_lower = content.lower()
-        for pattern in forbidden_patterns:
-            if pattern in content_lower:
-                return False
-        
-        return True
-    
+        return all(pattern not in content_lower for pattern in forbidden_patterns)
+
     async def chat_completion(self, request: XAIRequest) -> XAIResponse:
         """Send constitutional chat completion request to Grok.
-        
+
         Args:
             request: XAI request parameters
-            
+
         Returns:
             XAI response with constitutional validation
         """
         start_time = time.time()
         self.request_count += 1
-        
+
         try:
             # Check cache first
             cache_key = self._generate_cache_key(
-                request.message, 
-                request.system_prompt or "", 
-                request.model, 
-                request.temperature
+                request.message,
+                request.system_prompt or "",
+                request.model,
+                request.temperature,
             )
-            
+
             if cache_key in self.response_cache:
                 self.cache_hits += 1
                 cached_response = self.response_cache[cache_key]
                 response_time = (time.time() - start_time) * 1000
-                
+
                 return XAIResponse(
                     success=True,
                     content=cached_response["content"],
@@ -134,18 +134,20 @@ class ConstitutionalXAIClient:
                     response_time_ms=response_time,
                     metadata={
                         "cached": True,
-                        "constitutional_hash": self.constitutional_hash
-                    }
+                        "constitutional_hash": self.constitutional_hash,
+                    },
                 )
-            
+
             self.cache_misses += 1
-            
+
             # Prepare messages for XAI SDK
             messages = []
 
             # Add constitutional validation to system prompt
             constitutional_system = f"Constitutional Hash: {self.constitutional_hash}\n"
-            constitutional_system += "You must adhere to constitutional AI governance principles. "
+            constitutional_system += (
+                "You must adhere to constitutional AI governance principles. "
+            )
             constitutional_system += "Provide helpful, harmless, and honest responses that respect human autonomy and dignity.\n"
 
             if request.system_prompt:
@@ -162,7 +164,7 @@ class ConstitutionalXAIClient:
             response = self.client.invoke(
                 messages=messages,
                 temperature=request.temperature,
-                max_tokens=request.max_tokens
+                max_tokens=request.max_tokens,
             )
             response_time = (time.time() - start_time) * 1000
             self.total_response_time += response_time
@@ -177,13 +179,15 @@ class ConstitutionalXAIClient:
             # Constitutional validation
             constitutional_valid = True
             if request.constitutional_validation and response_content:
-                constitutional_valid = self._validate_constitutional_compliance(response_content)
+                constitutional_valid = self._validate_constitutional_compliance(
+                    response_content
+                )
 
             # Cache successful responses
             if constitutional_valid and len(self.response_cache) < self.max_cache_size:
                 self.response_cache[cache_key] = {
                     "content": response_content,
-                    "timestamp": time.time()
+                    "timestamp": time.time(),
                 }
 
             return XAIResponse(
@@ -195,10 +199,14 @@ class ConstitutionalXAIClient:
                 metadata={
                     "cached": False,
                     "constitutional_hash": self.constitutional_hash,
-                    "tokens_used": response.usage.total_tokens if response.usage else len(response_content.split())
-                }
+                    "tokens_used": (
+                        response.usage.total_tokens
+                        if response.usage
+                        else len(response_content.split())
+                    ),
+                },
             )
-            
+
         except Exception as e:
             response_time = (time.time() - start_time) * 1000
             return XAIResponse(
@@ -208,16 +216,22 @@ class ConstitutionalXAIClient:
                 constitutional_hash_valid=False,
                 response_time_ms=response_time,
                 error=str(e),
-                metadata={
-                    "constitutional_hash": self.constitutional_hash
-                }
+                metadata={"constitutional_hash": self.constitutional_hash},
             )
-    
-    def get_performance_metrics(self) -> Dict[str, Any]:
+
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get current performance metrics."""
-        cache_hit_rate = self.cache_hits / (self.cache_hits + self.cache_misses) if (self.cache_hits + self.cache_misses) > 0 else 0
-        avg_response_time = self.total_response_time / self.request_count if self.request_count > 0 else 0
-        
+        cache_hit_rate = (
+            self.cache_hits / (self.cache_hits + self.cache_misses)
+            if (self.cache_hits + self.cache_misses) > 0
+            else 0
+        )
+        avg_response_time = (
+            self.total_response_time / self.request_count
+            if self.request_count > 0
+            else 0
+        )
+
         return {
             "request_count": self.request_count,
             "cache_hit_rate": cache_hit_rate,
@@ -227,32 +241,29 @@ class ConstitutionalXAIClient:
             "performance_targets": {
                 "target_cache_hit_rate": TARGET_CACHE_HIT_RATE,
                 "target_p99_latency_ms": TARGET_P99_LATENCY_MS,
-                "target_throughput_rps": TARGET_THROUGHPUT_RPS
-            }
+                "target_throughput_rps": TARGET_THROUGHPUT_RPS,
+            },
         }
 
 
 # Global XAI client instance
-xai_client: Optional[ConstitutionalXAIClient] = None
+xai_client: ConstitutionalXAIClient | None = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan management."""
     global xai_client
-    
+
     # Startup
     try:
         xai_client = ConstitutionalXAIClient()
-        print(f"✅ XAI Integration Service started with constitutional hash: {CONSTITUTIONAL_HASH}")
-    except Exception as e:
-        print(f"❌ Failed to initialize XAI client: {e}")
+    except Exception:
         raise
-    
+
     yield
-    
+
     # Shutdown
-    print("🔄 XAI Integration Service shutting down...")
 
 
 # Create FastAPI application
@@ -260,7 +271,7 @@ app = FastAPI(
     title="ACGS-2 XAI Integration Service",
     description="X.AI Grok integration with constitutional governance",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Add CORS middleware
@@ -287,14 +298,13 @@ async def health_check():
         "status": "healthy",
         "service": "xai-integration",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
 
 
 @app.post("/chat/completion", response_model=XAIResponse)
 async def chat_completion(
-    request: XAIRequest,
-    client: ConstitutionalXAIClient = Depends(get_xai_client)
+    request: XAIRequest, client: ConstitutionalXAIClient = Depends(get_xai_client)
 ):
     """Send chat completion request to X.AI Grok with constitutional validation."""
     return await client.chat_completion(request)
@@ -308,16 +318,15 @@ async def get_metrics(client: ConstitutionalXAIClient = Depends(get_xai_client))
 
 @app.post("/validate/constitutional")
 async def validate_constitutional_compliance(
-    content: str,
-    client: ConstitutionalXAIClient = Depends(get_xai_client)
+    content: str, client: ConstitutionalXAIClient = Depends(get_xai_client)
 ):
     """Validate content for constitutional compliance."""
     is_valid = client._validate_constitutional_compliance(content)
-    
+
     return {
         "constitutional_hash": CONSTITUTIONAL_HASH,
         "content_valid": is_valid,
-        "validation_timestamp": time.time()
+        "validation_timestamp": time.time(),
     }
 
 
@@ -327,5 +336,5 @@ if __name__ == "__main__":
         host="0.0.0.0",
         port=8014,  # New port for XAI integration service
         reload=True,
-        log_level="info"
+        log_level="info",
     )

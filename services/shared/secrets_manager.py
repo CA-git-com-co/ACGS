@@ -9,8 +9,7 @@ import logging
 import os
 import secrets
 import string
-from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -25,7 +24,7 @@ class ACGSSecretsManager:
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self._secrets_cache = {}
 
-    def get_secret(self, key: str, default: Optional[str] = None) -> Optional[str]:
+    def get_secret(self, key: str, default: str | None = None) -> str | None:
         """Get secret from environment variables."""
         try:
             value = os.getenv(key, default)
@@ -35,7 +34,7 @@ class ACGSSecretsManager:
                 logger.debug(f"Retrieved secret: {key}")
             return value
         except Exception as e:
-            logger.error(f"Failed to retrieve secret {key}: {e}")
+            logger.exception(f"Failed to retrieve secret {key}: {e}")
             return default
 
     def get_database_url(self) -> str:
@@ -54,7 +53,7 @@ class ACGSSecretsManager:
             return "default_jwt_secret_change_in_production"
         return secret
 
-    def get_api_key(self, service_name: str) -> Optional[str]:
+    def get_api_key(self, service_name: str) -> str | None:
         """Get API key for specific service."""
         key_name = f"{service_name.upper()}_API_KEY"
         return self.get_secret(key_name)
@@ -74,7 +73,7 @@ class ACGSSecretsManager:
 
     def validate_secret_strength(
         self, secret: str, min_length: int = 32
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Validate the strength of a secret."""
         issues = []
 
@@ -97,7 +96,7 @@ class ACGSSecretsManager:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def validate_secrets_configuration(self) -> Dict[str, Any]:
+    def validate_secrets_configuration(self) -> dict[str, Any]:
         """Validate secrets configuration."""
         required_secrets = [
             "SECRET_KEY",
@@ -112,7 +111,7 @@ class ACGSSecretsManager:
             secret_value = self.get_secret(secret_name)
             if not secret_value:
                 missing_secrets.append(secret_name)
-            elif secret_name in ["SECRET_KEY", "JWT_SECRET_KEY"]:
+            elif secret_name in {"SECRET_KEY", "JWT_SECRET_KEY"}:
                 validation = self.validate_secret_strength(secret_value)
                 if not validation["valid"]:
                     weak_secrets.append(

@@ -13,7 +13,7 @@ import string
 import uuid
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, validator
 from sqlalchemy import and_, func, select
@@ -59,21 +59,21 @@ class OrganizationCreateRequest(BaseModel):
     """Request model for creating a new organization."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    slug: Optional[str] = None
-    legal_name: Optional[str] = None
+    slug: str | None = None
+    legal_name: str | None = None
     contact_email: str = Field(..., regex=r"^[^@]+@[^@]+\.[^@]+$")
-    billing_email: Optional[str] = None
-    industry: Optional[str] = None
-    company_size: Optional[str] = None
-    website: Optional[str] = None
+    billing_email: str | None = None
+    industry: str | None = None
+    company_size: str | None = None
+    website: str | None = None
 
     # Address information
-    address_line1: Optional[str] = None
-    address_line2: Optional[str] = None
-    city: Optional[str] = None
-    state_province: Optional[str] = None
-    postal_code: Optional[str] = None
-    country: Optional[str] = None
+    address_line1: str | None = None
+    address_line2: str | None = None
+    city: str | None = None
+    state_province: str | None = None
+    postal_code: str | None = None
+    country: str | None = None
 
     # Configuration
     tier: TenantTier = TenantTier.BASIC
@@ -81,7 +81,7 @@ class OrganizationCreateRequest(BaseModel):
     enforce_mfa: bool = False
 
     @validator("slug", pre=True, always=True)
-    def generate_slug(cls, v, values):
+    def generate_slug(self, v, values):
         if not v and "name" in values:
             # Generate slug from name
             slug = values["name"].lower().replace(" ", "-").replace("_", "-")
@@ -95,26 +95,26 @@ class TenantCreateRequest(BaseModel):
     """Request model for creating a new tenant."""
 
     name: str = Field(..., min_length=1, max_length=255)
-    slug: Optional[str] = None
-    description: Optional[str] = None
+    slug: str | None = None
+    description: str | None = None
     environment_type: str = "production"
     tier: TenantTier = TenantTier.BASIC
     security_level: SecurityLevel = SecurityLevel.BASIC
 
     # Resource limits
-    max_users: Optional[int] = None
+    max_users: int | None = None
     max_agents: int = 10
     max_storage_gb: int = 100
     max_compute_units: int = 1000
-    api_rate_limit_per_hour: Optional[int] = None
+    api_rate_limit_per_hour: int | None = None
 
     # Compliance settings
-    data_residency: Optional[DataResidency] = None
-    compliance_frameworks: Optional[list[str]] = None
+    data_residency: DataResidency | None = None
+    compliance_frameworks: list[str] | None = None
     audit_retention_days: int = 2555  # 7 years default
 
     @validator("slug", pre=True, always=True)
-    def generate_slug(cls, v, values):
+    def generate_slug(self, v, values):
         if not v and "name" in values:
             slug = values["name"].lower().replace(" ", "-").replace("_", "-")
             slug = "".join(c for c in slug if c.isalnum() or c == "-")
@@ -127,18 +127,18 @@ class TenantInviteRequest(BaseModel):
 
     email: str = Field(..., regex=r"^[^@]+@[^@]+\.[^@]+$")
     role: str = "user"
-    permissions: Optional[list[str]] = None
-    message: Optional[str] = None
+    permissions: list[str] | None = None
+    message: str | None = None
     expires_in_hours: int = 168  # 7 days default
 
 
 class TenantUserUpdateRequest(BaseModel):
     """Request model for updating tenant user access."""
 
-    role: Optional[str] = None
-    permissions: Optional[list[str]] = None
-    access_level: Optional[str] = None
-    is_active: Optional[bool] = None
+    role: str | None = None
+    permissions: list[str] | None = None
+    access_level: str | None = None
+    is_active: bool | None = None
 
 
 @dataclass
@@ -168,7 +168,7 @@ class TenantManagementService:
     async def create_organization(
         self,
         request: OrganizationCreateRequest,
-        created_by_user_id: Optional[int] = None,
+        created_by_user_id: int | None = None,
     ) -> Organization:
         """
         Create a new organization with constitutional validation.
@@ -219,14 +219,14 @@ class TenantManagementService:
             return org
 
         except Exception as e:
-            logger.error(f"Failed to create organization: {e}")
+            logger.exception(f"Failed to create organization: {e}")
             raise TenantCreationError(f"Organization creation failed: {e}")
 
     async def create_tenant(
         self,
         organization_id: uuid.UUID,
         request: TenantCreateRequest,
-        created_by_user_id: Optional[int] = None,
+        created_by_user_id: int | None = None,
     ) -> Tenant:
         """
         Create a new tenant within an organization.
@@ -309,7 +309,7 @@ class TenantManagementService:
             return tenant
 
         except Exception as e:
-            logger.error(f"Failed to create tenant: {e}")
+            logger.exception(f"Failed to create tenant: {e}")
             raise TenantCreationError(f"Tenant creation failed: {e}")
 
     async def onboard_tenant_with_admin(
@@ -365,7 +365,7 @@ class TenantManagementService:
             return result
 
         except Exception as e:
-            logger.error(f"Tenant onboarding failed: {e}")
+            logger.exception(f"Tenant onboarding failed: {e}")
             raise TenantCreationError(f"Tenant onboarding failed: {e}")
 
     async def add_user_to_tenant(
@@ -373,9 +373,9 @@ class TenantManagementService:
         tenant_id: uuid.UUID,
         user_id: int,
         role: str = "user",
-        permissions: Optional[list[str]] = None,
+        permissions: list[str] | None = None,
         access_level: str = "standard",
-        added_by_user_id: Optional[int] = None,
+        added_by_user_id: int | None = None,
     ) -> TenantUser:
         """
         Add a user to a tenant with specified role and permissions.
@@ -391,9 +391,7 @@ class TenantManagementService:
             # Check user quota
             current_user_count = await self.session.scalar(
                 select(func.count(TenantUser.id)).where(
-                    and_(
-                        TenantUser.tenant_id == tenant_id, TenantUser.is_active == True
-                    )
+                    and_(TenantUser.tenant_id == tenant_id, TenantUser.is_active)
                 )
             )
 
@@ -432,7 +430,7 @@ class TenantManagementService:
             return tenant_user
 
         except Exception as e:
-            logger.error(f"Failed to add user to tenant: {e}")
+            logger.exception(f"Failed to add user to tenant: {e}")
             raise TenantManagementError(f"Failed to add user to tenant: {e}")
 
     async def invite_user_to_tenant(
@@ -494,7 +492,7 @@ class TenantManagementService:
             return invitation
 
         except Exception as e:
-            logger.error(f"Failed to create invitation: {e}")
+            logger.exception(f"Failed to create invitation: {e}")
             raise InvitationError(f"Failed to create invitation: {e}")
 
     async def accept_tenant_invitation(
@@ -545,7 +543,7 @@ class TenantManagementService:
             return tenant_user
 
         except Exception as e:
-            logger.error(f"Failed to accept invitation: {e}")
+            logger.exception(f"Failed to accept invitation: {e}")
             raise InvitationError(f"Failed to accept invitation: {e}")
 
     async def update_tenant_user(
@@ -583,14 +581,14 @@ class TenantManagementService:
             return tenant_user
 
         except Exception as e:
-            logger.error(f"Failed to update tenant user: {e}")
+            logger.exception(f"Failed to update tenant user: {e}")
             raise TenantManagementError(f"Failed to update tenant user: {e}")
 
     async def remove_user_from_tenant(
         self,
         tenant_id: uuid.UUID,
         user_id: int,
-        removed_by_user_id: Optional[int] = None,
+        removed_by_user_id: int | None = None,
     ) -> bool:
         """Remove a user from a tenant."""
         try:
@@ -615,7 +613,7 @@ class TenantManagementService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to remove user from tenant: {e}")
+            logger.exception(f"Failed to remove user from tenant: {e}")
             raise TenantManagementError(f"Failed to remove user from tenant: {e}")
 
     async def get_tenant_users(
@@ -625,7 +623,7 @@ class TenantManagementService:
         query = select(TenantUser).where(TenantUser.tenant_id == tenant_id)
 
         if not include_inactive:
-            query = query.where(TenantUser.is_active == True)
+            query = query.where(TenantUser.is_active)
 
         result = await self.session.execute(query)
         return result.scalars().all()
@@ -636,7 +634,7 @@ class TenantManagementService:
         category: str,
         key: str,
         value: Any,
-        user_id: Optional[int] = None,
+        user_id: int | None = None,
     ) -> TenantSettings:
         """Set a tenant-specific setting."""
         try:
@@ -675,12 +673,12 @@ class TenantManagementService:
             return setting
 
         except Exception as e:
-            logger.error(f"Failed to set tenant setting: {e}")
+            logger.exception(f"Failed to set tenant setting: {e}")
             raise TenantManagementError(f"Failed to set tenant setting: {e}")
 
     async def get_tenant_setting(
         self, tenant_id: uuid.UUID, category: str, key: str
-    ) -> Optional[Any]:
+    ) -> Any | None:
         """Get a tenant-specific setting value."""
         try:
             setting = await self.session.execute(
@@ -698,7 +696,7 @@ class TenantManagementService:
             return setting.value if setting else None
 
         except Exception as e:
-            logger.error(f"Failed to get tenant setting: {e}")
+            logger.exception(f"Failed to get tenant setting: {e}")
             return None
 
     # Private helper methods
@@ -749,10 +747,7 @@ class TenantManagementService:
             return False
 
         # Check compliance score
-        if tenant.constitutional_compliance_score < 80:
-            return False
-
-        return True
+        return not tenant.constitutional_compliance_score < 80
 
     def _generate_secure_token(self, length: int = 32) -> str:
         """Generate a cryptographically secure token."""

@@ -112,7 +112,7 @@ class PolicySMTCompiler:
             return constraints
 
         except Exception as e:
-            logger.error(f"Failed to compile policy {policy_id}: {e}")
+            logger.exception(f"Failed to compile policy {policy_id}: {e}")
             return []
 
     def compile_constitutional_principles(
@@ -128,7 +128,7 @@ class PolicySMTCompiler:
             List of SMT constraints for constitutional principles
         """
         try:
-            with open(principles_file) as f:
+            with open(principles_file, encoding="utf-8") as f:
                 principles_data = yaml.safe_load(f)
 
             constraints = []
@@ -161,7 +161,7 @@ class PolicySMTCompiler:
             return constraints
 
         except Exception as e:
-            logger.error(f"Failed to compile constitutional principles: {e}")
+            logger.exception(f"Failed to compile constitutional principles: {e}")
             return []
 
     def _compile_rego_policy(
@@ -202,7 +202,7 @@ class PolicySMTCompiler:
                     )
 
         except Exception as e:
-            logger.error(f"Failed to compile Rego policy {policy_id}: {e}")
+            logger.exception(f"Failed to compile Rego policy {policy_id}: {e}")
 
         return constraints
 
@@ -342,7 +342,7 @@ class PolicySMTCompiler:
                     )
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to compile constitutional principle {principle_name}: {e}"
             )
 
@@ -407,10 +407,11 @@ class PolicySMTCompiler:
 
         try:
             # Correctness property: All policies must be consistent
-            consistency_constraints = []
-            for constraint in self.constraints:
-                if constraint.policy_type == PolicyType.ACCESS_CONTROL:
-                    consistency_constraints.append(constraint.constraint)
+            consistency_constraints = [
+                constraint.constraint
+                for constraint in self.constraints
+                if constraint.policy_type == PolicyType.ACCESS_CONTROL
+            ]
 
             if consistency_constraints:
                 consistency_property = z3.And(*consistency_constraints)
@@ -444,7 +445,7 @@ class PolicySMTCompiler:
             logger.info(f"Generated {len(properties)} formal properties")
 
         except Exception as e:
-            logger.error(f"Failed to generate formal properties: {e}")
+            logger.exception(f"Failed to generate formal properties: {e}")
 
         return properties
 
@@ -468,15 +469,16 @@ class PolicySMTCompiler:
             smt_lib_lines.append("")
 
             # Add constraints
-            for constraint in self.constraints:
-                smt_lib_lines.append(f"(assert {constraint.constraint})")
+            smt_lib_lines.extend(
+                f"(assert {constraint.constraint})" for constraint in self.constraints
+            )
 
             smt_lib_lines.extend(["", "(check-sat)", "(exit)"])
 
             return "\n".join(smt_lib_lines)
 
         except Exception as e:
-            logger.error(f"Failed to export SMT-LIB: {e}")
+            logger.exception(f"Failed to export SMT-LIB: {e}")
             return ""
 
     def get_compilation_summary(self) -> dict[str, Any]:
@@ -503,5 +505,5 @@ class PolicySMTCompiler:
             }
 
         except Exception as e:
-            logger.error(f"Failed to generate compilation summary: {e}")
+            logger.exception(f"Failed to generate compilation summary: {e}")
             return {"error": str(e)}

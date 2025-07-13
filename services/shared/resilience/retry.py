@@ -8,10 +8,10 @@ Comprehensive retry mechanisms with various backoff strategies.
 import asyncio
 import logging
 import random
-import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable, List, Optional, Type, Union
+from typing import Any
 
 from .exceptions import InfrastructureError, TimeoutError
 
@@ -43,12 +43,10 @@ class BackoffStrategy(ABC):
     @abstractmethod
     def get_delay(self, attempt: int) -> float:
         """Get delay in seconds for the given attempt number."""
-        pass
 
     @abstractmethod
     def reset(self) -> None:
         """Reset strategy state."""
-        pass
 
 
 class FixedBackoff(BackoffStrategy):
@@ -137,9 +135,9 @@ class RetryConfig:
 
     max_attempts: int = 3
     backoff_strategy: BackoffStrategy = None
-    retryable_exceptions: List[Type[Exception]] = None
-    timeout: Optional[float] = None
-    on_retry: Optional[Callable[[int, Exception], None]] = None
+    retryable_exceptions: list[type[Exception]] = None
+    timeout: float | None = None
+    on_retry: Callable[[int, Exception], None] | None = None
 
     def __post_init__(self):
         if self.backoff_strategy is None:
@@ -169,7 +167,7 @@ class RetryPolicy:
         )
 
     async def execute(
-        self, func: Callable, *args, operation_name: str = None, **kwargs
+        self, func: Callable, *args, operation_name: str | None = None, **kwargs
     ) -> Any:
         """
         Execute function with retry logic.
@@ -216,14 +214,14 @@ class RetryPolicy:
 
                 # Check if exception is retryable
                 if not self._is_retryable(e):
-                    logger.error(
+                    logger.exception(
                         f"'{operation_name}' failed with non-retryable error: {e}"
                     )
-                    raise e
+                    raise
 
                 # Check if we have more attempts
                 if attempt == self.config.max_attempts - 1:
-                    logger.error(
+                    logger.exception(
                         f"'{operation_name}' exhausted all {self.config.max_attempts} attempts"
                     )
                     break
@@ -240,7 +238,7 @@ class RetryPolicy:
                     try:
                         self.config.on_retry(attempt + 1, e)
                     except Exception as callback_error:
-                        logger.error(f"Retry callback failed: {callback_error}")
+                        logger.exception(f"Retry callback failed: {callback_error}")
 
                 await asyncio.sleep(delay)
 
@@ -264,9 +262,9 @@ class RetryPolicy:
 def retry(
     max_attempts: int = 3,
     backoff_strategy: BackoffStrategy = None,
-    retryable_exceptions: List[Type[Exception]] = None,
-    timeout: Optional[float] = None,
-    operation_name: str = None,
+    retryable_exceptions: list[type[Exception]] | None = None,
+    timeout: float | None = None,
+    operation_name: str | None = None,
 ):
     """
     Decorator for adding retry behavior to functions.
@@ -306,7 +304,7 @@ class CircuitBreakerRetryPolicy(RetryPolicy):
         self.circuit_breaker = circuit_breaker
 
     async def execute(
-        self, func: Callable, *args, operation_name: str = None, **kwargs
+        self, func: Callable, *args, operation_name: str | None = None, **kwargs
     ) -> Any:
         """Execute with circuit breaker integration."""
         if self.circuit_breaker:
@@ -316,11 +314,10 @@ class CircuitBreakerRetryPolicy(RetryPolicy):
                     func, *args, operation_name=operation_name, **kwargs
                 )
             )
-        else:
-            # Fallback to normal retry
-            return await super().execute(
-                func, *args, operation_name=operation_name, **kwargs
-            )
+        # Fallback to normal retry
+        return await super().execute(
+            func, *args, operation_name=operation_name, **kwargs
+        )
 
 
 # Convenience functions for common retry patterns
@@ -332,7 +329,7 @@ async def retry_with_exponential_backoff(
     max_attempts: int = 3,
     base_delay: float = 1.0,
     max_delay: float = 60.0,
-    operation_name: str = None,
+    operation_name: str | None = None,
     **kwargs,
 ) -> Any:
     """Retry with exponential backoff strategy."""
@@ -350,7 +347,7 @@ async def retry_with_linear_backoff(
     max_attempts: int = 3,
     base_delay: float = 1.0,
     increment: float = 1.0,
-    operation_name: str = None,
+    operation_name: str | None = None,
     **kwargs,
 ) -> Any:
     """Retry with linear backoff strategy."""
@@ -367,7 +364,7 @@ async def retry_with_fixed_delay(
     *args,
     max_attempts: int = 3,
     delay: float = 1.0,
-    operation_name: str = None,
+    operation_name: str | None = None,
     **kwargs,
 ) -> Any:
     """Retry with fixed delay strategy."""

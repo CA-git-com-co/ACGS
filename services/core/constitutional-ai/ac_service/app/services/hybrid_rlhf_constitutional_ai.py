@@ -20,7 +20,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -91,7 +91,6 @@ class RLHFPipeline:
         """
         try:
             # Simulate RLHF evaluation with production-like scoring
-            base_score = 0.8
 
             # Factor in response quality metrics
             quality_factors = {
@@ -120,12 +119,12 @@ class RLHFPipeline:
             return rlhf_score, reasoning
 
         except Exception as e:
-            logger.error(f"RLHF evaluation failed: {e}")
+            logger.exception(f"RLHF evaluation failed: {e}")
             return 0.5, f"RLHF evaluation error: {e!s}"
 
     async def get_human_feedback(
         self, prompt: str, response: str
-    ) -> Optional[dict[str, float]]:
+    ) -> dict[str, float] | None:
         """
         Collect human feedback for continuous learning
 
@@ -165,7 +164,7 @@ class HybridGovernanceEngine:
         self.human_review_threshold = config.get("human_review_threshold", 0.9)
 
         # Metrics tracking
-        self.decision_counts = {mode: 0 for mode in GovernanceMode}
+        self.decision_counts = dict.fromkeys(GovernanceMode, 0)
         self.performance_metrics = {
             "total_decisions": 0,
             "human_interventions": 0,
@@ -211,12 +210,11 @@ class HybridGovernanceEngine:
 
         if risk_score >= 3:
             return RiskLevel.CRITICAL
-        elif risk_score >= 2:
+        if risk_score >= 2:
             return RiskLevel.HIGH
-        elif risk_score >= 1:
+        if risk_score >= 1:
             return RiskLevel.MEDIUM
-        else:
-            return RiskLevel.LOW
+        return RiskLevel.LOW
 
     async def evaluate_with_rlhf(
         self, prompt: str, response: str, context: dict[str, Any]
@@ -233,7 +231,7 @@ class HybridGovernanceEngine:
             "approved" if rlhf_score >= self.rlhf_fallback_threshold else "rejected"
         )
         human_review = (
-            risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL] or rlhf_score < 0.7
+            risk_level in {RiskLevel.HIGH, RiskLevel.CRITICAL} or rlhf_score < 0.7
         )
 
         latency = time.time() - start_time
@@ -280,7 +278,7 @@ class HybridGovernanceEngine:
                 else "rejected"
             )
             human_review = (
-                risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL]
+                risk_level in {RiskLevel.HIGH, RiskLevel.CRITICAL}
                 or confidence < 0.8
                 or violations
             )
@@ -308,7 +306,7 @@ class HybridGovernanceEngine:
             )
 
         except Exception as e:
-            logger.error(f"Constitutional AI evaluation failed: {e}")
+            logger.exception(f"Constitutional AI evaluation failed: {e}")
             # Fallback to RLHF
             return await self.evaluate_with_rlhf(prompt, response, context)
 
@@ -339,13 +337,12 @@ class HybridGovernanceEngine:
         # Combine results with weighted approach
         if isinstance(constitutional_result, GovernanceDecision):
             # Weighted combination: 60% Constitutional AI, 40% RLHF for high-risk
-            if risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL]:
+            if risk_level in {RiskLevel.HIGH, RiskLevel.CRITICAL}:
                 combined_confidence = (
                     0.6 * constitutional_result.confidence
                     + 0.4 * rlhf_result.confidence
                 )
                 combined_violations = constitutional_result.constitutional_violations
-                primary_method = GovernanceMode.CONSTITUTIONAL_ONLY
             else:
                 # For lower risk: 40% Constitutional AI, 60% RLHF
                 combined_confidence = (
@@ -353,7 +350,6 @@ class HybridGovernanceEngine:
                     + 0.6 * rlhf_result.confidence
                 )
                 combined_violations = constitutional_result.constitutional_violations
-                primary_method = GovernanceMode.RLHF_ONLY
 
             reasoning = (
                 "Hybrid evaluation: Constitutional AI"
@@ -364,7 +360,6 @@ class HybridGovernanceEngine:
             # Constitutional AI failed, use RLHF only
             combined_confidence = rlhf_result.confidence
             combined_violations = []
-            primary_method = GovernanceMode.RLHF_ONLY
             reasoning = (
                 "Hybrid evaluation (Constitutional AI unavailable): RLHF"
                 f" ({rlhf_result.confidence:.3f})"
@@ -377,7 +372,7 @@ class HybridGovernanceEngine:
             else "rejected"
         )
         human_review = (
-            risk_level in [RiskLevel.HIGH, RiskLevel.CRITICAL]
+            risk_level in {RiskLevel.HIGH, RiskLevel.CRITICAL}
             or combined_confidence < 0.8
             or combined_violations
         )
@@ -409,20 +404,18 @@ class HybridGovernanceEngine:
         if risk_level == RiskLevel.CRITICAL:
             # Use both methods for critical decisions
             return await self.evaluate_hybrid(prompt, response, context)
-        elif risk_level == RiskLevel.HIGH:
+        if risk_level == RiskLevel.HIGH:
             # Prefer Constitutional AI for high-risk
             if self.constitutional_ai:
                 return await self.evaluate_with_constitutional_ai(
                     prompt, response, context
                 )
-            else:
-                return await self.evaluate_with_rlhf(prompt, response, context)
-        else:
-            # Use RLHF for lower risk (faster, proven)
             return await self.evaluate_with_rlhf(prompt, response, context)
+        # Use RLHF for lower risk (faster, proven)
+        return await self.evaluate_with_rlhf(prompt, response, context)
 
     async def evaluate(
-        self, prompt: str, response: str, context: Optional[dict[str, Any]] = None
+        self, prompt: str, response: str, context: dict[str, Any] | None = None
     ) -> GovernanceDecision:
         """
         Main evaluation entry point
@@ -475,7 +468,7 @@ class HybridGovernanceEngine:
             return result
 
         except Exception as e:
-            logger.error(f"Governance evaluation failed: {e}")
+            logger.exception(f"Governance evaluation failed: {e}")
             # Emergency fallback
             return GovernanceDecision(
                 decision="rejected",
@@ -579,7 +572,7 @@ DEFAULT_CONFIG = {
 
 
 async def create_hybrid_governance_engine(
-    config: Optional[dict[str, Any]] = None,
+    config: dict[str, Any] | None = None,
 ) -> HybridGovernanceEngine:
     """
     Factory function to create and initialize the hybrid governance engine

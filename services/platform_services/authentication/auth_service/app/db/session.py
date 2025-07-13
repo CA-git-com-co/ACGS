@@ -1,7 +1,7 @@
+from app.core.config import settings
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 
-from ..core.config import settings
 from .base_class import Base  # Import Base for metadata
 
 # Constitutional compliance hash for ACGS
@@ -14,7 +14,7 @@ db_url_to_use: str | None = settings.SQLALCHEMY_DATABASE_URI
 # Create an async engine instance
 # SQLALCHEMY_DATABASE_URI will point to test DB if TEST_ASYNC_DATABASE_URL is set.
 async_engine = create_async_engine(
-    db_url_to_use if db_url_to_use else "",  # Handle None for create_async_engine
+    db_url_to_use or "",  # Handle None for create_async_engine
     echo=getattr(settings, "DB_ECHO_LOG", False),  # Safely access DB_ECHO_LOG
     pool_pre_ping=True,
 )

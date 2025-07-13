@@ -12,14 +12,13 @@ import logging
 import pickle
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass
-from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, TypeVar, Union
+from typing import Any, TypeVar
 
 import aioredis
-
-from ..resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
+from shared.resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -53,7 +52,7 @@ class CacheKey:
     """Utility for generating consistent cache keys."""
 
     @staticmethod
-    def generate(prefix: str, *args, tenant_id: str = None, **kwargs) -> str:
+    def generate(prefix: str, *args, tenant_id: str | None = None, **kwargs) -> str:
         """Generate a consistent cache key."""
         key_parts = [prefix]
 
@@ -97,34 +96,28 @@ class Cache(ABC):
     """Abstract base class for cache implementations."""
 
     @abstractmethod
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from cache."""
-        pass
 
     @abstractmethod
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in cache."""
-        pass
 
     @abstractmethod
     async def delete(self, key: str) -> bool:
         """Delete value from cache."""
-        pass
 
     @abstractmethod
     async def exists(self, key: str) -> bool:
         """Check if key exists in cache."""
-        pass
 
     @abstractmethod
     async def clear(self) -> bool:
         """Clear all cache entries."""
-        pass
 
     @abstractmethod
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get cache statistics."""
-        pass
 
 
 class MemoryCache(Cache):
@@ -132,9 +125,9 @@ class MemoryCache(Cache):
 
     def __init__(self, config: CacheConfig = None):
         self.config = config or CacheConfig()
-        self._cache: Dict[str, Dict[str, Any]] = {}
-        self._access_times: Dict[str, float] = {}
-        self._access_counts: Dict[str, int] = {}
+        self._cache: dict[str, dict[str, Any]] = {}
+        self._access_times: dict[str, float] = {}
+        self._access_counts: dict[str, int] = {}
         self._lock = asyncio.Lock()
 
         # Statistics
@@ -143,7 +136,7 @@ class MemoryCache(Cache):
         self._sets = 0
         self._evictions = 0
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from memory cache."""
         async with self._lock:
             if key not in self._cache:
@@ -165,7 +158,7 @@ class MemoryCache(Cache):
             self._hits += 1
             return entry["value"]
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in memory cache."""
         async with self._lock:
             # Check if we need to evict
@@ -240,7 +233,7 @@ class MemoryCache(Cache):
 
         self._evictions += 1
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get memory cache statistics."""
         total_requests = self._hits + self._misses
         hit_rate = self._hits / max(total_requests, 1)
@@ -267,7 +260,7 @@ class RedisCache(Cache):
     ):
         self.redis_url = redis_url
         self.config = config or CacheConfig()
-        self._redis: Optional[aioredis.Redis] = None
+        self._redis: aioredis.Redis | None = None
         self._circuit_breaker = None
 
         if self.config.circuit_breaker_enabled:
@@ -292,26 +285,25 @@ class RedisCache(Cache):
                     decode_responses=False,  # We handle serialization
                 )
             except Exception as e:
-                logger.error(f"Failed to connect to Redis: {e}")
+                logger.exception(f"Failed to connect to Redis: {e}")
                 self._errors += 1
                 raise
 
         return self._redis
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from Redis cache."""
         try:
             if self._circuit_breaker:
                 return await self._circuit_breaker.call(self._get_internal, key)
-            else:
-                return await self._get_internal(key)
+            return await self._get_internal(key)
         except Exception as e:
-            logger.error(f"Redis cache get error: {e}")
+            logger.exception(f"Redis cache get error: {e}")
             self._errors += 1
             self._misses += 1
             return None
 
-    async def _get_internal(self, key: str) -> Optional[Any]:
+    async def _get_internal(self, key: str) -> Any | None:
         """Internal get method."""
         redis = await self._get_redis()
 
@@ -325,28 +317,25 @@ class RedisCache(Cache):
             self._hits += 1
             return value
         except Exception as e:
-            logger.error(f"Failed to deserialize cached value: {e}")
+            logger.exception(f"Failed to deserialize cached value: {e}")
             self._errors += 1
             self._misses += 1
             return None
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in Redis cache."""
         try:
             if self._circuit_breaker:
                 return await self._circuit_breaker.call(
                     self._set_internal, key, value, ttl
                 )
-            else:
-                return await self._set_internal(key, value, ttl)
+            return await self._set_internal(key, value, ttl)
         except Exception as e:
-            logger.error(f"Redis cache set error: {e}")
+            logger.exception(f"Redis cache set error: {e}")
             self._errors += 1
             return False
 
-    async def _set_internal(
-        self, key: str, value: Any, ttl: Optional[int] = None
-    ) -> bool:
+    async def _set_internal(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Internal set method."""
         redis = await self._get_redis()
 
@@ -358,7 +347,7 @@ class RedisCache(Cache):
             self._sets += 1
             return True
         except Exception as e:
-            logger.error(f"Failed to serialize value for cache: {e}")
+            logger.exception(f"Failed to serialize value for cache: {e}")
             self._errors += 1
             return False
 
@@ -369,7 +358,7 @@ class RedisCache(Cache):
             result = await redis.delete(key)
             return result > 0
         except Exception as e:
-            logger.error(f"Redis cache delete error: {e}")
+            logger.exception(f"Redis cache delete error: {e}")
             self._errors += 1
             return False
 
@@ -379,7 +368,7 @@ class RedisCache(Cache):
             redis = await self._get_redis()
             return await redis.exists(key) > 0
         except Exception as e:
-            logger.error(f"Redis cache exists error: {e}")
+            logger.exception(f"Redis cache exists error: {e}")
             self._errors += 1
             return False
 
@@ -390,11 +379,11 @@ class RedisCache(Cache):
             await redis.flushdb()
             return True
         except Exception as e:
-            logger.error(f"Redis cache clear error: {e}")
+            logger.exception(f"Redis cache clear error: {e}")
             self._errors += 1
             return False
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get Redis cache statistics."""
         total_requests = self._hits + self._misses
         hit_rate = self._hits / max(total_requests, 1)
@@ -410,7 +399,7 @@ class RedisCache(Cache):
                 "keyspace_misses": info.get("keyspace_misses", 0),
             }
         except Exception as e:
-            logger.error(f"Failed to get Redis info: {e}")
+            logger.exception(f"Failed to get Redis info: {e}")
 
         return {
             "type": "redis",
@@ -451,7 +440,7 @@ class MultiLevelCache(Cache):
         self._l2_hits = 0
         self._misses = 0
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from multi-level cache (L1 -> L2)."""
         # Try L1 cache first (memory)
         value = await self.l1_cache.get(key)
@@ -471,7 +460,7 @@ class MultiLevelCache(Cache):
         self._misses += 1
         return None
 
-    async def set(self, key: str, value: Any, ttl: Optional[int] = None) -> bool:
+    async def set(self, key: str, value: Any, ttl: int | None = None) -> bool:
         """Set value in both cache levels."""
         l1_success = await self.l1_cache.set(key, value, ttl)
 
@@ -511,7 +500,7 @@ class MultiLevelCache(Cache):
 
         return l1_success and l2_success
 
-    async def get_stats(self) -> Dict[str, Any]:
+    async def get_stats(self) -> dict[str, Any]:
         """Get multi-level cache statistics."""
         total_requests = self._l1_hits + self._l2_hits + self._misses
         l1_hit_rate = self._l1_hits / max(total_requests, 1)
@@ -541,8 +530,8 @@ class CacheManager:
     """Central cache manager for coordinating multiple cache instances."""
 
     def __init__(self):
-        self._caches: Dict[str, Cache] = {}
-        self._default_cache: Optional[Cache] = None
+        self._caches: dict[str, Cache] = {}
+        self._default_cache: Cache | None = None
 
     def register_cache(self, name: str, cache: Cache, is_default: bool = False) -> None:
         """Register a cache instance."""
@@ -552,20 +541,20 @@ class CacheManager:
 
         logger.info(f"Registered cache: {name}")
 
-    def get_cache(self, name: str = None) -> Optional[Cache]:
+    def get_cache(self, name: str | None = None) -> Cache | None:
         """Get cache by name or default."""
         if name:
             return self._caches.get(name)
         return self._default_cache
 
-    async def get_global_stats(self) -> Dict[str, Any]:
+    async def get_global_stats(self) -> dict[str, Any]:
         """Get statistics for all registered caches."""
         stats = {}
         for name, cache in self._caches.items():
             try:
                 stats[name] = await cache.get_stats()
             except Exception as e:
-                logger.error(f"Failed to get stats for cache {name}: {e}")
+                logger.exception(f"Failed to get stats for cache {name}: {e}")
                 stats[name] = {"error": str(e)}
 
         return {
@@ -585,9 +574,9 @@ def get_cache_manager() -> CacheManager:
 
 
 def cache_result(
-    cache_name: str = None,
-    key_prefix: str = None,
-    ttl: int = None,
+    cache_name: str | None = None,
+    key_prefix: str | None = None,
+    ttl: int | None = None,
     tenant_aware: bool = True,
 ):
     """Decorator for caching function results."""
@@ -622,7 +611,7 @@ def cache_result(
 
 
 async def invalidate_cache(
-    pattern: str, cache_name: str = None, tenant_id: str = None
+    pattern: str, cache_name: str | None = None, tenant_id: str | None = None
 ) -> int:
     """Invalidate cache entries matching pattern."""
     cache = _cache_manager.get_cache(cache_name)

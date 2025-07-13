@@ -8,7 +8,7 @@ agents and services.
 import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Callable, Dict, List, Optional, Set
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -23,21 +23,20 @@ class Event(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     event_type: str
     source: str
-    data: Dict[str, Any] = Field(default_factory=dict)
+    data: dict[str, Any] = Field(default_factory=dict)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
-    correlation_id: Optional[str] = None
+    correlation_id: str | None = None
 
 
 class EventHandler:
     """Base class for event handlers"""
 
-    def __init__(self, handler_id: str, event_types: List[str]):
+    def __init__(self, handler_id: str, event_types: list[str]):
         self.handler_id = handler_id
         self.event_types = set(event_types)
 
     async def handle(self, event: Event) -> None:
         """Handle an event. Override in subclasses."""
-        pass
 
     def can_handle(self, event_type: str) -> bool:
         """Check if this handler can handle the given event type"""
@@ -56,8 +55,8 @@ class EventBus:
     """
 
     def __init__(self, max_history: int = 1000):
-        self.handlers: Dict[str, EventHandler] = {}
-        self.event_history: List[Event] = []
+        self.handlers: dict[str, EventHandler] = {}
+        self.event_history: list[Event] = []
         self.max_history = max_history
         self.logger = logging.getLogger(__name__)
         self._lock = asyncio.Lock()
@@ -88,9 +87,11 @@ class EventBus:
         # Find handlers for this event type
         interested_handlers = []
         async with self._lock:
-            for handler in self.handlers.values():
-                if handler.can_handle(event.event_type):
-                    interested_handlers.append(handler)
+            interested_handlers.extend(
+                handler
+                for handler in self.handlers.values()
+                if handler.can_handle(event.event_type)
+            )
 
         # Handle event asynchronously
         if interested_handlers:
@@ -101,7 +102,7 @@ class EventBus:
         )
 
     async def _dispatch_to_handlers(
-        self, event: Event, handlers: List[EventHandler]
+        self, event: Event, handlers: list[EventHandler]
     ) -> None:
         """Dispatch event to handlers with error isolation"""
         tasks = []
@@ -118,13 +119,13 @@ class EventBus:
         try:
             await handler.handle(event)
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Error in handler {handler.handler_id} processing event {event.event_type}: {e}"
             )
 
     async def get_recent_events(
-        self, event_type: Optional[str] = None, limit: int = 100
-    ) -> List[Event]:
+        self, event_type: str | None = None, limit: int = 100
+    ) -> list[Event]:
         """Get recent events, optionally filtered by type"""
         async with self._lock:
             events = self.event_history.copy()
@@ -144,13 +145,13 @@ class EventBus:
         """Get number of registered handlers"""
         return len(self.handlers)
 
-    def get_registered_handlers(self) -> List[str]:
+    def get_registered_handlers(self) -> list[str]:
         """Get list of registered handler IDs"""
         return list(self.handlers.keys())
 
 
 # Global event bus instance
-_global_event_bus: Optional[EventBus] = None
+_global_event_bus: EventBus | None = None
 
 
 def get_event_bus() -> EventBus:
@@ -171,8 +172,8 @@ def set_event_bus(event_bus: EventBus) -> None:
 async def publish_event(
     event_type: str,
     source: str,
-    data: Dict[str, Any],
-    correlation_id: Optional[str] = None,
+    data: dict[str, Any],
+    correlation_id: str | None = None,
 ) -> None:
     """Convenience function to publish an event"""
     event = Event(

@@ -5,6 +5,8 @@ title: 'Add frontend component tests'
 labels: good first issue, frontend, testing
 assignees: ''
 ---
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Description
 Write React component tests for governance dashboard

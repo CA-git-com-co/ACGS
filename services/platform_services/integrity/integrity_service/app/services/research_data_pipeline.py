@@ -472,7 +472,7 @@ class ResearchDataPipeline:
 
         except Exception as e:
             await db.rollback()
-            logger.error(f"Failed to create research export: {e!s}")
+            logger.exception(f"Failed to create research export: {e!s}")
             raise
 
     async def _apply_k_anonymity(

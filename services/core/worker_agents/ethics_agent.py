@@ -7,8 +7,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Set
-from uuid import uuid4
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -23,13 +22,13 @@ class EthicalAnalysisResult(BaseModel):
     approved: bool
     risk_level: str  # 'low', 'medium', 'high', 'critical'
     confidence: float = Field(ge=0.0, le=1.0)
-    bias_assessment: Dict[str, Any] = Field(default_factory=dict)
-    fairness_evaluation: Dict[str, Any] = Field(default_factory=dict)
-    harm_potential: Dict[str, Any] = Field(default_factory=dict)
-    stakeholder_impact: Dict[str, Any] = Field(default_factory=dict)
-    recommendations: List[str] = Field(default_factory=list)
-    constitutional_compliance: Dict[str, Any] = Field(default_factory=dict)
-    analysis_metadata: Dict[str, Any] = Field(default_factory=dict)
+    bias_assessment: dict[str, Any] = Field(default_factory=dict)
+    fairness_evaluation: dict[str, Any] = Field(default_factory=dict)
+    harm_potential: dict[str, Any] = Field(default_factory=dict)
+    stakeholder_impact: dict[str, Any] = Field(default_factory=dict)
+    recommendations: list[str] = Field(default_factory=list)
+    constitutional_compliance: dict[str, Any] = Field(default_factory=dict)
+    analysis_metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class BiasDetector:
@@ -37,8 +36,8 @@ class BiasDetector:
 
     @staticmethod
     async def detect_demographic_bias(
-        model_info: Dict[str, Any], data_sources: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], data_sources: dict[str, Any]
+    ) -> dict[str, Any]:
         """Detect demographic bias in model or data"""
         bias_metrics = {
             "demographic_parity": False,
@@ -56,7 +55,7 @@ class BiasDetector:
         if total_samples > 0:
             gender_distribution = demographics.get("gender", {})
             race_distribution = demographics.get("race", {})
-            age_distribution = demographics.get("age", {})
+            demographics.get("age", {})
 
             # Calculate representation ratios
             bias_detected = False
@@ -105,10 +104,10 @@ class BiasDetector:
         }
 
     @staticmethod
-    async def detect_algorithmic_bias(model_info: Dict[str, Any]) -> Dict[str, Any]:
+    async def detect_algorithmic_bias(model_info: dict[str, Any]) -> dict[str, Any]:
         """Detect algorithmic bias in model architecture or training"""
         model_type = model_info.get("model_type", "")
-        architecture = model_info.get("architecture", {})
+        model_info.get("architecture", {})
 
         bias_indicators = []
 
@@ -143,17 +142,25 @@ class BiasDetector:
         }
 
     @staticmethod
-    def _generate_bias_recommendations(bias_details: Dict[str, Any]) -> List[str]:
+    def _generate_bias_recommendations(bias_details: dict[str, Any]) -> list[str]:
         """Generate recommendations for addressing detected bias"""
         recommendations = []
 
         if "gender_imbalance" in bias_details:
-            recommendations.append("Implement gender-balanced sampling or reweighting")
-            recommendations.append("Consider gender-neutral model variants")
+            recommendations.extend(
+                (
+                    "Implement gender-balanced sampling or reweighting",
+                    "Consider gender-neutral model variants",
+                )
+            )
 
         if "race_imbalance" in bias_details:
-            recommendations.append("Increase representation of underrepresented groups")
-            recommendations.append("Apply fairness-aware machine learning techniques")
+            recommendations.extend(
+                (
+                    "Increase representation of underrepresented groups",
+                    "Apply fairness-aware machine learning techniques",
+                )
+            )
 
         if not recommendations:
             recommendations.append("Continue monitoring for demographic biases")
@@ -161,7 +168,7 @@ class BiasDetector:
         return recommendations
 
     @staticmethod
-    def _generate_algorithmic_bias_recommendations(indicators: List[str]) -> List[str]:
+    def _generate_algorithmic_bias_recommendations(indicators: list[str]) -> list[str]:
         """Generate recommendations for algorithmic bias mitigation"""
         recommendations = []
 
@@ -189,8 +196,8 @@ class FairnessEvaluator:
 
     @staticmethod
     async def evaluate_fairness(
-        model_info: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate model fairness across different dimensions"""
         fairness_dimensions = {
             "individual_fairness": await FairnessEvaluator._evaluate_individual_fairness(
@@ -228,8 +235,8 @@ class FairnessEvaluator:
 
     @staticmethod
     async def _evaluate_individual_fairness(
-        model_info: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+    ) -> dict[str, Any]:
         """Evaluate individual fairness - similar individuals should be treated similarly"""
         # Check if model has similarity metrics or distance functions
         similarity_preservation = model_info.get("similarity_preservation", {})
@@ -252,7 +259,7 @@ class FairnessEvaluator:
         }
 
     @staticmethod
-    async def _evaluate_group_fairness(model_info: Dict[str, Any]) -> Dict[str, Any]:
+    async def _evaluate_group_fairness(model_info: dict[str, Any]) -> dict[str, Any]:
         """Evaluate group fairness - equal treatment across demographic groups"""
         fairness_constraints = model_info.get("fairness_constraints", [])
 
@@ -284,8 +291,8 @@ class FairnessEvaluator:
 
     @staticmethod
     async def _evaluate_counterfactual_fairness(
-        model_info: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+    ) -> dict[str, Any]:
         """Evaluate counterfactual fairness - decisions should be the same in counterfactual worlds"""
         causal_model = model_info.get("causal_model", {})
         protected_attributes = model_info.get("protected_attributes", [])
@@ -317,8 +324,8 @@ class FairnessEvaluator:
 
     @staticmethod
     async def _evaluate_procedural_fairness(
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Evaluate procedural fairness - fair processes and transparency"""
         transparency_measures = deployment_context.get("transparency_measures", [])
         appeal_process = deployment_context.get("appeal_process", {})
@@ -356,17 +363,16 @@ class FairnessEvaluator:
         """Categorize fairness level based on score"""
         if score >= 0.8:
             return "high"
-        elif score >= 0.6:
+        if score >= 0.6:
             return "medium"
-        elif score >= 0.4:
+        if score >= 0.4:
             return "low"
-        else:
-            return "critical"
+        return "critical"
 
     @staticmethod
     def _generate_fairness_recommendations(
-        fairness_dimensions: Dict[str, Any],
-    ) -> List[str]:
+        fairness_dimensions: dict[str, Any],
+    ) -> list[str]:
         """Generate recommendations based on fairness evaluation"""
         recommendations = []
 
@@ -396,10 +402,10 @@ class HarmAssessment:
 
     @staticmethod
     async def assess_potential_harms(
-        model_info: Dict[str, Any],
-        deployment_context: Dict[str, Any],
-        stakeholder_impact: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any],
+        deployment_context: dict[str, Any],
+        stakeholder_impact: dict[str, Any],
+    ) -> dict[str, Any]:
         """Comprehensive harm assessment"""
 
         harm_categories = {
@@ -437,8 +443,8 @@ class HarmAssessment:
 
     @staticmethod
     async def _assess_direct_harm(
-        model_info: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess direct harm to users"""
         use_case = deployment_context.get("use_case", "")
         user_impact = deployment_context.get("user_impact", {})
@@ -477,8 +483,8 @@ class HarmAssessment:
 
     @staticmethod
     async def _assess_indirect_harm(
-        model_info: Dict[str, Any], stakeholder_impact: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], stakeholder_impact: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess indirect harm to broader stakeholders"""
         affected_groups = stakeholder_impact.get("affected_groups", [])
         economic_impact = stakeholder_impact.get("economic_impact", {})
@@ -511,8 +517,8 @@ class HarmAssessment:
 
     @staticmethod
     async def _assess_systemic_harm(
-        deployment_context: Dict[str, Any],
-    ) -> Dict[str, Any]:
+        deployment_context: dict[str, Any],
+    ) -> dict[str, Any]:
         """Assess systemic harm to society"""
         scale = deployment_context.get("deployment_scale", {})
         societal_impact = deployment_context.get("societal_impact", {})
@@ -549,8 +555,8 @@ class HarmAssessment:
 
     @staticmethod
     async def _assess_privacy_harm(
-        model_info: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        model_info: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess privacy-related harm"""
         data_handling = deployment_context.get("data_handling", {})
         privacy_measures = deployment_context.get("privacy_measures", [])
@@ -599,15 +605,14 @@ class HarmAssessment:
         """Categorize risk level based on score"""
         if score >= 0.7:
             return "critical"
-        elif score >= 0.5:
+        if score >= 0.5:
             return "high"
-        elif score >= 0.3:
+        if score >= 0.3:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
     @staticmethod
-    def _generate_mitigation_strategies(harm_categories: Dict[str, Any]) -> List[str]:
+    def _generate_mitigation_strategies(harm_categories: dict[str, Any]) -> list[str]:
         """Generate harm mitigation strategies"""
         strategies = []
 
@@ -650,7 +655,7 @@ class HarmAssessment:
         return list(set(strategies))  # Remove duplicates
 
     @staticmethod
-    def _generate_monitoring_requirements(harm_categories: Dict[str, Any]) -> List[str]:
+    def _generate_monitoring_requirements(harm_categories: dict[str, Any]) -> list[str]:
         """Generate monitoring requirements for harm detection"""
         requirements = []
 
@@ -702,9 +707,9 @@ class EthicsAgent:
     def __init__(
         self,
         agent_id: str = "ethics_agent",
-        blackboard_service: Optional[BlackboardService] = None,
-        constitutional_framework: Optional[ConstitutionalSafetyValidator] = None,
-        ai_model_service: Optional[AIModelService] = None,
+        blackboard_service: BlackboardService | None = None,
+        constitutional_framework: ConstitutionalSafetyValidator | None = None,
+        ai_model_service: AIModelService | None = None,
     ):
         self.agent_id = agent_id
         self.agent_type = "ethics_agent"
@@ -743,8 +748,8 @@ class EthicsAgent:
         ]
 
     async def _analyze_bias(
-        self, model_info: Dict[str, Any], data_sources: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_info: dict[str, Any], data_sources: dict[str, Any]
+    ) -> dict[str, Any]:
         """Analyze bias in model and data sources"""
         return {
             "demographic_bias": {
@@ -769,8 +774,8 @@ class EthicsAgent:
         }
 
     async def _evaluate_fairness(
-        self, model_info: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_info: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate fairness of model deployment"""
         return {
             "distributive_fairness": {
@@ -805,8 +810,8 @@ class EthicsAgent:
         }
 
     async def _assess_potential_harm(
-        self, model_info: Dict[str, Any], deployment_context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, model_info: dict[str, Any], deployment_context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Assess potential harm from model deployment"""
         return {
             "direct_harm_potential": {
@@ -835,8 +840,8 @@ class EthicsAgent:
         }
 
     async def _apply_ethical_frameworks(
-        self, scenario: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any]
+    ) -> dict[str, Any]:
         """Apply various ethical frameworks to analyze scenario"""
         return {
             "utilitarian_analysis": {
@@ -865,8 +870,8 @@ class EthicsAgent:
         }
 
     async def _verify_constitutional_compliance(
-        self, analysis_result: Any, governance_request: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, analysis_result: Any, governance_request: dict[str, Any]
+    ) -> dict[str, Any]:
         """Verify constitutional compliance of analysis result"""
         # Return comprehensive compliance status for test compatibility
         return {
@@ -935,7 +940,7 @@ class EthicsAgent:
                 await asyncio.sleep(5)  # Check for new tasks every 5 seconds
 
             except Exception as e:
-                self.logger.error(f"Error in task claiming loop: {str(e)}")
+                self.logger.exception(f"Error in task claiming loop: {e!s}")
                 await asyncio.sleep(10)  # Wait longer on error
 
     async def process_task(self, task_id: str) -> Any:
@@ -960,13 +965,11 @@ class EthicsAgent:
                 raise ValueError(f"No handler for task type: {task.task_type}")
 
             # Process the task and return the actual result
-            result = await handler(task)
-
-            return result
+            return await handler(task)
 
         except Exception as e:
-            self.logger.error(f"Error processing task {task_id}: {str(e)}")
-            raise e
+            self.logger.exception(f"Error processing task {task_id}: {e!s}")
+            raise
 
     async def _process_task(self, task: TaskDefinition) -> None:
         """Process a claimed task"""
@@ -998,7 +1001,7 @@ class EthicsAgent:
             )
 
         except Exception as e:
-            self.logger.error(f"Error processing task {task.id}: {str(e)}")
+            self.logger.exception(f"Error processing task {task.id}: {e!s}")
 
             # Mark task as failed
             error_result = {
@@ -1024,7 +1027,7 @@ class EthicsAgent:
         bias_assessment = await BiasDetector.detect_demographic_bias(
             model_info, input_data.get("data_sources", {})
         )
-        algorithmic_bias = await BiasDetector.detect_algorithmic_bias(model_info)
+        await BiasDetector.detect_algorithmic_bias(model_info)
 
         # Perform fairness evaluation
         fairness_evaluation = await FairnessEvaluator.evaluate_fairness(
@@ -1052,7 +1055,7 @@ class EthicsAgent:
 
         # Bias assessment influence
         if bias_assessment.get("bias_detected", False):
-            if bias_assessment.get("severity") in ["high", "critical"]:
+            if bias_assessment.get("severity") in {"high", "critical"}:
                 risk_factors.append("High severity bias detected")
             else:
                 risk_factors.append("Moderate bias detected")
@@ -1061,14 +1064,14 @@ class EthicsAgent:
 
         # Fairness evaluation influence
         fairness_level = fairness_evaluation.get("fairness_level", "medium")
-        if fairness_level in ["low", "critical"]:
+        if fairness_level in {"low", "critical"}:
             risk_factors.append(f"Fairness level: {fairness_level}")
         else:
             confidence_factors.append(f"Acceptable fairness level: {fairness_level}")
 
         # Harm assessment influence
         harm_risk_level = harm_assessment.get("risk_level", "medium")
-        if harm_risk_level in ["high", "critical"]:
+        if harm_risk_level in {"high", "critical"}:
             risk_factors.append(f"Harm risk level: {harm_risk_level}")
         else:
             confidence_factors.append(f"Acceptable harm risk level: {harm_risk_level}")
@@ -1107,11 +1110,11 @@ class EthicsAgent:
             recommendations.append(
                 "Address identified ethical concerns before deployment"
             )
-        if harm_risk_level in ["high", "critical"]:
+        if harm_risk_level in {"high", "critical"}:
             recommendations.append(
                 "Implement comprehensive harm monitoring and mitigation"
             )
-        if fairness_level in ["low", "critical"]:
+        if fairness_level in {"low", "critical"}:
             recommendations.append("Improve fairness mechanisms before deployment")
 
         return EthicalAnalysisResult(
@@ -1162,10 +1165,10 @@ class EthicsAgent:
         ]
         max_severity = max(
             severity_levels,
-            key=lambda x: ["low", "medium", "high", "critical"].index(x),
+            key=["low", "medium", "high", "critical"].index,
         )
 
-        approved = max_severity in ["low", "medium"]
+        approved = max_severity in {"low", "medium"}
         confidence = 0.9 if not bias_assessment["overall_bias_detected"] else 0.6
 
         recommendations = []
@@ -1198,7 +1201,7 @@ class EthicsAgent:
         )
 
         fairness_level = fairness_evaluation.get("fairness_level", "medium")
-        approved = fairness_level in ["high", "medium"]
+        approved = fairness_level in {"high", "medium"}
         confidence = fairness_evaluation.get("overall_score", 0.5)
 
         return EthicalAnalysisResult(
@@ -1294,7 +1297,7 @@ class EthicsAgent:
         risk_level = harm_assessment.get("risk_level", "medium")
         risk_score = harm_assessment.get("overall_risk_score", 0.5)
 
-        approved = risk_level in ["low", "medium"] and risk_score < 0.7
+        approved = risk_level in {"low", "medium"} and risk_score < 0.7
         confidence = 1.0 - risk_score
 
         return EthicalAnalysisResult(
@@ -1312,8 +1315,8 @@ class EthicsAgent:
         )
 
     async def _check_constitutional_compliance(
-        self, required_principles: List[str], analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, required_principles: list[str], analysis_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check constitutional compliance for ethical analysis"""
         if not self.constitutional_framework:
             return {
@@ -1352,14 +1355,14 @@ class EthicsAgent:
         }
 
     async def _check_principle_compliance(
-        self, principle: str, analysis_results: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, principle: str, analysis_results: dict[str, Any]
+    ) -> dict[str, Any]:
         """Check compliance with a specific constitutional principle"""
         if principle == "safety":
             harm_assessment = analysis_results.get("harm_assessment", {})
             risk_level = harm_assessment.get("risk_level", "medium")
 
-            if risk_level in ["high", "critical"]:
+            if risk_level in {"high", "critical"}:
                 return {
                     "compliant": False,
                     "violation_reason": f"High harm risk level: {risk_level}",
@@ -1368,7 +1371,7 @@ class EthicsAgent:
 
             return {"compliant": True, "note": "Safety requirements met"}
 
-        elif principle == "transparency":
+        if principle == "transparency":
             fairness_eval = analysis_results.get("fairness_evaluation", {})
             procedural_fairness = fairness_eval.get("dimensions", {}).get(
                 "procedural_fairness", {}
@@ -1384,14 +1387,14 @@ class EthicsAgent:
 
             return {"compliant": True, "note": "Transparency requirements met"}
 
-        elif principle == "consent":
+        if principle == "consent":
             # Check if consent mechanisms are in place
             return {
                 "compliant": True,
                 "note": "Consent compliance check not implemented",
             }
 
-        elif principle == "data_privacy":
+        if principle == "data_privacy":
             harm_assessment = analysis_results.get("harm_assessment", {})
             privacy_harm = harm_assessment.get("harm_categories", {}).get(
                 "privacy_harm", {}
@@ -1407,11 +1410,10 @@ class EthicsAgent:
 
             return {"compliant": True, "note": "Data privacy requirements met"}
 
-        else:
-            return {
-                "compliant": True,
-                "note": f"Principle {principle} not specifically checked",
-            }
+        return {
+            "compliant": True,
+            "note": f"Principle {principle} not specifically checked",
+        }
 
     async def _add_task_knowledge(
         self, task: TaskDefinition, result: EthicalAnalysisResult
@@ -1444,5 +1446,5 @@ class EthicsAgent:
                 await self.blackboard.agent_heartbeat(self.agent_id)
                 await asyncio.sleep(30)  # Heartbeat every 30 seconds
             except Exception as e:
-                self.logger.error(f"Error in heartbeat loop: {str(e)}")
+                self.logger.exception(f"Error in heartbeat loop: {e!s}")
                 await asyncio.sleep(60)

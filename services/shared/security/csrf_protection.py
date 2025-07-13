@@ -12,7 +12,6 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Dict, Optional, Set, Tuple
 
 import structlog
 from fastapi import HTTPException, Request, Response
@@ -45,8 +44,8 @@ class CSRFConfig:
     cookie_secure: bool = True
     cookie_samesite: str = "Strict"  # Strict, Lax, None
     require_origin_header: bool = True
-    allowed_origins: Set[str] = None
-    excluded_paths: Set[str] = None
+    allowed_origins: set[str] = None
+    excluded_paths: set[str] = None
 
     def __post_init__(self):
         if self.allowed_origins is None:
@@ -72,9 +71,9 @@ class CSRFTokenManager:
 
     def __init__(self, config: CSRFConfig):
         self.config = config
-        self.tokens: Dict[str, datetime] = {}
+        self.tokens: dict[str, datetime] = {}
 
-    def generate_token(self, session_id: Optional[str] = None) -> Tuple[str, str]:
+    def generate_token(self, session_id: str | None = None) -> tuple[str, str]:
         """
         Generate CSRF token and signature.
 
@@ -110,7 +109,7 @@ class CSRFTokenManager:
         return token, signed_token
 
     def validate_token(
-        self, token: str, signed_token: str, session_id: Optional[str] = None
+        self, token: str, signed_token: str, session_id: str | None = None
     ) -> bool:
         """
         Validate CSRF token with signature verification.
@@ -182,7 +181,7 @@ class CSRFTokenManager:
             return True
 
         except Exception as e:
-            logger.error("CSRF token validation error", error=str(e))
+            logger.exception("CSRF token validation error", error=str(e))
             return False
 
     def invalidate_token(self, token: str):
@@ -220,7 +219,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             return await call_next(request)
 
         # For state-changing methods, validate CSRF
-        if request.method in ["POST", "PUT", "PATCH", "DELETE"]:
+        if request.method in {"POST", "PUT", "PATCH", "DELETE"}:
             if not await self._validate_csrf_protection(request):
                 logger.warning(
                     "CSRF validation failed",
@@ -274,10 +273,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             return False
 
         # Method 3: Synchronizer token validation
-        if not await self._validate_synchronizer_token(request):
-            return False
-
-        return True
+        return await self._validate_synchronizer_token(request)
 
     def _validate_origin(self, request: Request) -> bool:
         """Validate Origin or Referer header."""
@@ -394,7 +390,7 @@ class CSRFProtectionMiddleware(BaseHTTPMiddleware):
             )
 
         except Exception as e:
-            logger.error("Failed to add CSRF token to response", error=str(e))
+            logger.exception("Failed to add CSRF token to response", error=str(e))
 
         return response
 
@@ -406,7 +402,7 @@ class CSRFProtection:
         self.config = config or CSRFConfig()
         self.token_manager = CSRFTokenManager(self.config)
 
-    def generate_token_pair(self, session_id: Optional[str] = None) -> Dict[str, str]:
+    def generate_token_pair(self, session_id: str | None = None) -> dict[str, str]:
         """Generate CSRF token pair for manual handling."""
         token, signed_token = self.token_manager.generate_token(session_id)
 
@@ -418,7 +414,7 @@ class CSRFProtection:
         }
 
     def validate_request(
-        self, token: str, signed_token: str, session_id: Optional[str] = None
+        self, token: str, signed_token: str, session_id: str | None = None
     ) -> bool:
         """Validate CSRF tokens manually."""
         return self.token_manager.validate_token(token, signed_token, session_id)
@@ -430,7 +426,7 @@ class CSRFProtection:
 
 # Utility functions for easy integration
 def create_csrf_protection(
-    secret_key: str, allowed_origins: Set[str] = None, **kwargs
+    secret_key: str, allowed_origins: set[str] | None = None, **kwargs
 ) -> CSRFProtection:
     """Create CSRF protection with custom configuration."""
     config = CSRFConfig(
@@ -444,7 +440,7 @@ def generate_csrf_meta_tag(token: str, header_name: str = "X-CSRF-Token") -> str
     return f'<meta name="csrf-token" content="{token}" data-header="{header_name}">'
 
 
-def get_csrf_headers(token: str, header_name: str = "X-CSRF-Token") -> Dict[str, str]:
+def get_csrf_headers(token: str, header_name: str = "X-CSRF-Token") -> dict[str, str]:
     """Get headers for CSRF-protected requests."""
     return {header_name: token}
 
@@ -455,30 +451,30 @@ CSRF_JAVASCRIPT_SNIPPET = """
 (function() {
     const csrfMeta = document.querySelector('meta[name="csrf-token"]');
     if (!csrfMeta) return;
-    
+
     const token = csrfMeta.getAttribute('content');
     const headerName = csrfMeta.getAttribute('data-header') || 'X-CSRF-Token';
-    
+
     // Override fetch to include CSRF token
     const originalFetch = window.fetch;
     window.fetch = function(url, options = {}) {
         if (!options.headers) options.headers = {};
-        
+
         // Add CSRF token for state-changing methods
         if (options.method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(options.method.toUpperCase())) {
             options.headers[headerName] = token;
         }
-        
+
         return originalFetch(url, options);
     };
-    
+
     // Override XMLHttpRequest
     const originalOpen = XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(method, url, ...args) {
         this._method = method;
         return originalOpen.call(this, method, url, ...args);
     };
-    
+
     const originalSend = XMLHttpRequest.prototype.send;
     XMLHttpRequest.prototype.send = function(data) {
         if (this._method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(this._method.toUpperCase())) {

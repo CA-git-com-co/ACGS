@@ -15,7 +15,7 @@ import logging
 import time
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -44,7 +44,7 @@ class GovernanceRequest(BaseModel):
     requester_id: str
     input_data: dict[str, Any]
     constitutional_requirements: list[str] = Field(default_factory=list)
-    deadline: Optional[datetime] = None
+    deadline: datetime | None = None
     complexity_score: float = Field(default=0.5, ge=0.0, le=1.0)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -241,7 +241,7 @@ class HierarchicalAgent(BaseModel):
     tier: AgentTier = Field(..., description="Hierarchical tier")
     domain: str = Field(..., description="Domain of expertise")
     capabilities: list[str] = Field(default_factory=list)
-    parent_agent_id: Optional[str] = Field(None, description="Parent in hierarchy")
+    parent_agent_id: str | None = Field(None, description="Parent in hierarchy")
     child_agent_ids: list[str] = Field(default_factory=list)
     workload_capacity: int = Field(default=5, description="Maximum concurrent tasks")
     current_workload: int = Field(default=0, description="Current active tasks")
@@ -310,19 +310,18 @@ class HierarchicalCoordinationManager:
                 return await self._create_flat_agent_team(
                     hierarchy_id, task_description
                 )
-            elif complexity_level <= 5:
+            if complexity_level <= 5:
                 # Medium complexity - two-tier hierarchy
                 return await self._create_two_tier_hierarchy(
                     hierarchy_id, task_description, complexity_level
                 )
-            else:
-                # Complex task - full hierarchical structure
-                return await self._create_full_hierarchy(
-                    hierarchy_id, task_description, complexity_level
-                )
+            # Complex task - full hierarchical structure
+            return await self._create_full_hierarchy(
+                hierarchy_id, task_description, complexity_level
+            )
 
         except Exception as e:
-            logger.error(f"Failed to create agent hierarchy: {e!s}")
+            logger.exception(f"Failed to create agent hierarchy: {e!s}")
             raise
 
     async def _create_flat_agent_team(
@@ -359,7 +358,7 @@ class HierarchicalCoordinationManager:
             return hierarchy
 
         except Exception as e:
-            logger.error(f"Failed to create flat agent team: {e!s}")
+            logger.exception(f"Failed to create flat agent team: {e!s}")
             raise
 
     async def _create_two_tier_hierarchy(
@@ -422,7 +421,7 @@ class HierarchicalCoordinationManager:
             return hierarchy
 
         except Exception as e:
-            logger.error(f"Failed to create two-tier hierarchy: {e!s}")
+            logger.exception(f"Failed to create two-tier hierarchy: {e!s}")
             raise
 
     async def _create_full_hierarchy(
@@ -513,7 +512,7 @@ class HierarchicalCoordinationManager:
             return hierarchy
 
         except Exception as e:
-            logger.error(f"Failed to create full hierarchy: {e!s}")
+            logger.exception(f"Failed to create full hierarchy: {e!s}")
             raise
 
     async def _analyze_task_domains(
@@ -594,7 +593,7 @@ class HierarchicalCoordinationManager:
             return domains
 
         except Exception as e:
-            logger.error(f"Failed to analyze task domains: {e!s}")
+            logger.exception(f"Failed to analyze task domains: {e!s}")
             return {
                 "general": {"specialist_capabilities": [], "worker_capabilities": []}
             }
@@ -609,10 +608,10 @@ class CoordinatorAgent:
     def __init__(
         self,
         agent_id: str = "acgs_coordinator",
-        blackboard_service: Optional[BlackboardService] = None,
-        event_bus: Optional[EventBus] = None,
-        constitutional_framework: Optional[ConstitutionalSafetyValidator] = None,
-        performance_monitor: Optional[PerformanceMonitor] = None,
+        blackboard_service: BlackboardService | None = None,
+        event_bus: EventBus | None = None,
+        constitutional_framework: ConstitutionalSafetyValidator | None = None,
+        performance_monitor: PerformanceMonitor | None = None,
     ):
         self.agent_id = agent_id
         self.blackboard = blackboard_service or BlackboardService()
@@ -801,7 +800,7 @@ class CoordinatorAgent:
             }
 
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Error processing governance request {request.id}: {e!s}"
             )
             # Clean up
@@ -1039,7 +1038,7 @@ class CoordinatorAgent:
             return True
 
         except Exception as e:
-            self.logger.error(f"Constitutional compliance check failed: {e!s}")
+            self.logger.exception(f"Constitutional compliance check failed: {e!s}")
             return False
 
     async def _validate_constitutional_compliance_detailed(
@@ -1072,7 +1071,7 @@ class CoordinatorAgent:
             )
 
             # Ensure required fields are present
-            detailed_result = {
+            return {
                 "compliant": compliance_result.get("compliant", True),
                 "constitutional_hash": "cdd01ef066bc6cf2",
                 "principle_adherence": compliance_result.get(
@@ -1090,10 +1089,8 @@ class CoordinatorAgent:
                 "framework_available": True,
             }
 
-            return detailed_result
-
         except Exception as e:
-            self.logger.error(f"Constitutional compliance check failed: {e!s}")
+            self.logger.exception(f"Constitutional compliance check failed: {e!s}")
             return {
                 "compliant": False,
                 "constitutional_hash": "cdd01ef066bc6cf2",
@@ -1208,7 +1205,7 @@ class CoordinatorAgent:
             self.logger.info(f"Governance request {request_id} completed successfully")
 
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Error integrating results for request {request_id}: {e!s}"
             )
             # Mark as failed and cleanup
@@ -1337,7 +1334,7 @@ class CoordinatorAgent:
         recommendations = []
 
         # Analyze each task result for recommendations
-        for task_type, result in task_results.items():
+        for result in task_results.values():
             if "recommendations" in result:
                 recommendations.extend(result["recommendations"])
 
@@ -1362,10 +1359,11 @@ class CoordinatorAgent:
         if not task_results:
             return 0.0
 
-        confidence_scores = []
-        for result in task_results.values():
-            if "confidence" in result:
-                confidence_scores.append(result["confidence"])
+        confidence_scores = [
+            result["confidence"]
+            for result in task_results.values()
+            if "confidence" in result
+        ]
 
         if not confidence_scores:
             return 0.7  # Default confidence
@@ -1399,7 +1397,7 @@ class CoordinatorAgent:
                 await asyncio.sleep(30)  # Check every 30 seconds
 
             except Exception as e:
-                self.logger.error(f"Error in monitoring loop: {e!s}")
+                self.logger.exception(f"Error in monitoring loop: {e!s}")
                 await asyncio.sleep(60)  # Wait longer on error
 
     async def _conflict_resolution_loop(self) -> None:
@@ -1415,7 +1413,7 @@ class CoordinatorAgent:
                 await asyncio.sleep(10)  # Check every 10 seconds
 
             except Exception as e:
-                self.logger.error(f"Error in conflict resolution loop: {e!s}")
+                self.logger.exception(f"Error in conflict resolution loop: {e!s}")
                 await asyncio.sleep(30)
 
     async def _heartbeat_loop(self) -> None:
@@ -1425,7 +1423,7 @@ class CoordinatorAgent:
                 await self.blackboard.agent_heartbeat(self.agent_id)
                 await asyncio.sleep(30)  # Heartbeat every 30 seconds
             except Exception as e:
-                self.logger.error(f"Error in heartbeat loop: {e!s}")
+                self.logger.exception(f"Error in heartbeat loop: {e!s}")
                 await asyncio.sleep(60)
 
     async def _check_stuck_tasks(self) -> None:
@@ -1456,7 +1454,7 @@ class CoordinatorAgent:
                 self.logger.warning(f"Unknown conflict type: {conflict.conflict_type}")
 
         except Exception as e:
-            self.logger.error(f"Error resolving conflict {conflict.id}: {e!s}")
+            self.logger.exception(f"Error resolving conflict {conflict.id}: {e!s}")
 
     async def _resolve_decision_conflict(self, conflict: ConflictItem) -> None:
         """Resolve decision conflicts using voting or escalation"""
@@ -1589,7 +1587,7 @@ class CoordinatorAgent:
             request = GovernanceRequest(**request_data)
             await self.process_governance_request(request)
         except Exception as e:
-            self.logger.error(f"Error handling governance request: {e!s}")
+            self.logger.exception(f"Error handling governance request: {e!s}")
 
     async def _handle_conflict_detection(self, event_data: dict[str, Any]) -> None:
         """Handle conflict detection events"""
@@ -1605,7 +1603,7 @@ class CoordinatorAgent:
         This method is used by tests to initiate governance workflows.
         """
         # Process the request and return the request ID
-        result = await self.process_governance_request(request)
+        await self.process_governance_request(request)
         # Return the request ID regardless of the result structure
         return request.id
 
@@ -1673,7 +1671,7 @@ class CoordinatorAgent:
                     )
 
         except Exception as e:
-            self.logger.error(
+            self.logger.exception(
                 f"Error detecting conflicts for request {request_id}: {e!s}"
             )
 
@@ -1719,7 +1717,7 @@ class CoordinatorAgent:
             return True
 
         except Exception as e:
-            self.logger.error(f"Error assigning task to {agent_type}: {e!s}")
+            self.logger.exception(f"Error assigning task to {agent_type}: {e!s}")
             return False
 
     async def resolve_conflict_through_consensus(
@@ -1794,7 +1792,7 @@ class CoordinatorAgent:
             return resolution_result
 
         except Exception as e:
-            self.logger.error(f"Error resolving conflict through consensus: {e!s}")
+            self.logger.exception(f"Error resolving conflict through consensus: {e!s}")
             return {
                 "resolution": {
                     "success": False,
@@ -1826,7 +1824,7 @@ class CoordinatorAgent:
                     "description": "Require agents to reach consensus",
                 },
             ]
-        elif conflict_type == "approval_conflict":
+        if conflict_type == "approval_conflict":
             return [
                 {
                     "option": "require_unanimous_approval",
@@ -1838,17 +1836,16 @@ class CoordinatorAgent:
                     "description": "Apply constitutional principles",
                 },
             ]
-        else:
-            return [
-                {
-                    "option": "escalate_to_human",
-                    "description": "Escalate to human oversight",
-                },
-                {
-                    "option": "apply_constitutional_principles",
-                    "description": "Apply constitutional framework",
-                },
-            ]
+        return [
+            {
+                "option": "escalate_to_human",
+                "description": "Escalate to human oversight",
+            },
+            {
+                "option": "apply_constitutional_principles",
+                "description": "Apply constitutional framework",
+            },
+        ]
 
     def _apply_constitutional_resolution(
         self, conflict: dict[str, Any]
@@ -1866,7 +1863,7 @@ class CoordinatorAgent:
                 ),
                 "constitutional_principle": "safety_first",
             }
-        elif conflict_type == "approval_conflict":
+        if conflict_type == "approval_conflict":
             # Constitutional principle: require consensus for approval
             return {
                 "decision": "require_unanimous_approval",
@@ -1876,12 +1873,11 @@ class CoordinatorAgent:
                 ),
                 "constitutional_principle": "consensus_requirement",
             }
-        else:
-            return {
-                "decision": "escalate_to_human_oversight",
-                "rationale": "Unknown conflict type requires human intervention",
-                "constitutional_principle": "human_oversight",
-            }
+        return {
+            "decision": "escalate_to_human_oversight",
+            "rationale": "Unknown conflict type requires human intervention",
+            "constitutional_principle": "human_oversight",
+        }
 
     # Enhanced Hierarchical Coordination Methods
 
@@ -1930,7 +1926,7 @@ class CoordinatorAgent:
             return complexity_level
 
         except Exception as e:
-            self.logger.error(f"Failed to calculate task complexity: {e!s}")
+            self.logger.exception(f"Failed to calculate task complexity: {e!s}")
             return 5  # Default to medium complexity
 
     async def _coordinate_hierarchical_execution(
@@ -1957,34 +1953,30 @@ class CoordinatorAgent:
                     orchestrator_tasks.append(task_id)
                 # Domain-specific tasks go to specialists
                 elif any(
-                    domain in task_type
-                    for domain in hierarchy.domain_specialists.keys()
+                    domain in task_type for domain in hierarchy.domain_specialists
                 ):
-                    for domain in hierarchy.domain_specialists.keys():
+                    for domain in hierarchy.domain_specialists:
                         if domain in task_type:
                             if domain not in specialist_tasks:
                                 specialist_tasks[domain] = []
                             specialist_tasks[domain].append(task_id)
                             break
                 # Execution tasks go to workers
+                # Distribute among available workers
+                elif hierarchy.workers:
+                    worker_id = min(
+                        hierarchy.workers.keys(),
+                        key=lambda w: hierarchy.workers[w].current_workload,
+                    )
+                    if worker_id not in worker_tasks:
+                        worker_tasks[worker_id] = []
+                    worker_tasks[worker_id].append(task_id)
                 else:
-                    # Distribute among available workers
-                    if hierarchy.workers:
-                        worker_id = min(
-                            hierarchy.workers.keys(),
-                            key=lambda w: hierarchy.workers[w].current_workload,
-                        )
-                        if worker_id not in worker_tasks:
-                            worker_tasks[worker_id] = []
-                        worker_tasks[worker_id].append(task_id)
-                    else:
-                        # Fallback to specialists if no workers
-                        domain = next(
-                            iter(hierarchy.domain_specialists.keys()), "general"
-                        )
-                        if domain not in specialist_tasks:
-                            specialist_tasks[domain] = []
-                        specialist_tasks[domain].append(task_id)
+                    # Fallback to specialists if no workers
+                    domain = next(iter(hierarchy.domain_specialists.keys()), "general")
+                    if domain not in specialist_tasks:
+                        specialist_tasks[domain] = []
+                    specialist_tasks[domain].append(task_id)
 
             # Update workloads
             hierarchy.orchestrator.current_workload = len(orchestrator_tasks)
@@ -2017,7 +2009,7 @@ class CoordinatorAgent:
             )
 
         except Exception as e:
-            self.logger.error(f"Failed to coordinate hierarchical execution: {e!s}")
+            self.logger.exception(f"Failed to coordinate hierarchical execution: {e!s}")
             raise
 
     async def _store_hierarchy_assignments(
@@ -2047,7 +2039,7 @@ class CoordinatorAgent:
             )
 
         except Exception as e:
-            self.logger.error(f"Failed to store hierarchy assignments: {e!s}")
+            self.logger.exception(f"Failed to store hierarchy assignments: {e!s}")
 
     def get_hierarchy_metrics(self) -> dict[str, Any]:
         """Get hierarchical coordination performance metrics"""

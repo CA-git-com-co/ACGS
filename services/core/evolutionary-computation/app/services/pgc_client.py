@@ -6,6 +6,7 @@ for policy enforcement and WINA optimization insights.
 """
 
 import logging
+import pathlib
 from typing import Any
 
 import httpx
@@ -20,11 +21,11 @@ try:
     import sys
 
     # Add the correct path to services/shared
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = pathlib.Path(pathlib.Path(__file__).resolve()).parent
     shared_path = os.path.join(
         current_dir, "..", "..", "..", "..", "services", "shared"
     )
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, pathlib.Path(shared_path).resolve())
 
     from config import get_config
 except ImportError:
@@ -95,10 +96,10 @@ class PGCServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"Policy compliance evaluation failed: {e}")
+            logger.exception(f"Policy compliance evaluation failed: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in policy evaluation: {e}")
+            logger.exception(f"Unexpected error in policy evaluation: {e}")
             raise
 
     async def get_wina_enforcement_metrics(self) -> dict[str, Any]:
@@ -115,10 +116,10 @@ class PGCServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"Failed to get WINA enforcement metrics: {e}")
+            logger.exception(f"Failed to get WINA enforcement metrics: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error getting WINA metrics: {e}")
+            logger.exception(f"Unexpected error getting WINA metrics: {e}")
             raise
 
     async def enforce_alphaevolve_policies(
@@ -150,10 +151,10 @@ class PGCServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"AlphaEvolve policy enforcement failed: {e}")
+            logger.exception(f"AlphaEvolve policy enforcement failed: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error in policy enforcement: {e}")
+            logger.exception(f"Unexpected error in policy enforcement: {e}")
             raise
 
     async def get_enforcement_strategies(
@@ -182,10 +183,10 @@ class PGCServiceClient:
             return response.json()
 
         except httpx.HTTPError as e:
-            logger.error(f"Failed to get enforcement strategies: {e}")
+            logger.exception(f"Failed to get enforcement strategies: {e}")
             raise
         except Exception as e:
-            logger.error(f"Unexpected error getting strategies: {e}")
+            logger.exception(f"Unexpected error getting strategies: {e}")
             raise
 
 

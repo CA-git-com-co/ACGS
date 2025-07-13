@@ -62,7 +62,7 @@ class EnhancedSecurityMiddleware:
             )
 
         # 2. Content Type Validation for body-containing methods
-        if request.method in ["POST", "PUT", "PATCH"]:
+        if request.method in {"POST", "PUT", "PATCH"}:
             content_type_valid = self.validate_content_type(request)
             if not content_type_valid:
                 return JSONResponse(
@@ -75,8 +75,7 @@ class EnhancedSecurityMiddleware:
                 )
 
         # 3. Process request
-        response = await call_next(request)
-        return response
+        return await call_next(request)
 
     def validate_http_method(self, request: Request) -> bool:
         """Validate HTTP method for the requested endpoint."""
@@ -88,7 +87,7 @@ class EnhancedSecurityMiddleware:
                 return method in allowed_methods
 
         # Default: allow common methods for unmatched patterns
-        return method in ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"]
+        return method in {"GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS", "HEAD"}
 
     def validate_content_type(self, request: Request) -> bool:
         """Validate content type for requests with body."""

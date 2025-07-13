@@ -268,9 +268,7 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized Gemini model: {model_name}")
 
-                elif model_name.startswith("meta-llama/") or model_name.startswith(
-                    "llama"
-                ):
+                elif model_name.startswith(("meta-llama/", "llama")):
                     if self.config.groq_api_key and GROQ_AVAILABLE:
                         client = Groq(api_key=self.config.groq_api_key)
                         self.model_clients[model_name] = client
@@ -291,9 +289,7 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
 
-                elif model_name.startswith("deepseek/") or model_name.startswith(
-                    "qwen/qwen3-235b"
-                ):
+                elif model_name.startswith(("deepseek/", "qwen/qwen3-235b")):
                     # OpenRouter API support for DeepSeek models and Qwen3-235B
                     if (
                         hasattr(self.config, "openrouter_api_key")
@@ -343,7 +339,7 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized OpenAI model: {model_name}")
 
-                elif model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
+                elif model_name.startswith(("qwen/", "nvidia/")):
                     if self.config.nvidia_api_key and OPENAI_AVAILABLE:
                         client = OpenAI(
                             base_url="https://integrate.api.nvidia.com/v1",
@@ -355,11 +351,11 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized NVIDIA API model: {model_name}")
 
-                elif (
-                    model_name.startswith("hf.co/")
-                    or model_name.startswith("deepseek")
-                    or model_name in ["llama3.1", "mistral", "codellama"]
-                ):
+                elif model_name.startswith(("hf.co/", "deepseek")) or model_name in {
+                    "llama3.1",
+                    "mistral",
+                    "codellama",
+                }:
                     # Ollama local models
                     if OLLAMA_AVAILABLE:
                         try:
@@ -376,7 +372,7 @@ class MultiModelManager:
                             )
 
             except Exception as e:
-                logger.error(f"Failed to initialize model {model_name}: {e}")
+                logger.exception(f"Failed to initialize model {model_name}: {e}")
 
     async def get_model_response(
         self,
@@ -494,8 +490,7 @@ class MultiModelManager:
                 structured_client = client.with_structured_output(
                     structured_output_class
                 )
-                response = await structured_client.ainvoke(prompt)
-                return response
+                return await structured_client.ainvoke(prompt)
             response = await client.ainvoke(prompt)
             return response.content if hasattr(response, "content") else str(response)
 
@@ -531,9 +526,7 @@ class MultiModelManager:
             loop = asyncio.get_event_loop()
 
             # Handle different model types
-            if model_name.startswith("deepseek/") or model_name.startswith(
-                "qwen/qwen3-235b"
-            ):
+            if model_name.startswith(("deepseek/", "qwen/qwen3-235b")):
                 # OpenRouter models (DeepSeek Chat v3, DeepSeek R1, Qwen3-235B)
                 extra_headers = {
                     "HTTP-Referer": "https://acgs.local",  # Optional site URL
@@ -569,7 +562,7 @@ class MultiModelManager:
 
                 return content
 
-            if model_name.startswith("qwen/") or model_name.startswith("nvidia/"):
+            if model_name.startswith(("qwen/", "nvidia/")):
                 # NVIDIA API with reasoning support
                 extra_body = {}
                 if "qwen3-235b" in model_name.lower():
@@ -630,10 +623,9 @@ class MultiModelManager:
                 response = await client.get_structured_interpretation(query)
                 return response.raw_llm_response
             # Standard text generation
-            response = await client.generate_text(
+            return await client.generate_text(
                 prompt=prompt, temperature=temperature, max_tokens=4096
             )
-            return response
 
         raise ValueError(
             f"Unsupported client type for model {model_name}: {type(client)}"

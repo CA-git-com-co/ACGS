@@ -1,0 +1,1972 @@
+{
+    "report_meta": {
+        "scan_target": "environment",
+        "scanned": [
+            "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages"
+        ],
+        "policy_file": null,
+        "policy_file_source": "local",
+        "api_key": false,
+        "local_database_path": null,
+        "safety_version": "2.3.4",
+        "timestamp": "2025-07-13 04:11:59",
+        "packages_found": 368,
+        "vulnerabilities_found": 15,
+        "vulnerabilities_ignored": 0,
+        "remediations_recommended": 0,
+        "telemetry": {
+            "os_type": "Linux",
+            "os_release": "6.8.0-63-generic",
+            "os_description": "Linux-6.8.0-63-generic-x86_64-with-glibc2.39",
+            "python_version": "3.12.3",
+            "safety_command": "check",
+            "safety_options": {
+                "json": {
+                    "--json": 1
+                }
+            },
+            "safety_version": "2.3.4",
+            "safety_source": "cli"
+        },
+        "git": {
+            "branch": "main",
+            "tag": "",
+            "commit": "a646ccead9f49581950ab6ee703102bcc2fecf1d",
+            "dirty": true,
+            "origin": "https://github.com/CA-git-com-co/ACGS.git"
+        },
+        "project": null,
+        "json_version": 1
+    },
+    "scanned_packages": {
+        "brotli": {
+            "name": "brotli",
+            "version": "1.1.0"
+        },
+        "cerberus": {
+            "name": "cerberus",
+            "version": "1.3.7"
+        },
+        "deprecated": {
+            "name": "deprecated",
+            "version": "1.2.18"
+        },
+        "flask-login": {
+            "name": "flask-login",
+            "version": "0.6.3"
+        },
+        "markupsafe": {
+            "name": "markupsafe",
+            "version": "3.0.2"
+        },
+        "pyjwt": {
+            "name": "pyjwt",
+            "version": "2.9.0"
+        },
+        "pyyaml": {
+            "name": "pyyaml",
+            "version": "6.0.2"
+        },
+        "send2trash": {
+            "name": "send2trash",
+            "version": "1.8.3"
+        },
+        "absl-py": {
+            "name": "absl-py",
+            "version": "2.3.1"
+        },
+        "acgs-pgp": {
+            "name": "acgs-pgp",
+            "version": "3.0.0"
+        },
+        "aiofiles": {
+            "name": "aiofiles",
+            "version": "23.2.1"
+        },
+        "aiohappyeyeballs": {
+            "name": "aiohappyeyeballs",
+            "version": "2.6.1"
+        },
+        "aiohttp": {
+            "name": "aiohttp",
+            "version": "3.9.1"
+        },
+        "aioredis": {
+            "name": "aioredis",
+            "version": "2.0.1"
+        },
+        "aiosignal": {
+            "name": "aiosignal",
+            "version": "1.4.0"
+        },
+        "alembic": {
+            "name": "alembic",
+            "version": "1.12.1"
+        },
+        "annotated-types": {
+            "name": "annotated-types",
+            "version": "0.7.0"
+        },
+        "anyio": {
+            "name": "anyio",
+            "version": "3.7.1"
+        },
+        "argon2-cffi": {
+            "name": "argon2-cffi",
+            "version": "25.1.0"
+        },
+        "argon2-cffi-bindings": {
+            "name": "argon2-cffi-bindings",
+            "version": "21.2.0"
+        },
+        "arrow": {
+            "name": "arrow",
+            "version": "1.3.0"
+        },
+        "asgiref": {
+            "name": "asgiref",
+            "version": "3.9.0"
+        },
+        "asttokens": {
+            "name": "asttokens",
+            "version": "3.0.0"
+        },
+        "astunparse": {
+            "name": "astunparse",
+            "version": "1.6.3"
+        },
+        "async-lru": {
+            "name": "async-lru",
+            "version": "2.0.5"
+        },
+        "async-timeout": {
+            "name": "async-timeout",
+            "version": "5.0.1"
+        },
+        "asyncio-mqtt": {
+            "name": "asyncio-mqtt",
+            "version": "0.13.0"
+        },
+        "asyncpg": {
+            "name": "asyncpg",
+            "version": "0.30.0"
+        },
+        "attrs": {
+            "name": "attrs",
+            "version": "25.3.0"
+        },
+        "authlib": {
+            "name": "authlib",
+            "version": "1.6.0"
+        },
+        "babel": {
+            "name": "babel",
+            "version": "2.17.0"
+        },
+        "bandit": {
+            "name": "bandit",
+            "version": "1.8.6"
+        },
+        "bcrypt": {
+            "name": "bcrypt",
+            "version": "4.3.0"
+        },
+        "beautifulsoup4": {
+            "name": "beautifulsoup4",
+            "version": "4.13.4"
+        },
+        "bidict": {
+            "name": "bidict",
+            "version": "0.23.1"
+        },
+        "black": {
+            "name": "black",
+            "version": "24.10.0"
+        },
+        "bleach": {
+            "name": "bleach",
+            "version": "6.2.0"
+        },
+        "blinker": {
+            "name": "blinker",
+            "version": "1.9.0"
+        },
+        "boltons": {
+            "name": "boltons",
+            "version": "21.0.0"
+        },
+        "boolean-py": {
+            "name": "boolean-py",
+            "version": "5.0"
+        },
+        "bracex": {
+            "name": "bracex",
+            "version": "2.6"
+        },
+        "build": {
+            "name": "build",
+            "version": "1.2.2.post1"
+        },
+        "cachecontrol": {
+            "name": "cachecontrol",
+            "version": "0.14.3"
+        },
+        "cachetools": {
+            "name": "cachetools",
+            "version": "5.5.2"
+        },
+        "certifi": {
+            "name": "certifi",
+            "version": "2025.7.9"
+        },
+        "cffi": {
+            "name": "cffi",
+            "version": "1.17.1"
+        },
+        "cfgv": {
+            "name": "cfgv",
+            "version": "3.4.0"
+        },
+        "charset-normalizer": {
+            "name": "charset-normalizer",
+            "version": "3.4.2"
+        },
+        "cirq": {
+            "name": "cirq",
+            "version": "1.5.0"
+        },
+        "cirq-aqt": {
+            "name": "cirq-aqt",
+            "version": "1.5.0"
+        },
+        "cirq-core": {
+            "name": "cirq-core",
+            "version": "1.5.0"
+        },
+        "cirq-google": {
+            "name": "cirq-google",
+            "version": "1.5.0"
+        },
+        "cirq-ionq": {
+            "name": "cirq-ionq",
+            "version": "1.5.0"
+        },
+        "cirq-pasqal": {
+            "name": "cirq-pasqal",
+            "version": "1.5.0"
+        },
+        "cirq-web": {
+            "name": "cirq-web",
+            "version": "1.5.0"
+        },
+        "click": {
+            "name": "click",
+            "version": "8.1.8"
+        },
+        "click-option-group": {
+            "name": "click-option-group",
+            "version": "0.5.7"
+        },
+        "colorama": {
+            "name": "colorama",
+            "version": "0.4.6"
+        },
+        "comm": {
+            "name": "comm",
+            "version": "0.2.2"
+        },
+        "configargparse": {
+            "name": "configargparse",
+            "version": "1.7.1"
+        },
+        "contourpy": {
+            "name": "contourpy",
+            "version": "1.3.2"
+        },
+        "coverage": {
+            "name": "coverage",
+            "version": "7.9.2"
+        },
+        "cryptography": {
+            "name": "cryptography",
+            "version": "42.0.8"
+        },
+        "cycler": {
+            "name": "cycler",
+            "version": "0.12.1"
+        },
+        "cyclonedx-python-lib": {
+            "name": "cyclonedx-python-lib",
+            "version": "9.1.0"
+        },
+        "cython": {
+            "name": "cython",
+            "version": "3.1.2"
+        },
+        "debugpy": {
+            "name": "debugpy",
+            "version": "1.8.14"
+        },
+        "decorator": {
+            "name": "decorator",
+            "version": "5.2.1"
+        },
+        "defusedxml": {
+            "name": "defusedxml",
+            "version": "0.7.1"
+        },
+        "deprecation": {
+            "name": "deprecation",
+            "version": "2.1.0"
+        },
+        "distlib": {
+            "name": "distlib",
+            "version": "0.3.9"
+        },
+        "dnspython": {
+            "name": "dnspython",
+            "version": "2.7.0"
+        },
+        "docker": {
+            "name": "docker",
+            "version": "7.1.0"
+        },
+        "dparse": {
+            "name": "dparse",
+            "version": "0.6.4"
+        },
+        "duet": {
+            "name": "duet",
+            "version": "0.2.9"
+        },
+        "ecdsa": {
+            "name": "ecdsa",
+            "version": "0.19.1"
+        },
+        "email-validator": {
+            "name": "email-validator",
+            "version": "2.2.0"
+        },
+        "exceptiongroup": {
+            "name": "exceptiongroup",
+            "version": "1.2.2"
+        },
+        "execnet": {
+            "name": "execnet",
+            "version": "2.1.1"
+        },
+        "executing": {
+            "name": "executing",
+            "version": "2.2.0"
+        },
+        "face": {
+            "name": "face",
+            "version": "24.0.0"
+        },
+        "factory-boy": {
+            "name": "factory-boy",
+            "version": "3.3.3"
+        },
+        "faker": {
+            "name": "faker",
+            "version": "37.4.0"
+        },
+        "fakeredis": {
+            "name": "fakeredis",
+            "version": "2.30.1"
+        },
+        "fastapi": {
+            "name": "fastapi",
+            "version": "0.116.1"
+        },
+        "fastjsonschema": {
+            "name": "fastjsonschema",
+            "version": "2.21.1"
+        },
+        "filelock": {
+            "name": "filelock",
+            "version": "3.12.4"
+        },
+        "flask": {
+            "name": "flask",
+            "version": "3.1.1"
+        },
+        "flask-cors": {
+            "name": "flask-cors",
+            "version": "6.0.1"
+        },
+        "flatbuffers": {
+            "name": "flatbuffers",
+            "version": "25.2.10"
+        },
+        "fonttools": {
+            "name": "fonttools",
+            "version": "4.58.5"
+        },
+        "fqdn": {
+            "name": "fqdn",
+            "version": "1.5.1"
+        },
+        "freezegun": {
+            "name": "freezegun",
+            "version": "1.5.2"
+        },
+        "frozenlist": {
+            "name": "frozenlist",
+            "version": "1.7.0"
+        },
+        "fsspec": {
+            "name": "fsspec",
+            "version": "2025.5.1"
+        },
+        "gast": {
+            "name": "gast",
+            "version": "0.6.0"
+        },
+        "gevent": {
+            "name": "gevent",
+            "version": "25.5.1"
+        },
+        "geventhttpclient": {
+            "name": "geventhttpclient",
+            "version": "2.3.4"
+        },
+        "glom": {
+            "name": "glom",
+            "version": "22.1.0"
+        },
+        "google-api-core": {
+            "name": "google-api-core",
+            "version": "2.25.1"
+        },
+        "google-auth": {
+            "name": "google-auth",
+            "version": "2.40.3"
+        },
+        "google-pasta": {
+            "name": "google-pasta",
+            "version": "0.2.0"
+        },
+        "googleapis-common-protos": {
+            "name": "googleapis-common-protos",
+            "version": "1.70.0"
+        },
+        "greenlet": {
+            "name": "greenlet",
+            "version": "3.2.3"
+        },
+        "grpcio": {
+            "name": "grpcio",
+            "version": "1.73.1"
+        },
+        "grpcio-status": {
+            "name": "grpcio-status",
+            "version": "1.71.2"
+        },
+        "h11": {
+            "name": "h11",
+            "version": "0.16.0"
+        },
+        "h5py": {
+            "name": "h5py",
+            "version": "3.14.0"
+        },
+        "hashin": {
+            "name": "hashin",
+            "version": "1.0.5"
+        },
+        "hf-xet": {
+            "name": "hf-xet",
+            "version": "1.1.5"
+        },
+        "hiredis": {
+            "name": "hiredis",
+            "version": "3.2.1"
+        },
+        "httpcore": {
+            "name": "httpcore",
+            "version": "1.0.9"
+        },
+        "httptools": {
+            "name": "httptools",
+            "version": "0.6.4"
+        },
+        "httpx": {
+            "name": "httpx",
+            "version": "0.28.1"
+        },
+        "huggingface-hub": {
+            "name": "huggingface-hub",
+            "version": "0.33.4"
+        },
+        "hypothesis": {
+            "name": "hypothesis",
+            "version": "6.135.26"
+        },
+        "identify": {
+            "name": "identify",
+            "version": "2.6.12"
+        },
+        "idna": {
+            "name": "idna",
+            "version": "3.10"
+        },
+        "importlib-metadata": {
+            "name": "importlib-metadata",
+            "version": "7.1.0"
+        },
+        "iniconfig": {
+            "name": "iniconfig",
+            "version": "2.1.0"
+        },
+        "ipykernel": {
+            "name": "ipykernel",
+            "version": "6.29.5"
+        },
+        "ipython": {
+            "name": "ipython",
+            "version": "9.4.0"
+        },
+        "ipython-pygments-lexers": {
+            "name": "ipython-pygments-lexers",
+            "version": "1.1.1"
+        },
+        "ipywidgets": {
+            "name": "ipywidgets",
+            "version": "8.1.7"
+        },
+        "isoduration": {
+            "name": "isoduration",
+            "version": "20.11.0"
+        },
+        "isort": {
+            "name": "isort",
+            "version": "6.0.1"
+        },
+        "itsdangerous": {
+            "name": "itsdangerous",
+            "version": "2.2.0"
+        },
+        "jedi": {
+            "name": "jedi",
+            "version": "0.19.2"
+        },
+        "jinja2": {
+            "name": "jinja2",
+            "version": "3.1.6"
+        },
+        "joblib": {
+            "name": "joblib",
+            "version": "1.5.1"
+        },
+        "jose": {
+            "name": "jose",
+            "version": "1.0.0"
+        },
+        "json5": {
+            "name": "json5",
+            "version": "0.12.0"
+        },
+        "jsonpointer": {
+            "name": "jsonpointer",
+            "version": "3.0.0"
+        },
+        "jsonschema": {
+            "name": "jsonschema",
+            "version": "4.24.0"
+        },
+        "jsonschema-specifications": {
+            "name": "jsonschema-specifications",
+            "version": "2025.4.1"
+        },
+        "jupyter": {
+            "name": "jupyter",
+            "version": "1.1.1"
+        },
+        "jupyter-client": {
+            "name": "jupyter-client",
+            "version": "8.6.3"
+        },
+        "jupyter-console": {
+            "name": "jupyter-console",
+            "version": "6.6.3"
+        },
+        "jupyter-core": {
+            "name": "jupyter-core",
+            "version": "5.8.1"
+        },
+        "jupyter-events": {
+            "name": "jupyter-events",
+            "version": "0.12.0"
+        },
+        "jupyter-lsp": {
+            "name": "jupyter-lsp",
+            "version": "2.2.5"
+        },
+        "jupyter-server": {
+            "name": "jupyter-server",
+            "version": "2.16.0"
+        },
+        "jupyter-server-terminals": {
+            "name": "jupyter-server-terminals",
+            "version": "0.5.3"
+        },
+        "jupyterlab": {
+            "name": "jupyterlab",
+            "version": "4.4.4"
+        },
+        "jupyterlab-pygments": {
+            "name": "jupyterlab-pygments",
+            "version": "0.3.0"
+        },
+        "jupyterlab-server": {
+            "name": "jupyterlab-server",
+            "version": "2.27.3"
+        },
+        "jupyterlab-widgets": {
+            "name": "jupyterlab-widgets",
+            "version": "3.0.15"
+        },
+        "keras": {
+            "name": "keras",
+            "version": "3.10.0"
+        },
+        "kiwisolver": {
+            "name": "kiwisolver",
+            "version": "1.4.8"
+        },
+        "libclang": {
+            "name": "libclang",
+            "version": "18.1.1"
+        },
+        "license-expression": {
+            "name": "license-expression",
+            "version": "30.4.3"
+        },
+        "limits": {
+            "name": "limits",
+            "version": "5.4.0"
+        },
+        "locust": {
+            "name": "locust",
+            "version": "2.37.11"
+        },
+        "locust-cloud": {
+            "name": "locust-cloud",
+            "version": "1.24.2"
+        },
+        "mako": {
+            "name": "mako",
+            "version": "1.3.10"
+        },
+        "markdown": {
+            "name": "markdown",
+            "version": "3.8.2"
+        },
+        "markdown-it-py": {
+            "name": "markdown-it-py",
+            "version": "3.0.0"
+        },
+        "marshmallow": {
+            "name": "marshmallow",
+            "version": "4.0.0"
+        },
+        "matplotlib": {
+            "name": "matplotlib",
+            "version": "3.10.3"
+        },
+        "matplotlib-inline": {
+            "name": "matplotlib-inline",
+            "version": "0.1.7"
+        },
+        "mdurl": {
+            "name": "mdurl",
+            "version": "0.1.2"
+        },
+        "memory-profiler": {
+            "name": "memory-profiler",
+            "version": "0.61.0"
+        },
+        "mirakuru": {
+            "name": "mirakuru",
+            "version": "2.6.1"
+        },
+        "mistune": {
+            "name": "mistune",
+            "version": "3.1.3"
+        },
+        "ml-dtypes": {
+            "name": "ml-dtypes",
+            "version": "0.5.1"
+        },
+        "mpmath": {
+            "name": "mpmath",
+            "version": "1.3.0"
+        },
+        "msgpack": {
+            "name": "msgpack",
+            "version": "1.1.1"
+        },
+        "multidict": {
+            "name": "multidict",
+            "version": "6.6.3"
+        },
+        "mypy": {
+            "name": "mypy",
+            "version": "1.16.1"
+        },
+        "mypy-extensions": {
+            "name": "mypy-extensions",
+            "version": "1.1.0"
+        },
+        "namex": {
+            "name": "namex",
+            "version": "0.1.0"
+        },
+        "nbclient": {
+            "name": "nbclient",
+            "version": "0.10.2"
+        },
+        "nbconvert": {
+            "name": "nbconvert",
+            "version": "7.16.6"
+        },
+        "nbformat": {
+            "name": "nbformat",
+            "version": "5.10.4"
+        },
+        "nest-asyncio": {
+            "name": "nest-asyncio",
+            "version": "1.6.0"
+        },
+        "networkx": {
+            "name": "networkx",
+            "version": "3.5"
+        },
+        "nltk": {
+            "name": "nltk",
+            "version": "3.9.1"
+        },
+        "nodeenv": {
+            "name": "nodeenv",
+            "version": "1.9.1"
+        },
+        "notebook": {
+            "name": "notebook",
+            "version": "7.4.4"
+        },
+        "notebook-shim": {
+            "name": "notebook-shim",
+            "version": "0.2.4"
+        },
+        "numpy": {
+            "name": "numpy",
+            "version": "1.26.4"
+        },
+        "nvidia-cublas-cu12": {
+            "name": "nvidia-cublas-cu12",
+            "version": "12.6.4.1"
+        },
+        "nvidia-cuda-cupti-cu12": {
+            "name": "nvidia-cuda-cupti-cu12",
+            "version": "12.6.80"
+        },
+        "nvidia-cuda-nvrtc-cu12": {
+            "name": "nvidia-cuda-nvrtc-cu12",
+            "version": "12.6.77"
+        },
+        "nvidia-cuda-runtime-cu12": {
+            "name": "nvidia-cuda-runtime-cu12",
+            "version": "12.6.77"
+        },
+        "nvidia-cudnn-cu12": {
+            "name": "nvidia-cudnn-cu12",
+            "version": "9.5.1.17"
+        },
+        "nvidia-cufft-cu12": {
+            "name": "nvidia-cufft-cu12",
+            "version": "11.3.0.4"
+        },
+        "nvidia-cufile-cu12": {
+            "name": "nvidia-cufile-cu12",
+            "version": "1.11.1.6"
+        },
+        "nvidia-curand-cu12": {
+            "name": "nvidia-curand-cu12",
+            "version": "10.3.7.77"
+        },
+        "nvidia-cusolver-cu12": {
+            "name": "nvidia-cusolver-cu12",
+            "version": "11.7.1.2"
+        },
+        "nvidia-cusparse-cu12": {
+            "name": "nvidia-cusparse-cu12",
+            "version": "12.5.4.2"
+        },
+        "nvidia-cusparselt-cu12": {
+            "name": "nvidia-cusparselt-cu12",
+            "version": "0.6.3"
+        },
+        "nvidia-nccl-cu12": {
+            "name": "nvidia-nccl-cu12",
+            "version": "2.26.2"
+        },
+        "nvidia-nvjitlink-cu12": {
+            "name": "nvidia-nvjitlink-cu12",
+            "version": "12.6.85"
+        },
+        "nvidia-nvtx-cu12": {
+            "name": "nvidia-nvtx-cu12",
+            "version": "12.6.77"
+        },
+        "openfermion": {
+            "name": "openfermion",
+            "version": "1.7.1"
+        },
+        "opentelemetry-api": {
+            "name": "opentelemetry-api",
+            "version": "1.25.0"
+        },
+        "opentelemetry-exporter-otlp-proto-common": {
+            "name": "opentelemetry-exporter-otlp-proto-common",
+            "version": "1.25.0"
+        },
+        "opentelemetry-exporter-otlp-proto-http": {
+            "name": "opentelemetry-exporter-otlp-proto-http",
+            "version": "1.25.0"
+        },
+        "opentelemetry-instrumentation": {
+            "name": "opentelemetry-instrumentation",
+            "version": "0.46b0"
+        },
+        "opentelemetry-instrumentation-asgi": {
+            "name": "opentelemetry-instrumentation-asgi",
+            "version": "0.55b1"
+        },
+        "opentelemetry-instrumentation-fastapi": {
+            "name": "opentelemetry-instrumentation-fastapi",
+            "version": "0.55b1"
+        },
+        "opentelemetry-instrumentation-requests": {
+            "name": "opentelemetry-instrumentation-requests",
+            "version": "0.46b0"
+        },
+        "opentelemetry-proto": {
+            "name": "opentelemetry-proto",
+            "version": "1.25.0"
+        },
+        "opentelemetry-sdk": {
+            "name": "opentelemetry-sdk",
+            "version": "1.25.0"
+        },
+        "opentelemetry-semantic-conventions": {
+            "name": "opentelemetry-semantic-conventions",
+            "version": "0.46b0"
+        },
+        "opentelemetry-util-http": {
+            "name": "opentelemetry-util-http",
+            "version": "0.46b0"
+        },
+        "opt-einsum": {
+            "name": "opt-einsum",
+            "version": "3.4.0"
+        },
+        "optree": {
+            "name": "optree",
+            "version": "0.16.0"
+        },
+        "orjson": {
+            "name": "orjson",
+            "version": "3.10.18"
+        },
+        "overrides": {
+            "name": "overrides",
+            "version": "7.7.0"
+        },
+        "packageurl-python": {
+            "name": "packageurl-python",
+            "version": "0.17.1"
+        },
+        "packaging": {
+            "name": "packaging",
+            "version": "25.0"
+        },
+        "paho-mqtt": {
+            "name": "paho-mqtt",
+            "version": "2.1.0"
+        },
+        "pandas": {
+            "name": "pandas",
+            "version": "2.3.1"
+        },
+        "pandoc": {
+            "name": "pandoc",
+            "version": "2.4"
+        },
+        "pandocfilters": {
+            "name": "pandocfilters",
+            "version": "1.5.1"
+        },
+        "parso": {
+            "name": "parso",
+            "version": "0.8.4"
+        },
+        "passlib": {
+            "name": "passlib",
+            "version": "1.7.4"
+        },
+        "pathspec": {
+            "name": "pathspec",
+            "version": "0.12.1"
+        },
+        "pbr": {
+            "name": "pbr",
+            "version": "6.1.1"
+        },
+        "peewee": {
+            "name": "peewee",
+            "version": "3.18.2"
+        },
+        "pexpect": {
+            "name": "pexpect",
+            "version": "4.9.0"
+        },
+        "pillow": {
+            "name": "pillow",
+            "version": "10.4.0"
+        },
+        "pip": {
+            "name": "pip",
+            "version": "25.1.1"
+        },
+        "pip-api": {
+            "name": "pip-api",
+            "version": "0.0.34"
+        },
+        "pip-audit": {
+            "name": "pip-audit",
+            "version": "2.9.0"
+        },
+        "pip-requirements-parser": {
+            "name": "pip-requirements-parser",
+            "version": "32.0.1"
+        },
+        "pip-tools": {
+            "name": "pip-tools",
+            "version": "7.4.1"
+        },
+        "platformdirs": {
+            "name": "platformdirs",
+            "version": "4.3.8"
+        },
+        "pluggy": {
+            "name": "pluggy",
+            "version": "1.6.0"
+        },
+        "plumbum": {
+            "name": "plumbum",
+            "version": "1.9.0"
+        },
+        "ply": {
+            "name": "ply",
+            "version": "3.11"
+        },
+        "port-for": {
+            "name": "port-for",
+            "version": "0.7.4"
+        },
+        "pre-commit": {
+            "name": "pre-commit",
+            "version": "4.2.0"
+        },
+        "prometheus-client": {
+            "name": "prometheus-client",
+            "version": "0.22.1"
+        },
+        "prometheus-fastapi-instrumentator": {
+            "name": "prometheus-fastapi-instrumentator",
+            "version": "7.1.0"
+        },
+        "prompt-toolkit": {
+            "name": "prompt-toolkit",
+            "version": "3.0.51"
+        },
+        "propcache": {
+            "name": "propcache",
+            "version": "0.3.2"
+        },
+        "proto-plus": {
+            "name": "proto-plus",
+            "version": "1.26.1"
+        },
+        "protobuf": {
+            "name": "protobuf",
+            "version": "4.25.8"
+        },
+        "psutil": {
+            "name": "psutil",
+            "version": "5.9.8"
+        },
+        "psycopg": {
+            "name": "psycopg",
+            "version": "3.2.9"
+        },
+        "psycopg2-binary": {
+            "name": "psycopg2-binary",
+            "version": "2.9.10"
+        },
+        "ptyprocess": {
+            "name": "ptyprocess",
+            "version": "0.7.0"
+        },
+        "pubchempy": {
+            "name": "pubchempy",
+            "version": "1.0.4"
+        },
+        "pure-eval": {
+            "name": "pure-eval",
+            "version": "0.2.3"
+        },
+        "py-cpuinfo": {
+            "name": "py-cpuinfo",
+            "version": "9.0.0"
+        },
+        "py-serializable": {
+            "name": "py-serializable",
+            "version": "2.0.0"
+        },
+        "py-spy": {
+            "name": "py-spy",
+            "version": "0.4.0"
+        },
+        "pyasn1": {
+            "name": "pyasn1",
+            "version": "0.6.1"
+        },
+        "pyasn1-modules": {
+            "name": "pyasn1-modules",
+            "version": "0.4.2"
+        },
+        "pycparser": {
+            "name": "pycparser",
+            "version": "2.22"
+        },
+        "pydantic": {
+            "name": "pydantic",
+            "version": "2.11.7"
+        },
+        "pydantic-core": {
+            "name": "pydantic-core",
+            "version": "2.33.2"
+        },
+        "pydantic-settings": {
+            "name": "pydantic-settings",
+            "version": "2.10.1"
+        },
+        "pygments": {
+            "name": "pygments",
+            "version": "2.19.2"
+        },
+        "pyparsing": {
+            "name": "pyparsing",
+            "version": "3.2.3"
+        },
+        "pypdf": {
+            "name": "pypdf",
+            "version": "5.7.0"
+        },
+        "pyproject-hooks": {
+            "name": "pyproject-hooks",
+            "version": "1.2.0"
+        },
+        "pytest": {
+            "name": "pytest",
+            "version": "8.4.1"
+        },
+        "pytest-asyncio": {
+            "name": "pytest-asyncio",
+            "version": "0.23.8"
+        },
+        "pytest-benchmark": {
+            "name": "pytest-benchmark",
+            "version": "5.1.0"
+        },
+        "pytest-cov": {
+            "name": "pytest-cov",
+            "version": "4.1.0"
+        },
+        "pytest-html": {
+            "name": "pytest-html",
+            "version": "4.1.1"
+        },
+        "pytest-json-report": {
+            "name": "pytest-json-report",
+            "version": "1.5.0"
+        },
+        "pytest-metadata": {
+            "name": "pytest-metadata",
+            "version": "3.1.1"
+        },
+        "pytest-mock": {
+            "name": "pytest-mock",
+            "version": "3.14.1"
+        },
+        "pytest-timeout": {
+            "name": "pytest-timeout",
+            "version": "2.4.0"
+        },
+        "pytest-xdist": {
+            "name": "pytest-xdist",
+            "version": "3.8.0"
+        },
+        "python-dateutil": {
+            "name": "python-dateutil",
+            "version": "2.9.0.post0"
+        },
+        "python-dotenv": {
+            "name": "python-dotenv",
+            "version": "1.1.1"
+        },
+        "python-engineio": {
+            "name": "python-engineio",
+            "version": "4.12.2"
+        },
+        "python-jose": {
+            "name": "python-jose",
+            "version": "3.3.0"
+        },
+        "python-json-logger": {
+            "name": "python-json-logger",
+            "version": "3.3.0"
+        },
+        "python-multipart": {
+            "name": "python-multipart",
+            "version": "0.0.20"
+        },
+        "python-socketio": {
+            "name": "python-socketio",
+            "version": "5.13.0"
+        },
+        "pytz": {
+            "name": "pytz",
+            "version": "2025.2"
+        },
+        "pyzmq": {
+            "name": "pyzmq",
+            "version": "27.0.0"
+        },
+        "redis": {
+            "name": "redis",
+            "version": "5.3.0"
+        },
+        "referencing": {
+            "name": "referencing",
+            "version": "0.36.2"
+        },
+        "regex": {
+            "name": "regex",
+            "version": "2024.11.6"
+        },
+        "requests": {
+            "name": "requests",
+            "version": "2.32.4"
+        },
+        "responses": {
+            "name": "responses",
+            "version": "0.25.7"
+        },
+        "rfc3339-validator": {
+            "name": "rfc3339-validator",
+            "version": "0.1.4"
+        },
+        "rfc3986-validator": {
+            "name": "rfc3986-validator",
+            "version": "0.1.1"
+        },
+        "rich": {
+            "name": "rich",
+            "version": "13.5.3"
+        },
+        "rpds-py": {
+            "name": "rpds-py",
+            "version": "0.26.0"
+        },
+        "rsa": {
+            "name": "rsa",
+            "version": "4.9.1"
+        },
+        "ruamel.yaml": {
+            "name": "ruamel.yaml",
+            "version": "0.18.14"
+        },
+        "ruamel.yaml.clib": {
+            "name": "ruamel.yaml.clib",
+            "version": "0.2.12"
+        },
+        "ruff": {
+            "name": "ruff",
+            "version": "0.12.3"
+        },
+        "safetensors": {
+            "name": "safetensors",
+            "version": "0.5.3"
+        },
+        "safety": {
+            "name": "safety",
+            "version": "2.3.4"
+        },
+        "safety-schemas": {
+            "name": "safety-schemas",
+            "version": "0.0.5"
+        },
+        "scikit-learn": {
+            "name": "scikit-learn",
+            "version": "1.7.0"
+        },
+        "scipy": {
+            "name": "scipy",
+            "version": "1.16.0"
+        },
+        "semgrep": {
+            "name": "semgrep",
+            "version": "1.128.1"
+        },
+        "setuptools": {
+            "name": "setuptools",
+            "version": "69.5.1"
+        },
+        "shellingham": {
+            "name": "shellingham",
+            "version": "1.5.4"
+        },
+        "simple-websocket": {
+            "name": "simple-websocket",
+            "version": "1.1.0"
+        },
+        "six": {
+            "name": "six",
+            "version": "1.17.0"
+        },
+        "slowapi": {
+            "name": "slowapi",
+            "version": "0.1.9"
+        },
+        "sniffio": {
+            "name": "sniffio",
+            "version": "1.3.1"
+        },
+        "sortedcontainers": {
+            "name": "sortedcontainers",
+            "version": "2.4.0"
+        },
+        "soupsieve": {
+            "name": "soupsieve",
+            "version": "2.7"
+        },
+        "sqlalchemy": {
+            "name": "sqlalchemy",
+            "version": "2.0.41"
+        },
+        "stack-data": {
+            "name": "stack-data",
+            "version": "0.6.3"
+        },
+        "starlette": {
+            "name": "starlette",
+            "version": "0.47.1"
+        },
+        "stevedore": {
+            "name": "stevedore",
+            "version": "5.4.1"
+        },
+        "structlog": {
+            "name": "structlog",
+            "version": "23.3.0"
+        },
+        "sympy": {
+            "name": "sympy",
+            "version": "1.14.0"
+        },
+        "tenacity": {
+            "name": "tenacity",
+            "version": "9.1.2"
+        },
+        "tensorboard": {
+            "name": "tensorboard",
+            "version": "2.19.0"
+        },
+        "tensorboard-data-server": {
+            "name": "tensorboard-data-server",
+            "version": "0.7.2"
+        },
+        "tensorflow": {
+            "name": "tensorflow",
+            "version": "2.19.0"
+        },
+        "termcolor": {
+            "name": "termcolor",
+            "version": "3.1.0"
+        },
+        "terminado": {
+            "name": "terminado",
+            "version": "0.18.1"
+        },
+        "testcontainers": {
+            "name": "testcontainers",
+            "version": "4.10.0"
+        },
+        "threadpoolctl": {
+            "name": "threadpoolctl",
+            "version": "3.6.0"
+        },
+        "tinycss2": {
+            "name": "tinycss2",
+            "version": "1.4.0"
+        },
+        "tokenizers": {
+            "name": "tokenizers",
+            "version": "0.21.2"
+        },
+        "toml": {
+            "name": "toml",
+            "version": "0.10.2"
+        },
+        "tomli": {
+            "name": "tomli",
+            "version": "2.0.2"
+        },
+        "torch": {
+            "name": "torch",
+            "version": "2.7.1"
+        },
+        "tornado": {
+            "name": "tornado",
+            "version": "6.5.1"
+        },
+        "tqdm": {
+            "name": "tqdm",
+            "version": "4.67.1"
+        },
+        "traitlets": {
+            "name": "traitlets",
+            "version": "5.14.3"
+        },
+        "transformers": {
+            "name": "transformers",
+            "version": "4.53.2"
+        },
+        "triton": {
+            "name": "triton",
+            "version": "3.3.1"
+        },
+        "typedunits": {
+            "name": "typedunits",
+            "version": "0.0.1.dev20250509200845"
+        },
+        "typer": {
+            "name": "typer",
+            "version": "0.16.0"
+        },
+        "types-cffi": {
+            "name": "types-cffi",
+            "version": "1.17.0.20250523"
+        },
+        "types-docker": {
+            "name": "types-docker",
+            "version": "7.1.0.20250705"
+        },
+        "types-psutil": {
+            "name": "types-psutil",
+            "version": "7.0.0.20250601"
+        },
+        "types-pyopenssl": {
+            "name": "types-pyopenssl",
+            "version": "24.1.0.20240722"
+        },
+        "types-python-dateutil": {
+            "name": "types-python-dateutil",
+            "version": "2.9.0.20250708"
+        },
+        "types-pyyaml": {
+            "name": "types-pyyaml",
+            "version": "6.0.12.20250516"
+        },
+        "types-redis": {
+            "name": "types-redis",
+            "version": "4.6.0.20241004"
+        },
+        "types-requests": {
+            "name": "types-requests",
+            "version": "2.32.4.20250611"
+        },
+        "types-setuptools": {
+            "name": "types-setuptools",
+            "version": "80.9.0.20250529"
+        },
+        "typing-extensions": {
+            "name": "typing-extensions",
+            "version": "4.14.1"
+        },
+        "typing-inspection": {
+            "name": "typing-inspection",
+            "version": "0.4.1"
+        },
+        "tzdata": {
+            "name": "tzdata",
+            "version": "2025.2"
+        },
+        "uri-template": {
+            "name": "uri-template",
+            "version": "1.3.0"
+        },
+        "urllib3": {
+            "name": "urllib3",
+            "version": "2.5.0"
+        },
+        "uvicorn": {
+            "name": "uvicorn",
+            "version": "0.35.0"
+        },
+        "uvloop": {
+            "name": "uvloop",
+            "version": "0.21.0"
+        },
+        "validators": {
+            "name": "validators",
+            "version": "0.35.0"
+        },
+        "virtualenv": {
+            "name": "virtualenv",
+            "version": "20.31.2"
+        },
+        "watchfiles": {
+            "name": "watchfiles",
+            "version": "1.1.0"
+        },
+        "wcmatch": {
+            "name": "wcmatch",
+            "version": "8.5.2"
+        },
+        "wcwidth": {
+            "name": "wcwidth",
+            "version": "0.2.13"
+        },
+        "webcolors": {
+            "name": "webcolors",
+            "version": "24.11.1"
+        },
+        "webencodings": {
+            "name": "webencodings",
+            "version": "0.5.1"
+        },
+        "websocket-client": {
+            "name": "websocket-client",
+            "version": "1.8.0"
+        },
+        "websockets": {
+            "name": "websockets",
+            "version": "15.0.1"
+        },
+        "werkzeug": {
+            "name": "werkzeug",
+            "version": "3.1.3"
+        },
+        "wheel": {
+            "name": "wheel",
+            "version": "0.45.1"
+        },
+        "widgetsnbextension": {
+            "name": "widgetsnbextension",
+            "version": "4.0.14"
+        },
+        "wrapt": {
+            "name": "wrapt",
+            "version": "1.17.2"
+        },
+        "wsproto": {
+            "name": "wsproto",
+            "version": "1.2.0"
+        },
+        "xai-grok-sdk": {
+            "name": "xai-grok-sdk",
+            "version": "0.0.12"
+        },
+        "yarl": {
+            "name": "yarl",
+            "version": "1.20.1"
+        },
+        "z3-solver": {
+            "name": "z3-solver",
+            "version": "4.15.1.0"
+        },
+        "zipp": {
+            "name": "zipp",
+            "version": "3.23.0"
+        },
+        "zope.interface": {
+            "name": "zope.interface",
+            "version": "7.2"
+        },
+        "zope-event": {
+            "name": "zope-event",
+            "version": "5.1"
+        }
+    },
+    "affected_packages": {
+        "pyjwt": {
+            "name": "pyjwt",
+            "version": "2.9.0",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        },
+        "aiohttp": {
+            "name": "aiohttp",
+            "version": "3.9.1",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        },
+        "anyio": {
+            "name": "anyio",
+            "version": "3.7.1",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        },
+        "cryptography": {
+            "name": "cryptography",
+            "version": "42.0.8",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        },
+        "ecdsa": {
+            "name": "ecdsa",
+            "version": "0.19.1",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        },
+        "python-jose": {
+            "name": "python-jose",
+            "version": "3.3.0",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        },
+        "setuptools": {
+            "name": "setuptools",
+            "version": "69.5.1",
+            "found": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages",
+            "insecure_versions": [],
+            "secure_versions": [],
+            "latest_version_without_known_vulnerabilities": null,
+            "latest_version": null,
+            "more_info_url": "https://data.safetycli.com"
+        }
+    },
+    "announcements": [],
+    "vulnerabilities": [
+        {
+            "vulnerability_id": "74429",
+            "package_name": "pyjwt",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<2.10.1",
+            "all_vulnerable_specs": [
+                "<2.10.1"
+            ],
+            "analyzed_version": "2.9.0",
+            "advisory": "Affected versions of pyjwt are vulnerable to Partial Comparison (CWE-187). This flaw allows attackers to bypass issuer (iss) verification by providing partial matches, potentially granting unauthorized access. The vulnerability arises in the decode method of api_jwt.py, where issuer validation incorrectly treats strings as sequences, leading to partial matches (e.g., \"abc\" being accepted for \"__abc__\"). Exploiting this requires crafting JWTs with partially matching iss claims, which is straightforward.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-53861",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/74429/f17"
+        },
+        {
+            "vulnerability_id": "74251",
+            "package_name": "aiohttp",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<3.10.11",
+            "all_vulnerable_specs": [
+                "<3.10.11"
+            ],
+            "analyzed_version": "3.9.1",
+            "advisory": "Affected versions of aiohttp are vulnerable to HTTP Request Smuggling (CWE-444). This vulnerability allows attackers to inject malicious HTTP messages by including line feeds (LF) in chunk extensions, potentially bypassing security controls and executing unauthorized actions. The attack vector involves sending specially crafted chunked HTTP requests to exploit the improper parsing in the HttpPayloadParser class. To mitigate, upgrade to aiohttp version which validates chunk extensions by rejecting any containing unexpected LFs, thereby preventing request smuggling attacks.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-52304",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/74251/f17"
+        },
+        {
+            "vulnerability_id": "74252",
+            "package_name": "aiohttp",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<3.10.11",
+            "all_vulnerable_specs": [
+                "<3.10.11"
+            ],
+            "analyzed_version": "3.9.1",
+            "advisory": "Affected versions of aiohttp are vulnerable to Middleware Cache Pollution. This vulnerability allows attackers to potentially interfere with middleware handling by exploiting cached middleware associated with system routes. The impact includes possible bypassing of security middleware or unintended access to internal routes. The attack vector involves crafting requests that target system routes, causing the middleware cache to store and reuse inappropriate middleware configurations. The vulnerable methods are _build_middlewares and the middleware caching mechanism in web_app.py. To mitigate, upgrade to aiohttp version, which prevents system routes from polluting the middleware cache by excluding SystemRoute instances from caching.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-52303",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/74252/f17"
+        },
+        {
+            "vulnerability_id": "70630",
+            "package_name": "aiohttp",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<3.9.4",
+            "all_vulnerable_specs": [
+                "<3.9.4"
+            ],
+            "analyzed_version": "3.9.1",
+            "advisory": "aiohttp is an asynchronous HTTP client/server framework for asyncio and Python. A XSS vulnerability exists on index pages for static file handling. This vulnerability is fixed in 3.9.4. We have always recommended using a reverse proxy server (e.g. nginx) for serving static files. Users following the recommendation are unaffected. Other users can disable `show_index` if unable to upgrade. See CVE-2024-27306.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-27306",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/70630/f17"
+        },
+        {
+            "vulnerability_id": "71545",
+            "package_name": "aiohttp",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<3.9.4",
+            "all_vulnerable_specs": [
+                "<3.9.4"
+            ],
+            "analyzed_version": "3.9.1",
+            "advisory": "Affected versions of `aiohttp` are vulnerable to an infinite loop condition. This occurs when an attacker sends a specially crafted POST (multipart/form-data) request. Upon processing, the `aiohttp` server enters an infinite loop, preventing it from processing further requests. This results in a denial-of-service (DoS) attack, allowing an attacker to stop the application from serving requests after a single request. Users are advised to upgrade to version 3.9.4 or manually apply a patch to their systems as per the linked GHSA instructions.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-30251",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/71545/f17"
+        },
+        {
+            "vulnerability_id": "74380",
+            "package_name": "aiohttp",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<3.10.2",
+            "all_vulnerable_specs": [
+                "<3.10.2"
+            ],
+            "analyzed_version": "3.9.1",
+            "advisory": "Affected versions of aiohttp are vulnerable to Directory Traversal (CWE-22). This allows attackers to access sensitive files outside the intended directory by exploiting symbolic links with compressed file extensions. The vulnerability exists in the FileResponse class, where stat() is used instead of lstat(), causing the server to follow symlinks when checking for compressed file variants. To mitigate, update aiohttp to include the fix or modify the code to use lstat() and ensure only regular files are served.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-42367",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/74380/f17"
+        },
+        {
+            "vulnerability_id": "64642",
+            "package_name": "aiohttp",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": ">1.0.5,<3.9.2",
+            "all_vulnerable_specs": [
+                ">1.0.5,<3.9.2"
+            ],
+            "analyzed_version": "3.9.1",
+            "advisory": "The vulnerability lies in the improper configuration of static resource resolution when aiohttp is used as a web server. It occurs when the follow_symlinks option is enabled without proper validation, leading to directory traversal vulnerabilities. Unauthorized access to arbitrary files on the system could potentially occur. The affected versions are >1.0.5, and the issue was patched in version 3.9.2. As a workaround, it is advised to disable the follow_symlinks option outside of a restricted local development environment, especially in a server accepting requests from remote users. Using a reverse proxy server to handle static resources is also recommended.\r\nhttps://github.com/aio-libs/aiohttp/commit/1c335944d6a8b1298baf179b7c0b3069f10c514b",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-23334",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/64642/f17"
+        },
+        {
+            "vulnerability_id": "71199",
+            "package_name": "anyio",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<4.4.0",
+            "all_vulnerable_specs": [
+                "<4.4.0"
+            ],
+            "analyzed_version": "3.7.1",
+            "advisory": "Anyio version 4.4.0 addresses a thread race condition in `_eventloop.get_asynclib()` that caused crashes when multiple event loops of the same backend were running in separate threads and simultaneously attempted to use AnyIO for the first time. This fix ensures more stable and reliable performance in multi-threaded environments.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": null,
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/71199/f17"
+        },
+        {
+            "vulnerability_id": "76170",
+            "package_name": "cryptography",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": ">=42.0.0,<44.0.1",
+            "all_vulnerable_specs": [
+                ">=42.0.0,<44.0.1"
+            ],
+            "analyzed_version": "42.0.8",
+            "advisory": "Pyca/cryptography's wheels include a statically linked copy of OpenSSL. The versions of OpenSSL included in cryptography 42.0.0-44.0.0 are vulnerable to a security issue.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-12797",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/76170/f17"
+        },
+        {
+            "vulnerability_id": "64459",
+            "package_name": "ecdsa",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": ">=0",
+            "all_vulnerable_specs": [
+                ">=0"
+            ],
+            "analyzed_version": "0.19.1",
+            "advisory": "The python-ecdsa library, which implements ECDSA cryptography in Python, is vulnerable to the Minerva attack (CVE-2024-23342). This vulnerability arises because scalar multiplication is not performed in constant time, affecting ECDSA signatures, key generation, and ECDH operations. ECDSA signature verification remains unaffected. The project maintainers have stated that there is no plan to release a fix for this vulnerability, citing their security policy:\r\n\"As stated in the security policy, side-channel vulnerabilities are outside the scope of the project. This is not due to a lack of interest in side-channel secure implementations but rather because the main goal of the project is to be pure Python. Implementing side-channel-free code in pure Python is impossible. Therefore, we do not plan to release a fix for this vulnerability.\"\r\nNOTE: The specs we include in this advisory differ from the publicly available on other sources. That's because research by Safety CLI Cybersecurity Team confirms that there is no plan to address this vulnerability.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-23342",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/64459/f17"
+        },
+        {
+            "vulnerability_id": "64396",
+            "package_name": "ecdsa",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": ">=0",
+            "all_vulnerable_specs": [
+                ">=0"
+            ],
+            "analyzed_version": "0.19.1",
+            "advisory": "Ecdsa does not protects against side-channel attacks. This is because Python does not provide side-channel secure primitives (with the exception of hmac.compare_digest()), making side-channel secure programming impossible. For a sophisticated attacker observing just one operation with a private key will be sufficient to completely reconstruct the private key.\r\nhttps://pypi.org/project/ecdsa/#Security",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": null,
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/64396/f17"
+        },
+        {
+            "vulnerability_id": "70716",
+            "package_name": "python-jose",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": ">=0",
+            "all_vulnerable_specs": [
+                ">=0"
+            ],
+            "analyzed_version": "3.3.0",
+            "advisory": "Affected versions of Python-jose allow attackers to cause a denial of service (resource consumption) during a decode via a crafted JSON Web Encryption (JWE) token with a high compression ratio, aka a \"JWT bomb.\" This is similar to CVE-2024-21319.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-33664",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/70716/f17"
+        },
+        {
+            "vulnerability_id": "70715",
+            "package_name": "python-jose",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": ">=0",
+            "all_vulnerable_specs": [
+                ">=0"
+            ],
+            "analyzed_version": "3.3.0",
+            "advisory": "Affected versions of Python-jose have a algorithm confusion vulnerability with OpenSSH ECDSA keys and other key formats. This is similar to CVE-2022-29217.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-33663",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/70715/f17"
+        },
+        {
+            "vulnerability_id": "76752",
+            "package_name": "setuptools",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<78.1.1",
+            "all_vulnerable_specs": [
+                "<78.1.1"
+            ],
+            "analyzed_version": "69.5.1",
+            "advisory": "Affected versions of Setuptools are vulnerable to Path Traversal via PackageIndex.download(). The impact is Arbitrary File Overwrite: An attacker would be allowed to write files to arbitrary locations on the filesystem with the permissions of the process running the Python code, which could escalate to RCE depending on the context.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2025-47273",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/76752/f17"
+        },
+        {
+            "vulnerability_id": "72236",
+            "package_name": "setuptools",
+            "ignored": {},
+            "ignored_reason": null,
+            "ignored_expires": null,
+            "vulnerable_spec": "<70.0.0",
+            "all_vulnerable_specs": [
+                "<70.0.0"
+            ],
+            "analyzed_version": "69.5.1",
+            "advisory": "Affected versions of Setuptools allow for remote code execution via its download functions. These functions, which are used to download packages from URLs provided by users or retrieved from package index servers, are susceptible to code injection. If these functions are exposed to user-controlled inputs, such as package URLs, they can execute arbitrary commands on the system.",
+            "is_transitive": false,
+            "published_date": null,
+            "fixed_versions": [],
+            "closest_versions_without_known_vulnerabilities": [],
+            "resources": [],
+            "CVE": "CVE-2024-6345",
+            "severity": null,
+            "affected_versions": [],
+            "more_info_url": "https://data.safetycli.com/v/72236/f17"
+        }
+    ],
+    "ignored_vulnerabilities": [],
+    "remediations": {
+        "pyjwt": {
+            "current_version": "2.9.0",
+            "vulnerabilities_found": 1,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=2.9.0"
+        },
+        "aiohttp": {
+            "current_version": "3.9.1",
+            "vulnerabilities_found": 6,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=3.9.1"
+        },
+        "anyio": {
+            "current_version": "3.7.1",
+            "vulnerabilities_found": 1,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=3.7.1"
+        },
+        "cryptography": {
+            "current_version": "42.0.8",
+            "vulnerabilities_found": 1,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=42.0.8"
+        },
+        "ecdsa": {
+            "current_version": "0.19.1",
+            "vulnerabilities_found": 2,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=0.19.1"
+        },
+        "python-jose": {
+            "current_version": "3.3.0",
+            "vulnerabilities_found": 2,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=3.3.0"
+        },
+        "setuptools": {
+            "current_version": "69.5.1",
+            "vulnerabilities_found": 2,
+            "recommended_version": null,
+            "other_recommended_versions": [],
+            "more_info_url": "https://data.safetycli.com/?from=69.5.1"
+        }
+    }
+}

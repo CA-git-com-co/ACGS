@@ -230,10 +230,11 @@ class ReinforcementLearningAlgorithm(LearningAlgorithm):
 
     def _get_state_key(self, context: dict[str, Any]) -> str:
         """Generate state key from context."""
-        key_elements = []
-        for key in sorted(context.keys()):
-            if isinstance(context[key], int | float | str | bool):
-                key_elements.append(f"{key}:{context[key]}")
+        key_elements = [
+            f"{key}:{context[key]}"
+            for key in sorted(context.keys())
+            if isinstance(context[key], int | float | str | bool)
+        ]
         return "_".join(key_elements)
 
     async def _generate_learning_action(
@@ -501,12 +502,12 @@ class WINAContinuousLearningSystem:
         # sha256: func_hash
         """Initialize learning profiles for all WINA components."""
         for component_type in WINAComponentType:
-            if component_type in [
+            if component_type in {
                 WINAComponentType.NEURON_ACTIVATION,
                 WINAComponentType.SVD_TRANSFORMATION,
                 WINAComponentType.DYNAMIC_GATING,
                 WINAComponentType.CONSTITUTIONAL_INTEGRATION,
-            ]:
+            }:
                 # Component-specific parameter bounds
                 if component_type == WINAComponentType.NEURON_ACTIVATION:
                     bounds = {
@@ -592,7 +593,7 @@ class WINAContinuousLearningSystem:
                 f"Feedback signal queued: {feedback.feedback_type.value} for {feedback.component_type.value}"
             )
         except Exception as e:
-            logger.error(f"Failed to process feedback signal: {e}")
+            logger.exception(f"Failed to process feedback signal: {e}")
 
     async def _feedback_processing_loop(self):
         # requires: Valid input parameters
@@ -633,7 +634,7 @@ class WINAContinuousLearningSystem:
                     self.feedback_history.extend(feedback_batch)
 
             except Exception as e:
-                logger.error(f"Feedback processing loop error: {e}")
+                logger.exception(f"Feedback processing loop error: {e}")
                 await asyncio.sleep(1)  # Prevent tight error loop
 
     async def _process_feedback_batch(self, feedback_batch: list[FeedbackSignal]):
@@ -662,7 +663,7 @@ class WINAContinuousLearningSystem:
             await self._update_learning_state(feedback_batch, all_actions)
 
         except Exception as e:
-            logger.error(f"Feedback batch processing failed: {e}")
+            logger.exception(f"Feedback batch processing failed: {e}")
 
     async def _execute_learning_action(self, action: LearningAction):
         # requires: Valid input parameters
@@ -732,7 +733,7 @@ class WINAContinuousLearningSystem:
             self.learning_metrics["successful_adaptations"] += 1
 
         except Exception as e:
-            logger.error(f"Failed to execute learning action: {e}")
+            logger.exception(f"Failed to execute learning action: {e}")
             self.learning_metrics["failed_adaptations"] += 1
 
     async def _update_learning_state(
@@ -748,7 +749,7 @@ class WINAContinuousLearningSystem:
                 signal.value
                 for signal in feedback_batch
                 if signal.feedback_type
-                in [FeedbackType.EFFICIENCY_GAIN, FeedbackType.ACCURACY_RETENTION]
+                in {FeedbackType.EFFICIENCY_GAIN, FeedbackType.ACCURACY_RETENTION}
             ]
 
             if recent_performance:
@@ -850,7 +851,7 @@ class WINAContinuousLearningSystem:
                 await asyncio.sleep(adaptation_interval)
                 await self._perform_periodic_adaptation()
             except Exception as e:
-                logger.error(f"Adaptation loop error: {e}")
+                logger.exception(f"Adaptation loop error: {e}")
 
     async def _perform_periodic_adaptation(self):
         # requires: Valid input parameters
@@ -871,7 +872,7 @@ class WINAContinuousLearningSystem:
             await self._cleanup_learning_data()
 
         except Exception as e:
-            logger.error(f"Periodic adaptation failed: {e}")
+            logger.exception(f"Periodic adaptation failed: {e}")
 
     async def _analyze_component_performance(
         self, component_type: WINAComponentType, profile: ComponentLearningProfile
@@ -983,7 +984,7 @@ class WINAContinuousLearningSystem:
                     await self._generate_performance_feedback()
 
             except Exception as e:
-                logger.error(f"Performance monitoring loop error: {e}")
+                logger.exception(f"Performance monitoring loop error: {e}")
 
     async def _generate_performance_feedback(self):
         # requires: Valid input parameters
@@ -1059,7 +1060,7 @@ class WINAContinuousLearningSystem:
             return status
 
         except Exception as e:
-            logger.error(f"Failed to get learning status: {e}")
+            logger.exception(f"Failed to get learning status: {e}")
             return {"error": str(e)}
 
     async def get_component_recommendations(
@@ -1108,7 +1109,7 @@ class WINAContinuousLearningSystem:
             return recommendations
 
         except Exception as e:
-            logger.error(f"Failed to get component recommendations: {e}")
+            logger.exception(f"Failed to get component recommendations: {e}")
             return {"error": str(e)}
 
     def set_performance_collector(self, collector: WINAPerformanceCollector):

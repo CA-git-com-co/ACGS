@@ -5,6 +5,8 @@ title: 'Create deployment automation scripts'
 labels: good first issue, devops, automation
 assignees: ''
 ---
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 
 ## Description
 Automate the deployment process for development environments

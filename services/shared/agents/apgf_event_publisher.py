@@ -8,7 +8,7 @@ real-time notifications, monitoring, and cross-service communication.
 import logging
 import uuid
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.streaming.event_streaming_manager import (
     EventPriority,
@@ -29,7 +29,7 @@ class APGFEventPublisher:
     events, and tool execution events to the ACGS event streaming infrastructure.
     """
 
-    def __init__(self, event_streaming_manager: Optional[EventStreamingManager] = None):
+    def __init__(self, event_streaming_manager: EventStreamingManager | None = None):
         self.event_streaming_manager = event_streaming_manager
         self.source_service = "apgf_service"
 
@@ -49,7 +49,7 @@ class APGFEventPublisher:
                 await self.event_streaming_manager.initialize()
                 logger.info("APGF event publisher initialized successfully")
             except Exception as e:
-                logger.error(f"Failed to initialize APGF event publisher: {e!s}")
+                logger.exception(f"Failed to initialize APGF event publisher: {e!s}")
 
     async def publish_workflow_initiated(
         self, workflow_id: str, workflow_data: dict[str, Any]
@@ -269,8 +269,8 @@ class APGFEventPublisher:
         event_type: EventType,
         priority: EventPriority,
         payload: dict[str, Any],
-        target_service: Optional[str] = None,
-        correlation_id: Optional[str] = None,
+        target_service: str | None = None,
+        correlation_id: str | None = None,
     ) -> None:
         """Internal method to publish events"""
         if not self.event_streaming_manager:
@@ -306,7 +306,7 @@ class APGFEventPublisher:
             logger.debug(f"Published {event_type.value} event: {event.event_id}")
 
         except Exception as e:
-            logger.error(f"Failed to publish {event_type.value} event: {e!s}")
+            logger.exception(f"Failed to publish {event_type.value} event: {e!s}")
             # Don't raise exception to avoid breaking workflow on event failure
 
     async def shutdown(self) -> None:
@@ -316,4 +316,4 @@ class APGFEventPublisher:
                 await self.event_streaming_manager.shutdown()
                 logger.info("APGF event publisher shutdown successfully")
             except Exception as e:
-                logger.error(f"Error during APGF event publisher shutdown: {e!s}")
+                logger.exception(f"Error during APGF event publisher shutdown: {e!s}")

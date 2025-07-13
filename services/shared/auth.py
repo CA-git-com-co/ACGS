@@ -120,8 +120,7 @@ async def get_current_user_from_token(
 
     try:
         # Remove 'Bearer ' prefix if present
-        if token.startswith("Bearer "):
-            token = token[7:]
+        token = token.removeprefix("Bearer ")
 
         payload = verify_token_and_get_payload(token)
 
@@ -129,14 +128,12 @@ async def get_current_user_from_token(
             raise credentials_exception
 
         # Create user object from token payload
-        user = User(
+        return User(
             id=payload.user_id,
             username=payload.sub,
             roles=payload.roles or [],
             is_active=True,
         )
-
-        return user
 
     except HTTPException:
         raise
@@ -225,8 +222,7 @@ async def get_service_token() -> str:
         "exp": int(expire.timestamp()),
         "jti": str(uuid.uuid4()),  # Unique token identifier
     }
-    encoded_jwt = jwt.encode(payload, effective_secret_key, algorithm=ALGORITHM)
-    return encoded_jwt
+    return jwt.encode(payload, effective_secret_key, algorithm=ALGORITHM)
 
 
 async def get_auth_headers(token: str | None = None) -> dict:  # Changed to async

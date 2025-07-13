@@ -514,7 +514,9 @@ class PolicySynthesisEngine:
                 }
 
             except Exception as e:
-                logger.error(f"Multi-model consensus failed for {synthesis_id}: {e}")
+                logger.exception(
+                    f"Multi-model consensus failed for {synthesis_id}: {e}"
+                )
                 # Fallback to enhanced validation
                 result = await self._enhanced_validation_synthesis(
                     request, synthesis_id
@@ -641,7 +643,7 @@ async def synthesize_policy_phase_a3(
         return result
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Phase A3 synthesis failed: {e}", extra={"correlation_id": correlation_id}
         )
 
@@ -779,7 +781,7 @@ async def multi_model_consensus_direct(
         return response_data
 
     except Exception as e:
-        logger.error(
+        logger.exception(
             f"Multi-model consensus failed: {e}",
             extra={"correlation_id": correlation_id},
         )

@@ -10,10 +10,11 @@ import hashlib
 import json
 import logging
 import time
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from functools import wraps
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
 import asyncpg
 import redis.asyncio as redis
@@ -71,12 +72,12 @@ class O1LookupCache:
         self.max_size = max_size
         self.default_ttl = default_ttl
         self.cache: OrderedDict[str, CacheEntry] = OrderedDict()
-        self.index: Dict[str, str] = {}  # Fast lookup index
+        self.index: dict[str, str] = {}  # Fast lookup index
         self.metrics = PerformanceMetrics()
         self.hit_count = 0
         self.miss_count = 0
 
-    def _generate_key(self, key: Union[str, Dict[str, Any]]) -> str:
+    def _generate_key(self, key: str | dict[str, Any]) -> str:
         """Generate O(1) lookup key."""
         if isinstance(key, str):
             return key
@@ -85,7 +86,7 @@ class O1LookupCache:
         key_str = json.dumps(key, sort_keys=True)
         return hashlib.sha256(key_str.encode()).hexdigest()[:16]
 
-    def get(self, key: Union[str, Dict[str, Any]]) -> Optional[Any]:
+    def get(self, key: str | dict[str, Any]) -> Any | None:
         """O(1) cache get operation."""
         start_time = time.time()
         cache_key = self._generate_key(key)
@@ -123,7 +124,7 @@ class O1LookupCache:
             )
 
     def set(
-        self, key: Union[str, Dict[str, Any]], value: Any, ttl: Optional[int] = None
+        self, key: str | dict[str, Any], value: Any, ttl: int | None = None
     ) -> bool:
         """O(1) cache set operation."""
         start_time = time.time()
@@ -158,7 +159,7 @@ class O1LookupCache:
             return True
 
         except Exception as e:
-            logger.error(f"Cache set error: {e}")
+            logger.exception(f"Cache set error: {e}")
             return False
         finally:
             latency = (time.time() - start_time) * 1000
@@ -180,8 +181,8 @@ class EnhancedRedisCache:
         self.redis_url = redis_url
         self.service_name = service_name
         self.max_connections = max_connections
-        self.redis_client: Optional[redis.Redis] = None
-        self.connection_pool: Optional[redis.ConnectionPool] = None
+        self.redis_client: redis.Redis | None = None
+        self.connection_pool: redis.ConnectionPool | None = None
         self.circuit_breaker_failures = 0
         self.circuit_breaker_threshold = 5
         self.circuit_breaker_timeout = 60
@@ -209,7 +210,7 @@ class EnhancedRedisCache:
             logger.info(f"Redis cache initialized for {self.service_name}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize Redis cache: {e}")
+            logger.exception(f"Failed to initialize Redis cache: {e}")
             raise
 
     def _is_circuit_breaker_open(self) -> bool:
@@ -220,12 +221,11 @@ class EnhancedRedisCache:
                 < self.circuit_breaker_timeout
             ):
                 return True
-            else:
-                # Reset circuit breaker
-                self.circuit_breaker_failures = 0
+            # Reset circuit breaker
+            self.circuit_breaker_failures = 0
         return False
 
-    async def get(self, key: str) -> Optional[Any]:
+    async def get(self, key: str) -> Any | None:
         """Get value from Redis with circuit breaker."""
         if self._is_circuit_breaker_open():
             return None
@@ -245,7 +245,7 @@ class EnhancedRedisCache:
                 return None
 
         except Exception as e:
-            logger.error(f"Redis get error: {e}")
+            logger.exception(f"Redis get error: {e}")
             self.circuit_breaker_failures += 1
             self.circuit_breaker_last_failure = time.time()
             CACHE_MISSES.labels(service=self.service_name, cache_type="redis").inc()
@@ -271,7 +271,7 @@ class EnhancedRedisCache:
             return True
 
         except Exception as e:
-            logger.error(f"Redis set error: {e}")
+            logger.exception(f"Redis set error: {e}")
             self.circuit_breaker_failures += 1
             self.circuit_breaker_last_failure = time.time()
             return False
@@ -296,7 +296,7 @@ class DatabaseConnectionPool:
         self.service_name = service_name
         self.min_connections = min_connections
         self.max_connections = max_connections
-        self.pool: Optional[asyncpg.Pool] = None
+        self.pool: asyncpg.Pool | None = None
 
     async def initialize(self):
         """Initialize connection pool."""
@@ -319,7 +319,7 @@ class DatabaseConnectionPool:
             logger.info(f"Database pool initialized for {self.service_name}")
 
         except Exception as e:
-            logger.error(f"Failed to initialize database pool: {e}")
+            logger.exception(f"Failed to initialize database pool: {e}")
             raise
 
     async def execute_query(self, query: str, *args, query_type: str = "select") -> Any:
@@ -336,7 +336,7 @@ class DatabaseConnectionPool:
                 return result
 
         except Exception as e:
-            logger.error(f"Database query error: {e}")
+            logger.exception(f"Database query error: {e}")
             raise
         finally:
             latency = time.time() - start_time
@@ -418,7 +418,7 @@ class PerformanceMonitor:
     def __init__(self, service_name: str):
         self.service_name = service_name
         self.metrics = PerformanceMetrics()
-        self.latency_samples: List[float] = []
+        self.latency_samples: list[float] = []
         self.max_samples = 1000
 
     def record_latency(self, latency_ms: float):
@@ -438,7 +438,7 @@ class PerformanceMonitor:
                 int(0.99 * len(self.latency_samples))
             ]
 
-    def get_performance_report(self) -> Dict[str, Any]:
+    def get_performance_report(self) -> dict[str, Any]:
         """Get comprehensive performance report."""
         return {
             "service": self.service_name,

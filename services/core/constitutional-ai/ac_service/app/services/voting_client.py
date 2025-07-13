@@ -105,7 +105,7 @@ class EnhancedVotingClient:
             logger.info("Enhanced voting client initialized")
 
         except Exception as e:
-            logger.error(f"Failed to initialize voting client: {e}")
+            logger.exception(f"Failed to initialize voting client: {e}")
             raise VotingClientError(f"Initialization failed: {e}")
 
     async def close(self):
@@ -141,7 +141,7 @@ class EnhancedVotingClient:
                 await self._record_failure()
 
                 if attempt == self.config.max_retries:
-                    logger.error(
+                    logger.exception(
                         f"Vote submission failed after {self.config.max_retries} retries: {e}"
                     )
                     raise VotingClientError(f"Vote submission failed: {e}")
@@ -212,6 +212,7 @@ class EnhancedVotingClient:
             raise VotingClientError("Vote already exists for this amendment")
 
         response.raise_for_status()
+        return None
 
     async def get_amendment_votes(
         self, amendment_id: int, auth_token: str

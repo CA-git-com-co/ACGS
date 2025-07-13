@@ -9,6 +9,7 @@ Service URL: http://localhost:8107
 
 import asyncio
 import json
+import sys
 import time
 from datetime import datetime
 from typing import Any
@@ -137,34 +138,17 @@ class IntegrationExamples:
 
     async def example_1_basic_health_monitoring(self):
         """Example 1: Basic health monitoring integration"""
-        print("\n" + "=" * 60)
-        print("EXAMPLE 1: Basic Health Monitoring Integration")
-        print("=" * 60)
 
         try:
             async with ACGSCodeAnalysisClient() as client:
                 # Perform health check
-                health = await client.health_check()
-
-                print(f"✓ Service Status: {health['status']}")
-                print(
-                    f"✓ Constitutional Compliance: {health['constitutional_compliant']}"
-                )
-                print(f"✓ Service Version: {health.get('service_version', 'unknown')}")
-                print(f"✓ Timestamp: {health.get('timestamp', 'unknown')}")
+                await client.health_check()
 
                 # Monitor service over time
-                print("\n--- Monitoring Service Health (5 checks) ---")
-                for i in range(5):
+                for _i in range(5):
                     start_time = time.time()
-                    health = await client.health_check()
-                    response_time = (time.time() - start_time) * 1000
-
-                    print(
-                        f"Check {i + 1}: Status={health['status']}, "
-                        f"Response={response_time:.2f}ms, "
-                        f"Compliant={health['constitutional_compliant']}"
-                    )
+                    await client.health_check()
+                    (time.time() - start_time) * 1000
 
                     await asyncio.sleep(1)
 
@@ -175,7 +159,6 @@ class IntegrationExamples:
                 }
 
         except Exception as e:
-            print(f"✗ Basic health monitoring failed: {e}")
             self.results["basic_health_monitoring"] = {
                 "status": "failed",
                 "error": str(e),
@@ -183,9 +166,6 @@ class IntegrationExamples:
 
     async def example_2_code_search_integration(self):
         """Example 2: Code search integration"""
-        print("\n" + "=" * 60)
-        print("EXAMPLE 2: Code Search Integration")
-        print("=" * 60)
 
         try:
             async with ACGSCodeAnalysisClient() as client:
@@ -201,19 +181,10 @@ class IntegrationExamples:
                 search_results = []
 
                 for query in search_queries:
-                    print(f"\n--- Searching for: '{query}' ---")
 
                     start_time = time.time()
                     result = await client.search_code(query, limit=5)
                     search_time = (time.time() - start_time) * 1000
-
-                    print(f"✓ Query: {result['query']}")
-                    print(f"✓ Results found: {result['total']}")
-                    print(f"✓ Search time: {search_time:.2f}ms")
-                    print(
-                        "✓ Constitutional compliance:"
-                        f" {result['constitutional_compliant']}"
-                    )
 
                     search_results.append(
                         {
@@ -234,7 +205,6 @@ class IntegrationExamples:
                 }
 
         except Exception as e:
-            print(f"✗ Code search integration failed: {e}")
             self.results["code_search_integration"] = {
                 "status": "failed",
                 "error": str(e),
@@ -242,9 +212,6 @@ class IntegrationExamples:
 
     async def example_3_code_analysis_integration(self):
         """Example 3: Code analysis integration"""
-        print("\n" + "=" * 60)
-        print("EXAMPLE 3: Code Analysis Integration")
-        print("=" * 60)
 
         try:
             async with ACGSCodeAnalysisClient() as client:
@@ -289,22 +256,12 @@ class DatabaseManager:
                 analysis_results = []
 
                 for example in code_examples:
-                    print(f"\n--- Analyzing: {example['name']} ---")
 
                     start_time = time.time()
                     result = await client.analyze_code(
                         example["code"], example["language"]
                     )
                     analysis_time = (time.time() - start_time) * 1000
-
-                    print(f"✓ Code type: {example['name']}")
-                    print(f"✓ Language: {result['language']}")
-                    print(f"✓ Analysis result: {result['analysis']}")
-                    print(f"✓ Analysis time: {analysis_time:.2f}ms")
-                    print(
-                        "✓ Constitutional compliance:"
-                        f" {result['constitutional_compliant']}"
-                    )
 
                     analysis_results.append(
                         {
@@ -325,7 +282,6 @@ class DatabaseManager:
                 }
 
         except Exception as e:
-            print(f"✗ Code analysis integration failed: {e}")
             self.results["code_analysis_integration"] = {
                 "status": "failed",
                 "error": str(e),
@@ -333,35 +289,23 @@ class DatabaseManager:
 
     def example_4_synchronous_integration(self):
         """Example 4: Synchronous integration for simple use cases"""
-        print("\n" + "=" * 60)
-        print("EXAMPLE 4: Synchronous Integration")
-        print("=" * 60)
 
         try:
             client = ACGSCodeAnalysisClient()
 
             # Simple synchronous health checks
-            print("--- Synchronous Health Checks ---")
-            for i in range(3):
+            for _i in range(3):
                 start_time = time.time()
-                health = client.sync_health_check()
-                check_time = time.time() - start_time
-
-                print(
-                    f"Check {i + 1}: Status={health['status']}, "
-                    f"Time={check_time * 1000:.2f}ms, "
-                    f"Compliant={health['constitutional_compliant']}"
-                )
+                client.sync_health_check()
+                time.time() - start_time
 
             # Test error handling
-            print("\n--- Testing Error Handling ---")
             try:
                 # This should work fine
-                health = client.sync_health_check()
-                print(f"✓ Normal request successful: {health['status']}")
+                client.sync_health_check()
 
-            except Exception as e:
-                print(f"✗ Unexpected error: {e}")
+            except Exception:
+                pass
 
             self.results["synchronous_integration"] = {
                 "status": "success",
@@ -370,7 +314,6 @@ class DatabaseManager:
             }
 
         except Exception as e:
-            print(f"✗ Synchronous integration failed: {e}")
             self.results["synchronous_integration"] = {
                 "status": "failed",
                 "error": str(e),
@@ -378,13 +321,6 @@ class DatabaseManager:
 
     async def run_all_integration_examples(self):
         """Run all integration examples"""
-        print("=" * 80)
-        print("ACGS Code Analysis Engine - Phase 4 Service Integration Examples")
-        print("=" * 80)
-        print("Service URL: http://localhost:8107")
-        print("Constitutional Hash: cdd01ef066bc6cf2")
-        print(f"Test Start: {datetime.now().isoformat()}")
-        print("=" * 80)
 
         # Run all examples
         await self.example_1_basic_health_monitoring()
@@ -397,11 +333,8 @@ class DatabaseManager:
 
     def generate_integration_summary(self):
         """Generate comprehensive integration summary"""
-        print("\n" + "=" * 80)
-        print("PHASE 4 SERVICE INTEGRATION EXAMPLES SUMMARY")
-        print("=" * 80)
 
-        successful_examples = [
+        [
             name
             for name, result in self.results.items()
             if result.get("status") == "success"
@@ -417,36 +350,17 @@ class DatabaseManager:
             for result in self.results.values()
         )
 
-        print(f"✓ Total examples: {len(self.results)}")
-        print(f"✓ Successful examples: {len(successful_examples)}")
-        print(f"✓ Failed examples: {len(failed_examples)}")
-        print(
-            "✓ Constitutional compliance:"
-            f" {'YES' if constitutional_compliant else 'NO'}"
-        )
-
-        for name, result in self.results.items():
-            status_icon = "✓" if result.get("status") == "success" else "✗"
-            print(
-                f"{status_icon} {name.replace('_', ' ').title()}:"
-                f" {result.get('status', 'unknown').upper()}"
-            )
+        for result in self.results.values():
+            "✓" if result.get("status") == "success" else "✗"
 
         overall_success = len(failed_examples) == 0
 
         if overall_success:
-            print("\n🎉 Phase 4 service integration examples SUCCESSFUL!")
-            print("✓ All integration patterns demonstrated successfully")
-            print("✓ Constitutional compliance maintained throughout")
-            print("✓ Ready for Phase 5 production monitoring setup")
-        else:
-            print("\n⚠️ Phase 4 service integration examples PARTIAL!")
-            print("✗ Some integration examples failed")
-            print("✓ Review failed examples before production deployment")
+            pass
 
         # Save results
         results_file = "phase4_integration_examples_results.json"
-        with open(results_file, "w") as f:
+        with open(results_file, "w", encoding="utf-8") as f:
             json.dump(
                 {
                     "overall_success": overall_success,
@@ -458,8 +372,6 @@ class DatabaseManager:
                 indent=2,
             )
 
-        print(f"\n✓ Detailed results saved to: {results_file}")
-
         return overall_success
 
 
@@ -469,11 +381,10 @@ async def main():
 
     try:
         success = await examples.run_all_integration_examples()
-        exit(0 if success else 1)
+        sys.exit(0 if success else 1)
 
-    except Exception as e:
-        print(f"\n💥 Phase 4 integration examples failed: {e}")
-        exit(1)
+    except Exception:
+        sys.exit(1)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import logging
-from typing import AsyncGenerator
+from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -50,7 +50,7 @@ async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
             await session.commit()
         except Exception as e:
             await session.rollback()
-            logger.error(f"Database session error: {e}")
+            logger.exception(f"Database session error: {e}")
             raise
         finally:
             await session.close()
@@ -59,7 +59,7 @@ async def get_async_db() -> AsyncGenerator[AsyncSession, None]:
 async def init_database():
     """Initialize database tables."""
     try:
-        from ...models import Base
+        from app.models import Base
 
         async with engine.begin() as conn:
             # Create all tables
@@ -67,7 +67,7 @@ async def init_database():
             logger.info("Database tables created successfully")
 
     except Exception as e:
-        logger.error(f"Failed to initialize database: {e}")
+        logger.exception(f"Failed to initialize database: {e}")
         raise
 
 
@@ -84,7 +84,7 @@ async def check_database_connection() -> bool:
             result = await session.execute("SELECT 1")
             return result.scalar() == 1
     except Exception as e:
-        logger.error(f"Database connection check failed: {e}")
+        logger.exception(f"Database connection check failed: {e}")
         return False
 
 
@@ -96,9 +96,9 @@ async def get_database_stats() -> dict:
         dict: Database statistics
     """
     try:
-        async with AsyncSessionLocal() as session:
+        async with AsyncSessionLocal():
             # Get basic database info
-            stats = {
+            return {
                 "connection_status": "connected",
                 "constitutional_hash": CONSTITUTIONAL_HASH,
                 "engine_pool_size": engine.pool.size(),
@@ -106,10 +106,8 @@ async def get_database_stats() -> dict:
                 "engine_pool_checked_out": engine.pool.checkedout(),
             }
 
-            return stats
-
     except Exception as e:
-        logger.error(f"Failed to get database stats: {e}")
+        logger.exception(f"Failed to get database stats: {e}")
         return {
             "connection_status": "error",
             "error": str(e),
@@ -137,7 +135,7 @@ async def database_health_check() -> dict:
         }
 
     except Exception as e:
-        logger.error(f"Database health check failed: {e}")
+        logger.exception(f"Database health check failed: {e}")
         return {
             "status": "unhealthy",
             "connection": "error",
@@ -153,4 +151,4 @@ async def close_database():
         await engine.dispose()
         logger.info("Database connections closed")
     except Exception as e:
-        logger.error(f"Error closing database connections: {e}")
+        logger.exception(f"Error closing database connections: {e}")

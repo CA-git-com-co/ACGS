@@ -167,19 +167,16 @@ class RegoPolicy(BaseModel):
         lines = []
 
         # Package declaration
-        lines.append(f"package {self.package_name}")
-        lines.append("")
+        lines.extend((f"package {self.package_name}", ""))
 
         # Imports
-        for import_stmt in self.imports:
-            lines.append(f"import {import_stmt}")
+        lines.extend(f"import {import_stmt}" for import_stmt in self.imports)
         if self.imports:
             lines.append("")
 
         # Rules
         for rule in self.rules:
-            lines.append(rule)
-            lines.append("")
+            lines.extend((rule, ""))
 
         return "\n".join(lines)
 

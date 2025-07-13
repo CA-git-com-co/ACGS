@@ -21,7 +21,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -30,7 +30,10 @@ from services.shared.security.enhanced_audit_logging import AuditLogger
 
 from .lime_integration import LIMEExplainer, LIMEExplanation
 from .shap_integration import ExplainerType as SHAPExplainerType
-from .shap_integration import SHAPExplainer, SHAPExplanation
+from .shap_integration import (
+    SHAPExplainer,
+    SHAPExplanation,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -59,8 +62,8 @@ class ExplanationContext(Enum):
 class HybridExplanation:
     """Combined explanation result from multiple methods"""
 
-    shap_explanation: Optional[SHAPExplanation]
-    lime_explanation: Optional[LIMEExplanation]
+    shap_explanation: SHAPExplanation | None
+    lime_explanation: LIMEExplanation | None
     consensus_features: dict[str, float]
     explanation_agreement: float
     primary_method: str
@@ -91,7 +94,7 @@ class HybridExplainabilityEngine:
     Production-ready hybrid explainability engine
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
 
         # Initialize component explainers
@@ -128,7 +131,7 @@ class HybridExplainabilityEngine:
         # Metrics tracking
         self.metrics = {
             "total_explanations": 0,
-            "strategy_usage": {strategy: 0 for strategy in ExplanationStrategy},
+            "strategy_usage": dict.fromkeys(ExplanationStrategy, 0),
             "avg_computation_time": 0.0,
             "avg_agreement_score": 0.0,
             "constitutional_violations": 0,
@@ -140,7 +143,7 @@ class HybridExplainabilityEngine:
         model: Any,
         training_data: np.ndarray,
         feature_names: list[str],
-        class_names: Optional[list[str]] = None,
+        class_names: list[str] | None = None,
     ) -> bool:
         """
         Initialize both SHAP and LIME explainers
@@ -188,7 +191,7 @@ class HybridExplainabilityEngine:
             return initialization_success
 
         except Exception as e:
-            logger.error(f"Hybrid explainer initialization failed: {e}")
+            logger.exception(f"Hybrid explainer initialization failed: {e}")
             return False
 
     def _determine_optimal_shap_explainer(
@@ -230,9 +233,9 @@ class HybridExplainabilityEngine:
         self,
         model: Any,
         instance: np.ndarray,
-        predict_fn: Optional[Callable] = None,
+        predict_fn: Callable | None = None,
         context: ExplanationContext = ExplanationContext.ROUTINE_OPERATION,
-        strategy: Optional[ExplanationStrategy] = None,
+        strategy: ExplanationStrategy | None = None,
     ) -> HybridExplanation:
         """
         Generate hybrid explanation for a single instance
@@ -254,11 +257,13 @@ class HybridExplainabilityEngine:
             strategy = self._determine_strategy(context, model, instance)
 
         if predict_fn is None:
-            predict_fn = lambda x: (
-                model.predict(x)
-                if hasattr(model, "predict")
-                else np.random.random(len(x))
-            )
+
+            def predict_fn(x):
+                return (
+                    model.predict(x)
+                    if hasattr(model, "predict")
+                    else np.random.random(len(x))
+                )
 
         try:
             # Check cache first
@@ -273,12 +278,12 @@ class HybridExplainabilityEngine:
             lime_explanation = None
 
             # Generate explanations based on strategy
-            if strategy in [
+            if strategy in {
                 ExplanationStrategy.SHAP_ONLY,
                 ExplanationStrategy.BOTH_CONSENSUS,
                 ExplanationStrategy.ADAPTIVE,
                 ExplanationStrategy.CONSTITUTIONAL_GUIDED,
-            ]:
+            }:
                 try:
                     # Determine SHAP explainer type
                     shap_type = self._determine_optimal_shap_explainer(
@@ -290,12 +295,12 @@ class HybridExplainabilityEngine:
                 except Exception as e:
                     logger.warning(f"SHAP explanation failed: {e}")
 
-            if strategy in [
+            if strategy in {
                 ExplanationStrategy.LIME_ONLY,
                 ExplanationStrategy.BOTH_CONSENSUS,
                 ExplanationStrategy.ADAPTIVE,
                 ExplanationStrategy.CONSTITUTIONAL_GUIDED,
-            ]:
+            }:
                 try:
                     lime_explanation = (
                         await self.lime_explainer.explain_tabular_instance(
@@ -361,7 +366,7 @@ class HybridExplainabilityEngine:
             return hybrid_explanation
 
         except Exception as e:
-            logger.error(f"Hybrid explanation failed: {e}")
+            logger.exception(f"Hybrid explanation failed: {e}")
             computation_time = (datetime.utcnow() - start_time).total_seconds()
 
             return HybridExplanation(
@@ -387,29 +392,29 @@ class HybridExplainabilityEngine:
                 # Use both methods for high-stakes decisions
                 return ExplanationStrategy.BOTH_CONSENSUS
 
-            elif context == ExplanationContext.REGULATORY_COMPLIANCE:
+            if context == ExplanationContext.REGULATORY_COMPLIANCE:
                 # Use constitutional-guided approach for compliance
                 return ExplanationStrategy.CONSTITUTIONAL_GUIDED
 
-            elif context == ExplanationContext.BIAS_INVESTIGATION:
+            if context == ExplanationContext.BIAS_INVESTIGATION:
                 # Use both methods to investigate bias thoroughly
                 return ExplanationStrategy.BOTH_CONSENSUS
 
-            elif context == ExplanationContext.DEBUGGING:
+            if context == ExplanationContext.DEBUGGING:
                 # Use SHAP for faster debugging
                 return ExplanationStrategy.SHAP_ONLY
 
-            else:  # ROUTINE_OPERATION
-                # Use adaptive strategy for routine operations
-                return ExplanationStrategy.ADAPTIVE
+            # ROUTINE_OPERATION
+            # Use adaptive strategy for routine operations
+            return ExplanationStrategy.ADAPTIVE
 
         except Exception:
             return self.default_strategy
 
     async def _create_hybrid_explanation(
         self,
-        shap_explanation: Optional[SHAPExplanation],
-        lime_explanation: Optional[LIMEExplanation],
+        shap_explanation: SHAPExplanation | None,
+        lime_explanation: LIMEExplanation | None,
         strategy: ExplanationStrategy,
         context: ExplanationContext,
         instance_id: str,
@@ -498,7 +503,7 @@ class HybridExplainabilityEngine:
             )
 
         except Exception as e:
-            logger.error(f"Hybrid explanation creation failed: {e}")
+            logger.exception(f"Hybrid explanation creation failed: {e}")
             return HybridExplanation(
                 shap_explanation=shap_explanation,
                 lime_explanation=lime_explanation,
@@ -515,8 +520,8 @@ class HybridExplainabilityEngine:
 
     def _calculate_hybrid_confidence(
         self,
-        shap_explanation: Optional[SHAPExplanation],
-        lime_explanation: Optional[LIMEExplanation],
+        shap_explanation: SHAPExplanation | None,
+        lime_explanation: LIMEExplanation | None,
         agreement: float,
         context: ExplanationContext,
     ) -> float:
@@ -613,7 +618,7 @@ class HybridExplainabilityEngine:
             )
 
         except Exception as e:
-            logger.error(f"Explanation validation failed: {e}")
+            logger.exception(f"Explanation validation failed: {e}")
             return ExplanationValidation(
                 is_valid=False,
                 constitutional_compliance=False,
@@ -643,22 +648,20 @@ class HybridExplainabilityEngine:
             protected_attributes = ["race", "gender", "age", "religion", "ethnicity"]
             has_biased_features = any(
                 attr in feature.lower()
-                for feature in explanation.consensus_features.keys()
+                for feature in explanation.consensus_features
                 for attr in protected_attributes
             )
 
             # Basic compliance check
-            constitutional_compliance = (
+            return (
                 has_interpretable_features
                 and is_traceable
                 and not has_biased_features
                 and explanation.confidence > 0.3
             )
 
-            return constitutional_compliance
-
         except Exception as e:
-            logger.error(f"Constitutional compliance check failed: {e}")
+            logger.exception(f"Constitutional compliance check failed: {e}")
             return False
 
     def _assess_feature_consistency(self, explanation: HybridExplanation) -> float:
@@ -784,7 +787,7 @@ class HybridExplainabilityEngine:
             logger.info(f"Cleaned up {len(keys_to_remove)} expired cache entries")
 
         except Exception as e:
-            logger.error(f"Cache cleanup failed: {e}")
+            logger.exception(f"Cache cleanup failed: {e}")
 
     def _update_metrics(
         self,
@@ -832,7 +835,7 @@ class HybridExplainabilityEngine:
 
 # Factory function and example usage
 async def create_hybrid_explainability_engine(
-    config: Optional[dict[str, Any]] = None,
+    config: dict[str, Any] | None = None,
 ) -> HybridExplainabilityEngine:
     """
     Factory function to create and initialize the hybrid explainability engine
@@ -895,20 +898,15 @@ async def example_usage():
     if success:
         # Generate hybrid explanation
         test_instance = np.random.randn(10)
-        explanation = await engine.explain_instance(
+        await engine.explain_instance(
             model,
             test_instance,
             context=ExplanationContext.HIGH_STAKES,
             strategy=ExplanationStrategy.BOTH_CONSENSUS,
         )
 
-        print(f"Consensus features: {explanation.consensus_features}")
-        print(f"Agreement score: {explanation.explanation_agreement}")
-        print(f"Confidence: {explanation.confidence}")
-
         # Get performance summary
-        summary = engine.get_performance_summary()
-        print(f"Performance: {summary}")
+        engine.get_performance_summary()
 
 
 if __name__ == "__main__":

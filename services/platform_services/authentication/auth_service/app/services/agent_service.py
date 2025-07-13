@@ -10,20 +10,19 @@ import uuid
 from datetime import datetime, timezone
 from typing import Any
 
-from sqlalchemy import and_, func, or_
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.orm import selectinload
-
-from ..core.security import get_password_hash, verify_password
-from ..models import User
-from ..models.agent import Agent, AgentAuditLog, AgentStatus
-from ..schemas.agent import (
+from app.core.security import get_password_hash, verify_password
+from app.models import User
+from app.models.agent import Agent, AgentAuditLog, AgentStatus
+from app.schemas.agent import (
     AgentCreate,
     AgentSearchRequest,
     AgentStatusUpdate,
     AgentUpdate,
 )
+from sqlalchemy import and_, func, or_
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 
 class AgentService:
@@ -272,12 +271,13 @@ class AgentService:
 
         if search_request.tags:
             # PostgreSQL JSON contains operator
-            for tag in search_request.tags:
-                conditions.append(Agent.tags.contains([tag]))
+            conditions.extend(Agent.tags.contains([tag]) for tag in search_request.tags)
 
         if search_request.capabilities:
-            for capability in search_request.capabilities:
-                conditions.append(Agent.capabilities.contains([capability]))
+            conditions.extend(
+                Agent.capabilities.contains([capability])
+                for capability in search_request.capabilities
+            )
 
         if search_request.compliance_level:
             conditions.append(

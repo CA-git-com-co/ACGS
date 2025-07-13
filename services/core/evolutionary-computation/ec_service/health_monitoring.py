@@ -238,7 +238,7 @@ class HealthMonitor:
             try:
                 current_time = datetime.now(timezone.utc)
 
-                for check_id, health_check in self.health_checks.items():
+                for health_check in self.health_checks.values():
                     # Check if it's time to run this health check
                     if (
                         health_check.last_check_time is None
@@ -250,7 +250,7 @@ class HealthMonitor:
                 await asyncio.sleep(5)  # Check every 5 seconds for due health checks
 
             except Exception as e:
-                logger.error(f"Error in health check loop: {e}")
+                logger.exception(f"Error in health check loop: {e}")
                 await asyncio.sleep(10)
 
     async def run_health_check(self, health_check: HealthCheck):
@@ -299,7 +299,7 @@ class HealthMonitor:
             await self.handle_health_check_failure(health_check, "timeout")
 
         except Exception as e:
-            logger.error(f"Health check {health_check.check_id} failed: {e}")
+            logger.exception(f"Health check {health_check.check_id} failed: {e}")
             await self.handle_health_check_failure(health_check, str(e))
 
     async def check_api_endpoint(self, health_check: HealthCheck) -> dict:
@@ -312,7 +312,7 @@ class HealthMonitor:
                     response_time = (time.time() - start_time) * 1000
 
                     if response.status == 200:
-                        data = await response.json()
+                        await response.json()
 
                         return {
                             "status": HealthStatus.HEALTHY,
@@ -346,7 +346,7 @@ class HealthMonitor:
                     if response.status == 200:
                         data = await response.json()
 
-                        if data.get("status") in ["healthy", "operational"]:
+                        if data.get("status") in {"healthy", "operational"}:
                             return {
                                 "status": HealthStatus.HEALTHY,
                                 "response_time_ms": response_time,
@@ -649,7 +649,7 @@ class HealthMonitor:
                 await asyncio.sleep(60)
 
             except Exception as e:
-                logger.error(f"Error in alert manager: {e}")
+                logger.exception(f"Error in alert manager: {e}")
 
     async def metrics_updater(self):
         """Update aggregated metrics."""
@@ -661,7 +661,7 @@ class HealthMonitor:
                 # Implementation would aggregate component health
 
             except Exception as e:
-                logger.error(f"Error in metrics updater: {e}")
+                logger.exception(f"Error in metrics updater: {e}")
 
     def get_overall_health(self) -> dict:
         """Get overall health status."""

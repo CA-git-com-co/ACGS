@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 总计 2153
 drwxrwxr-x  33 dislove dislove     97 Jul  6 14:18 .
 drwxr-x--- 226 dislove dislove    398 Jul  6 14:36 ..

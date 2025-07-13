@@ -8,20 +8,14 @@ integration with other ACGS services.
 """
 
 import asyncio
-import json
 import time
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 from services.core.constitutional_ai.main import app
 from services.core.constitutional_ai.models import ConstitutionalValidation
-from services.core.constitutional_ai.schemas import (
-    ConstitutionalComplianceReport,
-    ValidationRequest,
-    ValidationResponse,
-)
 
 from services.shared.testing.constitutional_test_case import ConstitutionalAsyncTestCase
 
@@ -284,9 +278,6 @@ class TestConstitutionalAIService(ConstitutionalAsyncTestCase):
         # Note: This is a simplified cache test
         # In practice, we'd need to instrument the cache layer
         # to properly measure hit rates
-        print(
-            "Cache hit rate test completed (implementation-specific validation needed)"
-        )
 
     # === INTEGRATION TESTS ===
 
@@ -406,7 +397,6 @@ class TestConstitutionalAIService(ConstitutionalAsyncTestCase):
         validation_id = data["data"]["validation_id"]
 
         # Verify validation was persisted in database
-        from services.core.constitutional_ai.models import ConstitutionalValidation
         from sqlalchemy import select
 
         result = await db_session.execute(

@@ -201,26 +201,27 @@ class BiasDetectionEngine:
         if any(
             term in policy_content.lower()
             for term in ["fee", "cost", "payment", "purchase"]
+        ) and (
+            "waiver" not in policy_content.lower()
+            and "assistance" not in policy_content.lower()
         ):
-            if (
-                "waiver" not in policy_content.lower()
-                and "assistance" not in policy_content.lower()
-            ):
-                indicators.append(
-                    "Potential economic barrier: costs without assistance provisions"
-                )
-                score += 0.15
+            indicators.append(
+                "Potential economic barrier: costs without assistance provisions"
+            )
+            score += 0.15
 
         # Check for technological barriers
-        if any(
-            term in policy_content.lower()
-            for term in ["online", "digital", "app", "website"]
+        if (
+            any(
+                term in policy_content.lower()
+                for term in ["online", "digital", "app", "website"]
+            )
+            and "alternative" not in policy_content.lower()
         ):
-            if "alternative" not in policy_content.lower():
-                indicators.append(
-                    "Potential digital divide: digital requirements without alternatives"
-                )
-                score += 0.1
+            indicators.append(
+                "Potential digital divide: digital requirements without alternatives"
+            )
+            score += 0.1
 
         return {"indicators": indicators, "score": score}
 
@@ -519,7 +520,7 @@ class ProactiveFairnessGenerator:
         self,
         initial_policy: str,
         context: dict[str, Any],
-        requirements: dict[str, Any] = None,
+        requirements: dict[str, Any] | None = None,
     ) -> tuple[str, FairnessAssessment]:
         """Generate a fair policy from initial content."""
         start_time = time.time()

@@ -154,8 +154,7 @@ async def process_neuron_data_for_wina(
     Orchestrates the analysis of neuron activations and calculation of WINA weights.
     """
     analyzed_data = await analyze_neuron_activations(activation_input)
-    wina_weights = await calculate_wina_weights(analyzed_data)
-    return wina_weights
+    return await calculate_wina_weights(analyzed_data)
 
 
 async def transform_matrix_with_svd(matrix: np.ndarray, k: int) -> np.ndarray:
@@ -181,8 +180,7 @@ async def transform_matrix_with_svd(matrix: np.ndarray, k: int) -> np.ndarray:
     # async to align with FastAPI patterns if it were to involve I/O
     # for loading matrices in a real application.
     # For pure computation, it could be synchronous.
-    transformed_matrix = apply_svd_transformation(matrix, k)
-    return transformed_matrix
+    return apply_svd_transformation(matrix, k)
 
 
 # Example of how transform_matrix_with_svd might be called (for testing/demonstration)

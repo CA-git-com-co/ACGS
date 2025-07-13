@@ -6,7 +6,7 @@ These schemas handle validation and serialization for the context service endpoi
 """
 
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -35,23 +35,23 @@ class ContextCreateRequest(BaseModel):
     )
 
     # Optional fields based on context type
-    conversation_id: Optional[str] = Field(
+    conversation_id: str | None = Field(
         None, description="Conversation ID (for conversation context)"
     )
-    domain: Optional[str] = Field(None, description="Domain (for domain context)")
-    principle_id: Optional[str] = Field(
+    domain: str | None = Field(None, description="Domain (for domain context)")
+    principle_id: str | None = Field(
         None, description="Principle ID (for constitutional context)"
     )
-    agent_id: Optional[str] = Field(None, description="Agent ID (for agent context)")
-    policy_id: Optional[str] = Field(None, description="Policy ID (for policy context)")
+    agent_id: str | None = Field(None, description="Agent ID (for agent context)")
+    policy_id: str | None = Field(None, description="Policy ID (for policy context)")
 
     # Metadata
     keywords: list[str] = Field(default_factory=list, description="Context keywords")
     tags: list[str] = Field(default_factory=list, description="Context tags")
-    parent_context_id: Optional[UUID] = Field(None, description="Parent context ID")
+    parent_context_id: UUID | None = Field(None, description="Parent context ID")
 
     # Lifecycle
-    custom_ttl_seconds: Optional[int] = Field(None, description="Custom TTL in seconds")
+    custom_ttl_seconds: int | None = Field(None, description="Custom TTL in seconds")
 
     # Options
     generate_embedding: bool = Field(
@@ -65,14 +65,14 @@ class ContextCreateRequest(BaseModel):
 class ContextUpdateRequest(BaseModel):
     """Request schema for updating existing context."""
 
-    content: Optional[str] = Field(None, description="Updated content")
-    priority: Optional[ContextPriority] = Field(None, description="Updated priority")
-    status: Optional[ContextStatus] = Field(None, description="Updated status")
+    content: str | None = Field(None, description="Updated content")
+    priority: ContextPriority | None = Field(None, description="Updated priority")
+    status: ContextStatus | None = Field(None, description="Updated status")
 
-    keywords: Optional[list[str]] = Field(None, description="Updated keywords")
-    tags: Optional[list[str]] = Field(None, description="Updated tags")
+    keywords: list[str] | None = Field(None, description="Updated keywords")
+    tags: list[str] | None = Field(None, description="Updated tags")
 
-    extend_ttl_seconds: Optional[int] = Field(None, description="Extend TTL by seconds")
+    extend_ttl_seconds: int | None = Field(None, description="Extend TTL by seconds")
     regenerate_embedding: bool = Field(
         default=False, description="Regenerate vector embedding"
     )
@@ -94,16 +94,14 @@ class ContextSearchRequest(BaseModel):
     )
 
     # Filters
-    priority_filter: Optional[ContextPriority] = Field(
+    priority_filter: ContextPriority | None = Field(
         None, description="Filter by priority"
     )
     status_filter: list[ContextStatus] = Field(
         default=[ContextStatus.ACTIVE], description="Filter by status"
     )
-    created_after: Optional[datetime] = Field(
-        None, description="Created after timestamp"
-    )
-    created_before: Optional[datetime] = Field(
+    created_after: datetime | None = Field(None, description="Created after timestamp")
+    created_before: datetime | None = Field(
         None, description="Created before timestamp"
     )
     tags_filter: list[str] = Field(default_factory=list, description="Filter by tags")
@@ -159,20 +157,20 @@ class ContextResponse(BaseModel):
 
     created_at: datetime = Field(description="Creation timestamp")
     updated_at: datetime = Field(description="Last update timestamp")
-    expires_at: Optional[datetime] = Field(description="Expiration timestamp")
+    expires_at: datetime | None = Field(description="Expiration timestamp")
     accessed_at: datetime = Field(description="Last access timestamp")
 
     metadata: ContextMetadata = Field(description="Context metadata")
     keywords: list[str] = Field(description="Context keywords")
 
     # Hierarchical relationships
-    parent_context_id: Optional[UUID] = Field(description="Parent context ID")
+    parent_context_id: UUID | None = Field(description="Parent context ID")
     child_context_ids: list[UUID] = Field(description="Child context IDs")
 
     # Performance indicators
-    retrieval_latency_ms: Optional[float] = Field(None, description="Retrieval latency")
-    storage_tier: Optional[str] = Field(None, description="Storage tier used")
-    cache_hit: Optional[bool] = Field(None, description="Cache hit indicator")
+    retrieval_latency_ms: float | None = Field(None, description="Retrieval latency")
+    storage_tier: str | None = Field(None, description="Storage tier used")
+    cache_hit: bool | None = Field(None, description="Cache hit indicator")
 
 
 class ContextSearchResponse(BaseModel):
@@ -257,15 +255,11 @@ class ErrorResponse(BaseModel):
 
     error_code: str = Field(description="Error code")
     error_message: str = Field(description="Human-readable error message")
-    details: Optional[dict[str, Any]] = Field(
-        None, description="Additional error details"
-    )
+    details: dict[str, Any] | None = Field(None, description="Additional error details")
     timestamp: datetime = Field(
         default_factory=datetime.utcnow, description="Error timestamp"
     )
-    request_id: Optional[str] = Field(
-        None, description="Request identifier for tracing"
-    )
+    request_id: str | None = Field(None, description="Request identifier for tracing")
 
     # Context for debugging
     service_name: str = Field(default="context_service", description="Service name")

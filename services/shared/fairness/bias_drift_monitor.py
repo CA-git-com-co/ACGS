@@ -20,13 +20,14 @@ Key Features:
 import asyncio
 import logging
 import math
+import operator
 import statistics
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -172,7 +173,7 @@ class BiasDriftMonitor:
     Comprehensive bias drift monitoring system for constitutional AI
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -323,7 +324,7 @@ class BiasDriftMonitor:
             await asyncio.gather(*monitoring_tasks)
 
         except Exception as e:
-            logger.error(f"Bias drift monitoring failed: {e}")
+            logger.exception(f"Bias drift monitoring failed: {e}")
             self.running = False
             raise
         finally:
@@ -349,13 +350,13 @@ class BiasDriftMonitor:
                 self.last_analysis_time = datetime.utcnow()
 
             except Exception as e:
-                logger.error(f"Bias monitoring loop error: {e}")
+                logger.exception(f"Bias monitoring loop error: {e}")
                 await asyncio.sleep(60)
 
     async def _analyze_current_bias_metrics(self):
         """Analyze current bias metrics across all dimensions"""
         try:
-            current_time = datetime.utcnow()
+            datetime.utcnow()
 
             # Collect current data for bias analysis
             current_data = await self._collect_current_decision_data()
@@ -387,7 +388,7 @@ class BiasDriftMonitor:
                         await self._check_bias_drift(result)
 
         except Exception as e:
-            logger.error(f"Bias metrics analysis failed: {e}")
+            logger.exception(f"Bias metrics analysis failed: {e}")
 
     async def _collect_current_decision_data(self) -> list[dict[str, Any]]:
         """Collect current decision data for bias analysis"""
@@ -420,7 +421,7 @@ class BiasDriftMonitor:
                 # Simulate decision outcome and confidence
                 # Introduce subtle bias patterns for demonstration
                 bias_factor = 1.0
-                if protected_attributes["race_ethnicity"] in ["black", "hispanic"]:
+                if protected_attributes["race_ethnicity"] in {"black", "hispanic"}:
                     bias_factor *= 0.95  # Slight bias
                 if protected_attributes["socioeconomic_status"] == "low":
                     bias_factor *= 0.97
@@ -445,7 +446,7 @@ class BiasDriftMonitor:
             return simulated_data
 
         except Exception as e:
-            logger.error(f"Data collection failed: {e}")
+            logger.exception(f"Data collection failed: {e}")
             return []
 
     async def _calculate_bias_metrics(
@@ -486,7 +487,7 @@ class BiasDriftMonitor:
             return results
 
         except Exception as e:
-            logger.error(f"Bias metrics calculation failed: {e}")
+            logger.exception(f"Bias metrics calculation failed: {e}")
             return []
 
     async def _calculate_specific_bias_metric(
@@ -495,27 +496,26 @@ class BiasDriftMonitor:
         context: BiasContext,
         protected_attr: ProtectedAttribute,
         groups: dict[str, list[dict]],
-    ) -> Optional[BiasMetricResult]:
+    ) -> BiasMetricResult | None:
         """Calculate a specific bias metric"""
         try:
             if bias_type == BiasType.DEMOGRAPHIC_PARITY:
                 return await self._calculate_demographic_parity(
                     context, protected_attr, groups
                 )
-            elif bias_type == BiasType.EQUALIZED_ODDS:
+            if bias_type == BiasType.EQUALIZED_ODDS:
                 return await self._calculate_equalized_odds(
                     context, protected_attr, groups
                 )
-            elif bias_type == BiasType.CALIBRATION:
+            if bias_type == BiasType.CALIBRATION:
                 return await self._calculate_calibration(
                     context, protected_attr, groups
                 )
-            else:
-                logger.warning(f"Bias metric {bias_type.value} not implemented")
-                return None
+            logger.warning(f"Bias metric {bias_type.value} not implemented")
+            return None
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Specific bias metric calculation failed for {bias_type.value}: {e}"
             )
             return None
@@ -525,7 +525,7 @@ class BiasDriftMonitor:
         context: BiasContext,
         protected_attr: ProtectedAttribute,
         groups: dict[str, list[dict]],
-    ) -> Optional[BiasMetricResult]:
+    ) -> BiasMetricResult | None:
         """Calculate demographic parity metric"""
         try:
             group_rates = {}
@@ -583,7 +583,7 @@ class BiasDriftMonitor:
                 ),
             )
 
-            result = BiasMetricResult(
+            return BiasMetricResult(
                 metric_id=str(uuid.uuid4()),
                 bias_type=BiasType.DEMOGRAPHIC_PARITY,
                 protected_attribute=protected_attr,
@@ -601,10 +601,8 @@ class BiasDriftMonitor:
                 timestamp=datetime.utcnow(),
             )
 
-            return result
-
         except Exception as e:
-            logger.error(f"Demographic parity calculation failed: {e}")
+            logger.exception(f"Demographic parity calculation failed: {e}")
             return None
 
     async def _calculate_equalized_odds(
@@ -612,7 +610,7 @@ class BiasDriftMonitor:
         context: BiasContext,
         protected_attr: ProtectedAttribute,
         groups: dict[str, list[dict]],
-    ) -> Optional[BiasMetricResult]:
+    ) -> BiasMetricResult | None:
         """Calculate equalized odds metric"""
         try:
             # For equalized odds, we need true labels (ground truth)
@@ -689,13 +687,13 @@ class BiasDriftMonitor:
             )
 
             # Simplified confidence interval
-            total_samples = sum(len(group_data) for group_data in groups.values())
+            sum(len(group_data) for group_data in groups.values())
             confidence_interval = (
                 max(0, metric_value - 0.1),
                 min(1, metric_value + 0.1),
             )
 
-            result = BiasMetricResult(
+            return BiasMetricResult(
                 metric_id=str(uuid.uuid4()),
                 bias_type=BiasType.EQUALIZED_ODDS,
                 protected_attribute=protected_attr,
@@ -711,10 +709,8 @@ class BiasDriftMonitor:
                 timestamp=datetime.utcnow(),
             )
 
-            return result
-
         except Exception as e:
-            logger.error(f"Equalized odds calculation failed: {e}")
+            logger.exception(f"Equalized odds calculation failed: {e}")
             return None
 
     async def _calculate_calibration(
@@ -722,7 +718,7 @@ class BiasDriftMonitor:
         context: BiasContext,
         protected_attr: ProtectedAttribute,
         groups: dict[str, list[dict]],
-    ) -> Optional[BiasMetricResult]:
+    ) -> BiasMetricResult | None:
         """Calculate calibration metric"""
         try:
             group_calibration_errors = {}
@@ -795,7 +791,7 @@ class BiasDriftMonitor:
                 min(1, metric_value + 0.05),
             )
 
-            result = BiasMetricResult(
+            return BiasMetricResult(
                 metric_id=str(uuid.uuid4()),
                 bias_type=BiasType.CALIBRATION,
                 protected_attribute=protected_attr,
@@ -811,10 +807,8 @@ class BiasDriftMonitor:
                 timestamp=datetime.utcnow(),
             )
 
-            return result
-
         except Exception as e:
-            logger.error(f"Calibration calculation failed: {e}")
+            logger.exception(f"Calibration calculation failed: {e}")
             return None
 
     def _determine_bias_severity(
@@ -829,19 +823,18 @@ class BiasDriftMonitor:
 
         if drift_score >= thresholds["critical"]:
             return BiasSeverity.CRITICAL
-        elif drift_score >= thresholds["high"]:
+        if drift_score >= thresholds["high"]:
             return BiasSeverity.HIGH
-        elif drift_score >= thresholds["medium"]:
+        if drift_score >= thresholds["medium"]:
             return BiasSeverity.MEDIUM
-        elif drift_score >= thresholds["low"]:
+        if drift_score >= thresholds["low"]:
             return BiasSeverity.LOW
-        else:
-            return BiasSeverity.NONE
+        return BiasSeverity.NONE
 
     async def _check_bias_drift(self, result: BiasMetricResult):
         """Check for bias drift and handle accordingly"""
         try:
-            if result.severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]:
+            if result.severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}:
                 # Create and handle bias drift alert
                 alert = await self._create_bias_drift_alert([result])
                 await self._handle_bias_drift_alert(alert)
@@ -882,7 +875,7 @@ class BiasDriftMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Bias drift check failed: {e}")
+            logger.exception(f"Bias drift check failed: {e}")
 
     async def _create_bias_drift_alert(
         self, affected_metrics: list[BiasMetricResult]
@@ -915,7 +908,7 @@ class BiasDriftMonitor:
                 affected_metrics
             )
 
-            alert = BiasDriftAlert(
+            return BiasDriftAlert(
                 alert_id=str(uuid.uuid4()),
                 drift_type=f"bias_drift_{max_severity.value}",
                 severity=max_severity,
@@ -928,10 +921,8 @@ class BiasDriftMonitor:
                 timestamp=datetime.utcnow(),
             )
 
-            return alert
-
         except Exception as e:
-            logger.error(f"Bias drift alert creation failed: {e}")
+            logger.exception(f"Bias drift alert creation failed: {e}")
             # Return minimal alert
             return BiasDriftAlert(
                 alert_id=str(uuid.uuid4()),
@@ -990,7 +981,7 @@ class BiasDriftMonitor:
             return pattern_analysis
 
         except Exception as e:
-            logger.error(f"Temporal pattern analysis failed: {e}")
+            logger.exception(f"Temporal pattern analysis failed: {e}")
             return {"trend_direction": "unknown"}
 
     def _calculate_trend_slope(self, x: list[float], y: list[float]) -> float:
@@ -1005,8 +996,7 @@ class BiasDriftMonitor:
             sum_xy = sum(x[i] * y[i] for i in range(n))
             sum_x2 = sum(x[i] ** 2 for i in range(n))
 
-            slope = (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
-            return slope
+            return (n * sum_xy - sum_x * sum_y) / (n * sum_x2 - sum_x**2)
 
         except Exception:
             return 0.0
@@ -1030,7 +1020,7 @@ class BiasDriftMonitor:
                 )
 
             # Check bias types
-            bias_types = set(metric.bias_type for metric in metrics)
+            bias_types = {metric.bias_type for metric in metrics}
             if (
                 BiasType.DEMOGRAPHIC_PARITY in bias_types
                 and BiasType.EQUALIZED_ODDS in bias_types
@@ -1040,7 +1030,7 @@ class BiasDriftMonitor:
                 )
 
             # Check contexts
-            contexts = set(metric.context for metric in metrics)
+            contexts = {metric.context for metric in metrics}
             if len(contexts) > 1:
                 root_causes.append("Cross-context bias indicating systemic issues")
 
@@ -1048,7 +1038,7 @@ class BiasDriftMonitor:
             high_severity_metrics = [
                 m
                 for m in metrics
-                if m.severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                if m.severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}
             ]
             if len(high_severity_metrics) > 2:
                 root_causes.append(
@@ -1067,7 +1057,7 @@ class BiasDriftMonitor:
             return root_causes
 
         except Exception as e:
-            logger.error(f"Root cause analysis failed: {e}")
+            logger.exception(f"Root cause analysis failed: {e}")
             return ["Unknown bias sources"]
 
     async def _generate_bias_mitigation_recommendations(
@@ -1105,7 +1095,7 @@ class BiasDriftMonitor:
                 )
 
             # Bias type specific recommendations
-            bias_types = set(metric.bias_type for metric in metrics)
+            bias_types = {metric.bias_type for metric in metrics}
 
             if BiasType.DEMOGRAPHIC_PARITY in bias_types:
                 recommendations.extend(
@@ -1157,7 +1147,7 @@ class BiasDriftMonitor:
             return list(set(recommendations))  # Remove duplicates
 
         except Exception as e:
-            logger.error(f"Bias mitigation recommendations failed: {e}")
+            logger.exception(f"Bias mitigation recommendations failed: {e}")
             return ["Conduct comprehensive bias review"]
 
     def _determine_bias_alert_stakeholders(
@@ -1166,11 +1156,11 @@ class BiasDriftMonitor:
         """Determine stakeholders for bias alert"""
         stakeholders = ["ml_team", "fairness_team", "compliance_team"]
 
-        if severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]:
+        if severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}:
             stakeholders.extend(["legal_team", "ethics_committee", "executive_team"])
 
         # Context-specific stakeholders
-        contexts = set(metric.context for metric in metrics)
+        contexts = {metric.context for metric in metrics}
         if BiasContext.CONSTITUTIONAL_ANALYSIS in contexts:
             stakeholders.append("constitutional_experts")
         if BiasContext.POLICY_RECOMMENDATION in contexts:
@@ -1208,7 +1198,7 @@ class BiasDriftMonitor:
             )
 
         # Context-specific implications
-        contexts = set(metric.context for metric in metrics)
+        contexts = {metric.context for metric in metrics}
         if BiasContext.RESOURCE_ALLOCATION in contexts:
             implications.append("Equal protection under law implications")
         if BiasContext.DEMOCRATIC_PARTICIPATION in contexts:
@@ -1246,13 +1236,13 @@ class BiasDriftMonitor:
                     "severity": alert.severity.value,
                     "affected_metrics_count": len(alert.affected_metrics),
                     "affected_bias_types": list(
-                        set(m.bias_type.value for m in alert.affected_metrics)
+                        {m.bias_type.value for m in alert.affected_metrics}
                     ),
                     "affected_attributes": list(
-                        set(m.protected_attribute.value for m in alert.affected_metrics)
+                        {m.protected_attribute.value for m in alert.affected_metrics}
                     ),
                     "affected_contexts": list(
-                        set(m.context.value for m in alert.affected_metrics)
+                        {m.context.value for m in alert.affected_metrics}
                     ),
                     "root_causes": alert.root_cause_analysis,
                     "recommended_actions": alert.recommended_actions,
@@ -1284,7 +1274,7 @@ class BiasDriftMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Bias drift alert handling failed: {e}")
+            logger.exception(f"Bias drift alert handling failed: {e}")
 
     async def _run_intersectional_analysis(self):
         """Run intersectional bias analysis"""
@@ -1299,7 +1289,7 @@ class BiasDriftMonitor:
                     await self._perform_intersectional_analysis()
 
             except Exception as e:
-                logger.error(f"Intersectional analysis error: {e}")
+                logger.exception(f"Intersectional analysis error: {e}")
                 await asyncio.sleep(300)
 
     async def _perform_intersectional_analysis(self):
@@ -1361,11 +1351,11 @@ class BiasDriftMonitor:
                 await self._handle_intersectional_analysis(analysis)
 
         except Exception as e:
-            logger.error(f"Intersectional analysis failed: {e}")
+            logger.exception(f"Intersectional analysis failed: {e}")
 
     async def _analyze_attribute_interaction(
         self, data: list[dict[str, Any]], attributes: tuple[ProtectedAttribute, ...]
-    ) -> Optional[dict[str, float]]:
+    ) -> dict[str, float] | None:
         """Analyze interaction between multiple protected attributes"""
         try:
             # Group data by intersectional categories
@@ -1445,7 +1435,7 @@ class BiasDriftMonitor:
             }
 
         except Exception as e:
-            logger.error(f"Attribute interaction analysis failed: {e}")
+            logger.exception(f"Attribute interaction analysis failed: {e}")
             return None
 
     def _calculate_mitigation_complexity(
@@ -1494,7 +1484,7 @@ class BiasDriftMonitor:
                 combination_scores.append((combination, priority_score))
 
             # Sort by priority score (descending)
-            combination_scores.sort(key=lambda x: x[1], reverse=True)
+            combination_scores.sort(key=operator.itemgetter(1), reverse=True)
 
             return [combo for combo, score in combination_scores]
 
@@ -1542,7 +1532,7 @@ class BiasDriftMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Intersectional analysis handling failed: {e}")
+            logger.exception(f"Intersectional analysis handling failed: {e}")
 
     async def _run_pattern_detection(self):
         """Run bias pattern detection"""
@@ -1556,7 +1546,7 @@ class BiasDriftMonitor:
                 await self._detect_bias_patterns()
 
             except Exception as e:
-                logger.error(f"Pattern detection error: {e}")
+                logger.exception(f"Pattern detection error: {e}")
                 await asyncio.sleep(300)
 
     async def _detect_bias_patterns(self):
@@ -1582,11 +1572,11 @@ class BiasDriftMonitor:
                 await self._analyze_bias_pattern_significance(pattern)
 
         except Exception as e:
-            logger.error(f"Bias pattern detection failed: {e}")
+            logger.exception(f"Bias pattern detection failed: {e}")
 
     async def _detect_temporal_bias_pattern(
         self, pattern_key: str, pattern_data: list[dict]
-    ) -> Optional[BiasPattern]:
+    ) -> BiasPattern | None:
         """Detect temporal bias patterns"""
         try:
             # Extract values and timestamps
@@ -1621,7 +1611,7 @@ class BiasDriftMonitor:
                         has_periodicity = True
 
             # Determine pattern significance
-            pattern_context, bias_type, protected_attr = pattern_key.split("_", 2)
+            pattern_context, _bias_type, protected_attr = pattern_key.split("_", 2)
 
             # Create pattern if significant
             if abs(trend_slope) > 0.01 or volatility > 0.05 or has_periodicity:
@@ -1652,7 +1642,7 @@ class BiasDriftMonitor:
                 if abs(trend_slope) > 0.10 or volatility > 0.25:
                     risk_level = BiasSeverity.HIGH
 
-                pattern = BiasPattern(
+                return BiasPattern(
                     pattern_id=str(uuid.uuid4()),
                     pattern_type=pattern_type,
                     description=description,
@@ -1680,12 +1670,10 @@ class BiasDriftMonitor:
                     risk_level=risk_level,
                 )
 
-                return pattern
-
             return None
 
         except Exception as e:
-            logger.error(f"Temporal bias pattern detection failed: {e}")
+            logger.exception(f"Temporal bias pattern detection failed: {e}")
             return None
 
     def _generate_predictive_indicators(
@@ -1700,12 +1688,17 @@ class BiasDriftMonitor:
             indicators.append("Bias decreasing but may rebound")
 
         if volatility > 0.10:
-            indicators.append("High unpredictability in bias levels")
-            indicators.append("Frequent monitoring required")
+            indicators.extend(
+                ("High unpredictability in bias levels", "Frequent monitoring required")
+            )
 
         if has_periodicity:
-            indicators.append("Bias follows predictable weekly pattern")
-            indicators.append("Resource planning can account for pattern")
+            indicators.extend(
+                (
+                    "Bias follows predictable weekly pattern",
+                    "Resource planning can account for pattern",
+                )
+            )
 
         return indicators
 
@@ -1771,9 +1764,7 @@ class BiasDriftMonitor:
             signal_confidence = min(1.0, signal_strength / 0.5)
 
             # Combined confidence
-            confidence = (data_confidence + signal_confidence) / 2
-
-            return confidence
+            return (data_confidence + signal_confidence) / 2
 
         except Exception:
             return 0.5
@@ -1802,7 +1793,7 @@ class BiasDriftMonitor:
 
             # Alert on high-risk patterns
             if (
-                pattern.risk_level in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                pattern.risk_level in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}
                 and pattern.confidence > 0.7
             ):
                 await self.alerting.send_alert(
@@ -1812,7 +1803,7 @@ class BiasDriftMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Pattern significance analysis failed: {e}")
+            logger.exception(f"Pattern significance analysis failed: {e}")
 
     async def _run_compliance_tracking(self):
         """Run fairness compliance tracking"""
@@ -1826,7 +1817,7 @@ class BiasDriftMonitor:
                 await self._assess_fairness_compliance()
 
             except Exception as e:
-                logger.error(f"Compliance tracking error: {e}")
+                logger.exception(f"Compliance tracking error: {e}")
                 await asyncio.sleep(300)
 
     async def _assess_fairness_compliance(self):
@@ -1840,11 +1831,11 @@ class BiasDriftMonitor:
                     await self._handle_compliance_assessment(compliance)
 
         except Exception as e:
-            logger.error(f"Fairness compliance assessment failed: {e}")
+            logger.exception(f"Fairness compliance assessment failed: {e}")
 
     async def _calculate_context_compliance(
         self, context: BiasContext
-    ) -> Optional[FairnessCompliance]:
+    ) -> FairnessCompliance | None:
         """Calculate fairness compliance for a specific context"""
         try:
             # Get recent metrics for this context
@@ -1865,7 +1856,7 @@ class BiasDriftMonitor:
                 if type_metrics:
                     # Check if any metrics exceed thresholds
                     compliant = all(
-                        m.severity in [BiasSeverity.NONE, BiasSeverity.LOW]
+                        m.severity in {BiasSeverity.NONE, BiasSeverity.LOW}
                         for m in type_metrics
                     )
                     metric_compliance[bias_type] = compliant
@@ -1880,7 +1871,7 @@ class BiasDriftMonitor:
                 ]
                 if attr_metrics:
                     compliant = all(
-                        m.severity in [BiasSeverity.NONE, BiasSeverity.LOW]
+                        m.severity in {BiasSeverity.NONE, BiasSeverity.LOW}
                         for m in attr_metrics
                     )
                     protected_group_compliance[protected_attr] = compliant
@@ -1915,7 +1906,7 @@ class BiasDriftMonitor:
                 )
             )
 
-            compliance = FairnessCompliance(
+            return FairnessCompliance(
                 compliance_id=str(uuid.uuid4()),
                 context=context,
                 overall_fairness_score=overall_fairness_score,
@@ -1927,10 +1918,8 @@ class BiasDriftMonitor:
                 timestamp=datetime.utcnow(),
             )
 
-            return compliance
-
         except Exception as e:
-            logger.error(f"Context compliance calculation failed: {e}")
+            logger.exception(f"Context compliance calculation failed: {e}")
             return None
 
     async def _calculate_constitutional_alignment(
@@ -1945,7 +1934,7 @@ class BiasDriftMonitor:
             equal_protection_violations = sum(
                 1
                 for metric in metrics
-                if metric.severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                if metric.severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}
             )
             principle_scores["equal_protection"] = max(
                 0, 1 - (equal_protection_violations / len(metrics))
@@ -1978,9 +1967,7 @@ class BiasDriftMonitor:
                 principle_scores["non_discrimination"] = 0.8
 
             # Overall constitutional alignment
-            alignment = statistics.mean(principle_scores.values())
-
-            return alignment
+            return statistics.mean(principle_scores.values())
 
         except Exception:
             return 0.5
@@ -1997,11 +1984,16 @@ class BiasDriftMonitor:
 
         # Overall score recommendations
         if overall_score < 0.7:
-            recommendations.append("URGENT: Comprehensive bias audit required")
-            recommendations.append("Consider suspending automated decisions")
+            recommendations.extend(
+                (
+                    "URGENT: Comprehensive bias audit required",
+                    "Consider suspending automated decisions",
+                )
+            )
         elif overall_score < 0.8:
-            recommendations.append("Enhanced bias monitoring required")
-            recommendations.append("Increase human oversight")
+            recommendations.extend(
+                ("Enhanced bias monitoring required", "Increase human oversight")
+            )
 
         # Metric-specific recommendations
         for bias_type, compliant in metric_compliance.items():
@@ -2067,7 +2059,7 @@ class BiasDriftMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Compliance assessment handling failed: {e}")
+            logger.exception(f"Compliance assessment handling failed: {e}")
 
     async def _run_constitutional_alignment_check(self):
         """Run constitutional alignment checks"""
@@ -2081,7 +2073,7 @@ class BiasDriftMonitor:
                 await self._check_constitutional_alignment()
 
             except Exception as e:
-                logger.error(f"Constitutional alignment check error: {e}")
+                logger.exception(f"Constitutional alignment check error: {e}")
                 await asyncio.sleep(600)
 
     async def _check_constitutional_alignment(self):
@@ -2101,7 +2093,7 @@ class BiasDriftMonitor:
             # Assess alignment with each constitutional principle
             principle_assessments = {}
 
-            for principle, description in self.constitutional_principles.items():
+            for principle in self.constitutional_principles:
                 assessment = await self._assess_constitutional_principle(
                     principle, recent_metrics
                 )
@@ -2130,7 +2122,7 @@ class BiasDriftMonitor:
                 )
 
         except Exception as e:
-            logger.error(f"Constitutional alignment check failed: {e}")
+            logger.exception(f"Constitutional alignment check failed: {e}")
 
     async def _assess_constitutional_principle(
         self, principle: str, metrics: list[BiasMetricResult]
@@ -2142,7 +2134,7 @@ class BiasDriftMonitor:
                 violations = [
                     m
                     for m in metrics
-                    if m.severity in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                    if m.severity in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}
                 ]
                 score = max(0, 1 - (len(violations) / len(metrics)))
 
@@ -2153,7 +2145,7 @@ class BiasDriftMonitor:
                     "status": "compliant" if score > 0.8 else "non_compliant",
                 }
 
-            elif principle == "due_process":
+            if principle == "due_process":
                 # Due process requires fair and consistent treatment
                 calibration_metrics = [
                     m for m in metrics if m.bias_type == BiasType.CALIBRATION
@@ -2172,7 +2164,7 @@ class BiasDriftMonitor:
                     "status": "compliant" if score > 0.8 else "non_compliant",
                 }
 
-            elif principle == "non_discrimination":
+            if principle == "non_discrimination":
                 # Non-discrimination requires equal treatment regardless of protected attributes
                 demo_parity_metrics = [
                     m for m in metrics if m.bias_type == BiasType.DEMOGRAPHIC_PARITY
@@ -2191,16 +2183,15 @@ class BiasDriftMonitor:
                     "status": "compliant" if score > 0.8 else "non_compliant",
                 }
 
-            else:
-                # Default assessment for other principles
-                return {
-                    "score": 0.5,
-                    "status": "unknown",
-                    "note": f"Assessment method not implemented for {principle}",
-                }
+            # Default assessment for other principles
+            return {
+                "score": 0.5,
+                "status": "unknown",
+                "note": f"Assessment method not implemented for {principle}",
+            }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Constitutional principle assessment failed for {principle}: {e}"
             )
             return {"score": 0.0, "status": "error", "error": str(e)}
@@ -2218,7 +2209,7 @@ class BiasDriftMonitor:
                     await self._check_real_time_bias_alerts()
 
             except Exception as e:
-                logger.error(f"Real-time alerting error: {e}")
+                logger.exception(f"Real-time alerting error: {e}")
                 await asyncio.sleep(60)
 
     async def _check_real_time_bias_alerts(self):
@@ -2248,7 +2239,7 @@ class BiasDriftMonitor:
                     )
 
         except Exception as e:
-            logger.error(f"Real-time bias alert check failed: {e}")
+            logger.exception(f"Real-time bias alert check failed: {e}")
 
     # Public methods for baseline management and status
 
@@ -2281,7 +2272,7 @@ class BiasDriftMonitor:
             )
 
         except Exception as e:
-            logger.error(f"Failed to establish bias baseline: {e}")
+            logger.exception(f"Failed to establish bias baseline: {e}")
             raise
 
     def get_bias_monitoring_status(self) -> dict[str, Any]:
@@ -2366,7 +2357,7 @@ class BiasDriftMonitor:
             }
 
         except Exception as e:
-            logger.error(f"Status retrieval failed: {e}")
+            logger.exception(f"Status retrieval failed: {e}")
             return {"error": str(e)}
 
     def get_bias_summary_report(
@@ -2396,7 +2387,7 @@ class BiasDriftMonitor:
                 avg_drift_score = statistics.mean(
                     [m.drift_score for m in window_metrics]
                 )
-                max_drift_score = max([m.drift_score for m in window_metrics])
+                max_drift_score = max(m.drift_score for m in window_metrics)
             else:
                 avg_metric_value = avg_drift_score = max_drift_score = 0
 
@@ -2446,18 +2437,18 @@ class BiasDriftMonitor:
                         [a for a in window_alerts if a.severity == BiasSeverity.HIGH]
                     ),
                     "unique_affected_contexts": len(
-                        set(
+                        {
                             m.context
                             for alert in window_alerts
                             for m in alert.affected_metrics
-                        )
+                        }
                     ),
                     "unique_affected_attributes": len(
-                        set(
+                        {
                             m.protected_attribute
                             for alert in window_alerts
                             for m in alert.affected_metrics
-                        )
+                        }
                     ),
                 },
                 "compliance_summary": {
@@ -2472,13 +2463,13 @@ class BiasDriftMonitor:
                     ),
                 },
                 "pattern_summary": {
-                    "patterns_detected": len([p for p in self.bias_patterns]),
+                    "patterns_detected": len(list(self.bias_patterns)),
                     "high_risk_patterns": len(
                         [
                             p
                             for p in self.bias_patterns
                             if p.risk_level
-                            in [BiasSeverity.HIGH, BiasSeverity.CRITICAL]
+                            in {BiasSeverity.HIGH, BiasSeverity.CRITICAL}
                         ]
                     ),
                 },
@@ -2488,7 +2479,7 @@ class BiasDriftMonitor:
             }
 
         except Exception as e:
-            logger.error(f"Bias summary report generation failed: {e}")
+            logger.exception(f"Bias summary report generation failed: {e}")
             return {"error": str(e)}
 
     def _generate_summary_recommendations(

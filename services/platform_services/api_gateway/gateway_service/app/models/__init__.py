@@ -26,12 +26,12 @@ from .routing import (
 __all__ = [
     "GatewayRequest",
     "GatewayResponse",
-    "RouteConfig",
-    "ServiceEndpoint",
-    "ServiceHealth",
     "LoadBalancingStrategy",
+    "RouteConfig",
     "RouteMatch",
     "RouteRule",
     "RoutingDecision",
+    "ServiceEndpoint",
+    "ServiceHealth",
     "ServiceInstance",
 ]

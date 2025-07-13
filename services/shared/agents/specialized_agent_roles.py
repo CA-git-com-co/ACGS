@@ -24,7 +24,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.constitutional_safety_framework import (
     ConstitutionalSafetyValidator,
@@ -149,7 +149,7 @@ class SpecializedAgentRole(ABC):
             )
 
         except Exception as e:
-            logger.error(f"Failed to initialize specialized role: {e!s}")
+            logger.exception(f"Failed to initialize specialized role: {e!s}")
             raise
 
     async def execute_task(self, task_data: dict[str, Any]) -> dict[str, Any]:
@@ -186,7 +186,7 @@ class SpecializedAgentRole(ABC):
             return result
 
         except Exception as e:
-            logger.error(f"Task execution failed: {e!s}")
+            logger.exception(f"Task execution failed: {e!s}")
             await self._record_task_performance(task_id, 0, False)
             raise
 
@@ -211,7 +211,7 @@ class SpecializedAgentRole(ABC):
             return compliance_result.get("is_compliant", False)
 
         except Exception as e:
-            logger.error(f"Failed to validate task compliance: {e!s}")
+            logger.exception(f"Failed to validate task compliance: {e!s}")
             return False
 
     def _has_capability(self, capability_id: str) -> bool:
@@ -259,7 +259,7 @@ class SpecializedAgentRole(ABC):
             )
 
         except Exception as e:
-            logger.error(f"Failed to record task performance: {e!s}")
+            logger.exception(f"Failed to record task performance: {e!s}")
 
     def get_role_status(self) -> dict[str, Any]:
         """Get current role status and metrics"""
@@ -295,15 +295,14 @@ class PolicyManagerRole(SpecializedAgentRole):
 
             if "requirements_analysis" in task_type:
                 return await self._analyze_requirements(task_data)
-            elif "stakeholder_coordination" in task_type:
+            if "stakeholder_coordination" in task_type:
                 return await self._coordinate_stakeholders(task_data)
-            elif "policy_validation" in task_type:
+            if "policy_validation" in task_type:
                 return await self._validate_policy(task_data)
-            else:
-                return await self._general_policy_management(task_data)
+            return await self._general_policy_management(task_data)
 
         except Exception as e:
-            logger.error(f"Policy manager task execution failed: {e!s}")
+            logger.exception(f"Policy manager task execution failed: {e!s}")
             raise
 
     async def _analyze_requirements(self, task_data: dict[str, Any]) -> dict[str, Any]:
@@ -469,15 +468,14 @@ class ArchitectRole(SpecializedAgentRole):
 
             if "system_design" in task_type:
                 return await self._design_system_architecture(task_data)
-            elif "technical_specification" in task_type:
+            if "technical_specification" in task_type:
                 return await self._create_technical_specifications(task_data)
-            elif "architecture_validation" in task_type:
+            if "architecture_validation" in task_type:
                 return await self._validate_architecture(task_data)
-            else:
-                return await self._general_architecture_task(task_data)
+            return await self._general_architecture_task(task_data)
 
         except Exception as e:
-            logger.error(f"Architect task execution failed: {e!s}")
+            logger.exception(f"Architect task execution failed: {e!s}")
             raise
 
     async def _design_system_architecture(
@@ -551,15 +549,14 @@ class ValidatorRole(SpecializedAgentRole):
 
             if "compliance_validation" in task_type:
                 return await self._validate_compliance(task_data)
-            elif "performance_validation" in task_type:
+            if "performance_validation" in task_type:
                 return await self._validate_performance(task_data)
-            elif "security_validation" in task_type:
+            if "security_validation" in task_type:
                 return await self._validate_security(task_data)
-            else:
-                return await self._general_validation_task(task_data)
+            return await self._general_validation_task(task_data)
 
         except Exception as e:
-            logger.error(f"Validator task execution failed: {e!s}")
+            logger.exception(f"Validator task execution failed: {e!s}")
             raise
 
     async def _validate_compliance(self, task_data: dict[str, Any]) -> dict[str, Any]:
@@ -627,15 +624,14 @@ class ImplementerRole(SpecializedAgentRole):
 
             if "policy_implementation" in task_type:
                 return await self._implement_policy(task_data)
-            elif "system_deployment" in task_type:
+            if "system_deployment" in task_type:
                 return await self._deploy_system(task_data)
-            elif "configuration_management" in task_type:
+            if "configuration_management" in task_type:
                 return await self._manage_configuration(task_data)
-            else:
-                return await self._general_implementation_task(task_data)
+            return await self._general_implementation_task(task_data)
 
         except Exception as e:
-            logger.error(f"Implementer task execution failed: {e!s}")
+            logger.exception(f"Implementer task execution failed: {e!s}")
             raise
 
     async def _implement_policy(self, task_data: dict[str, Any]) -> dict[str, Any]:
@@ -836,20 +832,19 @@ class SpecializedRoleFactory:
             return PolicyManagerRole(
                 role_id, role_spec, safety_validator, audit_logger, performance_monitor
             )
-        elif role_type == AgentRoleType.ARCHITECT:
+        if role_type == AgentRoleType.ARCHITECT:
             return ArchitectRole(
                 role_id, role_spec, safety_validator, audit_logger, performance_monitor
             )
-        elif role_type == AgentRoleType.VALIDATOR:
+        if role_type == AgentRoleType.VALIDATOR:
             return ValidatorRole(
                 role_id, role_spec, safety_validator, audit_logger, performance_monitor
             )
-        elif role_type == AgentRoleType.IMPLEMENTER:
+        if role_type == AgentRoleType.IMPLEMENTER:
             return ImplementerRole(
                 role_id, role_spec, safety_validator, audit_logger, performance_monitor
             )
-        else:
-            raise ValueError(f"Unknown role type: {role_type}")
+        raise ValueError(f"Unknown role type: {role_type}")
 
 
 class SpecializedRoleRegistry:
@@ -864,7 +859,7 @@ class SpecializedRoleRegistry:
         self.roles[role.role_id] = role
         logger.info(f"Registered specialized role: {role.role_id}")
 
-    def get_role(self, role_id: str) -> Optional[SpecializedAgentRole]:
+    def get_role(self, role_id: str) -> SpecializedAgentRole | None:
         """Get a role by ID"""
         return self.roles.get(role_id)
 

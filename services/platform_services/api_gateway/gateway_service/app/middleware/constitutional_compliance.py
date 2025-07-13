@@ -12,7 +12,7 @@ import logging
 import time
 from collections.abc import Callable
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import Request, Response, status
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -39,7 +39,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
         self,
         app,
         constitutional_hash: str = CONSTITUTIONAL_HASH,
-        policy_engine: Optional[Any] = None,
+        policy_engine: Any | None = None,
         enable_formal_verification: bool = True,
         enable_audit_logging: bool = True,
     ):
@@ -132,7 +132,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             return response
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 "Constitutional compliance middleware error for request"
                 f" {request_id}: {e}"
             )
@@ -167,7 +167,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Constitutional hash verification error: {e}")
+            logger.exception(f"Constitutional hash verification error: {e}")
             return {
                 "valid": False,
                 "error": str(e),
@@ -183,7 +183,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             violations = []
 
             # Assess each constitutional principle
-            for principle, description in self.constitutional_principles.items():
+            for principle in self.constitutional_principles:
                 score = await self._assess_principle_compliance(request, principle)
                 principle_scores[principle] = score
                 compliance_score += score
@@ -219,7 +219,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Constitutional compliance assessment error: {e}")
+            logger.exception(f"Constitutional compliance assessment error: {e}")
             return {
                 "compliant": False,
                 "error": str(e),
@@ -242,54 +242,53 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                     request, tenant_context, user_context
                 )
 
-            elif principle == "fairness":
+            if principle == "fairness":
                 # Assess fairness and non-discrimination
                 return await self._assess_fairness_compliance(
                     request, tenant_context, user_context
                 )
 
-            elif principle == "transparency":
+            if principle == "transparency":
                 # Assess transparency requirements
                 return await self._assess_transparency_compliance(
                     request, tenant_context, user_context
                 )
 
-            elif principle == "accountability":
+            if principle == "accountability":
                 # Assess accountability mechanisms
                 return await self._assess_accountability_compliance(
                     request, tenant_context, user_context
                 )
 
-            elif principle == "democratic_governance":
+            if principle == "democratic_governance":
                 # Assess democratic governance compliance
                 return await self._assess_democratic_governance_compliance(
                     request, tenant_context, user_context
                 )
 
-            elif principle == "privacy_protection":
+            if principle == "privacy_protection":
                 # Assess privacy protection measures
                 return await self._assess_privacy_protection_compliance(
                     request, tenant_context, user_context
                 )
 
-            elif principle == "data_minimization":
+            if principle == "data_minimization":
                 # Assess data minimization principles
                 return await self._assess_data_minimization_compliance(
                     request, tenant_context, user_context
                 )
 
-            elif principle == "purpose_limitation":
+            if principle == "purpose_limitation":
                 # Assess purpose limitation compliance
                 return await self._assess_purpose_limitation_compliance(
                     request, tenant_context, user_context
                 )
 
-            else:
-                logger.warning(f"Unknown constitutional principle: {principle}")
-                return 1.0  # Default to compliant for unknown principles
+            logger.warning(f"Unknown constitutional principle: {principle}")
+            return 1.0  # Default to compliant for unknown principles
 
         except Exception as e:
-            logger.error(f"Error assessing principle {principle}: {e}")
+            logger.exception(f"Error assessing principle {principle}: {e}")
             return 0.5  # Partial compliance on error
 
     async def _assess_human_dignity_compliance(
@@ -298,7 +297,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
         """Assess human dignity compliance."""
 
         # Check for automated decision-making affecting individuals
-        if request.method in ["POST", "PUT", "PATCH"]:
+        if request.method in {"POST", "PUT", "PATCH"}:
             # Ensure human oversight for decisions affecting individuals
             if "automated_decision" in str(request.url).lower():
                 # Require human-in-the-loop for automated decisions
@@ -343,7 +342,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
         """Assess transparency requirements compliance."""
 
         # Check for transparent decision-making
-        if request.method in ["POST", "PUT", "DELETE"]:
+        if request.method in {"POST", "PUT", "DELETE"}:
             # Require audit trail for state-changing operations
             if request.headers.get("X-Audit-Enabled", "true") != "true":
                 return 0.4  # Poor transparency without audit trail
@@ -366,7 +365,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             return 0.3  # Poor accountability without user identification
 
         # Check for responsibility assignment
-        if request.method in ["POST", "PUT", "DELETE"]:
+        if request.method in {"POST", "PUT", "DELETE"}:
             # Require responsible party identification
             if not request.headers.get("X-Responsible-Party"):
                 return 0.8  # Good but could be better with explicit responsibility
@@ -388,7 +387,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                 return 0.6  # Requires democratic oversight for governance operations
 
         # Check for stakeholder consultation
-        if request.method in ["POST", "PUT"] and "policy" in str(request.url).lower():
+        if request.method in {"POST", "PUT"} and "policy" in str(request.url).lower():
             # Require stakeholder input for policy changes
             if not request.headers.get("X-Stakeholder-Consulted"):
                 return 0.7  # Should include stakeholder consultation
@@ -445,7 +444,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
         """Assess purpose limitation compliance."""
 
         # Check for purpose specification
-        if request.method in ["POST", "PUT"] and "data" in str(request.url).lower():
+        if request.method in {"POST", "PUT"} and "data" in str(request.url).lower():
             # Require purpose specification for data operations
             if not request.headers.get("X-Data-Purpose"):
                 return 0.7  # Should specify data purpose
@@ -485,7 +484,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Formal verification error: {e}")
+            logger.exception(f"Formal verification error: {e}")
             return {
                 "verified": False,
                 "error": str(e),
@@ -512,7 +511,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Constitutional policy application error: {e}")
+            logger.exception(f"Constitutional policy application error: {e}")
             return {
                 "allowed": False,
                 "error": str(e),
@@ -543,10 +542,11 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
                 "X-Tenant-Isolation-Verified",
             ]
 
-            compliance_issues = []
-            for header in constitutional_headers:
-                if header not in response.headers:
-                    compliance_issues.append(f"Missing constitutional header: {header}")
+            compliance_issues = [
+                f"Missing constitutional header: {header}"
+                for header in constitutional_headers
+                if header not in response.headers
+            ]
 
             # Check for constitutional hash in response
             response_hash = response.headers.get("X-Constitutional-Hash")
@@ -560,7 +560,7 @@ class ConstitutionalComplianceMiddleware(BaseHTTPMiddleware):
             }
 
         except Exception as e:
-            logger.error(f"Response compliance verification error: {e}")
+            logger.exception(f"Response compliance verification error: {e}")
             return {
                 "compliant": False,
                 "error": str(e),

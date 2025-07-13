@@ -10,13 +10,12 @@ import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, AsyncContextManager, Dict, List, Optional
+from typing import Any, AsyncContextManager
 
 import aioredis
 import asyncpg
-
-from ..resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
-from ..resilience.retry import retry_with_exponential_backoff
+from shared.resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
+from shared.resilience.retry import retry_with_exponential_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ class PoolConfig:
     max_inactive_time: int = 300  # Max idle time (seconds)
     retry_attempts: int = 3  # Connection retry attempts
     command_timeout: float = 60.0  # Command timeout
-    server_settings: Dict[str, str] = None
+    server_settings: dict[str, str] = None
 
     def __post_init__(self):
         if self.server_settings is None:
@@ -71,7 +70,7 @@ class PoolMetrics:
             return 1.0
         return self.total_acquisitions / total_attempts
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert metrics to dictionary."""
         return {
             "pool_name": self.pool_name,
@@ -102,28 +101,24 @@ class ConnectionPool(ABC):
         self._metrics = PoolMetrics(
             pool_name=name, min_size=config.min_size, max_size=config.max_size
         )
-        self._acquisition_times: List[float] = []
+        self._acquisition_times: list[float] = []
         self._lock = asyncio.Lock()
 
     @abstractmethod
     async def acquire(self) -> Any:
         """Acquire a connection from the pool."""
-        pass
 
     @abstractmethod
     async def release(self, connection: Any) -> None:
         """Release a connection back to the pool."""
-        pass
 
     @abstractmethod
     async def close(self) -> None:
         """Close the connection pool."""
-        pass
 
     @abstractmethod
-    async def get_pool_status(self) -> Dict[str, Any]:
+    async def get_pool_status(self) -> dict[str, Any]:
         """Get detailed pool status."""
-        pass
 
     def get_metrics(self) -> PoolMetrics:
         """Get current pool metrics."""
@@ -160,7 +155,7 @@ class PostgreSQLPoolManager(ConnectionPool):
     def __init__(self, name: str, dsn: str, config: PoolConfig = None):
         super().__init__(name, config or PoolConfig())
         self.dsn = dsn
-        self._pool: Optional[asyncpg.Pool] = None
+        self._pool: asyncpg.Pool | None = None
         self._circuit_breaker = get_circuit_breaker(
             f"postgresql_pool_{name}",
             CircuitBreakerConfig(
@@ -207,7 +202,7 @@ class PostgreSQLPoolManager(ConnectionPool):
             logger.info(f"PostgreSQL pool '{self.name}' initialized successfully")
 
         except Exception as e:
-            logger.error(f"Failed to initialize PostgreSQL pool '{self.name}': {e}")
+            logger.exception(f"Failed to initialize PostgreSQL pool '{self.name}': {e}")
             raise
 
     async def acquire(self) -> asyncpg.Connection:
@@ -229,7 +224,9 @@ class PostgreSQLPoolManager(ConnectionPool):
         except Exception as e:
             duration = time.time() - start_time
             self._record_acquisition(duration, False)
-            logger.error(f"Failed to acquire connection from pool '{self.name}': {e}")
+            logger.exception(
+                f"Failed to acquire connection from pool '{self.name}': {e}"
+            )
             raise
 
     async def _acquire_internal(self) -> asyncpg.Connection:
@@ -252,14 +249,12 @@ class PostgreSQLPoolManager(ConnectionPool):
         )
 
         # Create a direct connection as fallback
-        connection = await retry_with_exponential_backoff(
+        return await retry_with_exponential_backoff(
             asyncpg.connect,
             dsn=self.dsn,
             max_attempts=3,
             operation_name="postgresql_direct_connect",
         )
-
-        return connection
 
     async def release(self, connection: asyncpg.Connection) -> None:
         """Release a PostgreSQL connection back to the pool."""
@@ -282,7 +277,7 @@ class PostgreSQLPoolManager(ConnectionPool):
                 )
 
         except Exception as e:
-            logger.error(f"Error releasing connection to pool '{self.name}': {e}")
+            logger.exception(f"Error releasing connection to pool '{self.name}': {e}")
 
     async def execute_query(self, query: str, *args) -> Any:
         """Execute a query with automatic connection management."""
@@ -290,16 +285,15 @@ class PostgreSQLPoolManager(ConnectionPool):
             self._record_query()
             return await connection.fetch(query, *args)
 
-    async def execute_transaction(self, queries: List[tuple]) -> List[Any]:
+    async def execute_transaction(self, queries: list[tuple]) -> list[Any]:
         """Execute multiple queries in a transaction."""
-        async with self.acquire() as connection:
-            async with connection.transaction():
-                results = []
-                for query, args in queries:
-                    result = await connection.fetch(query, *args)
-                    results.append(result)
-                    self._record_query()
-                return results
+        async with self.acquire() as connection, connection.transaction():
+            results = []
+            for query, args in queries:
+                result = await connection.fetch(query, *args)
+                results.append(result)
+                self._record_query()
+            return results
 
     async def close(self) -> None:
         """Close the PostgreSQL connection pool."""
@@ -309,7 +303,7 @@ class PostgreSQLPoolManager(ConnectionPool):
             self._pool = None
             self._initialized = False
 
-    async def get_pool_status(self) -> Dict[str, Any]:
+    async def get_pool_status(self) -> dict[str, Any]:
         """Get detailed PostgreSQL pool status."""
         if not self._pool:
             return {"status": "not_initialized"}
@@ -332,8 +326,8 @@ class RedisPoolManager(ConnectionPool):
     def __init__(self, name: str, redis_url: str, config: PoolConfig = None):
         super().__init__(name, config or PoolConfig())
         self.redis_url = redis_url
-        self._pool: Optional[aioredis.ConnectionPool] = None
-        self._redis: Optional[aioredis.Redis] = None
+        self._pool: aioredis.ConnectionPool | None = None
+        self._redis: aioredis.Redis | None = None
         self._circuit_breaker = get_circuit_breaker(
             f"redis_pool_{name}",
             CircuitBreakerConfig(
@@ -369,7 +363,7 @@ class RedisPoolManager(ConnectionPool):
             logger.info(f"Redis pool '{self.name}' initialized successfully")
 
         except Exception as e:
-            logger.error(f"Failed to initialize Redis pool '{self.name}': {e}")
+            logger.exception(f"Failed to initialize Redis pool '{self.name}': {e}")
             raise
 
     async def acquire(self) -> aioredis.Redis:
@@ -392,7 +386,7 @@ class RedisPoolManager(ConnectionPool):
         except Exception as e:
             duration = time.time() - start_time
             self._record_acquisition(duration, False)
-            logger.error(
+            logger.exception(
                 f"Failed to acquire Redis connection from pool '{self.name}': {e}"
             )
             raise
@@ -430,7 +424,7 @@ class RedisPoolManager(ConnectionPool):
             self._pool = None
             self._initialized = False
 
-    async def get_pool_status(self) -> Dict[str, Any]:
+    async def get_pool_status(self) -> dict[str, Any]:
         """Get detailed Redis pool status."""
         if not self._redis:
             return {"status": "not_initialized"}
@@ -457,14 +451,14 @@ class ConnectionPoolRegistry:
     """Registry for managing multiple connection pools."""
 
     def __init__(self):
-        self._pools: Dict[str, ConnectionPool] = {}
+        self._pools: dict[str, ConnectionPool] = {}
 
     def register_pool(self, pool: ConnectionPool) -> None:
         """Register a connection pool."""
         self._pools[pool.name] = pool
         logger.info(f"Registered connection pool: {pool.name}")
 
-    def get_pool(self, name: str) -> Optional[ConnectionPool]:
+    def get_pool(self, name: str) -> ConnectionPool | None:
         """Get connection pool by name."""
         return self._pools.get(name)
 
@@ -475,9 +469,9 @@ class ConnectionPoolRegistry:
             try:
                 await pool.close()
             except Exception as e:
-                logger.error(f"Error closing pool {pool.name}: {e}")
+                logger.exception(f"Error closing pool {pool.name}: {e}")
 
-    async def get_global_status(self) -> Dict[str, Any]:
+    async def get_global_status(self) -> dict[str, Any]:
         """Get status of all connection pools."""
         status = {}
         for name, pool in self._pools.items():
@@ -502,7 +496,7 @@ def get_connection_pool_registry() -> ConnectionPoolRegistry:
     return _pool_registry
 
 
-def get_connection_pool(name: str) -> Optional[ConnectionPool]:
+def get_connection_pool(name: str) -> ConnectionPool | None:
     """Get connection pool by name."""
     return _pool_registry.get_pool(name)
 

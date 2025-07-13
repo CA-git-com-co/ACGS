@@ -21,7 +21,7 @@ import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.monitoring.intelligent_alerting_system import AlertingSystem
 from services.shared.security.enhanced_audit_logging import AuditLogger
@@ -84,7 +84,7 @@ class ComplianceRequirement:
     applicable_categories: list[AISystemCategory]
     assessment_criteria: list[str]
     evidence_required: list[str]
-    deadline_days: Optional[int]
+    deadline_days: int | None
     created_at: datetime
 
 
@@ -127,7 +127,7 @@ class EUAIActCompliance:
     EU AI Act Compliance Engine for Constitutional AI Systems
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -463,7 +463,7 @@ class EUAIActCompliance:
             return assessment
 
         except Exception as e:
-            logger.error(f"Risk assessment failed: {e}")
+            logger.exception(f"Risk assessment failed: {e}")
             raise
 
     def _identify_risk_factors(self, system_details: dict[str, Any]) -> list[str]:
@@ -643,10 +643,10 @@ class EUAIActCompliance:
             )
 
             # Send alerts for non-compliance
-            if status in [
+            if status in {
                 ComplianceStatus.NON_COMPLIANT,
                 ComplianceStatus.REQUIRES_REMEDIATION,
-            ]:
+            }:
                 await self.alerting.send_alert(
                     f"eu_ai_act_compliance_violation_{requirement_id}",
                     f"Non-compliance detected for {requirement.title}: {gaps}",
@@ -656,7 +656,7 @@ class EUAIActCompliance:
             return assessment
 
         except Exception as e:
-            logger.error(f"Compliance assessment failed for {requirement_id}: {e}")
+            logger.exception(f"Compliance assessment failed for {requirement_id}: {e}")
             raise
 
     async def _evaluate_compliance(
@@ -806,7 +806,7 @@ class EUAIActCompliance:
 
         # Compile detailed assessments
         detailed_assessments = {}
-        for assessment_id, assessment in self.compliance_assessments.items():
+        for assessment in self.compliance_assessments.values():
             requirement = self.compliance_requirements[assessment.requirement_id]
             detailed_assessments[assessment.requirement_id] = {
                 "requirement": {
@@ -823,7 +823,7 @@ class EUAIActCompliance:
                 },
             }
 
-        report = {
+        return {
             "report_metadata": {
                 "system_name": self.system_name,
                 "system_version": self.system_version,
@@ -839,8 +839,6 @@ class EUAIActCompliance:
             "next_actions": await self._generate_next_actions(),
         }
 
-        return report
-
     async def _generate_recommendations(self) -> list[str]:
         """Generate compliance recommendations"""
         recommendations = []
@@ -850,7 +848,7 @@ class EUAIActCompliance:
             assessment
             for assessment in self.compliance_assessments.values()
             if assessment.status
-            in [ComplianceStatus.NON_COMPLIANT, ComplianceStatus.REQUIRES_REMEDIATION]
+            in {ComplianceStatus.NON_COMPLIANT, ComplianceStatus.REQUIRES_REMEDIATION}
         ]
 
         if non_compliant_assessments:
@@ -890,10 +888,10 @@ class EUAIActCompliance:
         actions = []
 
         # Unassessed requirements
-        unassessed_requirements = set(self.compliance_requirements.keys()) - set(
+        unassessed_requirements = set(self.compliance_requirements.keys()) - {
             assessment.requirement_id
             for assessment in self.compliance_assessments.values()
-        )
+        }
 
         if unassessed_requirements:
             actions.extend(
@@ -929,16 +927,13 @@ class EUAIActCompliance:
         self, risk_level: AISystemRiskLevel, category: AISystemCategory
     ) -> list[ComplianceRequirement]:
         """Get compliance requirements applicable to specific risk level and category"""
-        applicable_requirements = []
 
-        for requirement in self.compliance_requirements.values():
-            if (
-                risk_level in requirement.applicable_risk_levels
-                and category in requirement.applicable_categories
-            ):
-                applicable_requirements.append(requirement)
-
-        return applicable_requirements
+        return [
+            requirement
+            for requirement in self.compliance_requirements.values()
+            if risk_level in requirement.applicable_risk_levels
+            and category in requirement.applicable_categories
+        ]
 
 
 # Example usage and testing
@@ -967,9 +962,7 @@ async def example_usage():
         "large_language_models": True,
     }
 
-    risk_assessment = await compliance_engine.assess_system_risk(system_details)
-    print(f"Risk Assessment: {risk_assessment.assessed_risk_level.value}")
-    print(f"Category: {risk_assessment.assessed_category.value}")
+    await compliance_engine.assess_system_risk(system_details)
 
     # Assess compliance for specific requirement
     evidence = {
@@ -979,16 +972,13 @@ async def example_usage():
         "testing_reports": "System testing and validation completed",
     }
 
-    assessment = await compliance_engine.assess_compliance("art11_tech_docs", evidence)
-    print(f"Compliance Status: {assessment.status.value}")
+    await compliance_engine.assess_compliance("art11_tech_docs", evidence)
 
     # Get overall compliance status
-    status = await compliance_engine.get_compliance_status()
-    print(f"Overall Compliance Score: {status['compliance_score']:.2%}")
+    await compliance_engine.get_compliance_status()
 
     # Generate compliance report
-    report = await compliance_engine.generate_compliance_report()
-    print(f"Report generated with {len(report['detailed_assessments'])} assessments")
+    await compliance_engine.generate_compliance_report()
 
 
 if __name__ == "__main__":

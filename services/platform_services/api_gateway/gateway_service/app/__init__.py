@@ -13,7 +13,7 @@ from .middleware.constitutional_compliance import ConstitutionalComplianceMiddle
 from .routing.service_router import ServiceRouter
 
 __all__ = [
-    "GatewayConfig",
     "ConstitutionalComplianceMiddleware",
+    "GatewayConfig",
     "ServiceRouter",
 ]

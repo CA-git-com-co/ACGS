@@ -166,7 +166,7 @@ class BiasDetector:
 
         # Check sampling method
         sampling_method = sampling_info.get("method", "unknown")
-        if sampling_method in ["convenience", "voluntary"]:
+        if sampling_method in {"convenience", "voluntary"}:
             bias_score += 0.3
             mitigation_strategies.append("Use stratified random sampling")
 
@@ -190,7 +190,7 @@ class BiasDetector:
 
     def _check_demographic_parity(self, demographics: dict[str, Any]) -> bool:
         """Check if demographic parity is satisfied."""
-        for group, representation in demographics.items():
+        for representation in demographics.values():
             if isinstance(representation, list) and len(representation) > 1:
                 min_rep = min(representation)
                 max_rep = max(representation)

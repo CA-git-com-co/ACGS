@@ -14,7 +14,7 @@ import time
 from collections import defaultdict, deque
 from datetime import datetime, timedelta, timezone
 from functools import wraps
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from prometheus_client import REGISTRY, CollectorRegistry, Counter, Gauge, Histogram
 
@@ -264,7 +264,7 @@ class ServiceMetrics:
         test_type: str,
         attribute: str,
         result: str,
-        sensitivity_score: Optional[float] = None,
+        sensitivity_score: float | None = None,
     ):
         """
         Record causal attribute test results.
@@ -309,7 +309,7 @@ class ServiceMetrics:
             f"{correlation_type} for {attribute} (strength: {correlation_strength:.3f})"
         )
 
-    def get_robustness_trends(self, window_minutes: int = 60) -> Dict[str, Any]:
+    def get_robustness_trends(self, window_minutes: int = 60) -> dict[str, Any]:
         """
         Get robustness trends over specified time window.
 
@@ -353,10 +353,9 @@ class ServiceMetrics:
 
                 if abs(correlation) < 0.1:
                     return "stable", abs(correlation)
-                elif correlation > 0.1:
+                if correlation > 0.1:
                     return "improving", correlation
-                else:
-                    return "degrading", abs(correlation)
+                return "degrading", abs(correlation)
             except:
                 return "stable", 0.0
 
@@ -387,7 +386,7 @@ class ServiceMetrics:
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
 
-    def check_robustness_alerts(self) -> List[Dict[str, Any]]:
+    def check_robustness_alerts(self) -> list[dict[str, Any]]:
         """
         Check for robustness-related alerts.
 
@@ -556,7 +555,7 @@ class ServiceMetrics:
                 "robustness_history_size": len(self.robustness_history),
             }
         except Exception as e:
-            logger.error(f"Failed to get metrics summary: {e}")
+            logger.exception(f"Failed to get metrics summary: {e}")
             return {
                 "service_name": self.service_name,
                 "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -564,7 +563,7 @@ class ServiceMetrics:
             }
 
 
-def monitor_performance(metrics: ServiceMetrics, endpoint: str = None):
+def monitor_performance(metrics: ServiceMetrics, endpoint: str | None = None):
     """
     Decorator for monitoring function/endpoint performance.
 
@@ -582,11 +581,10 @@ def monitor_performance(metrics: ServiceMetrics, endpoint: str = None):
             status_code = 200
 
             try:
-                result = await func(*args, **kwargs)
-                return result
+                return await func(*args, **kwargs)
             except Exception as e:
                 status_code = 500
-                logger.error(f"Error in {endpoint_name}: {e}")
+                logger.exception(f"Error in {endpoint_name}: {e}")
                 raise
             finally:
                 duration = time.time() - start_time
@@ -600,11 +598,10 @@ def monitor_performance(metrics: ServiceMetrics, endpoint: str = None):
             status_code = 200
 
             try:
-                result = func(*args, **kwargs)
-                return result
+                return func(*args, **kwargs)
             except Exception as e:
                 status_code = 500
-                logger.error(f"Error in {endpoint_name}: {e}")
+                logger.exception(f"Error in {endpoint_name}: {e}")
                 raise
             finally:
                 duration = time.time() - start_time
@@ -845,7 +842,7 @@ class PerformanceMonitor:
             "timestamp": time.time(),
         }
 
-    def get_system_robustness_trends(self, window_minutes: int = 120) -> Dict[str, Any]:
+    def get_system_robustness_trends(self, window_minutes: int = 120) -> dict[str, Any]:
         """
         Get system-wide robustness trends.
 
@@ -884,10 +881,9 @@ class PerformanceMonitor:
                 correlation = statistics.correlation(x, values)
                 if abs(correlation) < 0.1:
                     return "stable", abs(correlation)
-                elif correlation > 0.1:
+                if correlation > 0.1:
                     return "improving", correlation
-                else:
-                    return "degrading", abs(correlation)
+                return "degrading", abs(correlation)
             except:
                 return "stable", 0.0
 

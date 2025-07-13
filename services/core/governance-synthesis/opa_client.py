@@ -12,8 +12,9 @@ import asyncio
 import json
 import logging
 import os
+import pathlib
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 
@@ -51,7 +52,7 @@ class RealOPAClient:
     Replaces simulation methods with actual policy evaluation.
     """
 
-    def __init__(self, config: Optional[OPAConfig] = None):
+    def __init__(self, config: OPAConfig | None = None):
         self.config = config or OPAConfig()
         self.client = httpx.AsyncClient(
             base_url=self.config.base_url,
@@ -74,7 +75,7 @@ class RealOPAClient:
                 )
             return is_healthy
         except Exception as e:
-            logger.error(f"OPA health check failed: {e}")
+            logger.exception(f"OPA health check failed: {e}")
             return False
 
     async def load_policy_bundle(self, bundle_path: str) -> bool:
@@ -84,12 +85,12 @@ class RealOPAClient:
         """
         try:
             # Check if bundle file exists
-            if not os.path.exists(bundle_path):
+            if not pathlib.Path(bundle_path).exists():
                 logger.error(f"Policy bundle not found: {bundle_path}")
                 return False
 
             # Load bundle content
-            with open(bundle_path) as f:
+            with open(bundle_path, encoding="utf-8") as f:
                 bundle_content = f.read()
 
             # Upload to OPA
@@ -99,19 +100,18 @@ class RealOPAClient:
                 headers={"Content-Type": "text/plain"},
             )
 
-            if response.status_code in [200, 201]:
+            if response.status_code in {200, 201}:
                 self._policies_loaded = True
                 logger.info(f"Successfully loaded policy bundle: {bundle_path}")
                 return True
-            else:
-                logger.error(
-                    f"Failed to load policy bundle: {response.status_code} -"
-                    f" {response.text}"
-                )
-                return False
+            logger.error(
+                f"Failed to load policy bundle: {response.status_code} -"
+                f" {response.text}"
+            )
+            return False
 
         except Exception as e:
-            logger.error(f"Error loading policy bundle {bundle_path}: {e}")
+            logger.exception(f"Error loading policy bundle {bundle_path}: {e}")
             return False
 
     async def evaluate_policy(
@@ -145,12 +145,11 @@ class RealOPAClient:
                 result = response.json()
                 logger.debug(f"Policy evaluation successful: {policy_path}")
                 return result
-            elif response.status_code == 404:
+            if response.status_code == 404:
                 raise OPAPolicyError(f"Policy not found: {policy_path}")
-            else:
-                raise OPAConnectionError(
-                    f"OPA request failed: {response.status_code} - {response.text}"
-                )
+            raise OPAConnectionError(
+                f"OPA request failed: {response.status_code} - {response.text}"
+            )
 
         except httpx.RequestError as e:
             if retry_count < self.config.max_retries:
@@ -162,13 +161,11 @@ class RealOPAClient:
                 return await self.evaluate_policy(
                     policy_path, input_data, retry_count + 1
                 )
-            else:
-                raise OPAConnectionError(
-                    "OPA connection failed after"
-                    f" {self.config.max_retries} retries: {e}"
-                )
+            raise OPAConnectionError(
+                "OPA connection failed after" f" {self.config.max_retries} retries: {e}"
+            )
         except Exception as e:
-            logger.error(f"Unexpected error evaluating policy {policy_path}: {e}")
+            logger.exception(f"Unexpected error evaluating policy {policy_path}: {e}")
             raise OPAPolicyError(f"Policy evaluation failed: {e}")
 
     async def evaluate_constitutional_policy(
@@ -224,7 +221,7 @@ class RealOPAClient:
             }
 
         except Exception as e:
-            logger.error(f"Constitutional policy evaluation failed: {e}")
+            logger.exception(f"Constitutional policy evaluation failed: {e}")
             # Fallback to deny for safety
             return {
                 "decision": "deny",
@@ -249,7 +246,7 @@ class RealOPAClient:
                 "evaluation_method": "real_opa",
             }
         except Exception as e:
-            logger.error(f"Security policy evaluation failed: {e}")
+            logger.exception(f"Security policy evaluation failed: {e}")
             return {
                 "decision": "deny",
                 "security_level": "high",
@@ -271,7 +268,7 @@ class RealOPAClient:
                 "evaluation_method": "real_opa",
             }
         except Exception as e:
-            logger.error(f"Multi-tenant policy evaluation failed: {e}")
+            logger.exception(f"Multi-tenant policy evaluation failed: {e}")
             return {
                 "decision": "deny",
                 "tenant_access": False,
@@ -295,7 +292,7 @@ class RealOPAClient:
                 "evaluation_method": "real_opa",
             }
         except Exception as e:
-            logger.error(f"Evolutionary policy evaluation failed: {e}")
+            logger.exception(f"Evolutionary policy evaluation failed: {e}")
             return {
                 "decision": "allow",  # Default allow for evolutionary policies
                 "optimization_allowed": True,
@@ -312,10 +309,10 @@ class RealOPAClient:
                 return list(policies.keys()) if isinstance(policies, dict) else []
             return []
         except Exception as e:
-            logger.error(f"Failed to list policies: {e}")
+            logger.exception(f"Failed to list policies: {e}")
             return []
 
-    async def get_policy_data(self, path: str) -> Optional[dict[str, Any]]:
+    async def get_policy_data(self, path: str) -> dict[str, Any] | None:
         """Get data from a specific policy path."""
         try:
             response = await self.client.get(f"/v1/data/{path}")
@@ -323,7 +320,7 @@ class RealOPAClient:
                 return response.json()
             return None
         except Exception as e:
-            logger.error(f"Failed to get policy data for {path}: {e}")
+            logger.exception(f"Failed to get policy data for {path}: {e}")
             return None
 
     async def close(self):
@@ -365,7 +362,7 @@ class OPAPolicyManager:
                     content=policy_content,
                     headers={"Content-Type": "text/plain"},
                 )
-                if response.status_code in [200, 201]:
+                if response.status_code in {200, 201}:
                     success_count += 1
                     logger.info(f"Successfully created policy: {policy_name}")
                 else:
@@ -373,7 +370,7 @@ class OPAPolicyManager:
                         f"Failed to create policy {policy_name}: {response.status_code}"
                     )
             except Exception as e:
-                logger.error(f"Error creating policy {policy_name}: {e}")
+                logger.exception(f"Error creating policy {policy_name}: {e}")
 
         logger.info(f"Successfully created {success_count}/{len(policies)} policies")
         return success_count == len(policies)
@@ -715,7 +712,7 @@ _optimization_risks_detected(input_data) if {
 
 
 # Factory function
-def get_opa_client(config: Optional[OPAConfig] = None) -> RealOPAClient:
+def get_opa_client(config: OPAConfig | None = None) -> RealOPAClient:
     """Factory function to create an OPA client."""
     return RealOPAClient(config)
 

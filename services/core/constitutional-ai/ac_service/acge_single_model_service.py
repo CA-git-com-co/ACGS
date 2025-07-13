@@ -5,6 +5,7 @@ Transition from multi-model consensus to single highly-aligned ACGE model archit
 
 import logging
 import os
+import pathlib
 
 # Import existing AC service components
 import sys
@@ -18,7 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, Histogram
 from pydantic import BaseModel
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 from app.api.v1.constitutional_validation import ConstitutionalValidationRequest
 from app.services.constitutional_validation_service import (
@@ -150,7 +151,7 @@ class ACGESingleModelService:
             return await self._fallback_to_multi_model(request, "acge_disabled")
 
         except Exception as e:
-            logger.error(f"ACGE model validation failed: {e}")
+            logger.exception(f"ACGE model validation failed: {e}")
 
             # Record failure metrics
             ACGE_MODEL_REQUESTS.labels(
@@ -307,7 +308,7 @@ class ACGESingleModelService:
             )
 
         except Exception as e:
-            logger.error(f"Fallback validation failed: {e}")
+            logger.exception(f"Fallback validation failed: {e}")
             raise HTTPException(
                 status_code=500, detail=f"Both ACGE and fallback validation failed: {e}"
             )
@@ -322,7 +323,7 @@ class ACGESingleModelService:
             acge_status = "healthy" if acge_health.status_code == 200 else "unhealthy"
         except Exception as e:
             acge_status = "unreachable"
-            logger.error(f"ACGE model health check failed: {e}")
+            logger.exception(f"ACGE model health check failed: {e}")
 
         return {
             "service": SERVICE_NAME,
@@ -381,7 +382,7 @@ app.add_middleware(
 @app.middleware("http")
 async def constitutional_compliance_middleware(request: Request, call_next):
     """Add constitutional headers and metrics."""
-    start_time = time.time()
+    time.time()
 
     response = await call_next(request)
 

@@ -6,7 +6,7 @@ This module handles integration with various constitutional AI frameworks.
 """
 
 import logging
-from typing import Any, Dict
+from typing import Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -112,7 +112,7 @@ class FrameworkIntegration:
 
         logger.info(f"Frameworks initialized: {list(self.frameworks.keys())}")
 
-    def get_status(self) -> Dict[str, Any]:
+    def get_status(self) -> dict[str, Any]:
         """Get framework status summary."""
         available_count = sum(1 for f in self.frameworks.values() if f["available"])
         total_count = len(self.frameworks)
@@ -126,7 +126,7 @@ class FrameworkIntegration:
             "constitutional_hash": self.constitutional_hash,
         }
 
-    def get_detailed_status(self) -> Dict[str, Any]:
+    def get_detailed_status(self) -> dict[str, Any]:
         """Get detailed framework status."""
         return {
             "frameworks": self.frameworks,

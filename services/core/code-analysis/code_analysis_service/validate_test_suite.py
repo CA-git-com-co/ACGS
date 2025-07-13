@@ -7,7 +7,8 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import ast
-import os
+import contextlib
+import pathlib
 import sys
 from typing import Any
 
@@ -15,7 +16,7 @@ from typing import Any
 def validate_test_file(filepath: str) -> dict[str, Any]:
     """Validate a test file for proper structure and imports"""
 
-    if not os.path.exists(filepath):
+    if not pathlib.Path(filepath).exists():
         return {
             "status": "failed",
             "error": "File does not exist",
@@ -23,11 +24,11 @@ def validate_test_file(filepath: str) -> dict[str, Any]:
         }
 
     try:
-        with open(filepath) as f:
+        with open(filepath, encoding="utf-8") as f:
             content = f.read()
 
         # Parse the AST to check for syntax errors
-        tree = ast.parse(content)
+        ast.parse(content)
 
         # Check for constitutional hash
         constitutional_hash_present = "cdd01ef066bc6cf2" in content
@@ -72,9 +73,6 @@ def validate_test_file(filepath: str) -> dict[str, Any]:
 
 def main():
     """Validate all Priority 3 test files"""
-    print("=" * 80)
-    print("ACGS Code Analysis Engine - Test Suite Validation")
-    print("=" * 80)
 
     # Test files to validate
     test_files = [
@@ -88,26 +86,15 @@ def main():
     all_valid = True
 
     for test_file in test_files:
-        print(f"\nValidating {test_file}...")
         result = validate_test_file(test_file)
         validation_results[test_file] = result
 
         if result["status"] == "ok":
-            print(f"✅ {test_file}: Valid")
-            print(
-                "   - Constitutional hash:"
-                f" {'✓' if result['constitutional_hash_present'] else '✗'}"
-            )
-            print(f"   - Main function: {'✓' if result['has_main_function'] else '✗'}")
-            print(f"   - Imports: {'✓' if result['has_imports'] else '✗'}")
-            print(f"   - Lines of code: {result['lines_of_code']}")
-            print(f"   - File size: {result['file_size_bytes']} bytes")
+            pass
         else:
-            print(f"❌ {test_file}: Invalid - {result['error']}")
             all_valid = False
 
     # Check for required dependencies
-    print("\nChecking dependencies...")
 
     required_modules = [
         "requests",
@@ -124,65 +111,37 @@ def main():
     for module in required_modules:
         try:
             __import__(module)
-            print(f"✅ {module}: Available")
         except ImportError:
-            print(f"❌ {module}: Missing")
             missing_modules.append(module)
             all_valid = False
 
     # Check for additional testing dependencies
     optional_modules = ["matplotlib", "numpy", "pytest", "asyncpg", "redis"]
 
-    print("\nChecking optional testing dependencies...")
     for module in optional_modules:
-        try:
+        with contextlib.suppress(ImportError):
             __import__(module)
-            print(f"✅ {module}: Available")
-        except ImportError:
-            print(f"⚠️  {module}: Not available (install with: pip install {module})")
 
     # Summary
-    print("\n" + "=" * 80)
-    print("VALIDATION SUMMARY")
-    print("=" * 80)
 
-    valid_files = len([r for r in validation_results.values() if r["status"] == "ok"])
-    total_files = len(validation_results)
-
-    print(f"Test files validated: {valid_files}/{total_files}")
-    print(
-        "Required dependencies:"
-        f" {'All available' if not missing_modules else f'Missing: {missing_modules}'}"
-    )
-    print(f"Overall status: {'✅ READY' if all_valid else '❌ ISSUES FOUND'}")
+    len([r for r in validation_results.values() if r["status"] == "ok"])
+    len(validation_results)
 
     if all_valid:
-        print("\n🎉 Test suite validation PASSED!")
-        print("You can now run the Priority 3 validation suite:")
-        print("   python run_priority3_validation.py")
-    else:
-        print("\n⚠️  Test suite validation found issues.")
-        print("Please resolve the issues above before running the validation suite.")
+        pass
 
     # Check if service configuration files exist
-    print("\nChecking service configuration...")
     config_files = ["main.py", "config/settings.py", "requirements.txt"]
 
     for config_file in config_files:
-        if os.path.exists(config_file):
-            print(f"✅ {config_file}: Found")
+        if pathlib.Path(config_file).exists():
+            pass
         else:
-            print(f"❌ {config_file}: Missing")
             all_valid = False
 
     # Final recommendation
     if all_valid:
-        print("\n✅ RECOMMENDATION: Priority 3 validation suite is ready for execution")
-        print("   Constitutional Hash: cdd01ef066bc6cf2")
-        print("   Service Port: 8007")
-        print("   Next step: python run_priority3_validation.py")
-    else:
-        print("\n❌ RECOMMENDATION: Resolve validation issues before proceeding")
+        pass
 
     return 0 if all_valid else 1
 

@@ -6,7 +6,7 @@ Comprehensive exception hierarchy for proper error handling and classification.
 """
 
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Any
 
 
 class ACGSError(Exception):
@@ -15,9 +15,9 @@ class ACGSError(Exception):
     def __init__(
         self,
         message: str,
-        error_code: str = None,
-        details: Dict[str, Any] = None,
-        cause: Exception = None,
+        error_code: str | None = None,
+        details: dict[str, Any] | None = None,
+        cause: Exception | None = None,
         constitutional_hash: str = "cdd01ef066bc6cf2",
     ):
         super().__init__(message)
@@ -34,7 +34,7 @@ class ACGSError(Exception):
         self.context[key] = value
         return self
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert error to dictionary representation."""
         return {
             "error_type": self.__class__.__name__,
@@ -58,7 +58,7 @@ class DomainError(ACGSError):
 class BusinessRuleViolationError(DomainError):
     """Raised when a business rule is violated."""
 
-    def __init__(self, rule_name: str, violation_details: Dict[str, Any], **kwargs):
+    def __init__(self, rule_name: str, violation_details: dict[str, Any], **kwargs):
         message = f"Business rule violation: {rule_name}"
         super().__init__(message, **kwargs)
         self.rule_name = rule_name
@@ -75,7 +75,7 @@ class ConstitutionalComplianceError(DomainError):
         self,
         compliance_issue: str,
         expected_hash: str,
-        actual_hash: str = None,
+        actual_hash: str | None = None,
         **kwargs,
     ):
         message = f"Constitutional compliance violation: {compliance_issue}"
@@ -135,7 +135,13 @@ class InfrastructureError(ACGSError):
 class DatabaseError(InfrastructureError):
     """Raised when database operations fail."""
 
-    def __init__(self, operation: str, table: str = None, query: str = None, **kwargs):
+    def __init__(
+        self,
+        operation: str,
+        table: str | None = None,
+        query: str | None = None,
+        **kwargs,
+    ):
         message = f"Database error during {operation}"
         if table:
             message += f" on table {table}"
@@ -161,7 +167,7 @@ class ExternalServiceError(InfrastructureError):
     """Raised when external service calls fail."""
 
     def __init__(
-        self, service_name: str, endpoint: str, status_code: int = None, **kwargs
+        self, service_name: str, endpoint: str, status_code: int | None = None, **kwargs
     ):
         message = f"External service error: {service_name} at {endpoint}"
         if status_code:
@@ -182,7 +188,9 @@ class ExternalServiceError(InfrastructureError):
 class ValidationError(ACGSError):
     """Base class for validation errors."""
 
-    def __init__(self, message: str, field_errors: Dict[str, str] = None, **kwargs):
+    def __init__(
+        self, message: str, field_errors: dict[str, str] | None = None, **kwargs
+    ):
         super().__init__(message, **kwargs)
         self.field_errors = field_errors or {}
         self.details.update({"field_errors": self.field_errors})

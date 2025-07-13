@@ -7,13 +7,11 @@ robust constitutional compliance training data. Generates causal and neutral
 augmentations to train constitutional validators resistant to reward hacking.
 """
 
-import asyncio
 import json
 import logging
-import time
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -54,11 +52,11 @@ class GenerationStrategy(Enum):
 class CounterfactualGenerationResult(BaseModel):
     """Result of counterfactual generation process"""
 
-    original_scenario: Dict[str, Any]
-    generated_counterfactuals: List[ConstitutionalCounterfactual]
-    causal_augmentations: List[CausalAugmentationPair]
-    neutral_augmentations: List[NeutralAugmentationPair]
-    generation_statistics: Dict[str, Any]
+    original_scenario: dict[str, Any]
+    generated_counterfactuals: list[ConstitutionalCounterfactual]
+    causal_augmentations: list[CausalAugmentationPair]
+    neutral_augmentations: list[NeutralAugmentationPair]
+    generation_statistics: dict[str, Any]
     constitutional_hash: str = "cdd01ef066bc6cf2"
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -72,12 +70,12 @@ class ConstitutionalCounterfactualGenerator:
             "upgrade": """
             Enhance the safety aspects of this constitutional scenario while keeping other factors constant:
             {scenario}
-            
+
             Focus specifically on:
             - Risk mitigation and harm prevention
             - Safety protocol compliance
             - Protective measures for all stakeholders
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Preserve: formatting, length, style, technical complexity
             Change only: safety-related constitutional compliance
@@ -85,12 +83,12 @@ class ConstitutionalCounterfactualGenerator:
             "degrade": """
             Reduce the safety compliance in this constitutional scenario while preserving other aspects:
             {scenario}
-            
+
             Focus specifically on:
             - Introducing safety risks or inadequate protections
             - Reducing harm prevention measures
             - Compromising safety protocols
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Preserve: formatting, length, style, technical complexity
             Change only: safety-related constitutional aspects
@@ -100,12 +98,12 @@ class ConstitutionalCounterfactualGenerator:
             "upgrade": """
             Improve transparency and explainability in this constitutional scenario:
             {scenario}
-            
+
             Focus specifically on:
             - Clearer decision-making processes
             - Better explanation of reasoning
             - More accessible governance information
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Preserve: formatting, length, style, technical complexity
             Change only: transparency-related constitutional elements
@@ -113,12 +111,12 @@ class ConstitutionalCounterfactualGenerator:
             "degrade": """
             Reduce transparency while maintaining other constitutional aspects:
             {scenario}
-            
+
             Focus specifically on:
             - Making decision processes less clear
             - Reducing explanation quality
             - Limiting access to governance information
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Preserve: formatting, length, style, technical complexity
             Change only: transparency-related constitutional elements
@@ -128,12 +126,12 @@ class ConstitutionalCounterfactualGenerator:
             "upgrade": """
             Strengthen accountability mechanisms in this constitutional scenario:
             {scenario}
-            
+
             Focus specifically on:
             - Clear responsibility assignment
             - Robust audit trails
             - Effective oversight mechanisms
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Preserve: formatting, length, style, technical complexity
             Change only: accountability-related constitutional aspects
@@ -141,12 +139,12 @@ class ConstitutionalCounterfactualGenerator:
             "degrade": """
             Weaken accountability while preserving other constitutional factors:
             {scenario}
-            
+
             Focus specifically on:
             - Unclear responsibility chains
             - Incomplete audit mechanisms
             - Reduced oversight effectiveness
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Preserve: formatting, length, style, technical complexity
             Change only: accountability-related constitutional aspects
@@ -159,11 +157,11 @@ class ConstitutionalCounterfactualGenerator:
         Create a variation of this constitutional scenario that changes the response length
         while preserving all constitutional content and meaning:
         {scenario}
-        
+
         Variation type: {variation_type}
         - If expanding: Add relevant but non-essential details, examples, or elaboration
         - If condensing: Remove redundant content while keeping constitutional essence
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve: all constitutional compliance aspects, meaning, decisions
         Change only: length and verbosity level
@@ -171,11 +169,11 @@ class ConstitutionalCounterfactualGenerator:
         SpuriousAttribute.FORMATTING_STYLE: """
         Reformat this constitutional scenario using a different style while preserving content:
         {scenario}
-        
+
         Variation type: {variation_type}
         - Change formatting structure (bullet points ↔ paragraphs, headers, etc.)
         - Adjust presentation style (formal ↔ informal, technical ↔ plain language)
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve: all constitutional content, compliance decisions, meaning
         Change only: formatting and presentation style
@@ -183,11 +181,11 @@ class ConstitutionalCounterfactualGenerator:
         SpuriousAttribute.TECHNICAL_JARGON: """
         Adjust the technical complexity of this constitutional scenario:
         {scenario}
-        
+
         Variation type: {variation_type}
         - If simplifying: Use plain language while preserving constitutional precision
         - If technicalizing: Use more domain-specific terminology
-        
+
         Maintain constitutional hash: cdd01ef066bc6cf2
         Preserve: constitutional compliance decisions, core meaning
         Change only: technical language complexity
@@ -213,9 +211,9 @@ class ConstitutionalCounterfactualGenerator:
 
     async def generate_constitutional_training_data(
         self,
-        original_scenarios: List[Dict[str, Any]],
-        causal_attributes: Optional[List[ConstitutionalAttribute]] = None,
-        spurious_attributes: Optional[List[SpuriousAttribute]] = None,
+        original_scenarios: list[dict[str, Any]],
+        causal_attributes: list[ConstitutionalAttribute] | None = None,
+        spurious_attributes: list[SpuriousAttribute] | None = None,
         generation_strategy: GenerationStrategy = GenerationStrategy.ATTRIBUTE_ISOLATION,
         quality_threshold: float = 0.7,
     ) -> CounterfactualGenerationResult:
@@ -286,10 +284,10 @@ class ConstitutionalCounterfactualGenerator:
 
     async def _generate_causal_augmentations(
         self,
-        scenario: Dict[str, Any],
-        causal_attributes: List[ConstitutionalAttribute],
+        scenario: dict[str, Any],
+        causal_attributes: list[ConstitutionalAttribute],
         strategy: GenerationStrategy,
-    ) -> List[CausalAugmentationPair]:
+    ) -> list[CausalAugmentationPair]:
         """Generate causal augmentation pairs for constitutional attributes"""
 
         causal_pairs = []
@@ -346,10 +344,10 @@ class ConstitutionalCounterfactualGenerator:
 
     async def _generate_neutral_augmentations(
         self,
-        scenario: Dict[str, Any],
-        spurious_attributes: List[SpuriousAttribute],
+        scenario: dict[str, Any],
+        spurious_attributes: list[SpuriousAttribute],
         strategy: GenerationStrategy,
-    ) -> List[NeutralAugmentationPair]:
+    ) -> list[NeutralAugmentationPair]:
         """Generate neutral augmentation pairs for spurious invariance"""
 
         neutral_pairs = []
@@ -402,11 +400,11 @@ class ConstitutionalCounterfactualGenerator:
 
     async def _generate_causal_intervention(
         self,
-        scenario: Dict[str, Any],
+        scenario: dict[str, Any],
         attribute: ConstitutionalAttribute,
         intervention_type: str,
         strategy: GenerationStrategy,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate causal intervention for specific constitutional attribute"""
 
         # Get appropriate prompt template
@@ -419,7 +417,7 @@ class ConstitutionalCounterfactualGenerator:
             prompt_template = f"""
             {intervention_type.title()} the {attribute.value} aspect of this constitutional scenario:
             {{scenario}}
-            
+
             Focus on {attribute.value} while preserving other constitutional aspects.
             Maintain constitutional hash: cdd01ef066bc6cf2
             """
@@ -461,10 +459,10 @@ class ConstitutionalCounterfactualGenerator:
 
     async def _generate_spurious_variation(
         self,
-        scenario: Dict[str, Any],
+        scenario: dict[str, Any],
         spurious_attr: SpuriousAttribute,
         strategy: GenerationStrategy,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Generate spurious variation preserving constitutional content"""
 
         # Determine variation type based on current scenario characteristics
@@ -479,7 +477,7 @@ class ConstitutionalCounterfactualGenerator:
             Create a variation of this constitutional scenario that changes {spurious_attr.value}
             while preserving all constitutional content:
             {{scenario}}
-            
+
             Maintain constitutional hash: cdd01ef066bc6cf2
             Change only: {spurious_attr.value}
             Preserve: all constitutional decisions and compliance aspects
@@ -514,21 +512,21 @@ class ConstitutionalCounterfactualGenerator:
         return variation_scenario
 
     async def _generate_irrelevant_query_neutral(
-        self, scenario: Dict[str, Any], strategy: GenerationStrategy
-    ) -> Dict[str, Any]:
+        self, scenario: dict[str, Any], strategy: GenerationStrategy
+    ) -> dict[str, Any]:
         """Generate irrelevant query neutral following CARMA methodology"""
 
         irrelevant_prompt = f"""
         Create an irrelevant query version of this constitutional scenario by changing
         the context to something unrelated while maintaining the response structure:
         {json.dumps(scenario, indent=2)}
-        
+
         Instructions:
         - Change the query/context to something constitutionally irrelevant
         - Keep the same response format and constitutional structure
         - Ensure both responses would receive the same constitutional compliance score
         - Maintain constitutional hash: cdd01ef066bc6cf2
-        
+
         This creates a neutral pair for training spurious invariance.
         """
 
@@ -536,7 +534,7 @@ class ConstitutionalCounterfactualGenerator:
             irrelevant_prompt
         )
 
-        irrelevant_scenario = {
+        return {
             "irrelevant_query_neutral": True,
             "original_scenario_ref": scenario.get("scenario_id", "unknown"),
             "generated_content": irrelevant_result,
@@ -545,10 +543,8 @@ class ConstitutionalCounterfactualGenerator:
             "generation_timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        return irrelevant_scenario
-
     def _determine_variation_type(
-        self, scenario: Dict[str, Any], spurious_attr: SpuriousAttribute
+        self, scenario: dict[str, Any], spurious_attr: SpuriousAttribute
     ) -> str:
         """Determine appropriate variation type for spurious attribute"""
 
@@ -556,21 +552,20 @@ class ConstitutionalCounterfactualGenerator:
 
         if spurious_attr == SpuriousAttribute.RESPONSE_LENGTH:
             return "expand" if len(scenario_str) < 1000 else "condense"
-        elif spurious_attr == SpuriousAttribute.FORMATTING_STYLE:
+        if spurious_attr == SpuriousAttribute.FORMATTING_STYLE:
             return "formal" if "informal" in scenario_str.lower() else "informal"
-        elif spurious_attr == SpuriousAttribute.TECHNICAL_JARGON:
+        if spurious_attr == SpuriousAttribute.TECHNICAL_JARGON:
             return "simplify" if "technical" in scenario_str.lower() else "technify"
-        elif spurious_attr == SpuriousAttribute.VERBOSITY_LEVEL:
+        if spurious_attr == SpuriousAttribute.VERBOSITY_LEVEL:
             return "verbose" if len(scenario_str) < 500 else "concise"
-        else:
-            return "alternative"
+        return "alternative"
 
     async def _create_counterfactuals(
         self,
-        scenario: Dict[str, Any],
-        causal_pairs: List[CausalAugmentationPair],
-        neutral_pairs: List[NeutralAugmentationPair],
-    ) -> List[ConstitutionalCounterfactual]:
+        scenario: dict[str, Any],
+        causal_pairs: list[CausalAugmentationPair],
+        neutral_pairs: list[NeutralAugmentationPair],
+    ) -> list[ConstitutionalCounterfactual]:
         """Create counterfactual objects from augmentation pairs"""
 
         counterfactuals = []
@@ -603,9 +598,9 @@ class ConstitutionalCounterfactualGenerator:
 
     async def _apply_quality_filter(
         self,
-        augmentations: List[Union[CausalAugmentationPair, NeutralAugmentationPair]],
+        augmentations: list[CausalAugmentationPair | NeutralAugmentationPair],
         quality_threshold: float,
-    ) -> List[Union[CausalAugmentationPair, NeutralAugmentationPair]]:
+    ) -> list[CausalAugmentationPair | NeutralAugmentationPair]:
         """Apply quality filtering to generated augmentations"""
 
         # Simplified quality filtering - in production, this would use more sophisticated metrics
@@ -622,7 +617,7 @@ class ConstitutionalCounterfactualGenerator:
         return filtered
 
     def _calculate_quality_score(
-        self, augmentation: Union[CausalAugmentationPair, NeutralAugmentationPair]
+        self, augmentation: CausalAugmentationPair | NeutralAugmentationPair
     ) -> float:
         """Calculate quality score for generated augmentation"""
 
@@ -677,7 +672,7 @@ class ConstitutionalCounterfactualGenerator:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_generation_statistics(self) -> Dict[str, Any]:
+    def get_generation_statistics(self) -> dict[str, Any]:
         """Get detailed generation statistics"""
 
         stats = self.generation_stats.copy()

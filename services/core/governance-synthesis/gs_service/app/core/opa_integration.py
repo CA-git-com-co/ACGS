@@ -287,21 +287,21 @@ class OPAClient:
             return
 
         try:
-            if self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID]:
+            if self.config.mode in {OPAMode.EMBEDDED, OPAMode.HYBRID}:
                 await self._initialize_embedded_client()
 
-            if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID]:
+            if self.config.mode in {OPAMode.SERVER, OPAMode.HYBRID}:
                 await self._initialize_server_client()
 
             # Start health check task
-            if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID]:
+            if self.config.mode in {OPAMode.SERVER, OPAMode.HYBRID}:
                 self._health_check_task = asyncio.create_task(self._health_check_loop())
 
             self._initialized = True
             logger.info(f"OPA client initialized in {self.config.mode.value} mode")
 
         except Exception as e:
-            logger.error(f"Failed to initialize OPA client: {e}")
+            logger.exception(f"Failed to initialize OPA client: {e}")
             raise OPAIntegrationError(f"OPA client initialization failed: {e}")
 
     async def _initialize_embedded_client(self):
@@ -316,7 +316,7 @@ class OPAClient:
             self.opa_client = OPA()
             logger.info("Embedded OPA client initialized")
         except Exception as e:
-            logger.error(f"Failed to initialize embedded OPA client: {e}")
+            logger.exception(f"Failed to initialize embedded OPA client: {e}")
             raise
 
     async def _initialize_server_client(self):
@@ -338,7 +338,7 @@ class OPAClient:
             await self._check_server_health()
             logger.info(f"OPA server client initialized: {self.config.server.base_url}")
         except Exception as e:
-            logger.error(f"Failed to connect to OPA server: {e}")
+            logger.exception(f"Failed to connect to OPA server: {e}")
             if self.config.mode == OPAMode.SERVER:
                 raise OPAIntegrationError(f"OPA server connection failed: {e}")
 
@@ -370,7 +370,7 @@ class OPAClient:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Health check loop error: {e}")
+                logger.exception(f"Health check loop error: {e}")
 
     @performance_monitor_decorator("opa_policy_evaluation", "policy_decision")
     async def evaluate_policy(
@@ -432,7 +432,9 @@ class OPAClient:
 
         except Exception as e:
             self.metrics["error_count"] += 1
-            logger.error(f"Policy evaluation failed for {request.policy_path}: {e!s}")
+            logger.exception(
+                f"Policy evaluation failed for {request.policy_path}: {e!s}"
+            )
             raise OPAIntegrationError(f"Policy evaluation failed: {e}")
 
     async def _evaluate_policy_internal(
@@ -444,7 +446,7 @@ class OPAClient:
 
         try:
             # Try server mode first if available
-            if self.config.mode in [OPAMode.SERVER, OPAMode.HYBRID] and self.session:
+            if self.config.mode in {OPAMode.SERVER, OPAMode.HYBRID} and self.session:
                 try:
                     return await self._evaluate_via_server(
                         request, decision_id, start_time
@@ -458,7 +460,7 @@ class OPAClient:
 
             # Fall back to embedded mode
             if (
-                self.config.mode in [OPAMode.EMBEDDED, OPAMode.HYBRID]
+                self.config.mode in {OPAMode.EMBEDDED, OPAMode.HYBRID}
                 and self.opa_client
             ):
                 return await self._evaluate_via_embedded(

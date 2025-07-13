@@ -10,7 +10,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional
+from typing import Any
 
 import httpx
 from fastapi import Request
@@ -66,9 +66,9 @@ class TenantServiceClient:
 
     def _prepare_headers(
         self,
-        tenant_context: Optional[TenantContext] = None,
-        additional_headers: Optional[dict[str, str]] = None,
-        jwt_token: Optional[str] = None,
+        tenant_context: TenantContext | None = None,
+        additional_headers: dict[str, str] | None = None,
+        jwt_token: str | None = None,
     ) -> dict[str, str]:
         """Prepare headers with tenant context and constitutional compliance."""
         headers = {
@@ -136,11 +136,11 @@ class TenantServiceClient:
         self,
         method: str,
         endpoint: str,
-        tenant_context: Optional[TenantContext] = None,
-        jwt_token: Optional[str] = None,
-        json_data: Optional[dict[str, Any]] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, str]] = None,
+        tenant_context: TenantContext | None = None,
+        jwt_token: str | None = None,
+        json_data: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Make an HTTP request with tenant context and retry logic."""
 
@@ -179,7 +179,7 @@ class TenantServiceClient:
                 return response.json() if response.content else {}
 
             except httpx.HTTPStatusError as e:
-                logger.error(
+                logger.exception(
                     f"HTTP error from {self.service_name}: {e.response.status_code} -"
                     f" {e.response.text}"
                 )
@@ -191,13 +191,13 @@ class TenantServiceClient:
                     )
 
             except httpx.RequestError as e:
-                logger.error(f"Request error to {self.service_name}: {e}")
+                logger.exception(f"Request error to {self.service_name}: {e}")
                 if attempt == self.retries:
                     self._record_failure()
                     raise Exception(f"Request failed to {self.service_name}: {e}")
 
             except Exception as e:
-                logger.error(f"Unexpected error calling {self.service_name}: {e}")
+                logger.exception(f"Unexpected error calling {self.service_name}: {e}")
                 if attempt == self.retries:
                     self._record_failure()
                     raise Exception(
@@ -215,10 +215,10 @@ class TenantServiceClient:
     async def get(
         self,
         endpoint: str,
-        tenant_context: Optional[TenantContext] = None,
-        jwt_token: Optional[str] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, str]] = None,
+        tenant_context: TenantContext | None = None,
+        jwt_token: str | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Make a GET request with tenant context."""
         return await self._make_request(
@@ -228,11 +228,11 @@ class TenantServiceClient:
     async def post(
         self,
         endpoint: str,
-        data: Optional[dict[str, Any]] = None,
-        tenant_context: Optional[TenantContext] = None,
-        jwt_token: Optional[str] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, str]] = None,
+        data: dict[str, Any] | None = None,
+        tenant_context: TenantContext | None = None,
+        jwt_token: str | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Make a POST request with tenant context."""
         return await self._make_request(
@@ -242,11 +242,11 @@ class TenantServiceClient:
     async def put(
         self,
         endpoint: str,
-        data: Optional[dict[str, Any]] = None,
-        tenant_context: Optional[TenantContext] = None,
-        jwt_token: Optional[str] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, str]] = None,
+        data: dict[str, Any] | None = None,
+        tenant_context: TenantContext | None = None,
+        jwt_token: str | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Make a PUT request with tenant context."""
         return await self._make_request(
@@ -256,10 +256,10 @@ class TenantServiceClient:
     async def delete(
         self,
         endpoint: str,
-        tenant_context: Optional[TenantContext] = None,
-        jwt_token: Optional[str] = None,
-        params: Optional[dict[str, Any]] = None,
-        headers: Optional[dict[str, str]] = None,
+        tenant_context: TenantContext | None = None,
+        jwt_token: str | None = None,
+        params: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         """Make a DELETE request with tenant context."""
         return await self._make_request(
@@ -349,7 +349,7 @@ def get_service_client(service_name: str) -> TenantServiceClient:
     return service_registry.get_client(service_name)
 
 
-def extract_tenant_context_from_request(request: Request) -> Optional[TenantContext]:
+def extract_tenant_context_from_request(request: Request) -> TenantContext | None:
     """Extract tenant context from FastAPI request object."""
     return getattr(request.state, "tenant_context", None)
 
@@ -358,10 +358,10 @@ async def call_service_with_context(
     service_name: str,
     endpoint: str,
     method: str = "GET",
-    data: Optional[dict[str, Any]] = None,
-    request: Optional[Request] = None,
-    tenant_context: Optional[TenantContext] = None,
-    jwt_token: Optional[str] = None,
+    data: dict[str, Any] | None = None,
+    request: Request | None = None,
+    tenant_context: TenantContext | None = None,
+    jwt_token: str | None = None,
 ) -> dict[str, Any]:
     """
     Convenience function to call a service with tenant context.
@@ -383,14 +383,13 @@ async def call_service_with_context(
     # Make the request
     if method.upper() == "GET":
         return await client.get(endpoint, tenant_context, jwt_token)
-    elif method.upper() == "POST":
+    if method.upper() == "POST":
         return await client.post(endpoint, data, tenant_context, jwt_token)
-    elif method.upper() == "PUT":
+    if method.upper() == "PUT":
         return await client.put(endpoint, data, tenant_context, jwt_token)
-    elif method.upper() == "DELETE":
+    if method.upper() == "DELETE":
         return await client.delete(endpoint, tenant_context, jwt_token)
-    else:
-        raise ValueError(f"Unsupported HTTP method: {method}")
+    raise ValueError(f"Unsupported HTTP method: {method}")
 
 
 # Initialize default service endpoints

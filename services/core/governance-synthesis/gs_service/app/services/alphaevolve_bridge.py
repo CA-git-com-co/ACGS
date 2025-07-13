@@ -26,7 +26,7 @@ class ConstitutionalPrinciple:
         description: str,
         category: str,
         policy_code: str = "",
-        metadata: dict[str, Any] = None,
+        metadata: dict[str, Any] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -46,8 +46,8 @@ class OperationalRule:
         name: str,
         description: str,
         policy_code: str,
-        derived_from_principles: list[str] = None,
-        metadata: dict[str, Any] = None,
+        derived_from_principles: list[str] | None = None,
+        metadata: dict[str, Any] | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -208,7 +208,7 @@ class AlphaEvolveBridge:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize AlphaEvolve bridge: {e}")
+            logger.exception(f"Failed to initialize AlphaEvolve bridge: {e}")
             return False
 
     def is_available(self) -> bool:
@@ -257,7 +257,7 @@ class AlphaEvolveBridge:
             return alphaevolve_principles
 
         except Exception as e:
-            logger.error(f"Failed to sync constitutional principles: {e}")
+            logger.exception(f"Failed to sync constitutional principles: {e}")
             return []
 
     async def synthesize_ec_governance_rules(
@@ -350,7 +350,7 @@ class AlphaEvolveBridge:
             }
 
         except Exception as e:
-            logger.error(f"Failed to synthesize EC governance rules: {e}")
+            logger.exception(f"Failed to synthesize EC governance rules: {e}")
             return {"rules": [], "metadata": {"error": str(e)}}
 
     async def evaluate_ec_proposal(
@@ -391,7 +391,7 @@ class AlphaEvolveBridge:
             )
 
             # Create governance decision
-            decision = gs_schemas.ECGovernanceDecision(
+            return gs_schemas.ECGovernanceDecision(
                 proposal_id=proposal.proposal_id,
                 decision=evaluation_result["decision"],
                 confidence=evaluation_result["confidence"],
@@ -402,10 +402,8 @@ class AlphaEvolveBridge:
                 timestamp=datetime.utcnow(),
             )
 
-            return decision
-
         except Exception as e:
-            logger.error(f"Failed to evaluate EC proposal: {e}")
+            logger.exception(f"Failed to evaluate EC proposal: {e}")
             return self._create_fallback_decision(proposal, f"Evaluation error: {e!s}")
 
     def _convert_to_rego_policy(self, ac_principle: dict[str, Any]) -> str:
@@ -501,11 +499,10 @@ violation[msg] {{
                     keyword in code for keyword in ["unsafe", "dangerous", "harmful"]
                 ):
                     principle_violated = True
-            elif "privacy" in principle.category.lower():
-                if any(
-                    keyword in code for keyword in ["leak", "expose", "unauthorized"]
-                ):
-                    principle_violated = True
+            elif "privacy" in principle.category.lower() and any(
+                keyword in code for keyword in ["leak", "expose", "unauthorized"]
+            ):
+                principle_violated = True
 
             if principle_violated:
                 violated_principles.append(principle.principle_id)

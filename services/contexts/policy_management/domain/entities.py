@@ -5,12 +5,10 @@ Constitutional Hash: cdd01ef066bc6cf2
 Core entities for policy lifecycle management and compliance.
 """
 
-from datetime import datetime, timedelta
-from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from datetime import datetime
+from typing import Any
 
 from services.shared.domain.base import (
-    Entity,
     EntityId,
     MultiTenantAggregateRoot,
     TenantId,
@@ -19,7 +17,6 @@ from services.shared.domain.base import (
 from .events import (
     ComplianceEvaluatedEvent,
     PolicyActivatedEvent,
-    PolicyCreatedEvent,
     PolicyDeactivatedEvent,
     PolicyUpdatedEvent,
     PolicyViolationDetectedEvent,
@@ -50,7 +47,7 @@ class Policy(MultiTenantAggregateRoot):
         title: str,
         description: str,
         scope: PolicyScope,
-        rules: List[Dict[str, Any]],
+        rules: list[dict[str, Any]],
         metadata: PolicyMetadata,
     ):
         super().__init__(policy_id, tenant_id)
@@ -62,11 +59,11 @@ class Policy(MultiTenantAggregateRoot):
         self.metadata = metadata
         self._version = PolicyVersion(1, 0, 0)
         self._status = PolicyStatus.DRAFT
-        self._effective_date: Optional[datetime] = None
-        self._expiration_date: Optional[datetime] = None
-        self._compliance_history: List[ComplianceResult] = []
-        self._dependencies: Set[EntityId] = set()
-        self._conflicts: Set[EntityId] = set()
+        self._effective_date: datetime | None = None
+        self._expiration_date: datetime | None = None
+        self._compliance_history: list[ComplianceResult] = []
+        self._dependencies: set[EntityId] = set()
+        self._conflicts: set[EntityId] = set()
 
     @property
     def version(self) -> PolicyVersion:
@@ -79,17 +76,17 @@ class Policy(MultiTenantAggregateRoot):
         return self._status
 
     @property
-    def rules(self) -> List[Dict[str, Any]]:
+    def rules(self) -> list[dict[str, Any]]:
         """Get policy rules."""
         return self._rules.copy()
 
     @property
-    def effective_date(self) -> Optional[datetime]:
+    def effective_date(self) -> datetime | None:
         """Get policy effective date."""
         return self._effective_date
 
     @property
-    def expiration_date(self) -> Optional[datetime]:
+    def expiration_date(self) -> datetime | None:
         """Get policy expiration date."""
         return self._expiration_date
 
@@ -104,24 +101,24 @@ class Policy(MultiTenantAggregateRoot):
         )
 
     @property
-    def dependencies(self) -> Set[EntityId]:
+    def dependencies(self) -> set[EntityId]:
         """Get policy dependencies."""
         return self._dependencies.copy()
 
     @property
-    def conflicts(self) -> Set[EntityId]:
+    def conflicts(self) -> set[EntityId]:
         """Get conflicting policies."""
         return self._conflicts.copy()
 
     def update_content(
-        self, title: str, description: str, rules: List[Dict[str, Any]]
+        self, title: str, description: str, rules: list[dict[str, Any]]
     ) -> None:
         """Update policy content."""
         if self._status == PolicyStatus.ACTIVE:
             raise ValueError("Cannot update active policy without versioning")
 
         old_title = self.title
-        old_rules = self._rules.copy()
+        self._rules.copy()
 
         self.title = title
         self.description = description
@@ -169,8 +166,8 @@ class Policy(MultiTenantAggregateRoot):
 
     def activate(
         self,
-        effective_date: Optional[datetime] = None,
-        expiration_date: Optional[datetime] = None,
+        effective_date: datetime | None = None,
+        expiration_date: datetime | None = None,
     ) -> None:
         """Activate the policy."""
         if self._status == PolicyStatus.ACTIVE:
@@ -237,7 +234,7 @@ class Policy(MultiTenantAggregateRoot):
         """Remove policy conflict."""
         self._conflicts.discard(policy_id)
 
-    def evaluate_compliance(self, context: Dict[str, Any]) -> ComplianceResult:
+    def evaluate_compliance(self, context: dict[str, Any]) -> ComplianceResult:
         """Evaluate compliance against this policy."""
         if not self.is_active:
             return ComplianceResult(
@@ -307,15 +304,15 @@ class Policy(MultiTenantAggregateRoot):
         return result
 
     def get_compliance_history(
-        self, limit: Optional[int] = None
-    ) -> List[ComplianceResult]:
+        self, limit: int | None = None
+    ) -> list[ComplianceResult]:
         """Get compliance evaluation history."""
         history = sorted(
             self._compliance_history, key=lambda x: x.evaluated_at, reverse=True
         )
         return history[:limit] if limit else history
 
-    def get_compliance_trends(self) -> Dict[str, Any]:
+    def get_compliance_trends(self) -> dict[str, Any]:
         """Get compliance trends over time."""
         if not self._compliance_history:
             return {"trend": "no_data", "average_score": 0.0}
@@ -349,28 +346,27 @@ class Policy(MultiTenantAggregateRoot):
         }
 
     def _evaluate_rule(
-        self, rule: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rule: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate a single rule against context."""
         # Simplified rule evaluation - in practice this would be more sophisticated
         rule_type = rule.get("type", "unknown")
 
         if rule_type == "threshold":
             return self._evaluate_threshold_rule(rule, context)
-        elif rule_type == "conditional":
+        if rule_type == "conditional":
             return self._evaluate_conditional_rule(rule, context)
-        elif rule_type == "constraint":
+        if rule_type == "constraint":
             return self._evaluate_constraint_rule(rule, context)
-        else:
-            return {
-                "rule_id": rule.get("id", "unknown"),
-                "compliant": True,
-                "message": "Rule type not implemented",
-            }
+        return {
+            "rule_id": rule.get("id", "unknown"),
+            "compliant": True,
+            "message": "Rule type not implemented",
+        }
 
     def _evaluate_threshold_rule(
-        self, rule: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rule: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate threshold-based rule."""
         field = rule.get("field")
         operator = rule.get("operator", "<=")
@@ -407,10 +403,10 @@ class Policy(MultiTenantAggregateRoot):
         }
 
     def _evaluate_conditional_rule(
-        self, rule: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rule: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate conditional rule."""
-        condition = rule.get("condition")
+        rule.get("condition")
         # Simplified conditional evaluation
         return {
             "rule_id": rule.get("id"),
@@ -419,10 +415,10 @@ class Policy(MultiTenantAggregateRoot):
         }
 
     def _evaluate_constraint_rule(
-        self, rule: Dict[str, Any], context: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        self, rule: dict[str, Any], context: dict[str, Any]
+    ) -> dict[str, Any]:
         """Evaluate constraint rule."""
-        constraint = rule.get("constraint")
+        rule.get("constraint")
         # Simplified constraint evaluation
         return {
             "rule_id": rule.get("id"),
@@ -430,7 +426,7 @@ class Policy(MultiTenantAggregateRoot):
             "message": "Constraint rule evaluation simplified",
         }
 
-    def _calculate_violation_severity(self, violations: List[Dict[str, Any]]) -> str:
+    def _calculate_violation_severity(self, violations: list[dict[str, Any]]) -> str:
         """Calculate overall violation severity."""
         if not violations:
             return "none"
@@ -439,12 +435,11 @@ class Policy(MultiTenantAggregateRoot):
 
         if max_severity >= 0.8:
             return "critical"
-        elif max_severity >= 0.6:
+        if max_severity >= 0.6:
             return "high"
-        elif max_severity >= 0.4:
+        if max_severity >= 0.4:
             return "medium"
-        else:
-            return "low"
+        return "low"
 
 
 class PolicySet(MultiTenantAggregateRoot):
@@ -467,13 +462,13 @@ class PolicySet(MultiTenantAggregateRoot):
         self.name = name
         self.description = description
         self.category = category
-        self._policies: Set[EntityId] = set()
+        self._policies: set[EntityId] = set()
         self._status = "active"
         self.created_at = datetime.utcnow()
         self.updated_at = datetime.utcnow()
 
     @property
-    def policies(self) -> Set[EntityId]:
+    def policies(self) -> set[EntityId]:
         """Get policies in this set."""
         return self._policies.copy()
 

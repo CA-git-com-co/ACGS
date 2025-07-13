@@ -280,7 +280,7 @@ class AdversarialDefenseSystem:
             }
 
         except Exception as e:
-            logger.error(f"Refusal feature analysis failed: {e}")
+            logger.exception(f"Refusal feature analysis failed: {e}")
             return {
                 "method": "refusal_features",
                 "detected": False,
@@ -328,7 +328,7 @@ class AdversarialDefenseSystem:
             }
 
         except Exception as e:
-            logger.error(f"Semantic drift detection failed: {e}")
+            logger.exception(f"Semantic drift detection failed: {e}")
             return {
                 "method": "semantic_drift",
                 "detected": False,
@@ -354,10 +354,11 @@ class AdversarialDefenseSystem:
                 "system prompt",
             ]
 
-            detected_indicators = []
-            for indicator in manipulation_indicators:
-                if indicator.lower() in input_text.lower():
-                    detected_indicators.append(indicator)
+            detected_indicators = [
+                indicator
+                for indicator in manipulation_indicators
+                if indicator.lower() in input_text.lower()
+            ]
 
             # Check for principle contradictions
             constitutional_terms = [
@@ -400,7 +401,7 @@ class AdversarialDefenseSystem:
             }
 
         except Exception as e:
-            logger.error(f"Constitutional manipulation detection failed: {e}")
+            logger.exception(f"Constitutional manipulation detection failed: {e}")
             return {
                 "method": "constitutional_manipulation",
                 "detected": False,
@@ -460,7 +461,7 @@ class AdversarialDefenseSystem:
             }
 
         except Exception as e:
-            logger.error(f"Consensus validation failed: {e}")
+            logger.exception(f"Consensus validation failed: {e}")
             return {
                 "method": "consensus_validation",
                 "detected": False,
@@ -494,19 +495,19 @@ class AdversarialDefenseSystem:
         if not attack_type:
             return "none"
 
-        if attack_type in [
+        if attack_type in {
             AttackType.CONSTITUTIONAL_CAPTURE,
             AttackType.CONSENSUS_MANIPULATION,
-        ]:
+        }:
             if confidence > 0.8:
                 return "critical"
             if confidence > 0.6:
                 return "high"
             return "medium"
-        if attack_type in [
+        if attack_type in {
             AttackType.JAILBREAK_ATTEMPT,
             AttackType.RULE_SYNTHESIS_GAMING,
-        ]:
+        }:
             if confidence > 0.7:
                 return "high"
             if confidence > 0.5:
@@ -553,7 +554,7 @@ class AdversarialDefenseSystem:
             self.defense_metrics["successful_defenses"] += 1
 
         except Exception as e:
-            logger.error(f"Mitigation failed for event {event.event_id}: {e}")
+            logger.exception(f"Mitigation failed for event {event.event_id}: {e}")
             mitigation_result["error"] = str(e)
 
         return mitigation_result

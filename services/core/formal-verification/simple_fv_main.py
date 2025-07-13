@@ -108,7 +108,7 @@ async def verify_constitutional_compliance(request: Request):
     try:
         data = await request.json()
         content = data.get("content", "")
-        context = data.get("context", "")
+        data.get("context", "")
 
         # Simple constitutional compliance check
         compliance_score = calculate_compliance_score(content)
@@ -133,7 +133,7 @@ async def verify_constitutional_compliance(request: Request):
             "timestamp": time.time(),
         }
     except Exception as e:
-        logger.error(f"Constitutional verification error: {e}")
+        logger.exception(f"Constitutional verification error: {e}")
         return {
             "error": "Verification failed",
             "details": str(e),
@@ -165,7 +165,7 @@ async def verify_logical_consistency(request: Request):
             "timestamp": time.time(),
         }
     except Exception as e:
-        logger.error(f"Logical verification error: {e}")
+        logger.exception(f"Logical verification error: {e}")
         return {
             "error": "Verification failed",
             "details": str(e),

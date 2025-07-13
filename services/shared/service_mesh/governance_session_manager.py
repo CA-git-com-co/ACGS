@@ -4,6 +4,7 @@ Ensures workflow continuity and state consistency across service instances
 """
 
 import asyncio
+import contextlib
 import hashlib
 import json
 import logging
@@ -217,10 +218,8 @@ class GovernanceSessionManager:
         # Cancel cleanup task
         if self._cleanup_task:
             self._cleanup_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._cleanup_task
-            except asyncio.CancelledError:
-                pass
 
         logger.info("Governance session manager stopped")
 
@@ -457,7 +456,7 @@ class GovernanceSessionManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in session cleanup: {e}")
+                logger.exception(f"Error in session cleanup: {e}")
                 await asyncio.sleep(5)
 
     async def _cleanup_expired_sessions(self):

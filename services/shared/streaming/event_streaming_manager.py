@@ -25,7 +25,7 @@ from collections.abc import Callable
 from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from services.shared.monitoring.intelligent_alerting_system import (
     IntelligentAlertingSystem,
@@ -113,14 +113,14 @@ class StreamingEvent:
     event_type: EventType
     priority: EventPriority
     source_service: str
-    target_service: Optional[str]
+    target_service: str | None
     payload: dict[str, Any]
     metadata: dict[str, Any]
     routing_strategy: EventRoutingStrategy
     constitutional_compliant: bool
-    correlation_id: Optional[str]
+    correlation_id: str | None
     timestamp: datetime
-    ttl_seconds: Optional[int] = None
+    ttl_seconds: int | None = None
 
 
 @dataclass
@@ -146,8 +146,8 @@ class TopicMapping:
 
     event_type: EventType
     kafka_topic: str
-    nats_subject: Optional[str]
-    partitioning_key: Optional[str]
+    nats_subject: str | None
+    partitioning_key: str | None
     priority_routing: bool
     dlq_enabled: bool
     retention_hours: int
@@ -158,7 +158,7 @@ class EventStreamingManager:
     Production-ready event streaming orchestration manager
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
 
         # Core components
@@ -422,7 +422,7 @@ class EventStreamingManager:
             return True
 
         except Exception as e:
-            logger.error(f"Event Streaming Manager initialization failed: {e}")
+            logger.exception(f"Event Streaming Manager initialization failed: {e}")
             return False
 
     async def _initialize_kafka(self) -> bool:
@@ -456,7 +456,7 @@ class EventStreamingManager:
             return True
 
         except Exception as e:
-            logger.error(f"Kafka initialization failed: {e}")
+            logger.exception(f"Kafka initialization failed: {e}")
             return False
 
     async def _initialize_nats(self) -> bool:
@@ -483,7 +483,7 @@ class EventStreamingManager:
             return True
 
         except Exception as e:
-            logger.error(f"NATS initialization failed: {e}")
+            logger.exception(f"NATS initialization failed: {e}")
             return False
 
     async def _initialize_circuit_breakers(self):
@@ -567,7 +567,7 @@ class EventStreamingManager:
             return success
 
         except Exception as e:
-            logger.error(f"Event publication failed: {e}")
+            logger.exception(f"Event publication failed: {e}")
             await self._handle_publication_failure(event, str(e))
             return False
 
@@ -609,7 +609,7 @@ class EventStreamingManager:
                 partition_key = event.event_id
 
             # Publish to Kafka
-            success = await self.kafka_producers["main"].send_message(
+            return await self.kafka_producers["main"].send_message(
                 topic=topic_mapping.kafka_topic,
                 value=message_value,
                 key=partition_key,
@@ -619,10 +619,8 @@ class EventStreamingManager:
                 },
             )
 
-            return success
-
         except Exception as e:
-            logger.error(f"Kafka publication failed: {e}")
+            logger.exception(f"Kafka publication failed: {e}")
             return False
 
     async def _publish_to_nats(self, event: StreamingEvent) -> bool:
@@ -660,7 +658,7 @@ class EventStreamingManager:
             return True
 
         except Exception as e:
-            logger.error(f"NATS publication failed: {e}")
+            logger.exception(f"NATS publication failed: {e}")
             return False
 
     async def _publish_adaptive(self, event: StreamingEvent) -> bool:
@@ -672,7 +670,7 @@ class EventStreamingManager:
                 and self.health_status["nats_healthy"]
             ):
                 # Both healthy - choose based on event characteristics
-                if event.priority in [EventPriority.CRITICAL, EventPriority.HIGH]:
+                if event.priority in {EventPriority.CRITICAL, EventPriority.HIGH}:
                     primary, secondary = "kafka", "nats"
                 else:
                     primary, secondary = "nats", "kafka"
@@ -695,11 +693,10 @@ class EventStreamingManager:
             # Try secondary
             if secondary == "kafka":
                 return await self._publish_to_kafka(event)
-            else:
-                return await self._publish_to_nats(event)
+            return await self._publish_to_nats(event)
 
         except Exception as e:
-            logger.error(f"Adaptive publishing failed: {e}")
+            logger.exception(f"Adaptive publishing failed: {e}")
             return False
 
     def _determine_routing_strategy(
@@ -713,21 +710,20 @@ class EventStreamingManager:
         # Adaptive strategy based on event characteristics
         if event.priority == EventPriority.CRITICAL:
             return EventRoutingStrategy.HYBRID  # Redundancy for critical events
-        elif event.event_type in [EventType.METRIC_EVENT, EventType.SYSTEM_EVENT]:
+        if event.event_type in {EventType.METRIC_EVENT, EventType.SYSTEM_EVENT}:
             return EventRoutingStrategy.NATS_ONLY  # Lightweight for metrics
-        elif event.event_type in [
+        if event.event_type in {
             EventType.CONSTITUTIONAL_DECISION,
             EventType.AUDIT_EVENT,
-        ]:
+        }:
             return EventRoutingStrategy.KAFKA_ONLY  # Durability for important events
-        else:
-            return self.default_routing_strategy
+        return self.default_routing_strategy
 
     async def subscribe_to_events(
         self,
         event_type: EventType,
         handler: Callable[[StreamingEvent], bool],
-        group_id: Optional[str] = None,
+        group_id: str | None = None,
     ) -> bool:
         """
         Subscribe to events of a specific type
@@ -762,14 +758,14 @@ class EventStreamingManager:
             return True
 
         except Exception as e:
-            logger.error(f"Event subscription failed: {e}")
+            logger.exception(f"Event subscription failed: {e}")
             return False
 
     async def _subscribe_kafka(
         self,
         event_type: EventType,
         topic_mapping: TopicMapping,
-        group_id: Optional[str],
+        group_id: str | None,
     ):
         """Subscribe to Kafka topic"""
         try:
@@ -798,7 +794,7 @@ class EventStreamingManager:
                         return await handler(streaming_event)
                     return True
                 except Exception as e:
-                    logger.error(f"Kafka message handler failed: {e}")
+                    logger.exception(f"Kafka message handler failed: {e}")
                     return False
 
             consumer.set_message_handler(kafka_message_handler)
@@ -810,7 +806,7 @@ class EventStreamingManager:
             asyncio.create_task(consumer.start_consuming())
 
         except Exception as e:
-            logger.error(f"Kafka subscription failed: {e}")
+            logger.exception(f"Kafka subscription failed: {e}")
 
     async def _subscribe_nats(self, event_type: EventType, topic_mapping: TopicMapping):
         """Subscribe to NATS subject"""
@@ -845,7 +841,7 @@ class EventStreamingManager:
                         await handler(streaming_event)
 
                 except Exception as e:
-                    logger.error(f"NATS message handler failed: {e}")
+                    logger.exception(f"NATS message handler failed: {e}")
 
             # Subscribe to NATS subject
             await self.nats_client.subscribe(
@@ -853,7 +849,7 @@ class EventStreamingManager:
             )
 
         except Exception as e:
-            logger.error(f"NATS subscription failed: {e}")
+            logger.exception(f"NATS subscription failed: {e}")
 
     async def _kafka_message_to_streaming_event(
         self, kafka_message: KafkaMessage
@@ -918,7 +914,7 @@ class EventStreamingManager:
             return True
 
         except Exception as e:
-            logger.error(f"Event compliance validation failed: {e}")
+            logger.exception(f"Event compliance validation failed: {e}")
             return False
 
     async def _check_circuit_breaker(self, event_type: EventType) -> bool:
@@ -932,7 +928,7 @@ class EventStreamingManager:
 
             if breaker["state"] == "closed":
                 return True
-            elif breaker["state"] == "open":
+            if breaker["state"] == "open":
                 # Check if recovery timeout has passed
                 if breaker["last_failure"]:
                     time_since_failure = (
@@ -942,13 +938,10 @@ class EventStreamingManager:
                         breaker["state"] = "half_open"
                         return True
                 return False
-            elif breaker["state"] == "half_open":
-                return True
-
-            return False
+            return breaker["state"] == "half_open"
 
         except Exception as e:
-            logger.error(f"Circuit breaker check failed: {e}")
+            logger.exception(f"Circuit breaker check failed: {e}")
             return True  # Fail open
 
     async def _update_circuit_breaker(self, event_type: EventType, success: bool):
@@ -981,7 +974,7 @@ class EventStreamingManager:
                     )
 
         except Exception as e:
-            logger.error(f"Circuit breaker update failed: {e}")
+            logger.exception(f"Circuit breaker update failed: {e}")
 
     async def _send_to_dlq(self, event: StreamingEvent, reason: str):
         """Send failed event to dead letter queue"""
@@ -1004,7 +997,7 @@ class EventStreamingManager:
             self.metrics.events_in_dlq += 1
 
         except Exception as e:
-            logger.error(f"Failed to send event to DLQ: {e}")
+            logger.exception(f"Failed to send event to DLQ: {e}")
 
     async def _handle_publication_failure(self, event: StreamingEvent, error: str):
         """Handle event publication failure"""
@@ -1074,7 +1067,7 @@ class EventStreamingManager:
             )
 
         except Exception as e:
-            logger.error(f"Stream processor registration failed: {e}")
+            logger.exception(f"Stream processor registration failed: {e}")
 
     async def _health_monitor(self):
         """Monitor health of streaming infrastructure"""
@@ -1109,7 +1102,7 @@ class EventStreamingManager:
                 await asyncio.sleep(30)  # Check every 30 seconds
 
             except Exception as e:
-                logger.error(f"Health monitoring failed: {e}")
+                logger.exception(f"Health monitoring failed: {e}")
                 await asyncio.sleep(60)  # Longer sleep on error
 
     async def _metrics_collector(self):
@@ -1151,7 +1144,7 @@ class EventStreamingManager:
                 await asyncio.sleep(60)  # Collect every minute
 
             except Exception as e:
-                logger.error(f"Metrics collection failed: {e}")
+                logger.exception(f"Metrics collection failed: {e}")
                 await asyncio.sleep(120)  # Longer sleep on error
 
     async def shutdown(self):
@@ -1181,7 +1174,7 @@ class EventStreamingManager:
             logger.info("Event Streaming Manager shutdown complete")
 
         except Exception as e:
-            logger.error(f"Shutdown failed: {e}")
+            logger.exception(f"Shutdown failed: {e}")
 
     def get_metrics_summary(self) -> dict[str, Any]:
         """Get comprehensive metrics summary"""
@@ -1215,13 +1208,10 @@ async def example_usage():
     # Initialize
     success = await streaming_manager.initialize()
     if not success:
-        print("Failed to initialize streaming manager")
         return
 
     # Define event handler
     async def governance_event_handler(event: StreamingEvent) -> bool:
-        print(f"Received governance event: {event.event_id}")
-        print(f"Payload: {event.payload}")
         return True
 
     # Subscribe to events
@@ -1244,15 +1234,13 @@ async def example_usage():
         timestamp=datetime.utcnow(),
     )
 
-    publish_success = await streaming_manager.publish_event(test_event)
-    print(f"Event published: {publish_success}")
+    await streaming_manager.publish_event(test_event)
 
     # Wait for processing
     await asyncio.sleep(5)
 
     # Get metrics
-    metrics = streaming_manager.get_metrics_summary()
-    print(f"Metrics: {metrics}")
+    streaming_manager.get_metrics_summary()
 
     # Shutdown
     await streaming_manager.shutdown()

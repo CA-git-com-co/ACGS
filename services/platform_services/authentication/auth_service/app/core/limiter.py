@@ -1,7 +1,6 @@
-from fastapi import Request
-
 # Import the new function from security.py
-from ..core.security import get_user_id_from_request_optional
+from app.core.security import get_user_id_from_request_optional
+from fastapi import Request
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

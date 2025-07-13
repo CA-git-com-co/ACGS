@@ -8,24 +8,24 @@ that expect simple_main.py but the actual application is in main.py.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import sys
-import os
 import logging
+import os
+import pathlib
+import sys
 from datetime import datetime, timezone
-from typing import Any
 
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException, Request, Response, status
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from fastapi.responses import JSONResponse
-from fastapi.security import HTTPBearer
 
 # Add the current directory and parent directories to Python path
-current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = pathlib.Path(pathlib.Path(__file__).resolve()).parent
 sys.path.insert(0, current_dir)
-sys.path.insert(0, os.path.dirname(current_dir))
-sys.path.insert(0, os.path.join(os.path.dirname(current_dir), '..', '..', '..', '..'))
+sys.path.insert(0, pathlib.Path(current_dir).parent)
+sys.path.insert(
+    0, os.path.join(pathlib.Path(current_dir).parent, "..", "..", "..", "..")
+)
 
 # Import auth components with fallback
 try:
@@ -39,13 +39,15 @@ try:
 except ImportError:
     # Fallback auth components
     class AuthenticationResult:
-        def __init__(self, success: bool, user_id: str = None, error: str = None):
+        def __init__(
+            self, success: bool, user_id: str | None = None, error: str | None = None
+        ):
             self.success = success
             self.user_id = user_id
             self.error = error
 
     class TokenData:
-        def __init__(self, user_id: str, scopes: list = None):
+        def __init__(self, user_id: str, scopes: list | None = None):
             self.user_id = user_id
             self.scopes = scopes or []
 
@@ -55,7 +57,9 @@ except ImportError:
             self.password = password
 
     class IntegratedAuthManager:
-        async def authenticate(self, credentials: UserCredentials) -> AuthenticationResult:
+        async def authenticate(
+            self, credentials: UserCredentials
+        ) -> AuthenticationResult:
             return AuthenticationResult(success=True, user_id="fallback_user")
 
         async def validate_token(self, token: str) -> TokenData:
@@ -64,11 +68,14 @@ except ImportError:
     async def get_auth_manager() -> IntegratedAuthManager:
         return IntegratedAuthManager()
 
+
 # Import other components
 try:
-    from services.shared.middleware.constitutional_middleware import setup_constitutional_validation
-    from services.shared.middleware.security_middleware import SecurityPolicyEngine
+    from services.shared.middleware.constitutional_middleware import (
+        setup_constitutional_validation,
+    )
     from services.shared.middleware.metrics_middleware import MetricsCollector
+    from services.shared.middleware.security_middleware import SecurityPolicyEngine
     from services.shared.middleware.service_discovery_middleware import ServiceRouter
 except ImportError:
     # Fallback for missing shared components
@@ -76,16 +83,23 @@ except ImportError:
         pass
 
     class SecurityPolicyEngine:
-        async def initialize(self): pass
+        async def initialize(self):
+            pass
 
     class MetricsCollector:
-        async def initialize(self): pass
-        async def record_request(self, *args, **kwargs): pass
+        async def initialize(self):
+            pass
+
+        async def record_request(self, *args, **kwargs):
+            pass
 
     class ServiceRouter:
-        async def initialize(self): pass
+        async def initialize(self):
+            pass
+
         async def route_request(self, *args, **kwargs):
             return Response(content="Service routing not available", status_code=503)
+
 
 # Configuration
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -108,10 +122,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["*"]
-)
+app.add_middleware(TrustedHostMiddleware, allowed_hosts=["*"])
 
 # Setup constitutional validation
 setup_constitutional_validation(
@@ -128,10 +139,13 @@ service_router = ServiceRouter()
 
 logger = logging.getLogger(__name__)
 
+
 @app.on_event("startup")
 async def startup_event() -> None:
     """Initialize gateway components on startup."""
-    logger.info(f"Starting ACGS API Gateway with constitutional hash: {CONSTITUTIONAL_HASH}")
+    logger.info(
+        f"Starting ACGS API Gateway with constitutional hash: {CONSTITUTIONAL_HASH}"
+    )
 
     try:
         await service_router.initialize()
@@ -139,7 +153,8 @@ async def startup_event() -> None:
         await metrics_collector.initialize()
         logger.info("✅ ACGS API Gateway started successfully")
     except Exception as e:
-        logger.error(f"Failed to initialize gateway components: {e}")
+        logger.exception(f"Failed to initialize gateway components: {e}")
+
 
 @app.get("/health")
 async def health_check():
@@ -148,8 +163,9 @@ async def health_check():
         "status": "healthy",
         "service": "api-gateway",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
 
 @app.get("/gateway/health")
 async def gateway_health_check():
@@ -158,8 +174,9 @@ async def gateway_health_check():
         "status": "healthy",
         "service": "api-gateway",
         "constitutional_hash": CONSTITUTIONAL_HASH,
-        "timestamp": datetime.now(timezone.utc).isoformat()
+        "timestamp": datetime.now(timezone.utc).isoformat(),
     }
+
 
 if __name__ == "__main__":
     # Run the gateway service

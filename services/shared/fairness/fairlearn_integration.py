@@ -19,7 +19,7 @@ import logging
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -109,7 +109,7 @@ class FairlearnBiasDetector:
     Production-ready bias detection using Microsoft Fairlearn
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.alerting = AlertingSystem()
         self.audit_logger = AuditLogger()
@@ -139,21 +139,18 @@ class FairlearnBiasDetector:
             if metric_type == "difference":
                 if abs(value) <= 0.05:
                     return BiasLevel.NONE
-                elif abs(value) <= 0.10:
+                if abs(value) <= 0.10:
                     return BiasLevel.LOW
-                elif abs(value) <= 0.20:
+                if abs(value) <= 0.20:
                     return BiasLevel.MEDIUM
-                else:
-                    return BiasLevel.HIGH
-            else:  # ratio
-                if 0.95 <= value <= 1.05:
-                    return BiasLevel.NONE
-                elif 0.90 <= value <= 1.10:
-                    return BiasLevel.LOW
-                elif 0.80 <= value <= 1.20:
-                    return BiasLevel.MEDIUM
-                else:
-                    return BiasLevel.HIGH
+                return BiasLevel.HIGH
+            if 0.95 <= value <= 1.05:
+                return BiasLevel.NONE
+            if 0.90 <= value <= 1.10:
+                return BiasLevel.LOW
+            if 0.80 <= value <= 1.20:
+                return BiasLevel.MEDIUM
+            return BiasLevel.HIGH
 
         thresholds = self.thresholds[metric][metric_type]
         abs_value = (
@@ -163,21 +160,18 @@ class FairlearnBiasDetector:
         if metric_type == "difference":
             if abs_value <= thresholds["low"]:
                 return BiasLevel.NONE
-            elif abs_value <= thresholds["medium"]:
+            if abs_value <= thresholds["medium"]:
                 return BiasLevel.LOW
-            elif abs_value <= thresholds["high"]:
+            if abs_value <= thresholds["high"]:
                 return BiasLevel.MEDIUM
-            else:
-                return BiasLevel.HIGH
-        else:  # ratio
-            if abs_value >= thresholds["low"]:
-                return BiasLevel.NONE
-            elif abs_value >= thresholds["medium"]:
-                return BiasLevel.LOW
-            elif abs_value >= thresholds["high"]:
-                return BiasLevel.MEDIUM
-            else:
-                return BiasLevel.HIGH
+            return BiasLevel.HIGH
+        if abs_value >= thresholds["low"]:
+            return BiasLevel.NONE
+        if abs_value >= thresholds["medium"]:
+            return BiasLevel.LOW
+        if abs_value >= thresholds["high"]:
+            return BiasLevel.MEDIUM
+        return BiasLevel.HIGH
 
     async def detect_bias_fairlearn(
         self, y_true: np.ndarray, y_pred: np.ndarray, sensitive_features: pd.DataFrame
@@ -293,9 +287,7 @@ class FairlearnBiasDetector:
                 "demographic_parity_difference": dp_diff,
                 "demographic_parity_ratio": dp_ratio,
                 "max_group_accuracy_difference": (
-                    metric_frame.difference()["accuracy"]
-                    if "accuracy" in metric_frame.difference()
-                    else 0.0
+                    metric_frame.difference().get("accuracy", 0.0)
                 ),
                 "overall_bias_score": self._calculate_overall_bias_score(
                     fairness_results
@@ -308,15 +300,15 @@ class FairlearnBiasDetector:
                 for result in fairness_results
                 if result.bias_level != BiasLevel.NONE
             ]
-            if overall_bias in [BiasLevel.HIGH, BiasLevel.CRITICAL]:
+            if overall_bias in {BiasLevel.HIGH, BiasLevel.CRITICAL}:
                 recommendations.append("Immediate bias mitigation required")
 
             # Determine mitigation requirement
-            requires_mitigation = overall_bias in [
+            requires_mitigation = overall_bias in {
                 BiasLevel.MEDIUM,
                 BiasLevel.HIGH,
                 BiasLevel.CRITICAL,
-            ]
+            }
 
             result = BiasDetectionResult(
                 overall_bias_level=overall_bias,
@@ -341,7 +333,7 @@ class FairlearnBiasDetector:
             )
 
             # Send alerts if necessary
-            if overall_bias in [BiasLevel.HIGH, BiasLevel.CRITICAL]:
+            if overall_bias in {BiasLevel.HIGH, BiasLevel.CRITICAL}:
                 await self.alerting.send_alert(
                     "high_bias_detected",
                     f"High bias level detected: {overall_bias.value}",
@@ -352,7 +344,7 @@ class FairlearnBiasDetector:
             return result
 
         except Exception as e:
-            logger.error(f"Fairlearn bias detection failed: {e}")
+            logger.exception(f"Fairlearn bias detection failed: {e}")
             return await self.detect_bias_fallback(y_true, y_pred, sensitive_features)
 
     async def detect_bias_fallback(
@@ -388,7 +380,7 @@ class FairlearnBiasDetector:
                         metrics["positive_rate"] for metrics in group_metrics.values()
                     ]
 
-                    accuracy_diff = max(accuracies) - min(accuracies)
+                    max(accuracies) - min(accuracies)
                     positive_rate_diff = max(positive_rates) - min(positive_rates)
 
                     # Use positive rate difference as proxy for demographic parity
@@ -425,13 +417,13 @@ class FairlearnBiasDetector:
                 recommendations=[
                     "Consider installing Fairlearn for comprehensive bias detection"
                 ],
-                requires_mitigation=overall_bias in [BiasLevel.MEDIUM, BiasLevel.HIGH],
+                requires_mitigation=overall_bias in {BiasLevel.MEDIUM, BiasLevel.HIGH},
                 affected_protected_attributes=list(sensitive_features.columns),
                 timestamp=datetime.utcnow(),
             )
 
         except Exception as e:
-            logger.error(f"Fallback bias detection failed: {e}")
+            logger.exception(f"Fallback bias detection failed: {e}")
             return BiasDetectionResult(
                 overall_bias_level=BiasLevel.NONE,
                 fairness_results=[],
@@ -503,7 +495,7 @@ class FairlearnBiasDetector:
     async def monitor_bias_drift(
         self,
         current_results: BiasDetectionResult,
-        baseline_results: Optional[BiasDetectionResult] = None,
+        baseline_results: BiasDetectionResult | None = None,
     ) -> dict[str, Any]:
         """
         Monitor bias drift over time
@@ -586,7 +578,7 @@ class FairnessMitigator:
     Bias mitigation using Microsoft Fairlearn constraints and post-processing
     """
 
-    def __init__(self, config: Optional[dict[str, Any]] = None):
+    def __init__(self, config: dict[str, Any] | None = None):
         self.config = config or {}
         self.audit_logger = AuditLogger()
 
@@ -644,7 +636,7 @@ class FairnessMitigator:
             return mitigator
 
         except Exception as e:
-            logger.error(f"Fairness constraint application failed: {e}")
+            logger.exception(f"Fairness constraint application failed: {e}")
             return model
 
     async def apply_post_processing(
@@ -700,7 +692,7 @@ class FairnessMitigator:
             return postprocessor
 
         except Exception as e:
-            logger.error(f"Post-processing bias mitigation failed: {e}")
+            logger.exception(f"Post-processing bias mitigation failed: {e}")
             return model
 
 
@@ -725,14 +717,10 @@ async def example_usage():
         y_true, y_pred, sensitive_features
     )
 
-    print(f"Overall bias level: {bias_result.overall_bias_level.value}")
-    print(f"Requires mitigation: {bias_result.requires_mitigation}")
-
     # Apply mitigation if needed
     if bias_result.requires_mitigation:
-        mitigator = FairnessMitigator()
+        FairnessMitigator()
         # Would apply mitigation to actual model
-        print("Bias mitigation would be applied")
 
 
 if __name__ == "__main__":

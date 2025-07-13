@@ -106,7 +106,7 @@ class TestEvolutionOversightService:
 
         data = response.json()
         # Should be auto-approved due to high scores
-        assert data["status"] in ["auto_approved", "deployed"]
+        assert data["status"] in {"auto_approved", "deployed"}
         assert data["total_score"] >= 0.9
 
     async def test_low_score_human_review(self, oversight_client):
@@ -309,7 +309,6 @@ class TestEvolutionOversightService:
 
     async def test_rollback_mechanism(self, oversight_client):
         """Test agent rollback functionality."""
-        agent_id = "test_agent_rollback"
 
         # Submit rollback request
         response = await oversight_client.post(
@@ -319,7 +318,7 @@ class TestEvolutionOversightService:
 
         # Note: This might fail if no previous version exists, which is expected
         # In a real test, we'd set up proper version history first
-        assert response.status_code in [200, 404, 500]
+        assert response.status_code in {200, 404, 500}
 
         if response.status_code == 200:
             data = response.json()
@@ -376,25 +375,24 @@ class TestEvolutionOversightService:
         import time
 
         # Submit multiple evolution requests concurrently
-        evolution_requests = []
-        for i in range(10):
-            evolution_requests.append(
-                {
-                    "agent_id": f"test_agent_perf_{i}",
-                    "new_version": {
-                        "version": f"1.{i}.0",
-                        "changes": {
-                            "code_changes": [f"Change {i}"],
-                            "config_changes": {},
-                        },
-                        "complexity_delta": 0.01 * i,
-                        "resource_delta": 0.005 * i,
+        evolution_requests = [
+            {
+                "agent_id": f"test_agent_perf_{i}",
+                "new_version": {
+                    "version": f"1.{i}.0",
+                    "changes": {
+                        "code_changes": [f"Change {i}"],
+                        "config_changes": {},
                     },
-                    "change_description": f"Performance test evolution {i}",
-                    "requester_id": "performance_tester",
-                    "priority": "medium",
-                }
-            )
+                    "complexity_delta": 0.01 * i,
+                    "resource_delta": 0.005 * i,
+                },
+                "change_description": f"Performance test evolution {i}",
+                "requester_id": "performance_tester",
+                "priority": "medium",
+            }
+            for i in range(10)
+        ]
 
         # Submit all requests
         start_time = time.time()
@@ -414,10 +412,6 @@ class TestEvolutionOversightService:
 
         assert successful_submissions >= 8  # At least 80% success rate
         assert submission_time < 5.0  # Should complete within 5 seconds
-
-        print(
-            f"Performance test: {successful_submissions}/10 successful submissions in {submission_time:.2f}s"
-        )
 
     async def test_constitutional_compliance_integration(self, oversight_client):
         """Test integration with constitutional compliance checking."""
@@ -512,27 +506,25 @@ class TestEvolutionOversightPerformance:
             evaluation_time = 10  # Timeout
 
         assert evaluation_time <= 5  # Should complete within 5 seconds
-        print(f"Evaluation completed in {evaluation_time} seconds")
 
     async def test_concurrent_evaluations(self, oversight_client):
         """Test handling of concurrent evaluation requests."""
         concurrent_requests = 20
 
-        evolution_requests = []
-        for i in range(concurrent_requests):
-            evolution_requests.append(
-                {
-                    "agent_id": f"test_agent_concurrent_{i}",
-                    "new_version": {
-                        "version": "1.0.0",
-                        "changes": {"code_changes": [f"Change {i}"]},
-                        "complexity_delta": 0.01,
-                    },
-                    "change_description": f"Concurrent test evolution {i}",
-                    "requester_id": "concurrent_tester",
-                    "priority": "medium",
-                }
-            )
+        evolution_requests = [
+            {
+                "agent_id": f"test_agent_concurrent_{i}",
+                "new_version": {
+                    "version": "1.0.0",
+                    "changes": {"code_changes": [f"Change {i}"]},
+                    "complexity_delta": 0.01,
+                },
+                "change_description": f"Concurrent test evolution {i}",
+                "requester_id": "concurrent_tester",
+                "priority": "medium",
+            }
+            for i in range(concurrent_requests)
+        ]
 
         # Submit all requests concurrently
         import time
@@ -558,10 +550,6 @@ class TestEvolutionOversightPerformance:
         assert success_rate >= 0.9  # 90% success rate
         assert total_time < 10.0  # Complete within 10 seconds
 
-        print(
-            f"Concurrent test: {successful}/{concurrent_requests} successful in {total_time:.2f}s"
-        )
-
 
 if __name__ == "__main__":
     # Run basic smoke test
@@ -570,13 +558,8 @@ if __name__ == "__main__":
             try:
                 response = await client.get("/health")
                 if response.status_code == 200:
-                    print("✅ Evolution Oversight Service is healthy")
-                    data = response.json()
-                    print(f"   Constitutional Hash: {data['constitutional_hash']}")
-                    print(f"   Active Reviews: {data['active_reviews']}")
-                else:
-                    print(f"❌ Health check failed: {response.status_code}")
-            except Exception as e:
-                print(f"❌ Connection failed: {e}")
+                    response.json()
+            except Exception:
+                pass
 
     asyncio.run(smoke_test())

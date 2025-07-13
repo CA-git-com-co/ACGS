@@ -117,7 +117,7 @@ class ACGSPGPMetricsCollector:
         latency_ms: float,
         policy_count: int,
         compliance_result: bool,
-        context: dict = None,
+        context: dict | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -177,7 +177,7 @@ class ACGSPGPMetricsCollector:
         attack_type: str,
         detected: bool,
         severity: str,
-        defense_mechanism: str = None,
+        defense_mechanism: str | None = None,
     ):
         # requires: Valid input parameters
         # ensures: Correct function execution
@@ -271,7 +271,7 @@ class ACGSPGPMetricsCollector:
                     self.stability_metrics.stability_score = 0.0
 
         except Exception as e:
-            logger.error(f"Error calculating stability metrics: {e}")
+            logger.exception(f"Error calculating stability metrics: {e}")
 
     async def _analyze_scaling_performance(self):
         # requires: Valid input parameters
@@ -309,7 +309,7 @@ class ACGSPGPMetricsCollector:
                 logger.info(f"Scaling analysis: O(n^{scaling_exponent:.3f})")
 
         except Exception as e:
-            logger.error(f"Error in scaling analysis: {e}")
+            logger.exception(f"Error in scaling analysis: {e}")
 
     def _calculate_state_distance(self, state1: dict, state2: dict) -> float:
         """Calculate distance between constitutional states"""
@@ -364,7 +364,7 @@ class ACGSPGPMetricsCollector:
 
                 await asyncio.sleep(10)  # Update every 10 seconds
             except Exception as e:
-                logger.error(f"Error in performance monitoring: {e}")
+                logger.exception(f"Error in performance monitoring: {e}")
                 await asyncio.sleep(10)
 
     async def _monitor_constitutional_stability(self):
@@ -389,7 +389,7 @@ class ACGSPGPMetricsCollector:
 
                 await asyncio.sleep(30)  # Update every 30 seconds
             except Exception as e:
-                logger.error(f"Error in stability monitoring: {e}")
+                logger.exception(f"Error in stability monitoring: {e}")
                 await asyncio.sleep(30)
 
     async def _monitor_adversarial_robustness(self):
@@ -409,7 +409,7 @@ class ACGSPGPMetricsCollector:
 
                 await asyncio.sleep(60)  # Update every minute
             except Exception as e:
-                logger.error(f"Error in robustness monitoring: {e}")
+                logger.exception(f"Error in robustness monitoring: {e}")
                 await asyncio.sleep(60)
 
     def get_paper_validation_report(self) -> dict:

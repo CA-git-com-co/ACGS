@@ -24,7 +24,7 @@ from dataclasses import asdict, dataclass
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any
 
 import yaml
 
@@ -73,11 +73,11 @@ class KafkaClusterConfig:
     bootstrap_servers: list[str]
     environment: EnvironmentType
     security_protocol: SecurityProtocol
-    sasl_mechanism: Optional[SASLMechanism]
-    ssl_config: Optional[dict[str, Any]]
-    sasl_config: Optional[dict[str, Any]]
-    performance_config: Optional[dict[str, Any]]
-    monitoring_config: Optional[dict[str, Any]]
+    sasl_mechanism: SASLMechanism | None
+    ssl_config: dict[str, Any] | None
+    sasl_config: dict[str, Any] | None
+    performance_config: dict[str, Any] | None
+    monitoring_config: dict[str, Any] | None
     replication_factor: int
     min_insync_replicas: int
     retention_hours: int
@@ -91,7 +91,7 @@ class KafkaClusterConfig:
 class ProducerConfig:
     """Kafka producer configuration"""
 
-    acks: Union[str, int]
+    acks: str | int
     retries: int
     batch_size: int
     linger_ms: int
@@ -102,7 +102,7 @@ class ProducerConfig:
     request_timeout_ms: int
     delivery_timeout_ms: int
     enable_idempotence: bool
-    transactional_id: Optional[str]
+    transactional_id: str | None
 
 
 @dataclass
@@ -136,7 +136,7 @@ class TopicConfig:
     max_message_bytes: int
     min_insync_replicas: int
     compression_type: str
-    config_overrides: Optional[dict[str, str]]
+    config_overrides: dict[str, str] | None
 
 
 class KafkaConfigManager:
@@ -144,7 +144,7 @@ class KafkaConfigManager:
     Production-ready Kafka configuration manager
     """
 
-    def __init__(self, config_dir: Optional[str] = None):
+    def __init__(self, config_dir: str | None = None):
         self.config_dir = (
             Path(config_dir) if config_dir else Path(__file__).parent / "configs"
         )
@@ -362,7 +362,7 @@ class KafkaConfigManager:
             return cluster_config
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Failed to load cluster config for {cluster_id} in {environment}: {e}"
             )
             raise
@@ -426,7 +426,7 @@ class KafkaConfigManager:
             return base_config
 
         except Exception as e:
-            logger.error(f"Failed to generate producer config: {e}")
+            logger.exception(f"Failed to generate producer config: {e}")
             raise
 
     async def get_consumer_config(
@@ -492,7 +492,7 @@ class KafkaConfigManager:
             return base_config
 
         except Exception as e:
-            logger.error(f"Failed to generate consumer config: {e}")
+            logger.exception(f"Failed to generate consumer config: {e}")
             raise
 
     async def create_topic_config(
@@ -581,7 +581,7 @@ class KafkaConfigManager:
             return topic_config
 
         except Exception as e:
-            logger.error(f"Failed to create topic config for {topic_name}: {e}")
+            logger.exception(f"Failed to create topic config for {topic_name}: {e}")
             raise
 
     async def _validate_cluster_config(
@@ -612,19 +612,22 @@ class KafkaConfigManager:
                 errors.append("min.insync.replicas cannot exceed replication factor")
 
             # Validate security configuration
-            if config.security_protocol in [
-                SecurityProtocol.SSL,
-                SecurityProtocol.SASL_SSL,
-            ]:
-                if not config.ssl_config:
-                    errors.append(
-                        "SSL configuration required for SSL-enabled security protocol"
-                    )
+            if (
+                config.security_protocol
+                in {
+                    SecurityProtocol.SSL,
+                    SecurityProtocol.SASL_SSL,
+                }
+                and not config.ssl_config
+            ):
+                errors.append(
+                    "SSL configuration required for SSL-enabled security protocol"
+                )
 
-            if config.security_protocol in [
+            if config.security_protocol in {
                 SecurityProtocol.SASL_PLAINTEXT,
                 SecurityProtocol.SASL_SSL,
-            ]:
+            }:
                 if not config.sasl_mechanism:
                     errors.append(
                         "SASL mechanism required for SASL-enabled security protocol"
@@ -751,13 +754,12 @@ class KafkaConfigManager:
     async def _load_config_file(self, config_file: Path) -> dict[str, Any]:
         """Load configuration from YAML file"""
         try:
-            with open(config_file) as f:
-                if config_file.suffix == ".yaml" or config_file.suffix == ".yml":
+            with open(config_file, encoding="utf-8") as f:
+                if config_file.suffix in {".yaml", ".yml"}:
                     return yaml.safe_load(f)
-                else:
-                    return json.load(f)
+                return json.load(f)
         except Exception as e:
-            logger.error(f"Failed to load config file {config_file}: {e}")
+            logger.exception(f"Failed to load config file {config_file}: {e}")
             raise
 
     async def _save_config_file(self, config_file: Path, config_data: dict[str, Any]):
@@ -766,14 +768,14 @@ class KafkaConfigManager:
             # Ensure directory exists
             config_file.parent.mkdir(parents=True, exist_ok=True)
 
-            with open(config_file, "w") as f:
-                if config_file.suffix == ".yaml" or config_file.suffix == ".yml":
+            with open(config_file, "w", encoding="utf-8") as f:
+                if config_file.suffix in {".yaml", ".yml"}:
                     yaml.dump(config_data, f, default_flow_style=False)
                 else:
                     json.dump(config_data, f, indent=2, default=str)
 
         except Exception as e:
-            logger.error(f"Failed to save config file {config_file}: {e}")
+            logger.exception(f"Failed to save config file {config_file}: {e}")
             raise
 
     async def test_connection(
@@ -811,7 +813,7 @@ class KafkaConfigManager:
             return True
 
         except Exception as e:
-            logger.error(f"Kafka connection test failed: {e}")
+            logger.exception(f"Kafka connection test failed: {e}")
             return False
 
     def get_config_summary(self) -> dict[str, Any]:
@@ -836,12 +838,10 @@ async def example_usage():
     config_manager = KafkaConfigManager()
 
     # Load cluster configuration
-    cluster_config = await config_manager.load_cluster_config(
-        "acgs-main", EnvironmentType.PRODUCTION
-    )
+    await config_manager.load_cluster_config("acgs-main", EnvironmentType.PRODUCTION)
 
     # Get producer configuration
-    producer_config = await config_manager.get_producer_config(
+    await config_manager.get_producer_config(
         "acgs-main",
         EnvironmentType.PRODUCTION,
         batch_size=32768,  # Override default
@@ -849,12 +849,12 @@ async def example_usage():
     )
 
     # Get consumer configuration
-    consumer_config = await config_manager.get_consumer_config(
+    await config_manager.get_consumer_config(
         "acgs-main", EnvironmentType.PRODUCTION, "governance-group"
     )
 
     # Create topic configuration
-    topic_config = await config_manager.create_topic_config(
+    await config_manager.create_topic_config(
         "acgs-main",
         "constitutional-decisions",
         EnvironmentType.PRODUCTION,
@@ -863,13 +863,7 @@ async def example_usage():
     )
 
     # Test connection
-    connection_ok = await config_manager.test_connection(
-        "acgs-main", EnvironmentType.PRODUCTION
-    )
-
-    print(f"Cluster config: {cluster_config}")
-    print(f"Connection test: {connection_ok}")
-    print(f"Topic config: {topic_config}")
+    await config_manager.test_connection("acgs-main", EnvironmentType.PRODUCTION)
 
 
 if __name__ == "__main__":

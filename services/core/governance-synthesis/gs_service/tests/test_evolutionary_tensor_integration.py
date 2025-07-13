@@ -144,23 +144,23 @@ class TestEvolutionaryTensorIntegration(unittest.TestCase):
             )
 
             # Assertions for validation phase
-            self.assertIn("scores", validation_result)
-            self.assertIn("consensus", validation_result)
-            self.assertIn("detailed_results", validation_result)
+            assert "scores" in validation_result
+            assert "consensus" in validation_result
+            assert "detailed_results" in validation_result
 
             # Check that all validators participated
             expected_validators = ["formal", "adversarial", "primary", "semantic"]
             for validator_name in expected_validators:
-                self.assertIn(validator_name, validation_result["scores"])
+                assert validator_name in validation_result["scores"]
 
             # Check consensus result
             consensus = validation_result["consensus"]
-            self.assertIn("approved", consensus)
-            self.assertIn("confidence", consensus)
-            self.assertIn("weighted_score", consensus)
+            assert "approved" in consensus
+            assert "confidence" in consensus
+            assert "weighted_score" in consensus
 
             # Should meet >90% confidence threshold
-            self.assertGreaterEqual(consensus["confidence"], 0.9)
+            assert consensus["confidence"] >= 0.9
 
     @patch.dict(os.environ, {"GROQ_API_KEY": "test_groq_key"})
     async def test_tensor_decomposition_generation_workflow(self):
@@ -231,18 +231,18 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
             )
 
             # Assertions for tensor decomposition
-            self.assertIsNotNone(result)
-            self.assertIn("constitutional_tensor_decomposition", result.algorithm_code)
-            self.assertGreaterEqual(result.accuracy_estimate, 0.95)
-            self.assertTrue(result.constitutional_compliance)
-            self.assertEqual(
-                result.governance_metadata["constitutional_hash"],
-                self.constitutional_hash,
+            assert result is not None
+            assert "constitutional_tensor_decomposition" in result.algorithm_code
+            assert result.accuracy_estimate >= 0.95
+            assert result.constitutional_compliance
+            assert (
+                result.governance_metadata["constitutional_hash"]
+                == self.constitutional_hash
             )
 
             # Verify performance requirements
-            self.assertIn("regularization", result.parameters)
-            self.assertIn("error_bounds", result.error_bounds)
+            assert "regularization" in result.parameters
+            assert "error_bounds" in result.error_bounds
 
     async def test_performance_targets_validation(self):
         """Test that all performance targets are met."""
@@ -273,32 +273,30 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         performance_results["accuracy"] = accuracy
 
         # Assertions
-        self.assertLess(performance_results["response_time_ms"], 2000)
-        self.assertLess(performance_results["cost_sol"], 0.01)
-        self.assertGreater(performance_results["availability"], 0.995)
-        self.assertGreater(performance_results["accuracy"], 0.95)
+        assert performance_results["response_time_ms"] < 2000
+        assert performance_results["cost_sol"] < 0.01
+        assert performance_results["availability"] > 0.995
+        assert performance_results["accuracy"] > 0.95
 
     def test_quantumagi_compatibility(self):
         """Test compatibility with Quantumagi Solana devnet deployment."""
         # Verify constitutional hash compatibility
-        self.assertEqual(self.constitutional_hash, "cdd01ef066bc6cf2")
+        assert self.constitutional_hash == "cdd01ef066bc6cf2"
 
         # Test governance context structure
-        self.assertEqual(
-            self.governance_context.constitutional_hash, self.constitutional_hash
-        )
-        self.assertEqual(self.governance_context.policy_type, "constitutional")
+        assert self.governance_context.constitutional_hash == self.constitutional_hash
+        assert self.governance_context.policy_type == "constitutional"
 
         # Test compliance requirements
         compliance = self.governance_context.compliance_requirements
-        self.assertTrue(compliance["constitutional_compliance"])
-        self.assertGreaterEqual(compliance["accuracy_threshold"], 0.95)
+        assert compliance["constitutional_compliance"]
+        assert compliance["accuracy_threshold"] >= 0.95
 
         # Test performance targets alignment
         targets = self.governance_context.performance_targets
-        self.assertLessEqual(targets["cost_sol"], 0.01)
-        self.assertLessEqual(targets["response_time_ms"], 2000)
-        self.assertGreaterEqual(targets["availability"], 0.995)
+        assert targets["cost_sol"] <= 0.01
+        assert targets["response_time_ms"] <= 2000
+        assert targets["availability"] >= 0.995
 
     async def test_federated_evaluation_configuration(self):
         """Test federated evaluation configuration compatibility."""
@@ -317,24 +315,19 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         # Validate configuration requirements
-        self.assertGreaterEqual(federated_config["min_nodes"], 2)
-        self.assertLessEqual(federated_config["max_nodes"], 20)
-        self.assertLess(
-            federated_config["tensor_metrics"]["decomposition_error"], 0.005
-        )
-        self.assertGreater(
-            federated_config["tensor_metrics"]["computational_efficiency"], 0.90
-        )
-        self.assertEqual(
-            federated_config["tensor_metrics"]["constitutional_compliance"], 1.0
-        )
+        assert federated_config["min_nodes"] >= 2
+        assert federated_config["max_nodes"] <= 20
+        assert federated_config["tensor_metrics"]["decomposition_error"] < 0.005
+        assert federated_config["tensor_metrics"]["computational_efficiency"] > 0.9
+        assert federated_config["tensor_metrics"]["constitutional_compliance"] == 1.0
 
         # Test batch processing configuration
-        self.assertEqual(federated_config["batch_size"], 16)
-        self.assertIn(
-            federated_config["distribution_strategy"],
-            ["least_loaded", "round_robin", "capability_based"],
-        )
+        assert federated_config["batch_size"] == 16
+        assert federated_config["distribution_strategy"] in {
+            "least_loaded",
+            "round_robin",
+            "capability_based",
+        }
 
     def test_acgs_services_integration(self):
         """Test integration with all seven ACGS services."""
@@ -350,12 +343,12 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         # Validate service configuration
-        for _service_name, config in expected_services.items():
-            self.assertIn("port", config)
-            self.assertIn("endpoint", config)
-            self.assertGreaterEqual(config["port"], 8000)
-            self.assertLessEqual(config["port"], 8006)
-            self.assertTrue(config["endpoint"].startswith("/api/v1/"))
+        for config in expected_services.values():
+            assert "port" in config
+            assert "endpoint" in config
+            assert config["port"] >= 8000
+            assert config["port"] <= 8006
+            assert config["endpoint"].startswith("/api/v1/")
 
         # Test service mesh configuration
         service_mesh_config = {
@@ -365,9 +358,9 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
             "constitutional_compliance_required": True,
         }
 
-        self.assertTrue(service_mesh_config["circuit_breaker_enabled"])
-        self.assertTrue(service_mesh_config["constitutional_compliance_required"])
-        self.assertLessEqual(service_mesh_config["health_check_interval_ms"], 30000)
+        assert service_mesh_config["circuit_breaker_enabled"]
+        assert service_mesh_config["constitutional_compliance_required"]
+        assert service_mesh_config["health_check_interval_ms"] <= 30000
 
     def test_security_and_compliance_requirements(self):
         """Test security and compliance requirements."""
@@ -381,9 +374,9 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         for check_name, required in compliance_checks.items():
-            self.assertTrue(
-                required, f"{check_name} must be enabled for constitutional governance"
-            )
+            assert (
+                required
+            ), f"{check_name} must be enabled for constitutional governance"
 
         # Test security configuration
         security_config = {
@@ -395,7 +388,7 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
         }
 
         for security_feature, enabled in security_config.items():
-            self.assertTrue(enabled, f"{security_feature} must be enabled for security")
+            assert enabled, f"{security_feature} must be enabled for security"
 
     async def test_error_handling_and_resilience(self):
         """Test error handling and system resilience."""
@@ -414,7 +407,7 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
                 # Should fallback to other validators
                 validator = HeterogeneousValidator()
                 # Even without Gemini, should still function
-                self.assertIsNotNone(validator.validators)
+                assert validator.validators is not None
 
             elif scenario == "groq_api_unavailable":
                 # Should fallback to local tensor decomposition
@@ -422,8 +415,8 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
                 fallback_result = await tensor_service._fallback_local_decomposition(
                     np.random.rand(5, 5), self.governance_constraints, None
                 )
-                self.assertIsNotNone(fallback_result)
-                self.assertTrue(fallback_result.constitutional_compliance)
+                assert fallback_result is not None
+                assert fallback_result.constitutional_compliance
 
     def test_monitoring_and_metrics(self):
         """Test monitoring and metrics collection."""
@@ -453,15 +446,15 @@ def constitutional_tensor_decomposition(matrix, governance_constraints):
 
         # Validate metrics meet requirements
         for metric_name in required_metrics:
-            self.assertIn(metric_name, metrics)
+            assert metric_name in metrics
 
         # Validate specific thresholds
-        self.assertLess(metrics["response_time_ms"], 2000)
-        self.assertGreater(metrics["accuracy_score"], 0.95)
-        self.assertEqual(metrics["constitutional_compliance_rate"], 1.0)
-        self.assertLess(metrics["error_rate"], 0.05)
-        self.assertLess(metrics["cost_per_governance_action_sol"], 0.01)
-        self.assertGreater(metrics["availability_percentage"], 0.995)
+        assert metrics["response_time_ms"] < 2000
+        assert metrics["accuracy_score"] > 0.95
+        assert metrics["constitutional_compliance_rate"] == 1.0
+        assert metrics["error_rate"] < 0.05
+        assert metrics["cost_per_governance_action_sol"] < 0.01
+        assert metrics["availability_percentage"] > 0.995
 
 
 class TestSystemValidation(unittest.TestCase):
@@ -479,9 +472,7 @@ class TestSystemValidation(unittest.TestCase):
         }
 
         for requirement, needed in verification_requirements.items():
-            self.assertTrue(
-                needed, f"Formal verification requirement {requirement} must be met"
-            )
+            assert needed, f"Formal verification requirement {requirement} must be met"
 
     def test_deployment_readiness(self):
         """Test deployment readiness criteria."""
@@ -495,12 +486,12 @@ class TestSystemValidation(unittest.TestCase):
         }
 
         # Validate deployment criteria
-        self.assertGreaterEqual(deployment_criteria["test_coverage_percentage"], 80)
-        self.assertGreaterEqual(deployment_criteria["test_pass_rate"], 90)
-        self.assertTrue(deployment_criteria["performance_targets_met"])
-        self.assertTrue(deployment_criteria["security_validation_passed"])
-        self.assertTrue(deployment_criteria["constitutional_compliance_verified"])
-        self.assertTrue(deployment_criteria["quantumagi_compatibility_confirmed"])
+        assert deployment_criteria["test_coverage_percentage"] >= 80
+        assert deployment_criteria["test_pass_rate"] >= 90
+        assert deployment_criteria["performance_targets_met"]
+        assert deployment_criteria["security_validation_passed"]
+        assert deployment_criteria["constitutional_compliance_verified"]
+        assert deployment_criteria["quantumagi_compatibility_confirmed"]
 
 
 if __name__ == "__main__":

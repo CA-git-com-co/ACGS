@@ -6,15 +6,14 @@ Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import time
-from typing import Any, Optional
+from typing import Any
 
 import httpx
+from app.utils.constitutional import CONSTITUTIONAL_HASH, validate_constitutional_hash
+from app.utils.logging import get_logger, security_logger
 from fastapi import HTTPException, Request, Response, status
 from fastapi.security import HTTPBearer
 from starlette.middleware.base import BaseHTTPMiddleware
-
-from ..utils.constitutional import CONSTITUTIONAL_HASH, validate_constitutional_hash
-from ..utils.logging import get_logger, security_logger
 
 logger = get_logger("middleware.auth")
 
@@ -30,7 +29,7 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
         self,
         app,
         auth_service_url: str = "http://localhost:8016",
-        excluded_paths: Optional[list[str]] = None,
+        excluded_paths: list[str] | None = None,
         timeout_seconds: float = 5.0,
     ):
         """
@@ -143,7 +142,7 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
         """Check if path is excluded from authentication."""
         return any(path.startswith(excluded) for excluded in self.excluded_paths)
 
-    async def _extract_token(self, request: Request) -> Optional[str]:
+    async def _extract_token(self, request: Request) -> str | None:
         """Extract JWT token from request headers."""
         authorization = request.headers.get("Authorization")
         if not authorization:
@@ -154,7 +153,7 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
 
         return authorization[7:]  # Remove "Bearer " prefix
 
-    async def _validate_token(self, token: str) -> Optional[dict[str, Any]]:
+    async def _validate_token(self, token: str) -> dict[str, Any] | None:
         """
         Validate JWT token with Auth Service.
 
@@ -198,15 +197,14 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
                 self._cache_token(token, user_info)
 
                 return user_info
-            else:
-                logger.warning(
-                    f"Auth service validation failed: {response.status_code}",
-                    extra={
-                        "status_code": response.status_code,
-                        "constitutional_hash": CONSTITUTIONAL_HASH,
-                    },
-                )
-                return None
+            logger.warning(
+                f"Auth service validation failed: {response.status_code}",
+                extra={
+                    "status_code": response.status_code,
+                    "constitutional_hash": CONSTITUTIONAL_HASH,
+                },
+            )
+            return None
 
         except httpx.RequestError as e:
             logger.error(
@@ -233,12 +231,9 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
                 return False
 
         # Check if token is marked as valid
-        if not user_info.get("valid", False):
-            return False
+        return user_info.get("valid", False)
 
-        return True
-
-    def _get_cached_token(self, token: str) -> Optional[dict[str, Any]]:
+    def _get_cached_token(self, token: str) -> dict[str, Any] | None:
         """Get cached token validation result."""
         if token not in self._token_cache:
             return None
@@ -277,7 +272,7 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
             "service": "acgs-code-analysis-engine",
         }
 
-        response = Response(
+        return Response(
             content=str(error_response).replace("'", '"'),
             status_code=status.HTTP_401_UNAUTHORIZED,
             headers={
@@ -286,8 +281,6 @@ class AuthenticationMiddleware(BaseHTTPMiddleware):
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
             },
         )
-
-        return response
 
     async def __aenter__(self):
         """Async context manager entry."""

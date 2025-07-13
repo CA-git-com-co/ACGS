@@ -5,10 +5,9 @@ High-level service layer for evolutionary computation operations with
 constitutional compliance and ACGS integration.
 """
 
-import asyncio
 import logging
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import redis.asyncio as aioredis
 from prometheus_client import Counter, Gauge, Histogram
@@ -17,11 +16,8 @@ from ..core.constitutional_validator import ConstitutionalValidator
 from ..core.evolution_engine import EvolutionEngine
 from ..models.evolution import (
     EvolutionRequest,
-    EvolutionResult,
-    EvolutionStatus,
     EvolutionType,
     Individual,
-    Population,
 )
 from ..models.oversight import OversightLevel, OversightRequest
 
@@ -39,7 +35,7 @@ class EvolutionService:
     request-scoped caching, and sub-5ms P99 latency targets.
     """
 
-    def __init__(self, redis_client: Optional[aioredis.Redis] = None):
+    def __init__(self, redis_client: aioredis.Redis | None = None):
         """Initialize evolution service."""
         self.redis = redis_client
         self.evolution_engine = EvolutionEngine(redis_client)
@@ -48,8 +44,8 @@ class EvolutionService:
         self.setup_metrics()
 
         # Service state tracking
-        self.active_requests: Dict[str, EvolutionRequest] = {}
-        self.request_cache: Dict[str, Any] = {}
+        self.active_requests: dict[str, EvolutionRequest] = {}
+        self.request_cache: dict[str, Any] = {}
 
         logger.info("EvolutionService initialized with constitutional compliance")
 
@@ -131,7 +127,7 @@ class EvolutionService:
             return request
 
         except Exception as e:
-            logger.error(f"Failed to create evolution request: {e}")
+            logger.exception(f"Failed to create evolution request: {e}")
             self.service_requests_total.labels(
                 operation=operation, status="error"
             ).inc()
@@ -171,7 +167,7 @@ class EvolutionService:
             return evolution_id
 
         except Exception as e:
-            logger.error(f"Failed to submit evolution request: {e}")
+            logger.exception(f"Failed to submit evolution request: {e}")
             self.service_requests_total.labels(
                 operation=operation, status="error"
             ).inc()
@@ -181,9 +177,7 @@ class EvolutionService:
             duration = (time.time() - start_time) * 1000
             self.request_duration.labels(operation=operation).observe(duration)
 
-    async def get_evolution_status(
-        self, evolution_id: str
-    ) -> Optional[EvolutionRequest]:
+    async def get_evolution_status(self, evolution_id: str) -> EvolutionRequest | None:
         """
         Get evolution status with O(1) lookup performance.
 
@@ -262,7 +256,7 @@ class EvolutionService:
             return individual
 
         except Exception as e:
-            logger.error(f"Failed to evaluate individual fitness: {e}")
+            logger.exception(f"Failed to evaluate individual fitness: {e}")
             self.service_requests_total.labels(
                 operation=operation, status="error"
             ).inc()
@@ -317,7 +311,7 @@ class EvolutionService:
             return oversight_request
 
         except Exception as e:
-            logger.error(f"Failed to create oversight request: {e}")
+            logger.exception(f"Failed to create oversight request: {e}")
             self.service_requests_total.labels(
                 operation=operation, status="error"
             ).inc()
@@ -327,7 +321,7 @@ class EvolutionService:
             duration = (time.time() - start_time) * 1000
             self.request_duration.labels(operation=operation).observe(duration)
 
-    async def get_service_health(self) -> Dict[str, Any]:
+    async def get_service_health(self) -> dict[str, Any]:
         """
         Get service health status.
 

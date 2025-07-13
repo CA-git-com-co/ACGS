@@ -7,14 +7,11 @@ Implements CARMA-inspired methodology for generating causal and neutral augmenta
 to mitigate constitutional reward hacking.
 """
 
-import asyncio
-import json
 import logging
-import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -27,10 +24,8 @@ from .causal_constitutional_framework import (
     SpuriousAttribute,
 )
 from .constitutional_counterfactual_generator import (
-    CausalAugmentationPair,
     ConstitutionalCounterfactualGenerator,
     GenerationStrategy,
-    NeutralAugmentationPair,
 )
 from .constitutional_safety_framework import ConstitutionalSafetyValidator
 
@@ -53,7 +48,7 @@ class AugmentationConfig(BaseModel):
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Causal augmentation settings
-    causal_attributes: List[ConstitutionalAttribute] = Field(
+    causal_attributes: list[ConstitutionalAttribute] = Field(
         default_factory=lambda: [
             ConstitutionalAttribute.SAFETY,
             ConstitutionalAttribute.TRANSPARENCY,
@@ -64,7 +59,7 @@ class AugmentationConfig(BaseModel):
     )
 
     # Spurious invariance settings
-    spurious_attributes: List[SpuriousAttribute] = Field(
+    spurious_attributes: list[SpuriousAttribute] = Field(
         default_factory=lambda: [
             SpuriousAttribute.RESPONSE_LENGTH,
             SpuriousAttribute.FORMATTING_STYLE,
@@ -90,13 +85,13 @@ class ConstitutionalTrainingExample:
 
     example_id: str
     data_type: TrainingDataType
-    scenario: Dict[str, Any]
-    comparison_scenario: Optional[Dict[str, Any]] = None
+    scenario: dict[str, Any]
+    comparison_scenario: dict[str, Any] | None = None
     preference_label: str = "equivalent"  # "preferred", "dispreferred", "equivalent"
-    constitutional_attributes: List[str] = field(default_factory=list)
-    spurious_attributes: List[str] = field(default_factory=list)
+    constitutional_attributes: list[str] = field(default_factory=list)
+    spurious_attributes: list[str] = field(default_factory=list)
     constitutional_hash: str = "cdd01ef066bc6cf2"
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class ConstitutionalTrainingDataset(BaseModel):
@@ -106,12 +101,12 @@ class ConstitutionalTrainingDataset(BaseModel):
     constitutional_hash: str = "cdd01ef066bc6cf2"
 
     # Data splits
-    original_examples: List[ConstitutionalTrainingExample] = Field(default_factory=list)
-    causal_examples: List[ConstitutionalTrainingExample] = Field(default_factory=list)
-    neutral_examples: List[ConstitutionalTrainingExample] = Field(default_factory=list)
+    original_examples: list[ConstitutionalTrainingExample] = Field(default_factory=list)
+    causal_examples: list[ConstitutionalTrainingExample] = Field(default_factory=list)
+    neutral_examples: list[ConstitutionalTrainingExample] = Field(default_factory=list)
 
     # Dataset statistics
-    dataset_statistics: Dict[str, Any] = Field(default_factory=dict)
+    dataset_statistics: dict[str, Any] = Field(default_factory=dict)
     augmentation_config: AugmentationConfig
     creation_timestamp: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc)
@@ -126,7 +121,7 @@ class ConstitutionalAugmentationPipeline:
         constitutional_validator: ConstitutionalSafetyValidator,
         ai_model_service: AIModelService,
         blackboard_service: BlackboardService,
-        config: Optional[AugmentationConfig] = None,
+        config: AugmentationConfig | None = None,
     ):
         """Initialize constitutional augmentation pipeline"""
         self.constitutional_validator = constitutional_validator
@@ -154,7 +149,7 @@ class ConstitutionalAugmentationPipeline:
 
     async def create_constitutional_training_dataset(
         self,
-        original_preference_data: List[Dict[str, Any]],
+        original_preference_data: list[dict[str, Any]],
         dataset_name: str = "constitutional_robustness_dataset",
     ) -> ConstitutionalTrainingDataset:
         """Create complete training dataset with causal and neutral augmentations"""
@@ -203,8 +198,8 @@ class ConstitutionalAugmentationPipeline:
         return dataset
 
     async def _process_original_data(
-        self, original_data: List[Dict[str, Any]]
-    ) -> List[ConstitutionalTrainingExample]:
+        self, original_data: list[dict[str, Any]]
+    ) -> list[ConstitutionalTrainingExample]:
         """Process original preference data into training examples"""
 
         original_examples = []
@@ -227,8 +222,8 @@ class ConstitutionalAugmentationPipeline:
         return original_examples
 
     async def _generate_causal_training_examples(
-        self, original_data: List[Dict[str, Any]]
-    ) -> List[ConstitutionalTrainingExample]:
+        self, original_data: list[dict[str, Any]]
+    ) -> list[ConstitutionalTrainingExample]:
         """Generate causal augmentation training examples"""
 
         causal_examples = []
@@ -267,9 +262,9 @@ class ConstitutionalAugmentationPipeline:
 
     async def _generate_neutral_training_examples(
         self,
-        original_data: List[Dict[str, Any]],
-        causal_examples: List[ConstitutionalTrainingExample],
-    ) -> List[ConstitutionalTrainingExample]:
+        original_data: list[dict[str, Any]],
+        causal_examples: list[ConstitutionalTrainingExample],
+    ) -> list[ConstitutionalTrainingExample]:
         """Generate neutral augmentation training examples for spurious invariance"""
 
         neutral_examples = []
@@ -340,8 +335,8 @@ class ConstitutionalAugmentationPipeline:
         return neutral_examples
 
     async def _apply_quality_filtering(
-        self, examples: List[ConstitutionalTrainingExample]
-    ) -> List[ConstitutionalTrainingExample]:
+        self, examples: list[ConstitutionalTrainingExample]
+    ) -> list[ConstitutionalTrainingExample]:
         """Apply quality filtering using baseline constitutional validator"""
 
         filtered_examples = []
@@ -447,10 +442,10 @@ class ConstitutionalAugmentationPipeline:
 
     def _calculate_dataset_statistics(
         self,
-        original_examples: List[ConstitutionalTrainingExample],
-        causal_examples: List[ConstitutionalTrainingExample],
-        neutral_examples: List[ConstitutionalTrainingExample],
-    ) -> Dict[str, Any]:
+        original_examples: list[ConstitutionalTrainingExample],
+        causal_examples: list[ConstitutionalTrainingExample],
+        neutral_examples: list[ConstitutionalTrainingExample],
+    ) -> dict[str, Any]:
         """Calculate comprehensive dataset statistics"""
 
         total_examples = (
@@ -474,7 +469,7 @@ class ConstitutionalAugmentationPipeline:
             )
             spurious_attr_distribution[attr.value] = count
 
-        statistics = {
+        return {
             "constitutional_hash": "cdd01ef066bc6cf2",
             "total_examples": total_examples,
             "original_examples": len(original_examples),
@@ -509,53 +504,51 @@ class ConstitutionalAugmentationPipeline:
             },
         }
 
-        return statistics
-
     async def create_loss_function_data(
         self, dataset: ConstitutionalTrainingDataset
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """Create data structure optimized for CARMA-style loss function training"""
 
         # Separate data for different loss components following CARMA methodology
-        preference_data = []  # For preference loss (causal sensitivity)
-        neutral_data = []  # For neutral tie loss (spurious invariance)
 
         # Process original and causal examples for preference loss
-        for example in dataset.original_examples + dataset.causal_examples:
-            if example.comparison_scenario:
-                preference_data.append(
-                    {
-                        "query": example.scenario,
-                        "preferred_response": (
-                            example.comparison_scenario
-                            if example.preference_label == "modified_preferred"
-                            else example.scenario
-                        ),
-                        "dispreferred_response": (
-                            example.scenario
-                            if example.preference_label == "modified_preferred"
-                            else example.comparison_scenario
-                        ),
-                        "constitutional_attributes": example.constitutional_attributes,
-                        "constitutional_hash": "cdd01ef066bc6cf2",
-                    }
-                )
+        # For preference loss (causal sensitivity)
+        preference_data = [
+            {
+                "query": example.scenario,
+                "preferred_response": (
+                    example.comparison_scenario
+                    if example.preference_label == "modified_preferred"
+                    else example.scenario
+                ),
+                "dispreferred_response": (
+                    example.scenario
+                    if example.preference_label == "modified_preferred"
+                    else example.comparison_scenario
+                ),
+                "constitutional_attributes": example.constitutional_attributes,
+                "constitutional_hash": "cdd01ef066bc6cf2",
+            }
+            for example in dataset.original_examples + dataset.causal_examples
+            if example.comparison_scenario
+        ]
 
         # Process neutral examples for tie loss
-        for example in dataset.neutral_examples:
-            if example.comparison_scenario:
-                neutral_data.append(
-                    {
-                        "query": example.scenario,
-                        "response_a": example.scenario,
-                        "response_b": example.comparison_scenario,
-                        "tie_label": True,
-                        "spurious_attributes": example.spurious_attributes,
-                        "constitutional_hash": "cdd01ef066bc6cf2",
-                    }
-                )
+        # For neutral tie loss (spurious invariance)
+        neutral_data = [
+            {
+                "query": example.scenario,
+                "response_a": example.scenario,
+                "response_b": example.comparison_scenario,
+                "tie_label": True,
+                "spurious_attributes": example.spurious_attributes,
+                "constitutional_hash": "cdd01ef066bc6cf2",
+            }
+            for example in dataset.neutral_examples
+            if example.comparison_scenario
+        ]
 
-        loss_data = {
+        return {
             "preference_loss_data": preference_data,
             "neutral_tie_loss_data": neutral_data,
             "loss_weights": {
@@ -566,8 +559,6 @@ class ConstitutionalAugmentationPipeline:
             "constitutional_hash": "cdd01ef066bc6cf2",
             "carma_methodology": True,
         }
-
-        return loss_data
 
     async def _log_dataset_creation(
         self, dataset: ConstitutionalTrainingDataset
@@ -604,7 +595,7 @@ class ConstitutionalAugmentationPipeline:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_pipeline_statistics(self) -> Dict[str, Any]:
+    def get_pipeline_statistics(self) -> dict[str, Any]:
         """Get comprehensive pipeline statistics"""
 
         stats = self.pipeline_stats.copy()

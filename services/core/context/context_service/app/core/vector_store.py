@@ -9,7 +9,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 from uuid import UUID
 
 try:
@@ -43,7 +43,11 @@ except ImportError:
         pass
 
 
-from ..models.storage_models import StorageMetrics, StorageTier, VectorDocument
+from context.context_service.app.models.storage_models import (
+    StorageMetrics,
+    StorageTier,
+    VectorDocument,
+)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -67,7 +71,7 @@ class QdrantVectorStore:
         self,
         host: str = "localhost",
         port: int = 6333,
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         timeout: float = 60.0,
         prefer_grpc: bool = True,
     ):
@@ -87,7 +91,7 @@ class QdrantVectorStore:
         self.timeout = timeout
         self.prefer_grpc = prefer_grpc
 
-        self.client: Optional[QdrantClient] = None
+        self.client: QdrantClient | None = None
         self.collections: dict[str, dict[str, Any]] = {}
         self.metrics = {
             "search_operations": 0,
@@ -237,7 +241,7 @@ class QdrantVectorStore:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to initialize Qdrant vector store: {e}")
+            logger.exception(f"Failed to initialize Qdrant vector store: {e}")
             self.client = None
             return False
 
@@ -276,7 +280,9 @@ class QdrantVectorStore:
                 }
 
             except Exception as e:
-                logger.error(f"Failed to initialize collection {collection_name}: {e}")
+                logger.exception(
+                    f"Failed to initialize collection {collection_name}: {e}"
+                )
                 self.collections[context_type] = {
                     "name": collection_name,
                     "config": config,
@@ -353,7 +359,7 @@ class QdrantVectorStore:
             )
 
             # Index the point
-            operation_info = await asyncio.to_thread(
+            await asyncio.to_thread(
                 self.client.upsert if upsert else self.client.upload_points,
                 collection_name=collection_name,
                 points=[point],
@@ -372,7 +378,7 @@ class QdrantVectorStore:
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             self._update_metrics("index", latency_ms, False)
-            logger.error(f"Failed to index document {document.document_id}: {e}")
+            logger.exception(f"Failed to index document {document.document_id}: {e}")
             return False
 
     async def search_similar(
@@ -381,8 +387,8 @@ class QdrantVectorStore:
         context_type: str,
         limit: int = 10,
         score_threshold: float = 0.7,
-        filter_conditions: Optional[dict[str, Any]] = None,
-        ef_search: Optional[int] = None,
+        filter_conditions: dict[str, Any] | None = None,
+        ef_search: int | None = None,
     ) -> list[tuple[VectorDocument, float]]:
         """
         Search for similar documents using vector similarity.
@@ -518,7 +524,7 @@ class QdrantVectorStore:
         except Exception as e:
             latency_ms = (time.time() - start_time) * 1000
             self._update_metrics("search", latency_ms, False)
-            logger.error(f"Vector search failed: {e}")
+            logger.exception(f"Vector search failed: {e}")
             return []
 
     async def delete_document(self, document_id: str, context_type: str) -> bool:
@@ -539,7 +545,7 @@ class QdrantVectorStore:
         try:
             collection_name = self._get_collection_name(context_type)
 
-            operation_info = await asyncio.to_thread(
+            await asyncio.to_thread(
                 self.client.delete,
                 collection_name=collection_name,
                 points_selector=models.PointIdsList(
@@ -554,10 +560,10 @@ class QdrantVectorStore:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to delete document {document_id}: {e}")
+            logger.exception(f"Failed to delete document {document_id}: {e}")
             return False
 
-    async def get_collection_info(self, context_type: str) -> Optional[dict[str, Any]]:
+    async def get_collection_info(self, context_type: str) -> dict[str, Any] | None:
         """
         Get information about a collection.
 
@@ -591,7 +597,7 @@ class QdrantVectorStore:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get collection info for {context_type}: {e}")
+            logger.exception(f"Failed to get collection info for {context_type}: {e}")
             return None
 
     async def get_storage_metrics(self) -> StorageMetrics:
@@ -648,7 +654,7 @@ class QdrantVectorStore:
             )
 
         except Exception as e:
-            logger.error(f"Failed to get storage metrics: {e}")
+            logger.exception(f"Failed to get storage metrics: {e}")
             return StorageMetrics(
                 tier=StorageTier.L2_VECTOR,
                 total_capacity_bytes=0,
@@ -707,6 +713,6 @@ class QdrantVectorStore:
                 await asyncio.to_thread(self.client.close)
                 logger.info("Qdrant client connection closed")
             except Exception as e:
-                logger.error(f"Error closing Qdrant client: {e}")
+                logger.exception(f"Error closing Qdrant client: {e}")
             finally:
                 self.client = None

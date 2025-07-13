@@ -140,19 +140,18 @@ async def validate_with_ensemble(
         )
 
         # Convert model contributions to serializable format
-        model_contributions = []
-        for pred in result.model_contributions:
-            model_contributions.append(
-                {
-                    "model_id": pred.model_id,
-                    "prediction": pred.prediction,
-                    "confidence": pred.confidence,
-                    "constitutional_compliance": pred.constitutional_compliance,
-                    "bias_score": pred.bias_score,
-                    "response_time": pred.response_time,
-                    "uncertainty_score": pred.uncertainty_score,
-                }
-            )
+        model_contributions = [
+            {
+                "model_id": pred.model_id,
+                "prediction": pred.prediction,
+                "confidence": pred.confidence,
+                "constitutional_compliance": pred.constitutional_compliance,
+                "bias_score": pred.bias_score,
+                "response_time": pred.response_time,
+                "uncertainty_score": pred.uncertainty_score,
+            }
+            for pred in result.model_contributions
+        ]
 
         return EnsembleValidationResponse(
             final_prediction=result.final_prediction,
@@ -167,7 +166,7 @@ async def validate_with_ensemble(
         )
 
     except Exception as e:
-        logger.error(f"Error in ensemble validation: {e}")
+        logger.exception(f"Error in ensemble validation: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to perform ensemble validation: {e!s}",
@@ -204,7 +203,7 @@ async def update_model_performance(
         }
 
     except Exception as e:
-        logger.error(f"Error updating model performance: {e}")
+        logger.exception(f"Error updating model performance: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to update model performance: {e!s}",
@@ -244,7 +243,7 @@ async def get_validation_metrics(
         )
 
     except Exception as e:
-        logger.error(f"Error retrieving validation metrics: {e}")
+        logger.exception(f"Error retrieving validation metrics: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to retrieve validation metrics: {e!s}",
@@ -299,7 +298,7 @@ async def list_validation_strategies(
         }
 
     except Exception as e:
-        logger.error(f"Error listing validation strategies: {e}")
+        logger.exception(f"Error listing validation strategies: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to list validation strategies: {e!s}",
@@ -374,7 +373,7 @@ async def list_model_clusters(
         }
 
     except Exception as e:
-        logger.error(f"Error listing model clusters: {e}")
+        logger.exception(f"Error listing model clusters: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to list model clusters: {e!s}",

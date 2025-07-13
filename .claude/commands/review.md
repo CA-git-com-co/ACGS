@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 **Purpose**: AI-powered code review and quality analysis
 
 ---

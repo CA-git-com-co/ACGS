@@ -137,8 +137,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
 
         # Temporal features
         hour_of_day = datetime.now().hour / 24.0
-        features.append(hour_of_day)
-        features.append(context.get("time_pressure", 0.5))
+        features.extend((hour_of_day, context.get("time_pressure", 0.5)))
 
         # Pad or truncate to match context dimension
         while len(features) < self.context_dimension:
@@ -173,8 +172,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
         try:
             A_inv = inv(arm_stats.A)
             arm_stats.theta = A_inv @ arm_stats.b
-            estimated_reward = float(context_vector.T @ arm_stats.theta)
-            return estimated_reward
+            return float(context_vector.T @ arm_stats.theta)
         except np.linalg.LinAlgError:
             logger.warning(f"Singular matrix for arm {arm_stats.arm_id}")
             return (
@@ -216,7 +214,9 @@ class ConservativeLinUCB(MABAlgorithmBase):
         return is_safe
 
     def select_arm(
-        self, context: dict[str, Any] = None, available_arms: list[str] = None
+        self,
+        context: dict[str, Any] | None = None,
+        available_arms: list[str] | None = None,
     ) -> str | None:
         """Select arm using Conservative Constrained LinUCB."""
         if not available_arms:
@@ -309,7 +309,9 @@ class ConservativeLinUCB(MABAlgorithmBase):
 
         return best_arm or available_arms[0]
 
-    def update_reward(self, arm_id: str, reward: float, context: dict[str, Any] = None):
+    def update_reward(
+        self, arm_id: str, reward: float, context: dict[str, Any] | None = None
+    ):
         """Update arm statistics with new reward observation."""
         if arm_id not in self.arm_stats:
             self._initialize_arm(arm_id)
@@ -459,8 +461,7 @@ class ConservativeLinUCB(MABAlgorithmBase):
         return {
             "performance_history": self.performance_history,
             "arm_statistics": {
-                arm_id: self.get_arm_statistics(arm_id)
-                for arm_id in self.arm_stats.keys()
+                arm_id: self.get_arm_statistics(arm_id) for arm_id in self.arm_stats
             },
             "system_statistics": self.get_system_statistics(),
             "config": self.config.__dict__,

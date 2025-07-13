@@ -20,7 +20,7 @@ import uuid
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -91,10 +91,9 @@ class Stakeholder:
         """Check if stakeholder can vote on a specific domain."""
         if self.stakeholder_type == StakeholderType.CONSTITUTIONAL_COUNCIL:
             return domain == PolicyDomain.CONSTITUTIONAL
-        elif self.stakeholder_type == StakeholderType.EXPERT:
+        if self.stakeholder_type == StakeholderType.EXPERT:
             return domain.value in self.expertise
-        else:
-            return True  # General stakeholders can vote on most issues
+        return True  # General stakeholders can vote on most issues
 
 
 @dataclass
@@ -112,7 +111,7 @@ class GovernanceProposal:
     impact_assessment: dict[str, Any] = field(default_factory=dict)
     voting_mechanism: VotingMechanism = VotingMechanism.SIMPLE_MAJORITY
     required_threshold: float = 0.5
-    deadline: Optional[datetime] = None
+    deadline: datetime | None = None
     status: str = "draft"
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -140,14 +139,14 @@ class DeliberationResult:
     discussion_points: list[str]
     consensus_areas: list[str]
     disagreement_areas: list[str]
-    refined_proposal: Optional[dict[str, Any]] = None
+    refined_proposal: dict[str, Any] | None = None
     quality_score: float = 0.0
 
 
 class GovernanceDecisionEngine:
     """Core governance decision-making engine."""
 
-    def __init__(self, constitutional_client: Optional[Any] = None):
+    def __init__(self, constitutional_client: Any | None = None):
         self.constitutional_client = constitutional_client
         self.stakeholders: dict[str, Stakeholder] = {}
         self.proposals: dict[str, GovernanceProposal] = {}
@@ -520,10 +519,10 @@ class GovernanceDecisionEngine:
 
         # Domain-specific validation
         if proposal.policy_domain == PolicyDomain.CONSTITUTIONAL:
-            if proposer.stakeholder_type not in [
+            if proposer.stakeholder_type not in {
                 StakeholderType.CONSTITUTIONAL_COUNCIL,
                 StakeholderType.INSTITUTION,
-            ]:
+            }:
                 return {
                     "valid": False,
                     "reason": "Insufficient authority for constitutional proposals",
@@ -955,14 +954,13 @@ class GovernanceDecisionEngine:
 
         if proposal.voting_mechanism == VotingMechanism.SIMPLE_MAJORITY:
             return self._simple_majority_decision(proposal, votes)
-        elif proposal.voting_mechanism == VotingMechanism.SUPERMAJORITY:
+        if proposal.voting_mechanism == VotingMechanism.SUPERMAJORITY:
             return self._supermajority_decision(proposal, votes)
-        elif proposal.voting_mechanism == VotingMechanism.QUADRATIC_VOTING:
+        if proposal.voting_mechanism == VotingMechanism.QUADRATIC_VOTING:
             return self._quadratic_voting_decision(proposal, votes)
-        elif proposal.voting_mechanism == VotingMechanism.RANKED_CHOICE:
+        if proposal.voting_mechanism == VotingMechanism.RANKED_CHOICE:
             return self._ranked_choice_decision(proposal, votes)
-        else:
-            return self._simple_majority_decision(proposal, votes)
+        return self._simple_majority_decision(proposal, votes)
 
     def _simple_majority_decision(
         self, proposal: GovernanceProposal, votes: list[Vote]
@@ -973,10 +971,7 @@ class GovernanceDecisionEngine:
         reject_weight = sum(v.weight for v in votes if v.choice == "reject")
         total_weight = approve_weight + reject_weight
 
-        if total_weight == 0:
-            threshold_achieved = 0.0
-        else:
-            threshold_achieved = approve_weight / total_weight
+        threshold_achieved = 0.0 if total_weight == 0 else approve_weight / total_weight
 
         decision = (
             "approved"
@@ -1197,11 +1192,11 @@ class GovernanceDecisionEngine:
 
 
 # Global governance engine instance
-_governance_engine: Optional[GovernanceDecisionEngine] = None
+_governance_engine: GovernanceDecisionEngine | None = None
 
 
 def get_governance_engine(
-    constitutional_client: Optional[Any] = None,
+    constitutional_client: Any | None = None,
 ) -> GovernanceDecisionEngine:
     """Get or create the global governance decision engine."""
     global _governance_engine

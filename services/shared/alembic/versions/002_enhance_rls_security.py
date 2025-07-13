@@ -173,24 +173,24 @@ def upgrade():
         BEGIN
             -- Validate constitutional hash consistency
             SELECT EXISTS(
-                SELECT 1 FROM tenants 
-                WHERE id = tenant_id 
+                SELECT 1 FROM tenants
+                WHERE id = tenant_id
                 AND constitutional_hash = current_setting('app.constitutional_hash', true)
             ) INTO constitutional_valid;
-            
+
             IF NOT constitutional_valid AND tenant_id IS NOT NULL THEN
                 RAISE EXCEPTION 'Constitutional hash validation failed for tenant context';
             END IF;
-            
+
             -- Validate user authorization for tenant
             IF tenant_id IS NOT NULL AND NOT bypass_rls THEN
                 SELECT EXISTS(
-                    SELECT 1 FROM tenant_users 
-                    WHERE user_id = set_secure_tenant_context.user_id 
+                    SELECT 1 FROM tenant_users
+                    WHERE user_id = set_secure_tenant_context.user_id
                     AND tenant_id = set_secure_tenant_context.tenant_id
                     AND is_active = true
                 ) INTO user_authorized;
-                
+
                 IF NOT user_authorized THEN
                     -- Log unauthorized access attempt
                     INSERT INTO rls_audit_events (
@@ -201,26 +201,26 @@ def upgrade():
                         'Attempted to set context for unauthorized tenant', 'tenant_authorization', 'high',
                         client_ip, session_id
                     );
-                    
+
                     RAISE EXCEPTION 'User % not authorized for tenant %', user_id, tenant_id;
                 END IF;
             END IF;
-            
+
             -- Set context variables
             PERFORM set_config('app.current_user_id', user_id::text, true);
             PERFORM set_config('app.session_id', COALESCE(session_id, gen_random_uuid()::text), true);
             PERFORM set_config('app.client_ip', COALESCE(client_ip, 'unknown'), true);
-            
+
             IF tenant_id IS NOT NULL THEN
                 PERFORM set_config('app.current_tenant_id', tenant_id::text, true);
             END IF;
-            
+
             PERFORM set_config('app.bypass_rls', bypass_rls::text, true);
             PERFORM set_config('app.admin_access', admin_access::text, true);
             PERFORM set_config('app.constitutional_hash', '"""
         + CONSTITUTIONAL_HASH
         + """', true);
-            
+
             -- Log successful context setting
             INSERT INTO rls_audit_events (
                 id, tenant_id, user_id, table_name, operation_type,
@@ -255,7 +255,7 @@ def upgrade():
                 AND t2.id = target_tenant_id
                 AND t1.organization_id = t2.organization_id
             ) INTO same_organization;
-            
+
             -- Check if user has cross-tenant permissions
             SELECT EXISTS(
                 SELECT 1 FROM tenant_users tu1, tenant_users tu2
@@ -268,7 +268,7 @@ def upgrade():
                 AND (tu1.role = 'admin' OR tu1.role = 'cross_tenant_user')
                 AND (tu2.role = 'admin' OR tu2.role = 'cross_tenant_user')
             ) INTO is_authorized;
-            
+
             -- Log the validation attempt
             INSERT INTO rls_audit_events (
                 id, tenant_id, user_id, table_name, operation_type,
@@ -278,7 +278,7 @@ def upgrade():
                 format('Cross-tenant operation validation: %s -> %s', source_tenant_id, target_tenant_id),
                 CASE WHEN is_authorized THEN 'info' ELSE 'warning' END
             );
-            
+
             RETURN is_authorized AND same_organization;
         END;
         $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -299,7 +299,7 @@ def upgrade():
             FROM rls_audit_events
             WHERE created_at > NOW() - INTERVAL '1 hour'
             AND severity IN ('high', 'critical');
-            
+
             -- If violations exceed threshold, take action
             IF recent_violations > 10 THEN
                 -- Log critical security event
@@ -310,7 +310,7 @@ def upgrade():
                     format('High violation rate detected: %s violations in last hour', recent_violations),
                     'critical'
                 );
-                
+
                 -- Could trigger additional security measures here
                 RAISE WARNING 'High RLS violation rate detected: % violations in last hour', recent_violations;
             END IF;
@@ -331,11 +331,11 @@ def upgrade():
         BEGIN
             -- Check if constitutional compliance is required for this table
             SELECT EXISTS(
-                SELECT 1 FROM information_schema.columns 
-                WHERE table_name = TG_TABLE_NAME 
+                SELECT 1 FROM information_schema.columns
+                WHERE table_name = TG_TABLE_NAME
                 AND column_name = 'constitutional_hash'
             ) INTO compliance_required;
-            
+
             IF compliance_required THEN
                 -- Validate constitutional hash
                 IF NEW.constitutional_hash IS NULL OR NEW.constitutional_hash != expected_hash THEN
@@ -353,17 +353,17 @@ def upgrade():
                         'constitutional_compliance',
                         'critical'
                     );
-                    
-                    RAISE EXCEPTION 'Constitutional hash validation failed for table %. Expected: %, Got: %', 
+
+                    RAISE EXCEPTION 'Constitutional hash validation failed for table %. Expected: %, Got: %',
                         TG_TABLE_NAME, expected_hash, COALESCE(NEW.constitutional_hash, 'NULL');
                 END IF;
-                
+
                 -- Update timestamp for compliance tracking
                 IF TG_OP = 'UPDATE' AND OLD.constitutional_hash = NEW.constitutional_hash THEN
                     NEW.updated_at = NOW();
                 END IF;
             END IF;
-            
+
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
@@ -392,7 +392,7 @@ def upgrade():
     op.execute(
         """
         CREATE OR REPLACE VIEW tenant_security_dashboard AS
-        SELECT 
+        SELECT
             t.id as tenant_id,
             t.name as tenant_name,
             t.security_level,
@@ -420,16 +420,16 @@ def upgrade():
         RETURNS void AS $$
         BEGIN
             -- Clean up old audit events (keep 90 days)
-            DELETE FROM rls_audit_events 
+            DELETE FROM rls_audit_events
             WHERE created_at < NOW() - INTERVAL '90 days';
-            
+
             -- Run violation monitoring
             PERFORM monitor_rls_violations();
-            
+
             -- Update statistics
             ANALYZE rls_audit_events;
             ANALYZE tenant_security_policies;
-            
+
             -- Log maintenance completion
             INSERT INTO rls_audit_events (
                 id, table_name, operation_type, attempted_action, severity
@@ -449,7 +449,7 @@ def upgrade():
             id, tenant_id, policy_name, policy_type, table_name, policy_definition,
             enforcement_level, constitutional_hash
         )
-        SELECT 
+        SELECT
             gen_random_uuid(),
             t.id,
             'strict_tenant_isolation',
@@ -460,8 +460,8 @@ def upgrade():
             '{CONSTITUTIONAL_HASH}'
         FROM tenants t
         WHERE NOT EXISTS (
-            SELECT 1 FROM tenant_security_policies tsp 
-            WHERE tsp.tenant_id = t.id 
+            SELECT 1 FROM tenant_security_policies tsp
+            WHERE tsp.tenant_id = t.id
             AND tsp.policy_name = 'strict_tenant_isolation'
         );
     """

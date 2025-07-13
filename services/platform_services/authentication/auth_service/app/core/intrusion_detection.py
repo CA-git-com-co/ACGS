@@ -44,8 +44,8 @@ class IntrusionDetectionSystem:
         # ensures: Correct function execution
         # sha256: func_hash
         # Rate limiting tracking
-        self.request_counts: dict[str, deque] = defaultdict(lambda: deque())
-        self.failed_login_attempts: dict[str, deque] = defaultdict(lambda: deque())
+        self.request_counts: dict[str, deque] = defaultdict(deque)
+        self.failed_login_attempts: dict[str, deque] = defaultdict(deque)
         self.blocked_ips: dict[str, datetime] = {}
 
         # Suspicious patterns tracking
@@ -117,7 +117,7 @@ class IntrusionDetectionSystem:
             del self.blocked_ips[ip_address]
         return False
 
-    def block_ip(self, ip_address: str, duration_minutes: int = None):
+    def block_ip(self, ip_address: str, duration_minutes: int | None = None):
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
@@ -168,7 +168,7 @@ class IntrusionDetectionSystem:
         return None
 
     def detect_brute_force_attack(
-        self, ip_address: str, user_id: int = None
+        self, ip_address: str, user_id: int | None = None
     ) -> SecurityThreat | None:
         """Detect brute force login attempts"""
         current_time = time.time()
@@ -317,7 +317,7 @@ class IntrusionDetectionSystem:
         return None
 
     async def analyze_request(
-        self, request: Request, db: AsyncSession, user_id: int = None
+        self, request: Request, db: AsyncSession, user_id: int | None = None
     ) -> list[SecurityThreat]:
         """Comprehensive request analysis for security threats"""
         threats = []
@@ -380,13 +380,13 @@ class IntrusionDetectionSystem:
             )
 
             # Block IP for critical or high severity threats
-            if threat.severity in ["critical", "high"]:
+            if threat.severity in {"critical", "high"}:
                 self.block_ip(ip_address)
 
         return threats
 
     async def record_failed_login(
-        self, ip_address: str, user_id: int = None, db: AsyncSession = None
+        self, ip_address: str, user_id: int | None = None, db: AsyncSession = None
     ) -> SecurityThreat | None:
         """Record failed login attempt and check for brute force"""
         threat = self.detect_brute_force_attack(ip_address, user_id)

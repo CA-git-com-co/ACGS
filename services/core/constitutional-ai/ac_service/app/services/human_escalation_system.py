@@ -235,17 +235,15 @@ class HumanEscalationSystem:
                     logger.info(f"Escalation triggered by rule: {rule.rule_id}")
 
                     # Create escalation request
-                    escalation_request = await self._create_escalation_request(
+                    return await self._create_escalation_request(
                         db, conflict, rule, resolution_result, detection_result
                     )
-
-                    return escalation_request
 
             # No escalation needed
             return None
 
         except Exception as e:
-            logger.error(f"Escalation evaluation failed: {e}")
+            logger.exception(f"Escalation evaluation failed: {e}")
             # In case of error, escalate for safety
             return await self._create_emergency_escalation(
                 db, conflict, f"Evaluation error: {e!s}"

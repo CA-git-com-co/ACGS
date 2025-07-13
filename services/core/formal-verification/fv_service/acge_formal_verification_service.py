@@ -6,6 +6,7 @@ Constitutional compliance formal verification with ACGE integration and Z3 theor
 import hashlib
 import logging
 import os
+import pathlib
 
 # Import existing FV service components
 import sys
@@ -19,7 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import Counter, Gauge, Histogram
 from pydantic import BaseModel, Field
 
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(pathlib.Path(pathlib.Path(__file__).resolve()).parent)
 
 from app.core.constitutional_verification_engine import (
     ConstitutionalProperty,
@@ -188,7 +189,7 @@ class ACGEFormalVerificationService:
             )
 
         except Exception as e:
-            logger.error(f"Formal verification failed: {e}")
+            logger.exception(f"Formal verification failed: {e}")
             processing_time = (time.time() - start_time) * 1000
 
             return ACGEFormalVerificationResponse(
@@ -215,17 +216,16 @@ class ACGEFormalVerificationService:
 
         try:
             # Convert constitutional properties to formal properties
-            constitutional_properties = []
-            for prop_name in request.constitutional_properties:
-                constitutional_properties.append(
-                    ConstitutionalProperty(
-                        property_id=f"prop_{hash(prop_name) % 1000}",
-                        name=prop_name,
-                        formal_specification=f"constitutional_property({prop_name})",
-                        constitutional_principle_id=f"principle_{hash(prop_name) % 100}",
-                        checksum=hashlib.sha256(prop_name.encode()).hexdigest()[:16],
-                    )
+            constitutional_properties = [
+                ConstitutionalProperty(
+                    property_id=f"prop_{hash(prop_name) % 1000}",
+                    name=prop_name,
+                    formal_specification=f"constitutional_property({prop_name})",
+                    constitutional_principle_id=f"principle_{hash(prop_name) % 100}",
+                    checksum=hashlib.sha256(prop_name.encode()).hexdigest()[:16],
                 )
+                for prop_name in request.constitutional_properties
+            ]
 
             # Perform constitutional compliance verification
             verification_level = VerificationLevel.STANDARD
@@ -269,7 +269,7 @@ class ACGEFormalVerificationService:
             }
 
         except Exception as e:
-            logger.error(f"Z3 verification failed: {e}")
+            logger.exception(f"Z3 verification failed: {e}")
             solver_time = (time.time() - start_time) * 1000
 
             Z3_SOLVER_PERFORMANCE.labels(
@@ -342,7 +342,7 @@ class ACGEFormalVerificationService:
 
         except Exception as e:
             validation_time = (time.time() - start_time) * 1000
-            logger.error(f"ACGE validation error: {e}")
+            logger.exception(f"ACGE validation error: {e}")
             return {
                 "compliance_score": 0.5,
                 "compliant": False,
@@ -395,7 +395,7 @@ class ACGEFormalVerificationService:
 
         except Exception as e:
             generation_time = (time.time() - start_time) * 1000
-            logger.error(f"Formal proof generation failed: {e}")
+            logger.exception(f"Formal proof generation failed: {e}")
 
             FORMAL_PROOF_GENERATIONS.labels(
                 proof_type=request.proof_type,
@@ -418,7 +418,7 @@ class ACGEFormalVerificationService:
         """Calculate overall constitutional compliance score."""
         try:
             # Z3 verification score
-            z3_score = 1.0 if z3_result.get("verified", False) else 0.0
+            z3_score = 1.0 if z3_result.get("verified") else 0.0
 
             # ACGE compliance score
             acge_score = acge_result.get("compliance_score", 0.0)
@@ -432,7 +432,7 @@ class ACGEFormalVerificationService:
             return round(overall_score, 3)
 
         except Exception as e:
-            logger.error(f"Compliance score calculation failed: {e}")
+            logger.exception(f"Compliance score calculation failed: {e}")
             return 0.0
 
     async def get_service_status(self) -> dict[str, Any]:
@@ -476,7 +476,7 @@ class ACGEFormalVerificationService:
             }
 
         except Exception as e:
-            logger.error(f"Status check failed: {e}")
+            logger.exception(f"Status check failed: {e}")
             return {"service": SERVICE_NAME, "status": "error", "error": str(e)}
 
 
@@ -503,7 +503,7 @@ app.add_middleware(
 @app.middleware("http")
 async def constitutional_compliance_middleware(request: Request, call_next):
     """Add constitutional headers and metrics."""
-    start_time = time.time()
+    time.time()
 
     response = await call_next(request)
 
@@ -565,10 +565,12 @@ async def verify_constitutional_compliance(request: ACGEFormalVerificationReques
 @app.post("/api/v1/verify/generate-formal-proof")
 async def generate_formal_proof(
     property_specification: str,
-    policy_constraints: list[str] = [],
+    policy_constraints: list[str] | None = None,
     proof_type: str = "constitutional_compliance",
 ):
     """Generate formal mathematical proof using Z3 theorem prover."""
+    if policy_constraints is None:
+        policy_constraints = []
     try:
         request = ACGEFormalVerificationRequest(
             policy_content=property_specification,

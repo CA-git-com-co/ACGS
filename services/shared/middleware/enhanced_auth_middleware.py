@@ -5,7 +5,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 import logging
 import time
-from typing import Any, Callable, Dict, List, Optional
+from collections.abc import Callable
 
 import httpx
 import jwt
@@ -32,8 +32,8 @@ class EnhancedAuthMiddleware(BaseHTTPMiddleware):
         service_name: str,
         service_secret: str,
         auth_service_url: str = "http://localhost:8016",
-        public_paths: List[str] = None,
-        service_only_paths: List[str] = None,
+        public_paths: list[str] | None = None,
+        service_only_paths: list[str] | None = None,
     ):
         super().__init__(app)
         self.service_name = service_name
@@ -91,7 +91,7 @@ class EnhancedAuthMiddleware(BaseHTTPMiddleware):
         except HTTPException:
             raise
         except Exception as e:
-            logger.error(f"Authentication error: {e}")
+            logger.exception(f"Authentication error: {e}")
             raise HTTPException(status_code=500, detail="Authentication service error")
 
     async def _validate_service_auth(self, request: Request):
@@ -166,7 +166,7 @@ class EnhancedAuthMiddleware(BaseHTTPMiddleware):
             request.state.auth_type = "user"
 
         except httpx.RequestError as e:
-            logger.error(f"Auth service request error: {e}")
+            logger.exception(f"Auth service request error: {e}")
             raise HTTPException(
                 status_code=503, detail="Authentication service unavailable"
             )
@@ -224,7 +224,7 @@ class ServiceAuthManager:
         self.service_name = service_name
         self.service_secret = service_secret
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self._token_cache: Optional[str] = None
+        self._token_cache: str | None = None
         self._token_expires: float = 0
 
     def get_service_token(self) -> str:
@@ -243,7 +243,7 @@ class ServiceAuthManager:
 
         return self._token_cache
 
-    def get_auth_headers(self) -> Dict[str, str]:
+    def get_auth_headers(self) -> dict[str, str]:
         """Get authentication headers for service requests."""
         return {
             SERVICE_AUTH_HEADER: self.get_service_token(),
@@ -270,5 +270,4 @@ class ServiceAuthManager:
         kwargs["headers"] = headers
 
         async with httpx.AsyncClient() as client:
-            response = await client.request(method, url, **kwargs)
-            return response
+            return await client.request(method, url, **kwargs)

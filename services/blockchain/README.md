@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # ACGS-1 Blockchain Layer
 
 This directory contains the Solana/Anchor programs that implement on-chain constitutional governance for ACGS-1.

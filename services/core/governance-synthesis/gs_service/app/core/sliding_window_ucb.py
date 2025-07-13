@@ -140,7 +140,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
         logger.info(f"Initialized Sliding Window UCB with config: {config}")
 
     def select_arm(
-        self, context: dict[str, Any] = None, available_arms: list[str] = None
+        self,
+        context: dict[str, Any] | None = None,
+        available_arms: list[str] | None = None,
     ) -> str | None:
         """Select arm using Sliding Window UCB algorithm."""
         if not available_arms:
@@ -209,7 +211,9 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         return selected_arm
 
-    def update_reward(self, arm_id: str, reward: float, context: dict[str, Any] = None):
+    def update_reward(
+        self, arm_id: str, reward: float, context: dict[str, Any] | None = None
+    ):
         """Update arm statistics with new reward observation."""
         if arm_id not in self.arm_windows:
             self._initialize_arm(arm_id)
@@ -399,7 +403,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         # Perform t-test for mean change
         try:
-            t_stat, p_value = stats.ttest_ind(old_window, new_window)
+            _t_stat, p_value = stats.ttest_ind(old_window, new_window)
             change_magnitude = abs(new_mean - old_mean)
 
             # Determine if change is significant
@@ -554,7 +558,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
             },
         }
 
-    def reset_change_detection(self, arm_id: str = None):
+    def reset_change_detection(self, arm_id: str | None = None):
         """Reset change detection for specific arm or all arms."""
         if arm_id:
             arm_window = self.arm_windows.get(arm_id)

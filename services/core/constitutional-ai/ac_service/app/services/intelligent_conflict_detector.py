@@ -253,7 +253,7 @@ class IntelligentConflictDetector:
             return filtered_conflicts
 
         except Exception as e:
-            logger.error(f"Conflict detection failed: {e}")
+            logger.exception(f"Conflict detection failed: {e}")
             raise
 
     async def _get_principles_for_analysis(
@@ -391,13 +391,12 @@ class IntelligentConflictDetector:
             "required",
             "prohibited",
         ]
-        normative_statements = []
 
-        for sentence in sentences:
-            if any(keyword in sentence.lower() for keyword in normative_keywords):
-                normative_statements.append(sentence)
-
-        return normative_statements
+        return [
+            sentence
+            for sentence in sentences
+            if any(keyword in sentence.lower() for keyword in normative_keywords)
+        ]
 
     async def _detect_semantic_conflicts(
         self, analyses: list[PrincipleAnalysis]

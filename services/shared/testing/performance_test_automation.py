@@ -10,14 +10,13 @@ import asyncio
 import logging
 import statistics
 import time
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from datetime import datetime
+from typing import Any
 
 import aioredis
 import httpx
-import psutil
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class PerformanceMetrics:
     duration_seconds: float
 
     # Latency metrics
-    latencies_ms: List[float] = field(default_factory=list)
+    latencies_ms: list[float] = field(default_factory=list)
     p50_latency_ms: float = 0.0
     p95_latency_ms: float = 0.0
     p99_latency_ms: float = 0.0
@@ -100,8 +99,8 @@ class PerformanceTestConfig:
     test_name: str
     target_url: str
     method: str = "GET"
-    payload: Optional[Dict[str, Any]] = None
-    headers: Optional[Dict[str, str]] = None
+    payload: dict[str, Any] | None = None
+    headers: dict[str, str] | None = None
 
     # Test parameters
     duration_seconds: int = 60
@@ -124,8 +123,8 @@ class PerformanceTestAutomation:
     CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
     def __init__(self):
-        self.metrics: List[PerformanceMetrics] = []
-        self.redis_client: Optional[aioredis.Redis] = None
+        self.metrics: list[PerformanceMetrics] = []
+        self.redis_client: aioredis.Redis | None = None
 
     async def setup_redis_monitoring(self, redis_url: str):
         """Setup Redis client for cache monitoring."""
@@ -253,7 +252,7 @@ class PerformanceTestAutomation:
 
         async def worker(
             worker_id: int, duration: float
-        ) -> Tuple[List[float], int, int, int, int]:
+        ) -> tuple[list[float], int, int, int, int]:
             """Worker function for concurrent requests."""
             worker_latencies = []
             worker_successful = 0
@@ -379,7 +378,7 @@ class PerformanceTestAutomation:
         return metrics
 
     async def run_cache_performance_test(
-        self, config: PerformanceTestConfig, cache_test_operations: List[Callable]
+        self, config: PerformanceTestConfig, cache_test_operations: list[Callable]
     ) -> PerformanceMetrics:
         """Run cache performance test to validate hit rate."""
         logger.info(f"Starting cache performance test: {config.test_name}")
@@ -444,8 +443,8 @@ class PerformanceTestAutomation:
         return metrics
 
     async def run_comprehensive_performance_test(
-        self, service_name: str, service_configs: List[PerformanceTestConfig]
-    ) -> Dict[str, PerformanceMetrics]:
+        self, service_name: str, service_configs: list[PerformanceTestConfig]
+    ) -> dict[str, PerformanceMetrics]:
         """Run comprehensive performance test suite for a service."""
         logger.info(f"Starting comprehensive performance test for {service_name}")
 
@@ -480,7 +479,7 @@ class PerformanceTestAutomation:
                 results[f"{config.test_name}_throughput"] = throughput_metrics
 
             except Exception as e:
-                logger.error(f"Performance test failed for {config.test_name}: {e}")
+                logger.exception(f"Performance test failed for {config.test_name}: {e}")
 
         logger.info(f"Comprehensive performance test completed for {service_name}")
         return results
@@ -510,7 +509,7 @@ class PerformanceTestAutomation:
         except Exception:
             return False
 
-    async def _get_redis_stats(self) -> Dict[str, Any]:
+    async def _get_redis_stats(self) -> dict[str, Any]:
         """Get Redis statistics."""
         try:
             if self.redis_client:
@@ -527,8 +526,8 @@ class PerformanceTestAutomation:
         return {}
 
     def generate_performance_report(
-        self, service_name: str, metrics_dict: Dict[str, PerformanceMetrics]
-    ) -> Dict[str, Any]:
+        self, service_name: str, metrics_dict: dict[str, PerformanceMetrics]
+    ) -> dict[str, Any]:
         """Generate comprehensive performance report."""
         report = {
             "service_name": service_name,

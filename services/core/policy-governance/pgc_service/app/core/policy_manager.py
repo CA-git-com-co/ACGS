@@ -85,7 +85,6 @@ class PolicyManager:
                 or not self._last_refresh_time
                 or (now - self._last_refresh_time > self._refresh_interval)
             ):
-                print("PolicyManager: Refreshing policies from Integrity Service...")
                 try:
                     # Fetch verified rules from Integrity Service
                     fetched_rules = (
@@ -98,9 +97,6 @@ class PolicyManager:
                     ):  # list_verified_policy_rules returns [] on error, not None
                         self._active_rules = fetched_rules
                         self._last_refresh_time = now
-                        print(
-                            f"PolicyManager: Successfully loaded {len(self._active_rules)} verified rules."
-                        )
 
                         # Enhanced rule processing with format conversion and validation
                         processed_rules = await self._process_and_validate_rules(
@@ -120,22 +116,14 @@ class PolicyManager:
                             ]
                             datalog_engine.load_rules(rule_strings)
 
-                        print(
-                            f"PolicyManager: Updated with {len(processed_rules)} processed rules."
-                        )
-                        print(f"Validation stats: {self._validation_stats}")
                     else:
                         # This case might not be hit if client returns [] on error.
-                        print(
-                            "PolicyManager: Failed to fetch rules from Integrity Service (received None)."
-                        )
+                        pass
                         # Optionally, decide if to clear active rules or keep stale ones
                         # For now, keeping stale ones if fetch fails.
-                except Exception as e:
-                    print(f"PolicyManager: Error refreshing policies: {e}")
+                except Exception:
+                    pass
                     # Decide on error handling: keep stale, clear, or retry later
-            else:
-                print("PolicyManager: Using cached policies.")
         return self._active_rules
 
     async def _process_and_validate_rules(
@@ -226,7 +214,7 @@ class PolicyManager:
                 processed_rules.append(rule)
 
             except Exception as e:
-                logger.error(
+                logger.exception(
                     f"Error processing rule {getattr(rule, 'id', 'unknown')}: {e}"
                 )
                 self._validation_stats["validation_failed"] += 1
@@ -252,13 +240,12 @@ class PolicyManager:
             signature_bytes = bytes.fromhex(rule.pgp_signature)
 
             # Verify signature
-            is_valid = self.crypto_service.verify_signature(
+            return self.crypto_service.verify_signature(
                 message_to_verify, signature_bytes
             )
-            return is_valid
 
         except Exception as e:
-            logger.error(f"Signature verification error: {e}")
+            logger.exception(f"Signature verification error: {e}")
             return False
 
     def _generate_principle_text(self, rule: IntegrityPolicyRule) -> str:
@@ -344,7 +331,7 @@ class PolicyManager:
             datalog_engine.load_rules(rule_strings)
 
         except Exception as e:
-            logger.error(f"Incremental compilation failed: {e}")
+            logger.exception(f"Incremental compilation failed: {e}")
             # Fallback to traditional loading
             logger.info("Falling back to traditional Datalog engine loading")
             datalog_engine.clear_rules_and_facts()
@@ -375,9 +362,7 @@ class PolicyManager:
         # This method doesn't trigger a refresh on its own; relies on get_active_rules being called.
         # Or, could be adapted to also call get_active_rules if needed.
         if not self._active_rules and not self._last_refresh_time:  # If never loaded
-            print(
-                "PolicyManager: Rules not loaded yet. Consider calling get_active_rules() first."
-            )
+            pass
         return [rule.rule_content for rule in self._active_rules]
 
 
@@ -400,24 +385,18 @@ if __name__ == "__main__":
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        print("Testing Policy Manager...")
         # Requires integrity_service to be running with some verified rules.
 
         # Initial load
         rules1 = await policy_manager.get_active_rules(force_refresh=True)
-        print(f"Fetched {len(rules1)} rules initially.")
         if rules1:
-            print(f"First rule content: {rules1[0].rule_content[:60]}...")
+            pass
 
         # Subsequent call (should use cache if within refresh interval)
         # To test caching, you'd need to ensure refresh_interval is not immediately passed.
         # For this manual test, it will likely use cache if the first call was quick.
         # policy_manager._last_refresh_time = datetime.utcnow() # Simulate it just refreshed
-        print(
-            "\nSecond call (expecting cache for rules, but Datalog engine is already loaded):"
-        )
-        rules2 = await policy_manager.get_active_rules()
-        print(f"Fetched {len(rules2)} rules on second call.")
+        await policy_manager.get_active_rules()
 
         # Test Datalog engine state (indirectly)
         # This assumes integrity_service has a rule like: "test_rule(a) <= test_fact(a)."
@@ -431,6 +410,3 @@ if __name__ == "__main__":
         await integrity_service_client.close()  # Close the shared client
 
     # asyncio.run(test_policy_manager())
-    print(
-        "Policy Manager defined. Run test_policy_manager() with a live Integrity service to test."
-    )

@@ -5,7 +5,7 @@ Constitutional compliance hash: cdd01ef066bc6cf2
 
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -99,8 +99,8 @@ class DomainContextBase(BaseModel):
 
     name: str = Field(..., description="Domain context name")
     domain_type: DomainType = Field(..., description="Type of domain")
-    description: Optional[str] = Field(None, description="Domain description")
-    configuration: Optional[Dict[str, Any]] = Field(
+    description: str | None = Field(None, description="Domain description")
+    configuration: dict[str, Any] | None = Field(
         None, description="Domain configuration"
     )
 
@@ -108,17 +108,15 @@ class DomainContextBase(BaseModel):
 class DomainContextCreate(DomainContextBase):
     """Domain context creation model."""
 
-    pass
-
 
 class DomainContextUpdate(BaseModel):
     """Domain context update model."""
 
-    name: Optional[str] = None
-    domain_type: Optional[DomainType] = None
-    description: Optional[str] = None
-    configuration: Optional[Dict[str, Any]] = None
-    is_active: Optional[bool] = None
+    name: str | None = None
+    domain_type: DomainType | None = None
+    description: str | None = None
+    configuration: dict[str, Any] | None = None
+    is_active: bool | None = None
 
 
 class DomainContextResponse(DomainContextBase):
@@ -138,21 +136,17 @@ class CrossDomainTestScenarioBase(BaseModel):
     """Base cross-domain test scenario model."""
 
     name: str = Field(..., description="Scenario name")
-    description: Optional[str] = Field(None, description="Scenario description")
+    description: str | None = Field(None, description="Scenario description")
     source_domain: DomainType = Field(..., description="Source domain")
     target_domain: DomainType = Field(..., description="Target domain")
-    test_parameters: Optional[Dict[str, Any]] = Field(
-        None, description="Test parameters"
-    )
-    expected_outcomes: Optional[Dict[str, Any]] = Field(
+    test_parameters: dict[str, Any] | None = Field(None, description="Test parameters")
+    expected_outcomes: dict[str, Any] | None = Field(
         None, description="Expected outcomes"
     )
 
 
 class CrossDomainTestScenarioCreate(CrossDomainTestScenarioBase):
     """Cross-domain test scenario creation model."""
-
-    pass
 
 
 class CrossDomainTestScenarioResponse(CrossDomainTestScenarioBase):
@@ -175,13 +169,11 @@ class CrossDomainTestResultBase(BaseModel):
     test_name: str = Field(..., description="Test name")
     status: TestStatus = Field(..., description="Test status")
     start_time: datetime = Field(..., description="Test start time")
-    end_time: Optional[datetime] = Field(None, description="Test end time")
-    duration_ms: Optional[int] = Field(
-        None, description="Test duration in milliseconds"
-    )
-    results: Optional[Dict[str, Any]] = Field(None, description="Test results")
-    metrics: Optional[Dict[str, Any]] = Field(None, description="Test metrics")
-    errors: Optional[List[Dict[str, Any]]] = Field(None, description="Test errors")
+    end_time: datetime | None = Field(None, description="Test end time")
+    duration_ms: int | None = Field(None, description="Test duration in milliseconds")
+    results: dict[str, Any] | None = Field(None, description="Test results")
+    metrics: dict[str, Any] | None = Field(None, description="Test metrics")
+    errors: list[dict[str, Any]] | None = Field(None, description="Test errors")
 
 
 class CrossDomainTestResultResponse(CrossDomainTestResultBase):
@@ -200,10 +192,10 @@ class CrossDomainTestRequest(BaseModel):
     """Cross-domain test execution request."""
 
     scenario_id: UUID = Field(..., description="Test scenario ID")
-    test_parameters: Optional[Dict[str, Any]] = Field(
+    test_parameters: dict[str, Any] | None = Field(
         None, description="Override test parameters"
     )
-    timeout_seconds: Optional[int] = Field(300, description="Test timeout in seconds")
+    timeout_seconds: int | None = Field(300, description="Test timeout in seconds")
 
 
 class CrossDomainTestResponse(BaseModel):

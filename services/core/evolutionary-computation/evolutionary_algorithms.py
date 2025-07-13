@@ -22,7 +22,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -172,17 +172,17 @@ class Individual:
         if not hasattr(self, "constitutional_compliance"):
             self.constitutional_compliance = 0.0
 
-    def total_fitness(self, weights: dict[str, float] = None) -> float:
+    def total_fitness(self, weights: dict[str, float] | None = None) -> float:
         """Calculate weighted total fitness across all objectives."""
         if not self.fitness:
             return 0.0
 
         if weights is None:
             # Equal weighting by default
-            weights = {obj: 1.0 for obj in self.fitness.keys()}
+            weights = dict.fromkeys(self.fitness.keys(), 1.0)
 
         total = sum(
-            self.fitness.get(obj, 0.0) * weights.get(obj, 0.0) for obj in weights.keys()
+            self.fitness.get(obj, 0.0) * weights.get(obj, 0.0) for obj in weights
         )
 
         # Normalize by total weight
@@ -193,13 +193,13 @@ class Individual:
         """Check if this individual Pareto-dominates another."""
         at_least_one_better = False
 
-        for objective in self.fitness.keys():
+        for objective in self.fitness:
             self_score = self.fitness.get(objective, 0.0)
             other_score = other.fitness.get(objective, 0.0)
 
             if self_score < other_score:
                 return False
-            elif self_score > other_score:
+            if self_score > other_score:
                 at_least_one_better = True
 
         return at_least_one_better
@@ -224,7 +224,7 @@ class EvolutionParams:
 class FitnessEvaluator:
     """Evaluates fitness of individuals across multiple objectives."""
 
-    def __init__(self, constitutional_client: Optional[Any] = None):
+    def __init__(self, constitutional_client: Any | None = None):
         self.constitutional_client = constitutional_client
         self.evaluation_cache: dict[str, dict[str, float]] = {}
 
@@ -262,27 +262,26 @@ class FitnessEvaluator:
         if objective == OptimizationObjective.PERFORMANCE:
             return self._evaluate_performance(individual)
 
-        elif objective == OptimizationObjective.CONSTITUTIONAL_COMPLIANCE:
+        if objective == OptimizationObjective.CONSTITUTIONAL_COMPLIANCE:
             return await self._evaluate_constitutional_compliance(individual)
 
-        elif objective == OptimizationObjective.RESOURCE_EFFICIENCY:
+        if objective == OptimizationObjective.RESOURCE_EFFICIENCY:
             return self._evaluate_resource_efficiency(individual)
 
-        elif objective == OptimizationObjective.SAFETY:
+        if objective == OptimizationObjective.SAFETY:
             return self._evaluate_safety(individual)
 
-        elif objective == OptimizationObjective.EXPLAINABILITY:
+        if objective == OptimizationObjective.EXPLAINABILITY:
             return self._evaluate_explainability(individual)
 
-        elif objective == OptimizationObjective.ROBUSTNESS:
+        if objective == OptimizationObjective.ROBUSTNESS:
             return self._evaluate_robustness(individual)
 
-        elif objective == OptimizationObjective.ADAPTABILITY:
+        if objective == OptimizationObjective.ADAPTABILITY:
             return self._evaluate_adaptability(individual)
 
-        else:
-            logger.warning(f"Unknown objective: {objective}")
-            return 0.0
+        logger.warning(f"Unknown objective: {objective}")
+        return 0.0
 
     def _evaluate_performance(self, individual: Individual) -> float:
         """Evaluate performance objective."""
@@ -388,9 +387,7 @@ class FitnessEvaluator:
 
         # Normalize to [0, 1] where lower complexity is better
         max_complexity = 1e6  # Arbitrary threshold
-        efficiency = 1.0 - min(total_flops, max_complexity) / max_complexity
-
-        return efficiency
+        return 1.0 - min(total_flops, max_complexity) / max_complexity
 
     def _evaluate_safety(self, individual: Individual) -> float:
         """Evaluate safety objective."""
@@ -505,7 +502,7 @@ class EvolutionaryAlgorithm(ABC):
         self.objectives = objectives
         self.population: list[Individual] = []
         self.generation = 0
-        self.best_individual: Optional[Individual] = None
+        self.best_individual: Individual | None = None
         self.fitness_history: list[dict[str, float]] = []
         self.diversity_history: list[float] = []
 
@@ -688,9 +685,9 @@ class GeneticAlgorithm(EvolutionaryAlgorithm):
     def __init__(
         self,
         config: EvolutionConfig,
-        fitness_evaluator: Optional[FitnessEvaluator] = None,
-        objectives: Optional[list[OptimizationObjective]] = None,
-        genotype_template: Optional[dict[str, Any]] = None,
+        fitness_evaluator: FitnessEvaluator | None = None,
+        objectives: list[OptimizationObjective] | None = None,
+        genotype_template: dict[str, Any] | None = None,
     ):
         # Support both old and new constructor styles
         if isinstance(config, EvolutionConfig):
@@ -950,7 +947,7 @@ class GeneticAlgorithm(EvolutionaryAlgorithm):
         """Evolve with safety and constitutional constraints."""
         population = initial_population
 
-        for generation in range(generations):
+        for _generation in range(generations):
             # Evaluate fitness
             self.evaluate_fitness(population, fitness_function)
 
@@ -967,7 +964,7 @@ class GeneticAlgorithm(EvolutionaryAlgorithm):
 
             # Continue with standard evolution using valid individuals
             valid_population = Population(valid_individuals)
-            best, final_pop = await self.evolve(valid_population, fitness_function, 1)
+            _best, final_pop = await self.evolve(valid_population, fitness_function, 1)
             population = final_pop
 
         # Return best valid individual
@@ -1302,7 +1299,7 @@ class MultiObjectiveEvolution(EvolutionaryAlgorithm):
         child1_genotype = {}
         child2_genotype = {}
 
-        for key in parent1.genotype.keys():
+        for key in parent1.genotype:
             val1 = parent1.genotype[key]
             val2 = parent2.genotype[key]
 
@@ -1333,14 +1330,13 @@ class MultiObjectiveEvolution(EvolutionaryAlgorithm):
                 else:
                     child1_genotype[key] = val1
                     child2_genotype[key] = val2
+            # For non-numerical values, random assignment
+            elif random.random() < 0.5:
+                child1_genotype[key] = val1
+                child2_genotype[key] = val2
             else:
-                # For non-numerical values, random assignment
-                if random.random() < 0.5:
-                    child1_genotype[key] = val1
-                    child2_genotype[key] = val2
-                else:
-                    child1_genotype[key] = val2
-                    child2_genotype[key] = val1
+                child1_genotype[key] = val2
+                child2_genotype[key] = val1
 
         child1 = Individual(
             genotype=child1_genotype,
@@ -1407,7 +1403,7 @@ class MultiObjectiveEvolution(EvolutionaryAlgorithm):
 class EvolutionaryAgentOptimizer:
     """Main interface for evolutionary agent optimization."""
 
-    def __init__(self, constitutional_client: Optional[Any] = None):
+    def __init__(self, constitutional_client: Any | None = None):
         self.constitutional_client = constitutional_client
         self.fitness_evaluator = FitnessEvaluator(constitutional_client)
         self.optimization_history: list[dict[str, Any]] = []
@@ -1417,7 +1413,7 @@ class EvolutionaryAgentOptimizer:
         agent_config: dict[str, Any],
         optimization_objectives: list[OptimizationObjective],
         algorithm_type: str = "genetic",
-        evolution_params: Optional[EvolutionParams] = None,
+        evolution_params: EvolutionParams | None = None,
     ) -> dict[str, Any]:
         """Optimize an agent using evolutionary computation."""
 
@@ -1546,11 +1542,11 @@ class EvolutionaryAgentOptimizer:
 
         # Analyze convergence
         best_fitness_values = [entry["best_fitness"] for entry in fitness_history]
-        avg_fitness_values = [entry["avg_fitness"] for entry in fitness_history]
+        [entry["avg_fitness"] for entry in fitness_history]
         diversity_values = [entry["diversity"] for entry in fitness_history]
 
         # Calculate convergence metrics
-        convergence_analysis = {
+        return {
             "optimization_id": optimization_id,
             "total_generations": len(fitness_history),
             "final_best_fitness": best_fitness_values[-1] if best_fitness_values else 0,
@@ -1571,8 +1567,6 @@ class EvolutionaryAgentOptimizer:
                 best_fitness_values, diversity_values
             ),
         }
-
-        return convergence_analysis
 
     def _calculate_convergence_rate(self, fitness_values: list[float]) -> float:
         """Calculate the rate of convergence."""
@@ -1637,16 +1631,24 @@ class EvolutionaryAgentOptimizer:
         # Check diversity
         avg_diversity = np.mean(diversity_values)
         if avg_diversity < 0.1:
-            recommendations.append("Increase mutation rate to maintain diversity")
-            recommendations.append("Consider using fitness sharing or niching")
+            recommendations.extend(
+                (
+                    "Increase mutation rate to maintain diversity",
+                    "Consider using fitness sharing or niching",
+                )
+            )
 
         # Check convergence rate
         recent_improvement = (
             fitness_values[-1] - fitness_values[max(0, len(fitness_values) - 10)]
         )
         if recent_improvement < 0.01:
-            recommendations.append("Consider increasing population size")
-            recommendations.append("Try different selection pressure")
+            recommendations.extend(
+                (
+                    "Consider increasing population size",
+                    "Try different selection pressure",
+                )
+            )
 
         # Check for stagnation
         final_quarter = fitness_values[len(fitness_values) * 3 // 4 :]

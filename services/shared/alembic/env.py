@@ -1,6 +1,7 @@
 """Alembic environment configuration for ACGS-PGP"""
 
 import os
+import pathlib
 import sys
 from logging.config import fileConfig
 
@@ -12,7 +13,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 # Add the shared directory to the Python path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent, ".."))
 
 # Import the models and database configuration
 from models import Base

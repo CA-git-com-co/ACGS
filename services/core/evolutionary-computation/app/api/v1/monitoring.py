@@ -202,7 +202,7 @@ async def get_monitoring_dashboard(
         return dashboard
 
     except Exception as e:
-        logger.error(f"Failed to generate monitoring dashboard: {e}")
+        logger.exception(f"Failed to generate monitoring dashboard: {e}")
         raise HTTPException(
             status_code=500, detail=f"Dashboard generation failed: {e!s}"
         )
@@ -247,7 +247,7 @@ async def get_wina_metrics():
         return metrics
 
     except Exception as e:
-        logger.error(f"Failed to collect WINA metrics: {e}")
+        logger.exception(f"Failed to collect WINA metrics: {e}")
         raise HTTPException(
             status_code=500, detail=f"WINA metrics collection failed: {e!s}"
         )
@@ -285,7 +285,7 @@ async def get_system_metrics():
         return metrics
 
     except Exception as e:
-        logger.error(f"Failed to collect system metrics: {e}")
+        logger.exception(f"Failed to collect system metrics: {e}")
         raise HTTPException(
             status_code=500, detail=f"System metrics collection failed: {e!s}"
         )
@@ -325,7 +325,7 @@ async def get_active_alerts():
         }
 
     except Exception as e:
-        logger.error(f"Failed to retrieve active alerts: {e}")
+        logger.exception(f"Failed to retrieve active alerts: {e}")
         raise HTTPException(status_code=500, detail=f"Alert retrieval failed: {e!s}")
 
 
@@ -353,7 +353,7 @@ async def monitoring_health_check():
         }
 
     except Exception as e:
-        logger.error(f"Monitoring health check failed: {e}")
+        logger.exception(f"Monitoring health check failed: {e}")
         raise HTTPException(
             status_code=503, detail=f"Monitoring system unhealthy: {e!s}"
         )

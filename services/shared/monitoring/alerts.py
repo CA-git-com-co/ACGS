@@ -10,17 +10,18 @@ import json
 import logging
 import smtplib
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
 import aiohttp
+from shared.resilience.retry import retry_with_exponential_backoff
 
-from ..resilience.retry import retry_with_exponential_backoff
-from .metrics import MetricValue, get_metrics_collector
+from .metrics import get_metrics_collector
 
 logger = logging.getLogger(__name__)
 
@@ -53,12 +54,12 @@ class Alert:
     severity: AlertSeverity
     source: str
     timestamp: datetime = field(default_factory=datetime.utcnow)
-    labels: Dict[str, str] = field(default_factory=dict)
-    annotations: Dict[str, str] = field(default_factory=dict)
+    labels: dict[str, str] = field(default_factory=dict)
+    annotations: dict[str, str] = field(default_factory=dict)
     status: AlertStatus = AlertStatus.PENDING
-    resolved_at: Optional[datetime] = None
-    acknowledged_at: Optional[datetime] = None
-    acknowledged_by: Optional[str] = None
+    resolved_at: datetime | None = None
+    acknowledged_at: datetime | None = None
+    acknowledged_by: str | None = None
 
     def __post_init__(self):
         """Initialize alert with constitutional compliance."""
@@ -83,7 +84,7 @@ class Alert:
     @property
     def is_active(self) -> bool:
         """Check if alert is currently active."""
-        return self.status in [AlertStatus.PENDING, AlertStatus.FIRING]
+        return self.status in {AlertStatus.PENDING, AlertStatus.FIRING}
 
     @property
     def duration(self) -> timedelta:
@@ -91,7 +92,7 @@ class Alert:
         end_time = self.resolved_at or datetime.utcnow()
         return end_time - self.timestamp
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert alert to dictionary representation."""
         return {
             "name": self.name,
@@ -118,13 +119,13 @@ class AlertRule:
     def __init__(
         self,
         name: str,
-        condition: Callable[[Dict[str, Any]], bool],
+        condition: Callable[[dict[str, Any]], bool],
         severity: AlertSeverity,
         message_template: str,
-        labels: Dict[str, str] = None,
-        annotations: Dict[str, str] = None,
-        for_duration: timedelta = None,
-        cooldown: timedelta = None,
+        labels: dict[str, str] | None = None,
+        annotations: dict[str, str] | None = None,
+        for_duration: timedelta | None = None,
+        cooldown: timedelta | None = None,
     ):
         self.name = name
         self.condition = condition
@@ -136,10 +137,10 @@ class AlertRule:
         self.cooldown = cooldown or timedelta(minutes=5)
 
         # Internal state
-        self._condition_met_since: Optional[datetime] = None
-        self._last_fired: Optional[datetime] = None
+        self._condition_met_since: datetime | None = None
+        self._last_fired: datetime | None = None
 
-    def evaluate(self, context: Dict[str, Any]) -> Optional[Alert]:
+    def evaluate(self, context: dict[str, Any]) -> Alert | None:
         """Evaluate rule and return alert if condition is met."""
         try:
             condition_met = self.condition(context)
@@ -168,10 +169,10 @@ class AlertRule:
             return None
 
         except Exception as e:
-            logger.error(f"Error evaluating alert rule '{self.name}': {e}")
+            logger.exception(f"Error evaluating alert rule '{self.name}': {e}")
             return None
 
-    def _create_alert(self, context: Dict[str, Any]) -> Alert:
+    def _create_alert(self, context: dict[str, Any]) -> Alert:
         """Create alert from rule."""
         # Format message with context
         try:
@@ -206,7 +207,6 @@ class AlertChannel(ABC):
     @abstractmethod
     async def send_alert(self, alert: Alert) -> bool:
         """Send alert through this channel."""
-        pass
 
     def should_send(self, alert: Alert) -> bool:
         """Check if alert should be sent through this channel."""
@@ -223,8 +223,8 @@ class EmailAlertChannel(AlertChannel):
         smtp_port: int,
         username: str,
         password: str,
-        recipients: List[str],
-        from_email: str = None,
+        recipients: list[str],
+        from_email: str | None = None,
         enabled: bool = True,
         min_severity: AlertSeverity = AlertSeverity.WARNING,
     ):
@@ -292,7 +292,7 @@ Constitutional Hash: cdd01ef066bc6cf2
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send email alert for {alert.name}: {e}")
+            logger.exception(f"Failed to send email alert for {alert.name}: {e}")
             return False
 
     async def _send_email(self, msg: MIMEMultipart) -> None:
@@ -316,7 +316,7 @@ class SlackAlertChannel(AlertChannel):
         self,
         name: str,
         webhook_url: str,
-        channel: str = None,
+        channel: str | None = None,
         username: str = "ACGS Alerts",
         enabled: bool = True,
         min_severity: AlertSeverity = AlertSeverity.WARNING,
@@ -373,7 +373,7 @@ class SlackAlertChannel(AlertChannel):
                                 "short": True,
                             },
                         ],
-                        "footer": f"Constitutional Hash: cdd01ef066bc6cf2",
+                        "footer": "Constitutional Hash: cdd01ef066bc6cf2",
                         "ts": int(alert.timestamp.timestamp()),
                     }
                 ],
@@ -394,19 +394,21 @@ class SlackAlertChannel(AlertChannel):
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send Slack alert for {alert.name}: {e}")
+            logger.exception(f"Failed to send Slack alert for {alert.name}: {e}")
             return False
 
-    async def _send_to_slack(self, payload: Dict[str, Any]) -> None:
+    async def _send_to_slack(self, payload: dict[str, Any]) -> None:
         """Send message to Slack webhook."""
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(
                 self.webhook_url,
                 json=payload,
                 headers={"Content-Type": "application/json"},
-            ) as response:
-                if response.status != 200:
-                    raise Exception(f"Slack webhook returned status {response.status}")
+            ) as response,
+        ):
+            if response.status != 200:
+                raise Exception(f"Slack webhook returned status {response.status}")
 
 
 class WebhookAlertChannel(AlertChannel):
@@ -416,7 +418,7 @@ class WebhookAlertChannel(AlertChannel):
         self,
         name: str,
         webhook_url: str,
-        headers: Dict[str, str] = None,
+        headers: dict[str, str] | None = None,
         enabled: bool = True,
     ):
         super().__init__(name, enabled)
@@ -442,17 +444,19 @@ class WebhookAlertChannel(AlertChannel):
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send webhook alert for {alert.name}: {e}")
+            logger.exception(f"Failed to send webhook alert for {alert.name}: {e}")
             return False
 
-    async def _send_to_webhook(self, payload: Dict[str, Any]) -> None:
+    async def _send_to_webhook(self, payload: dict[str, Any]) -> None:
         """Send payload to webhook."""
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(
                 self.webhook_url, json=payload, headers=self.headers
-            ) as response:
-                if response.status not in [200, 201, 202]:
-                    raise Exception(f"Webhook returned status {response.status}")
+            ) as response,
+        ):
+            if response.status not in {200, 201, 202}:
+                raise Exception(f"Webhook returned status {response.status}")
 
 
 class AlertManager:
@@ -460,13 +464,13 @@ class AlertManager:
 
     def __init__(self, name: str = "acgs_alerts"):
         self.name = name
-        self._rules: List[AlertRule] = []
-        self._channels: List[AlertChannel] = []
-        self._active_alerts: Dict[str, Alert] = {}
-        self._alert_history: List[Alert] = []
+        self._rules: list[AlertRule] = []
+        self._channels: list[AlertChannel] = []
+        self._active_alerts: dict[str, Alert] = {}
+        self._alert_history: list[Alert] = []
         self._evaluation_interval = 30.0  # Evaluate rules every 30 seconds
         self._running = False
-        self._evaluation_task: Optional[asyncio.Task] = None
+        self._evaluation_task: asyncio.Task | None = None
 
         # Metrics
         self._metrics_collector = get_metrics_collector()
@@ -507,7 +511,7 @@ class AlertManager:
 
         logger.warning(f"Alert fired: {alert.name} ({alert.severity.value})")
 
-    async def resolve_alert(self, alert_name: str, source: str = None) -> bool:
+    async def resolve_alert(self, alert_name: str, source: str | None = None) -> bool:
         """Resolve an active alert."""
         alert_key = f"{alert_name}_{source or 'unknown'}"
 
@@ -522,7 +526,7 @@ class AlertManager:
         return False
 
     async def acknowledge_alert(
-        self, alert_name: str, user: str, source: str = None
+        self, alert_name: str, user: str, source: str | None = None
     ) -> bool:
         """Acknowledge an active alert."""
         alert_key = f"{alert_name}_{source or 'unknown'}"
@@ -538,16 +542,15 @@ class AlertManager:
 
     async def _send_alert(self, alert: Alert) -> None:
         """Send alert through all channels."""
-        send_tasks = []
-        for channel in self._channels:
-            if channel.enabled:
-                send_tasks.append(channel.send_alert(alert))
+        send_tasks = [
+            channel.send_alert(alert) for channel in self._channels if channel.enabled
+        ]
 
         if send_tasks:
             results = await asyncio.gather(*send_tasks, return_exceptions=True)
             failed_channels = [
                 channel.name
-                for channel, result in zip(self._channels, results)
+                for channel, result in zip(self._channels, results, strict=False)
                 if isinstance(result, Exception)
             ]
 
@@ -580,7 +583,7 @@ class AlertManager:
                 if alert:
                     await self.fire_alert(alert)
             except Exception as e:
-                logger.error(f"Error evaluating rule '{rule.name}': {e}")
+                logger.exception(f"Error evaluating rule '{rule.name}': {e}")
 
     async def start_evaluation_loop(self) -> None:
         """Start automatic rule evaluation loop."""
@@ -599,7 +602,7 @@ class AlertManager:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in alert evaluation loop: {e}")
+                logger.exception(f"Error in alert evaluation loop: {e}")
                 await asyncio.sleep(self._evaluation_interval)
 
     def stop_evaluation_loop(self) -> None:
@@ -608,15 +611,15 @@ class AlertManager:
         if self._evaluation_task:
             self._evaluation_task.cancel()
 
-    def get_active_alerts(self) -> List[Alert]:
+    def get_active_alerts(self) -> list[Alert]:
         """Get all active alerts."""
         return list(self._active_alerts.values())
 
-    def get_alert_history(self, limit: int = 100) -> List[Alert]:
+    def get_alert_history(self, limit: int = 100) -> list[Alert]:
         """Get alert history."""
         return self._alert_history[-limit:]
 
-    def get_alert_stats(self) -> Dict[str, Any]:
+    def get_alert_stats(self) -> dict[str, Any]:
         """Get alert statistics."""
         severity_counts = {}
         for severity in AlertSeverity:
@@ -652,8 +655,8 @@ async def send_alert(
     message: str,
     severity: AlertSeverity,
     source: str = "manual",
-    labels: Dict[str, str] = None,
-    annotations: Dict[str, str] = None,
+    labels: dict[str, str] | None = None,
+    annotations: dict[str, str] | None = None,
 ) -> None:
     """Convenience function to send an alert."""
     alert = Alert(
@@ -680,7 +683,7 @@ def create_high_cpu_rule(threshold: float = 90.0) -> AlertRule:
         name="high_cpu_usage",
         condition=condition,
         severity=AlertSeverity.WARNING,
-        message_template=f"High CPU usage detected: {{metrics[system_cpu_usage]:.1f}}%",
+        message_template="High CPU usage detected: {metrics[system_cpu_usage]:.1f}%",
         for_duration=timedelta(minutes=2),
         cooldown=timedelta(minutes=10),
     )
@@ -697,7 +700,7 @@ def create_high_memory_rule(threshold: float = 90.0) -> AlertRule:
         name="high_memory_usage",
         condition=condition,
         severity=AlertSeverity.WARNING,
-        message_template=f"High memory usage detected: {{metrics[system_memory_usage]:.1f}}%",
+        message_template="High memory usage detected: {metrics[system_memory_usage]:.1f}%",
         for_duration=timedelta(minutes=2),
         cooldown=timedelta(minutes=10),
     )

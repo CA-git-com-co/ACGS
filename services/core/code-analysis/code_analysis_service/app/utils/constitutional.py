@@ -9,7 +9,7 @@ import hashlib
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -75,7 +75,7 @@ class ConstitutionalValidator:
         return f"const_{signature}"
 
     def validate_compliance(
-        self, data: dict[str, Any], signature: Optional[str] = None
+        self, data: dict[str, Any], signature: str | None = None
     ) -> dict[str, Any]:
         """
         Validate constitutional compliance of data and operations.
@@ -153,7 +153,7 @@ class ConstitutionalValidator:
         clean_data = {
             k: v
             for k, v in data.items()
-            if k not in ["timestamp", "validation_timestamp", "request_id"]
+            if k not in {"timestamp", "validation_timestamp", "request_id"}
         }
 
         # Sort keys for deterministic output

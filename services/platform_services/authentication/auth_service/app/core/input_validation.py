@@ -8,8 +8,7 @@ injection attacks, XSS, and other security vulnerabilities.
 import html
 import logging
 import re
-import urllib.parse
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -62,9 +61,7 @@ class InputValidator:
             raise ValueError(f"Input exceeds maximum length of {max_length}")
 
         # HTML encode to prevent XSS
-        value = html.escape(value)
-
-        return value
+        return html.escape(value)
 
     @staticmethod
     def validate_username(username: str) -> str:
@@ -190,7 +187,7 @@ class InputValidator:
         return api_key.strip()
 
     @staticmethod
-    def sanitize_request_data(data: Dict[str, Any]) -> Dict[str, Any]:
+    def sanitize_request_data(data: dict[str, Any]) -> dict[str, Any]:
         """Sanitize request data dictionary."""
         sanitized = {}
 
@@ -253,7 +250,9 @@ class SecureTokenRequest(BaseModel):
         return InputValidator.validate_jwt_token(v)
 
 
-def log_security_event(event_type: str, details: Dict[str, Any], client_ip: str = None):
+def log_security_event(
+    event_type: str, details: dict[str, Any], client_ip: str | None = None
+):
     """Log security events for monitoring."""
     log_data = {
         "event_type": event_type,

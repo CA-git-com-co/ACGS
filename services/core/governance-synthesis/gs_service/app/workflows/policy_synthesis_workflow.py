@@ -183,7 +183,7 @@ class PolicySynthesisWorkflow:
             return response
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Policy synthesis failed for request {request.request_id}: {e}"
             )
 
@@ -229,7 +229,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Constitutional analysis error: {e!s}")
-            logger.error(
+            logger.exception(
                 f"Constitutional analysis failed for workflow {state.workflow_id}: {e}"
             )
 
@@ -261,7 +261,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Policy generation error: {e!s}")
-            logger.error(
+            logger.exception(
                 f"Policy generation failed for workflow {state.workflow_id}: {e}"
             )
 
@@ -298,7 +298,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Fidelity assessment error: {e!s}")
-            logger.error(
+            logger.exception(
                 f"Fidelity assessment failed for workflow {state.workflow_id}: {e}"
             )
 
@@ -336,7 +336,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Conflict resolution error: {e!s}")
-            logger.error(
+            logger.exception(
                 f"Conflict resolution failed for workflow {state.workflow_id}: {e}"
             )
 
@@ -375,7 +375,7 @@ class PolicySynthesisWorkflow:
 
         except Exception as e:
             state.add_error(f"Final validation error: {e!s}")
-            logger.error(
+            logger.exception(
                 f"Final validation failed for workflow {state.workflow_id}: {e}"
             )
 

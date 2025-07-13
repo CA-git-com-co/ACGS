@@ -11,6 +11,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 import asyncio
 import logging
 import os
+import sys
 
 import asyncpg
 
@@ -154,7 +155,7 @@ async def test_audit_trail():
         return True
 
     except Exception as e:
-        logger.error(f"❌ Test failed: {e}")
+        logger.exception(f"❌ Test failed: {e}")
         import traceback
 
         traceback.print_exc()
@@ -175,7 +176,7 @@ async def main():
         )
     else:
         logger.error("❌ Tests failed! Please check the implementation.")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":

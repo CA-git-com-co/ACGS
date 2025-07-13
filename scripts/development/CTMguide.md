@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # CTM Task Management Guide
 
 ## 1. Text-Based Task Template (`task_00X.txt`)

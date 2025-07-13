@@ -16,10 +16,10 @@ try:
     from pathlib import Path
 
     # Add project root to path
-    current_dir = os.path.dirname(os.path.abspath(__file__))
+    current_dir = Path(Path(__file__).resolve()).parent
     project_root = os.path.join(current_dir, "..", "..", "..", "..", "..")
     shared_path = os.path.join(project_root, "services", "shared")
-    sys.path.insert(0, os.path.abspath(shared_path))
+    sys.path.insert(0, Path(shared_path).resolve())
 
     from clients.tenant_service_client import TenantServiceClient, service_registry
     from middleware.tenant_middleware import (
@@ -31,9 +31,7 @@ try:
     )
 
     MULTI_TENANT_AVAILABLE = True
-    print("✅ Multi-tenant components loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Multi-tenant components not available: {e}")
+except ImportError:
     MULTI_TENANT_AVAILABLE = False
 
 # Import production security middleware
@@ -45,9 +43,7 @@ try:
     )
 
     SECURITY_MIDDLEWARE_AVAILABLE = True
-    print("✅ Production security middleware loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Production security middleware not available: {e}")
+except ImportError:
     SECURITY_MIDDLEWARE_AVAILABLE = False
 
 # Import leader election
@@ -56,9 +52,7 @@ try:
     from leader_election import create_leader_election_service, leader_required
 
     LEADER_ELECTION_AVAILABLE = True
-    print("✅ Leader election service loaded successfully")
-except ImportError as e:
-    print(f"⚠️ Leader election service not available: {e}")
+except ImportError:
     LEADER_ELECTION_AVAILABLE = False
 
 from fastapi import Depends, FastAPI, Request
@@ -129,11 +123,11 @@ async def lifespan(app: FastAPI):
 
     # Initialize advanced governance synthesis engine
     try:
-        policies_path = os.path.join(os.path.dirname(__file__), "..", "policies")
+        policies_path = os.path.join(Path(__file__).parent, "..", "policies")
         advanced_governance_engine = AdvancedGovernanceSynthesisEngine(policies_path)
         logger.info("✅ Advanced Governance Synthesis Engine initialized")
     except Exception as e:
-        logger.error(f"❌ Failed to initialize Advanced Governance Engine: {e}")
+        logger.exception(f"❌ Failed to initialize Advanced Governance Engine: {e}")
         advanced_governance_engine = None
 
     # Initialize leader election if enabled
@@ -152,7 +146,7 @@ async def lifespan(app: FastAPI):
             logger.info("✅ Leader election enabled for GS service")
 
         except Exception as e:
-            logger.error(f"❌ Failed to initialize leader election: {e}")
+            logger.exception(f"❌ Failed to initialize leader election: {e}")
             leader_election_service = None
     else:
         logger.info("⚠️ Leader election disabled for GS service")
@@ -202,10 +196,6 @@ if MULTI_TENANT_AVAILABLE:
 
     # Add tenant security middleware
     app.add_middleware(TenantSecurityMiddleware)
-
-    print("✅ Multi-tenant middleware applied to governance synthesis service")
-else:
-    print("⚠️ Multi-tenant middleware not available for governance synthesis service")
 
 
 @app.middleware("http")
@@ -258,9 +248,6 @@ if SECURITY_MIDDLEWARE_AVAILABLE:
         enable_threat_detection=True,
     )
     apply_production_security_middleware(app, "gs_service", security_config)
-    print("✅ Production security middleware applied to gs service")
-else:
-    print("⚠️ Security middleware not available for gs service")
 
 
 # Add secure CORS middleware with environment-based configuration
@@ -333,7 +320,7 @@ from .performance_optimizer import (
     get_synthesis_performance_metrics,
 )
 
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(os.path.join(Path(__file__).parent, ".."))
 from advanced_opa_engine import (
     AdvancedGovernanceSynthesisEngine,
     PolicyEvaluationContext,
@@ -420,7 +407,7 @@ async def synthesize_governance_as_leader(request: Request):
     logger.info("🏛️ Synthesizing governance as leader")
 
     try:
-        body = await request.json()
+        await request.json()
 
         # Leader-only governance synthesis logic
         return {
@@ -441,7 +428,7 @@ async def synthesize_governance_as_leader(request: Request):
         }
 
     except Exception as e:
-        logger.error(f"Leader synthesis error: {e}")
+        logger.exception(f"Leader synthesis error: {e}")
         return {"error": str(e), "status": "failed"}
 
 
@@ -506,7 +493,7 @@ async def synthesize_governance(
                 )
 
                 # Enhance with WINA optimization data
-                enhanced_result = {
+                return {
                     **advanced_result,
                     "wina_optimized": True,
                     "optimization_metrics": {
@@ -521,59 +508,54 @@ async def synthesize_governance(
                     "legacy_compatibility": True,
                 }
 
-                return enhanced_result
-
             # Fallback to legacy synthesis if advanced engine not available
-            else:
-                logger.warning(
-                    "Advanced governance engine not available, using legacy synthesis"
-                )
+            logger.warning(
+                "Advanced governance engine not available, using legacy synthesis"
+            )
 
-                # Enhanced governance synthesis response with optimization
-                synthesis_result = {
-                    "synthesis_id": f"gs_{int(time.time())}",
-                    "status": "completed",
-                    "wina_optimized": True,
-                    "governance_rules": [
-                        {
-                            "rule_id": "rule_001",
-                            "type": "constitutional_compliance",
-                            "description": (
-                                "Ensure all actions comply with constitutional hash"
-                            ),
-                            "priority": "high",
-                            "wina_weight": optimized_input.get(
-                                "weight_analysis", {}
-                            ).get("constitutional_weight", 0.95),
-                        },
-                        {
-                            "rule_id": "rule_002",
-                            "type": "policy_governance",
-                            "description": "WINA-optimized policy governance rule",
-                            "priority": "high",
-                            "optimization_score": optimized_input.get(
-                                "neuron_activation", {}
-                            ).get("activation_score", 0.89),
-                        },
-                    ],
-                    "optimization_metrics": {
-                        "wina_applied": optimized_input.get("wina_optimized", False),
-                        "optimization_level": optimized_input.get(
-                            "neuron_activation", {}
-                        ).get("optimization_level", "medium"),
-                        "confidence_score": optimized_input.get(
-                            "neuron_activation", {}
-                        ).get("confidence", 0.85),
+            # Enhanced governance synthesis response with optimization
+            return {
+                "synthesis_id": f"gs_{int(time.time())}",
+                "status": "completed",
+                "wina_optimized": True,
+                "governance_rules": [
+                    {
+                        "rule_id": "rule_001",
+                        "type": "constitutional_compliance",
+                        "description": (
+                            "Ensure all actions comply with constitutional hash"
+                        ),
+                        "priority": "high",
+                        "wina_weight": optimized_input.get("weight_analysis", {}).get(
+                            "constitutional_weight", 0.95
+                        ),
                     },
-                    "constitutional_hash": "cdd01ef066bc6cf2",
-                    "timestamp": datetime.now(timezone.utc).isoformat(),
-                    "legacy_mode": True,
-                }
-
-                return synthesis_result
+                    {
+                        "rule_id": "rule_002",
+                        "type": "policy_governance",
+                        "description": "WINA-optimized policy governance rule",
+                        "priority": "high",
+                        "optimization_score": optimized_input.get(
+                            "neuron_activation", {}
+                        ).get("activation_score", 0.89),
+                    },
+                ],
+                "optimization_metrics": {
+                    "wina_applied": optimized_input.get("wina_optimized", False),
+                    "optimization_level": optimized_input.get(
+                        "neuron_activation", {}
+                    ).get("optimization_level", "medium"),
+                    "confidence_score": optimized_input.get(
+                        "neuron_activation", {}
+                    ).get("confidence", 0.85),
+                },
+                "constitutional_hash": "cdd01ef066bc6cf2",
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "legacy_mode": True,
+            }
 
         except Exception as e:
-            logger.error(f"Synthesis error: {e}")
+            logger.exception(f"Synthesis error: {e}")
             return {
                 "error": str(e),
                 "status": "failed",
@@ -682,7 +664,7 @@ async def synthesize_governance_advanced(request: Request):
         return result
 
     except Exception as e:
-        logger.error(f"Advanced synthesis error: {e}")
+        logger.exception(f"Advanced synthesis error: {e}")
         return {
             "error": str(e),
             "status": "synthesis_failed",
@@ -731,7 +713,7 @@ async def evaluate_policy(request: Request):
         )
 
         # Format results
-        results = {
+        return {
             "evaluation_id": context.request_id,
             "policies_evaluated": policies,
             "decisions": [
@@ -742,10 +724,8 @@ async def evaluate_policy(request: Request):
             "constitutional_hash": "cdd01ef066bc6cf2",
         }
 
-        return results
-
     except Exception as e:
-        logger.error(f"Policy evaluation error: {e}")
+        logger.exception(f"Policy evaluation error: {e}")
         return {
             "error": str(e),
             "status": "evaluation_failed",
@@ -780,7 +760,7 @@ async def get_synthesis_performance_metrics():
             }
 
         except Exception as e:
-            logger.error(f"Performance metrics error: {e}")
+            logger.exception(f"Performance metrics error: {e}")
             return {
                 "error": str(e),
                 "optimization_status": "error",
@@ -800,7 +780,7 @@ async def get_policy_catalog():
                 "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
-        catalog = {
+        return {
             "policy_catalog": advanced_governance_engine.policy_catalog,
             "total_policies": len(advanced_governance_engine.policy_catalog),
             "policy_dependencies": len(advanced_governance_engine.policy_graph.edges()),
@@ -808,10 +788,8 @@ async def get_policy_catalog():
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
-        return catalog
-
     except Exception as e:
-        logger.error(f"Policy catalog error: {e}")
+        logger.exception(f"Policy catalog error: {e}")
         return {
             "error": str(e),
             "status": "catalog_error",

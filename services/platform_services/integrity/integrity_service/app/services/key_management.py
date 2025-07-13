@@ -10,10 +10,10 @@ import secrets
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
+from app.models import CryptoKey
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..models import CryptoKey
 from .crypto_service import crypto_service
 
 # Constitutional compliance hash for ACGS
@@ -67,7 +67,7 @@ class KeyManagementService:
         """
         # Simple XOR encryption for demo - use proper encryption in production
         key_bytes = private_key_pem.encode("utf-8")
-        encrypted = bytes(
+        return bytes(
             a ^ b
             for a, b in zip(
                 key_bytes,
@@ -75,7 +75,6 @@ class KeyManagementService:
                 strict=False,
             )
         )
-        return encrypted
 
     def _decrypt_private_key(self, encrypted_key: bytes) -> str:
         """
@@ -104,8 +103,8 @@ class KeyManagementService:
         self,
         db: AsyncSession,
         purpose: str = "signing",
-        key_size: int = None,
-        expires_days: int = None,
+        key_size: int | None = None,
+        expires_days: int | None = None,
     ) -> dict[str, Any]:
         """
         Generate new signing key pair
@@ -161,7 +160,7 @@ class KeyManagementService:
             }
 
         except Exception as e:
-            logger.error(f"Error generating signing key: {e}")
+            logger.exception(f"Error generating signing key: {e}")
             await db.rollback()
             raise
 
@@ -214,7 +213,7 @@ class KeyManagementService:
             }
 
         except Exception as e:
-            logger.error(f"Error getting active signing key: {e}")
+            logger.exception(f"Error getting active signing key: {e}")
             return None
 
     async def get_public_key(self, db: AsyncSession, key_id: str) -> str | None:
@@ -238,7 +237,7 @@ class KeyManagementService:
             return None
 
         except Exception as e:
-            logger.error(f"Error getting public key {key_id}: {e}")
+            logger.exception(f"Error getting public key {key_id}: {e}")
             return None
 
     async def rotate_key(
@@ -292,7 +291,7 @@ class KeyManagementService:
             return new_key_info
 
         except Exception as e:
-            logger.error(f"Error rotating key {old_key_id}: {e}")
+            logger.exception(f"Error rotating key {old_key_id}: {e}")
             await db.rollback()
             raise
 
@@ -331,12 +330,12 @@ class KeyManagementService:
             return False
 
         except Exception as e:
-            logger.error(f"Error revoking key {key_id}: {e}")
+            logger.exception(f"Error revoking key {key_id}: {e}")
             await db.rollback()
             return False
 
     async def list_keys(
-        self, db: AsyncSession, purpose: str = None, active_only: bool = False
+        self, db: AsyncSession, purpose: str | None = None, active_only: bool = False
     ) -> list[dict[str, Any]]:
         """
         List cryptographic keys
@@ -386,7 +385,7 @@ class KeyManagementService:
             ]
 
         except Exception as e:
-            logger.error(f"Error listing keys: {e}")
+            logger.exception(f"Error listing keys: {e}")
             return []
 
 

@@ -43,8 +43,7 @@ async def create_audit_log_endpoint(  # Changed to async def
     ),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_internal_service),
 ):
-    created_log = await crud.create_audit_log(db=db, log_entry=log_entry)  # Added await
-    return created_log
+    return await crud.create_audit_log(db=db, log_entry=log_entry)  # Added await
 
 
 @router.get("/", response_model=schemas.AuditLogList)

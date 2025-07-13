@@ -8,7 +8,7 @@ and satisfiability checking with constitutional compliance.
 import uuid
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 
 from pydantic import BaseModel, Field
 
@@ -57,12 +57,12 @@ class SMTFormula(BaseModel):
     # Formula content
     formula: str = Field(..., description="SMT-LIB formula")
     logic: SMTLogic = Field(default=SMTLogic.ALL, description="SMT logic")
-    variables: List[str] = Field(default_factory=list, description="Formula variables")
+    variables: list[str] = Field(default_factory=list, description="Formula variables")
 
     # Formula metadata
     formula_type: str = Field(default="assertion", description="Type of formula")
     complexity_estimate: int = Field(default=1, ge=1, le=10)
-    expected_result: Optional[SMTResult] = Field(
+    expected_result: SMTResult | None = Field(
         None, description="Expected solver result"
     )
 
@@ -85,7 +85,7 @@ class SMTModel(BaseModel):
     formula_id: str = Field(..., description="Associated formula ID")
 
     # Model content
-    assignments: Dict[str, Union[int, float, bool, str]] = Field(
+    assignments: dict[str, int | float | bool | str] = Field(
         ..., description="Variable assignments"
     )
     model_string: str = Field(..., description="Model in SMT-LIB format")
@@ -117,7 +117,7 @@ class SMTSolverRequest(BaseModel):
     solver_type: SMTSolverType = Field(default=SMTSolverType.Z3)
 
     # Solver input
-    formulas: List[SMTFormula] = Field(..., description="Formulas to solve")
+    formulas: list[SMTFormula] = Field(..., description="Formulas to solve")
     logic: SMTLogic = Field(default=SMTLogic.ALL, description="SMT logic to use")
 
     # Solver parameters
@@ -133,7 +133,7 @@ class SMTSolverRequest(BaseModel):
     )
 
     # Solver options
-    solver_options: Dict[str, Any] = Field(
+    solver_options: dict[str, Any] = Field(
         default_factory=dict, description="Solver-specific options"
     )
 
@@ -142,7 +142,7 @@ class SMTSolverRequest(BaseModel):
     safety_critical: bool = Field(default=False)
 
     # Context
-    verification_context: Dict[str, Any] = Field(default_factory=dict)
+    verification_context: dict[str, Any] = Field(default_factory=dict)
     requester_id: str = Field(..., description="Requester ID")
 
     # Metadata
@@ -161,8 +161,8 @@ class Z3ProofResult(BaseModel):
 
     # Proof content
     proof_object: str = Field(..., description="Z3 proof object")
-    proof_steps: List[str] = Field(default_factory=list, description="Proof steps")
-    proof_core: List[str] = Field(
+    proof_steps: list[str] = Field(default_factory=list, description="Proof steps")
+    proof_core: list[str] = Field(
         default_factory=list, description="Unsatisfiable core"
     )
 
@@ -197,11 +197,11 @@ class SMTSolverResponse(BaseModel):
     solver_used: SMTSolverType = Field(..., description="Solver that was used")
 
     # Result details
-    satisfiable: Optional[bool] = Field(
+    satisfiable: bool | None = Field(
         None, description="Whether formulas are satisfiable"
     )
-    model: Optional[SMTModel] = Field(None, description="Satisfying model if SAT")
-    proof: Optional[Z3ProofResult] = Field(None, description="Proof if UNSAT")
+    model: SMTModel | None = Field(None, description="Satisfying model if SAT")
+    proof: Z3ProofResult | None = Field(None, description="Proof if UNSAT")
 
     # Solver metrics
     solving_time_ms: float = Field(..., description="Solving time in milliseconds")
@@ -221,8 +221,8 @@ class SMTSolverResponse(BaseModel):
     constitutional_compliance_score: float = Field(default=0.0, ge=0.0, le=1.0)
 
     # Error handling
-    errors: List[str] = Field(default_factory=list, description="Solver errors")
-    warnings: List[str] = Field(default_factory=list, description="Solver warnings")
+    errors: list[str] = Field(default_factory=list, description="Solver errors")
+    warnings: list[str] = Field(default_factory=list, description="Solver warnings")
 
     # Metadata
     completed_at: datetime = Field(default_factory=datetime.utcnow)

@@ -102,10 +102,7 @@ if __name__ == "__main__":
             sample_principles
         )
 
-        print("Generated Proof Obligations:")
-        for ob in all_generated_obligations:
-            print(f"  Principle ID: {ob.principle_id}")
-            print(f"  Description: {ob.description}")
-            print(f"  Obligation Content: {ob.obligation_content}\n")
+        for _ob in all_generated_obligations:
+            pass
 
     asyncio.run(test_proof_obligation_generation())

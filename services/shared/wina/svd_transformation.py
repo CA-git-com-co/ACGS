@@ -170,7 +170,7 @@ class SVDTransformation:
             return result
 
         except Exception as e:
-            logger.error(f"SVD transformation failed for {layer_name}: {e}")
+            logger.exception(f"SVD transformation failed for {layer_name}: {e}")
             raise WINATransformationError(f"SVD transformation failed: {e}")
 
     def verify_computational_invariance(
@@ -244,7 +244,7 @@ class SVDTransformation:
             return metrics
 
         except Exception as e:
-            logger.error(f"Computational invariance verification failed: {e}")
+            logger.exception(f"Computational invariance verification failed: {e}")
             raise WINATransformationError(f"Invariance verification failed: {e}")
 
     def _validate_input_matrix(self, matrix: torch.Tensor) -> None:
@@ -322,7 +322,7 @@ class SVDTransformation:
                 reconstruction_error / torch.norm(original).item()
             )
 
-            stability_metrics = {
+            return {
                 "condition_number": condition_number,
                 "u_orthogonality_error": u_orthogonality,
                 "vt_orthogonality_error": vt_orthogonality,
@@ -332,8 +332,6 @@ class SVDTransformation:
                 "numerical_rank": len(S),
                 "effective_rank": torch.sum(1e-10 * S[0] < S).item(),
             }
-
-            return stability_metrics
 
         except Exception as e:
             logger.warning(f"Numerical stability assessment failed: {e}")
@@ -351,7 +349,7 @@ class SVDTransformation:
 
         results = list(self._transformation_cache.values())
 
-        stats = {
+        return {
             "total_transformations": len(results),
             "average_compression_ratio": np.mean(
                 [r.compression_ratio for r in results]
@@ -359,7 +357,7 @@ class SVDTransformation:
             "average_transformation_time": np.mean(
                 [r.transformation_time for r in results]
             ),
-            "total_transformation_time": sum([r.transformation_time for r in results]),
+            "total_transformation_time": sum(r.transformation_time for r in results),
             "rank_reductions": [r.rank_reduction for r in results],
             "numerical_stability_summary": {
                 "average_condition_number": np.mean(
@@ -373,8 +371,6 @@ class SVDTransformation:
                 ),
             },
         }
-
-        return stats
 
     def clear_cache(self) -> None:
         """Clear transformation cache."""
@@ -443,7 +439,7 @@ class OrthogonalityProtocol:
                     )
 
             except Exception as e:
-                logger.error(f"Orthogonality protocol failed for {layer_name}: {e}")
+                logger.exception(f"Orthogonality protocol failed for {layer_name}: {e}")
                 raise WINATransformationError(
                     f"Protocol application failed for {layer_name}: {e}"
                 )
@@ -495,7 +491,7 @@ class OrthogonalityProtocol:
                     )
 
             except Exception as e:
-                logger.error(f"Compliance validation failed for {layer_name}: {e}")
+                logger.exception(f"Compliance validation failed for {layer_name}: {e}")
                 compliance[layer_name] = False
 
         return compliance

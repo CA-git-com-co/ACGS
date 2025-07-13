@@ -7,7 +7,7 @@ and tool execution within the ACGS constitutional AI framework.
 
 import logging
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, Field, validator
@@ -38,7 +38,7 @@ class WorkflowRequest(BaseModel):
     """Request model for creating policy generation workflows"""
 
     name: str = Field(..., min_length=1, max_length=100, description="Workflow name")
-    description: Optional[str] = Field(
+    description: str | None = Field(
         None, max_length=500, description="Workflow description"
     )
     requirements: dict[str, Any] = Field(
@@ -50,7 +50,7 @@ class WorkflowRequest(BaseModel):
     priority: str = Field(default="medium", description="Workflow priority level")
 
     @validator("coordination_strategy")
-    def validate_coordination_strategy(cls, v):
+    def validate_coordination_strategy(self, v):
         valid_strategies = [
             "sequential",
             "parallel",
@@ -65,7 +65,7 @@ class WorkflowRequest(BaseModel):
         return v
 
     @validator("priority")
-    def validate_priority(cls, v):
+    def validate_priority(self, v):
         valid_priorities = ["low", "medium", "high", "critical"]
         if v not in valid_priorities:
             raise ValueError(f"Invalid priority. Must be one of: {valid_priorities}")
@@ -80,9 +80,7 @@ class AgentRequest(BaseModel):
     capabilities: list[str] = Field(
         ..., min_items=1, description="List of agent capabilities"
     )
-    domain: Optional[str] = Field(
-        None, max_length=50, description="Domain specialization"
-    )
+    domain: str | None = Field(None, max_length=50, description="Domain specialization")
     priority: str = Field(default="medium", description="Agent priority level")
     reporting_level: str = Field(
         default="standard", description="Reporting detail level"
@@ -103,7 +101,7 @@ class ToolExecutionRequest(BaseModel):
     priority: int = Field(
         default=5, ge=1, le=10, description="Execution priority (1-10)"
     )
-    timeout_seconds: Optional[int] = Field(
+    timeout_seconds: int | None = Field(
         None, ge=1, le=3600, description="Execution timeout"
     )
     metadata: dict[str, Any] = Field(
@@ -123,8 +121,8 @@ class WorkflowResponse(BaseModel):
     assigned_agents: int
     generated_policies: int
     start_time: str
-    estimated_completion: Optional[str]
-    actual_completion: Optional[str]
+    estimated_completion: str | None
+    actual_completion: str | None
     success_metrics: dict[str, Any]
     errors: int
     constitutional_hash: str = CONSTITUTIONAL_HASH
@@ -158,18 +156,18 @@ class ToolExecutionResponse(BaseModel):
     tool_id: str
     agent_id: str
     status: str
-    result: Optional[dict[str, Any]]
-    error_message: Optional[str]
+    result: dict[str, Any] | None
+    error_message: str | None
     execution_time_seconds: float
     resource_usage: dict[str, Any]
     started_at: str
-    completed_at: Optional[str]
+    completed_at: str | None
     audit_trail: list[dict[str, Any]]
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
 # Global APGF orchestrator instance
-_apgf_orchestrator: Optional[APGFOrchestrator] = None
+_apgf_orchestrator: APGFOrchestrator | None = None
 
 
 async def get_apgf_orchestrator() -> APGFOrchestrator:
@@ -235,10 +233,10 @@ async def create_workflow(
         return WorkflowResponse(**workflow_status)
 
     except ValueError as e:
-        logger.error(f"Invalid workflow request: {e!s}")
+        logger.exception(f"Invalid workflow request: {e!s}")
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to create workflow: {e!s}")
+        logger.exception(f"Failed to create workflow: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -261,7 +259,7 @@ async def get_workflow_status(
     except ValueError:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Workflow not found")
     except Exception as e:
-        logger.error(f"Failed to get workflow status: {e!s}")
+        logger.exception(f"Failed to get workflow status: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -291,7 +289,7 @@ async def cancel_workflow(
     except ValueError:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Workflow not found")
     except Exception as e:
-        logger.error(f"Failed to cancel workflow: {e!s}")
+        logger.exception(f"Failed to cancel workflow: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -329,10 +327,10 @@ async def create_agent(
         return AgentResponse(**agent_status)
 
     except ValueError as e:
-        logger.error(f"Invalid agent request: {e!s}")
+        logger.exception(f"Invalid agent request: {e!s}")
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to create agent: {e!s}")
+        logger.exception(f"Failed to create agent: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -355,7 +353,7 @@ async def get_agent_status(
     except ValueError:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Agent not found")
     except Exception as e:
-        logger.error(f"Failed to get agent status: {e!s}")
+        logger.exception(f"Failed to get agent status: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -385,7 +383,7 @@ async def shutdown_agent(
     except ValueError:
         raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Agent not found")
     except Exception as e:
-        logger.error(f"Failed to shutdown agent: {e!s}")
+        logger.exception(f"Failed to shutdown agent: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -451,10 +449,10 @@ async def execute_tool(
         return ToolExecutionResponse(**response_data)
 
     except ValueError as e:
-        logger.error(f"Invalid tool execution request: {e!s}")
+        logger.exception(f"Invalid tool execution request: {e!s}")
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to execute tool: {e!s}")
+        logger.exception(f"Failed to execute tool: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -462,8 +460,8 @@ async def execute_tool(
 
 @router.get("/tools/available")
 async def get_available_tools(
-    agent_id: Optional[str] = None,
-    safety_level: Optional[str] = None,
+    agent_id: str | None = None,
+    safety_level: str | None = None,
     orchestrator: APGFOrchestrator = Depends(get_apgf_orchestrator),
 ) -> dict[str, Any]:
     """
@@ -484,23 +482,22 @@ async def get_available_tools(
         )
 
         # Convert to response format
-        tools_data = []
-        for tool in tools:
-            tools_data.append(
-                {
-                    "tool_id": tool.tool_id,
-                    "name": tool.name,
-                    "description": tool.description,
-                    "safety_level": tool.safety_level.value,
-                    "required_permissions": [
-                        perm.value for perm in tool.required_permissions
-                    ],
-                    "rate_limit_per_hour": tool.rate_limit_per_hour,
-                    "max_execution_time_seconds": tool.max_execution_time_seconds,
-                    "tags": tool.tags,
-                    "version": tool.version,
-                }
-            )
+        tools_data = [
+            {
+                "tool_id": tool.tool_id,
+                "name": tool.name,
+                "description": tool.description,
+                "safety_level": tool.safety_level.value,
+                "required_permissions": [
+                    perm.value for perm in tool.required_permissions
+                ],
+                "rate_limit_per_hour": tool.rate_limit_per_hour,
+                "max_execution_time_seconds": tool.max_execution_time_seconds,
+                "tags": tool.tags,
+                "version": tool.version,
+            }
+            for tool in tools
+        ]
 
         return {
             "tools": tools_data,
@@ -512,10 +509,10 @@ async def get_available_tools(
         }
 
     except ValueError as e:
-        logger.error(f"Invalid tools request: {e!s}")
+        logger.exception(f"Invalid tools request: {e!s}")
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"Failed to get available tools: {e!s}")
+        logger.exception(f"Failed to get available tools: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )
@@ -544,7 +541,7 @@ async def get_apgf_status(
         }
 
     except Exception as e:
-        logger.error(f"Failed to get APGF status: {e!s}")
+        logger.exception(f"Failed to get APGF status: {e!s}")
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error"
         )

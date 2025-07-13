@@ -10,7 +10,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import structlog
 from pythonjsonlogger import jsonlogger
@@ -139,7 +139,7 @@ class SecurityLogger:
     def log_authentication_event(
         self,
         event_type: str,
-        user_id: Optional[str] = None,
+        user_id: str | None = None,
         success: bool = True,
         **kwargs,
     ) -> None:
@@ -203,7 +203,7 @@ class SecurityLogger:
 def setup_logging(
     log_level: str = "INFO",
     log_format: str = "json",
-    log_file: Optional[str] = None,
+    log_file: str | None = None,
     enable_console: bool = True,
 ) -> None:
     """
@@ -306,11 +306,9 @@ def get_logger(name: str) -> logging.Logger:
     Returns:
         logging.Logger: Configured logger
     """
-    logger = logging.getLogger(f"acgs.code_analysis.{name}")
+    return logging.getLogger(f"acgs.code_analysis.{name}")
 
     # Constitutional hash will be added via the formatter
-
-    return logger
 
 
 # Global logger instances
@@ -321,8 +319,8 @@ security_logger = SecurityLogger()
 def log_api_request(
     method: str,
     path: str,
-    user_id: Optional[str] = None,
-    request_id: Optional[str] = None,
+    user_id: str | None = None,
+    request_id: str | None = None,
     **kwargs,
 ) -> None:
     """Log API request with constitutional compliance."""
@@ -345,8 +343,8 @@ def log_api_response(
     path: str,
     status_code: int,
     duration_ms: float,
-    user_id: Optional[str] = None,
-    request_id: Optional[str] = None,
+    user_id: str | None = None,
+    request_id: str | None = None,
     **kwargs,
 ) -> None:
     """Log API response with constitutional compliance."""

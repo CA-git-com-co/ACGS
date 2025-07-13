@@ -1,6 +1,13 @@
 # backend/auth_service/app/api/v1/endpoints_unified.py
 # Updated Authentication Service with Unified Response Format
 
+import pathlib
+
+# Application-specific imports
+from app.core import security
+from app.core.config import settings
+from app.crud import crud_refresh_token, crud_user
+from app.models import User  # RefreshToken model not directly used here, but in crud
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_csrf_protect import CsrfProtect
@@ -10,11 +17,6 @@ from jose import JWTError, jwt  # For decoding in /logout and /token/refresh
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
-# Application-specific imports
-from ...core import security
-from ...core.config import settings
-from ...crud import crud_refresh_token, crud_user
-from ...models import User  # RefreshToken model not directly used here, but in crud
 from . import deps  # Assuming deps.get_db is correctly defined for AsyncSession
 
 # Constitutional compliance
@@ -33,7 +35,6 @@ try:
 except ImportError:
     # Fallback for when shared module is not available
     UNIFIED_RESPONSE_AVAILABLE = False
-    print("Warning: Unified response module not available, using legacy format")
 
 
 class Token(BaseModel):
@@ -207,7 +208,7 @@ async def login_for_access_token(
             )
 
         # Create access token
-        access_token_str, access_jti = security.create_access_token(
+        access_token_str, _access_jti = security.create_access_token(
             subject=user_obj.username, user_id=user_obj.id, roles=[user_obj.role]
         )
 
@@ -226,7 +227,7 @@ async def login_for_access_token(
         )
 
         # Set CSRF token using correct API
-        csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
+        _csrf_token, signed_token = csrf_protect.generate_csrf_tokens()
         csrf_protect.set_csrf_cookie(signed_token, response)
 
         # Set HttpOnly cookies for tokens
@@ -373,7 +374,7 @@ async def logout(
             return UnifiedJSONResponse(content=success_response)
         return {"message": "Logout successful"}
 
-    except Exception as e:
+    except Exception:
         if UNIFIED_RESPONSE_AVAILABLE:
             error_response = response_builder.error(
                 message="Logout failed", error_code="LOGOUT_ERROR"
@@ -396,17 +397,21 @@ async def validate_token(
     Critical security endpoint that validates tokens from other services.
     Optimized with multi-tier caching for sub-5ms P99 latency.
     """
-    from datetime import datetime
     import hashlib
-    import json
-    import time
+    import os
 
     # Import multi-tier cache
     import sys
-    import os
-    sys.path.append(os.path.join(os.path.dirname(__file__), '../../../../../../shared/performance'))
+    import time
+    from datetime import datetime
+
+    sys.path.append(
+        os.path.join(
+            pathlib.Path(__file__).parent, "../../../../../../shared/performance"
+        )
+    )
     try:
-        from multi_tier_cache import get_cached_jwt_validation, cache_jwt_validation
+        from multi_tier_cache import cache_jwt_validation, get_cached_jwt_validation
     except ImportError:
         # Fallback if cache not available
         get_cached_jwt_validation = None
@@ -420,7 +425,7 @@ async def validate_token(
             valid=False,
             reason="Invalid constitutional hash",
             constitutional_hash=CONSTITUTIONAL_HASH,
-            validated_at=datetime.now().isoformat()
+            validated_at=datetime.now().isoformat(),
         )
 
     try:
@@ -439,7 +444,7 @@ async def validate_token(
                     processing_time = (time.perf_counter() - start_time) * 1000
                     cached_result["processing_time_ms"] = processing_time
                     return TokenValidationResponse(**cached_result)
-            except Exception as cache_error:
+            except Exception:
                 # Log cache error but continue with validation
                 pass
 
@@ -451,7 +456,7 @@ async def validate_token(
                 "valid": False,
                 "reason": "Invalid or expired token",
                 "constitutional_hash": CONSTITUTIONAL_HASH,
-                "validated_at": datetime.now().isoformat()
+                "validated_at": datetime.now().isoformat(),
             }
             return TokenValidationResponse(**validation_result)
 
@@ -462,7 +467,7 @@ async def validate_token(
                 "valid": False,
                 "reason": "User not found or inactive",
                 "constitutional_hash": CONSTITUTIONAL_HASH,
-                "validated_at": datetime.now().isoformat()
+                "validated_at": datetime.now().isoformat(),
             }
             return TokenValidationResponse(**validation_result)
 
@@ -474,14 +479,14 @@ async def validate_token(
             "roles": [user_obj.role] if user_obj.role else [],
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "validated_at": datetime.now().isoformat(),
-            "cache_hit": False
+            "cache_hit": False,
         }
 
         # Cache the successful validation result (1 hour TTL)
         if cache_jwt_validation:
             try:
                 await cache_jwt_validation(token_hash, validation_result)
-            except Exception as cache_error:
+            except Exception:
                 # Log cache error but don't fail the request
                 pass
 
@@ -493,9 +498,9 @@ async def validate_token(
     except Exception as e:
         validation_result = {
             "valid": False,
-            "reason": f"Token validation error: {str(e)}",
+            "reason": f"Token validation error: {e!s}",
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "validated_at": datetime.now().isoformat()
+            "validated_at": datetime.now().isoformat(),
         }
         return TokenValidationResponse(**validation_result)
 

@@ -6,17 +6,17 @@ Advanced feature flags with conditions, rollout strategies, and A/B testing.
 """
 
 import hashlib
-import json
 import logging
 import threading
 import time
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any
 
-from ..resilience.exceptions import ConfigurationError
+from shared.resilience.exceptions import ConfigurationError
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +46,10 @@ class UserContext:
     """User context for feature flag evaluation."""
 
     user_id: str
-    attributes: Dict[str, Any] = field(default_factory=dict)
-    groups: List[str] = field(default_factory=list)
-    tenant_id: Optional[str] = None
-    session_id: Optional[str] = None
+    attributes: dict[str, Any] = field(default_factory=dict)
+    groups: list[str] = field(default_factory=list)
+    tenant_id: str | None = None
+    session_id: str | None = None
 
     def get_attribute(self, key: str, default: Any = None) -> Any:
         """Get user attribute."""
@@ -59,7 +59,7 @@ class UserContext:
         """Check if user belongs to group."""
         return group in self.groups
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return {
             "user_id": self.user_id,
@@ -76,12 +76,10 @@ class FeatureFlagCondition(ABC):
     @abstractmethod
     def evaluate(self, context: UserContext) -> bool:
         """Evaluate condition against user context."""
-        pass
 
     @abstractmethod
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert condition to dictionary."""
-        pass
 
 
 class PercentageCondition(FeatureFlagCondition):
@@ -94,7 +92,7 @@ class PercentageCondition(FeatureFlagCondition):
     def evaluate(self, context: UserContext) -> bool:
         """Evaluate percentage condition."""
         # Create deterministic hash based on user ID and salt
-        hash_input = f"{context.user_id}{self.salt}".encode("utf-8")
+        hash_input = f"{context.user_id}{self.salt}".encode()
         hash_value = hashlib.md5(hash_input).hexdigest()
 
         # Convert first 8 chars of hash to integer and get percentage
@@ -103,14 +101,14 @@ class PercentageCondition(FeatureFlagCondition):
 
         return user_percentage < self.percentage
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {"type": "percentage", "percentage": self.percentage, "salt": self.salt}
 
 
 class UserListCondition(FeatureFlagCondition):
     """User list condition."""
 
-    def __init__(self, user_ids: List[str], include: bool = True):
+    def __init__(self, user_ids: list[str], include: bool = True):
         self.user_ids = set(user_ids)
         self.include = include
 
@@ -119,7 +117,7 @@ class UserListCondition(FeatureFlagCondition):
         is_in_list = context.user_id in self.user_ids
         return is_in_list if self.include else not is_in_list
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "type": "user_list",
             "user_ids": list(self.user_ids),
@@ -144,39 +142,38 @@ class AttributeCondition(FeatureFlagCondition):
 
         if self.operator == "equals":
             return user_value == self.value
-        elif self.operator == "not_equals":
+        if self.operator == "not_equals":
             return user_value != self.value
-        elif self.operator == "in":
+        if self.operator == "in":
             return (
                 user_value in self.value
                 if isinstance(self.value, (list, tuple, set))
                 else False
             )
-        elif self.operator == "not_in":
+        if self.operator == "not_in":
             return (
                 user_value not in self.value
                 if isinstance(self.value, (list, tuple, set))
                 else True
             )
-        elif self.operator == "greater_than":
+        if self.operator == "greater_than":
             return user_value > self.value
-        elif self.operator == "less_than":
+        if self.operator == "less_than":
             return user_value < self.value
-        elif self.operator == "greater_equal":
+        if self.operator == "greater_equal":
             return user_value >= self.value
-        elif self.operator == "less_equal":
+        if self.operator == "less_equal":
             return user_value <= self.value
-        elif self.operator == "contains":
+        if self.operator == "contains":
             return str(self.value) in str(user_value)
-        elif self.operator == "starts_with":
+        if self.operator == "starts_with":
             return str(user_value).startswith(str(self.value))
-        elif self.operator == "ends_with":
+        if self.operator == "ends_with":
             return str(user_value).endswith(str(self.value))
-        else:
-            logger.warning(f"Unknown operator: {self.operator}")
-            return False
+        logger.warning(f"Unknown operator: {self.operator}")
+        return False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "type": "attribute",
             "attribute": self.attribute,
@@ -188,7 +185,7 @@ class AttributeCondition(FeatureFlagCondition):
 class GroupCondition(FeatureFlagCondition):
     """User group condition."""
 
-    def __init__(self, groups: List[str], require_all: bool = False):
+    def __init__(self, groups: list[str], require_all: bool = False):
         self.groups = set(groups)
         self.require_all = require_all
 
@@ -198,10 +195,9 @@ class GroupCondition(FeatureFlagCondition):
 
         if self.require_all:
             return self.groups.issubset(user_groups)
-        else:
-            return bool(self.groups.intersection(user_groups))
+        return bool(self.groups.intersection(user_groups))
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "type": "group",
             "groups": list(self.groups),
@@ -213,7 +209,7 @@ class TimeBasedCondition(FeatureFlagCondition):
     """Time-based condition."""
 
     def __init__(
-        self, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None
+        self, start_time: datetime | None = None, end_time: datetime | None = None
     ):
         self.start_time = start_time
         self.end_time = end_time
@@ -225,12 +221,9 @@ class TimeBasedCondition(FeatureFlagCondition):
         if self.start_time and now < self.start_time:
             return False
 
-        if self.end_time and now > self.end_time:
-            return False
+        return not (self.end_time and now > self.end_time)
 
-        return True
-
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "type": "time_based",
             "start_time": self.start_time.isoformat() if self.start_time else None,
@@ -241,7 +234,7 @@ class TimeBasedCondition(FeatureFlagCondition):
 class CompositeCondition(FeatureFlagCondition):
     """Composite condition combining multiple conditions."""
 
-    def __init__(self, conditions: List[FeatureFlagCondition], operator: str = "and"):
+    def __init__(self, conditions: list[FeatureFlagCondition], operator: str = "and"):
         self.conditions = conditions
         self.operator = operator  # "and", "or"
 
@@ -254,13 +247,12 @@ class CompositeCondition(FeatureFlagCondition):
 
         if self.operator == "and":
             return all(results)
-        elif self.operator == "or":
+        if self.operator == "or":
             return any(results)
-        else:
-            logger.warning(f"Unknown composite operator: {self.operator}")
-            return False
+        logger.warning(f"Unknown composite operator: {self.operator}")
+        return False
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "type": "composite",
             "operator": self.operator,
@@ -275,11 +267,11 @@ class FeatureFlag:
     name: str
     description: str = ""
     status: FeatureFlagStatus = FeatureFlagStatus.DISABLED
-    conditions: List[FeatureFlagCondition] = field(default_factory=list)
+    conditions: list[FeatureFlagCondition] = field(default_factory=list)
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime = field(default_factory=datetime.utcnow)
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
+    tags: list[str] = field(default_factory=list)
+    metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self):
         """Initialize feature flag with constitutional compliance."""
@@ -289,16 +281,12 @@ class FeatureFlag:
         """Check if feature flag is enabled for user."""
         if self.status == FeatureFlagStatus.ENABLED:
             return True
-        elif self.status == FeatureFlagStatus.DISABLED:
+        if self.status == FeatureFlagStatus.DISABLED:
             return False
-        elif self.status in [FeatureFlagStatus.CONDITIONAL, FeatureFlagStatus.ROLLOUT]:
+        if self.status in {FeatureFlagStatus.CONDITIONAL, FeatureFlagStatus.ROLLOUT}:
             # Evaluate all conditions
-            for condition in self.conditions:
-                if not condition.evaluate(context):
-                    return False
-            return True
-        else:
-            return False
+            return all(condition.evaluate(context) for condition in self.conditions)
+        return False
 
     def add_condition(self, condition: FeatureFlagCondition) -> None:
         """Add condition to feature flag."""
@@ -311,7 +299,7 @@ class FeatureFlag:
             self.conditions.pop(condition_index)
             self.updated_at = datetime.utcnow()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert feature flag to dictionary."""
         return {
             "name": self.name,
@@ -330,19 +318,19 @@ class FeatureFlagManager:
 
     def __init__(self, name: str = "acgs_feature_flags"):
         self.name = name
-        self._flags: Dict[str, FeatureFlag] = {}
-        self._evaluations: Dict[str, int] = {}  # Track evaluation counts
-        self._cache: Dict[str, Tuple[bool, float]] = {}  # Simple cache with TTL
+        self._flags: dict[str, FeatureFlag] = {}
+        self._evaluations: dict[str, int] = {}  # Track evaluation counts
+        self._cache: dict[str, Tuple[bool, float]] = {}  # Simple cache with TTL
         self._cache_ttl = 300  # 5 minutes
         self._lock = threading.RLock()
-        self._change_callbacks: List[Callable[[str, FeatureFlag], None]] = []
+        self._change_callbacks: list[Callable[[str, FeatureFlag], None]] = []
 
     def create_flag(
         self,
         name: str,
         description: str = "",
         status: FeatureFlagStatus = FeatureFlagStatus.DISABLED,
-        tags: List[str] = None,
+        tags: list[str] | None = None,
     ) -> FeatureFlag:
         """Create a new feature flag."""
         with self._lock:
@@ -366,8 +354,8 @@ class FeatureFlagManager:
         self,
         name: str,
         status: FeatureFlagStatus = None,
-        description: str = None,
-        tags: List[str] = None,
+        description: str | None = None,
+        tags: list[str] | None = None,
     ) -> FeatureFlag:
         """Update existing feature flag."""
         with self._lock:
@@ -406,12 +394,12 @@ class FeatureFlagManager:
 
             logger.info(f"Deleted feature flag: {name}")
 
-    def get_flag(self, name: str) -> Optional[FeatureFlag]:
+    def get_flag(self, name: str) -> FeatureFlag | None:
         """Get feature flag by name."""
         with self._lock:
             return self._flags.get(name)
 
-    def list_flags(self) -> List[FeatureFlag]:
+    def list_flags(self) -> list[FeatureFlag]:
         """List all feature flags."""
         with self._lock:
             return list(self._flags.values())
@@ -464,7 +452,7 @@ class FeatureFlagManager:
         self._notify_change_callbacks(flag_name, flag)
 
     def add_user_list(
-        self, flag_name: str, user_ids: List[str], include: bool = True
+        self, flag_name: str, user_ids: list[str], include: bool = True
     ) -> None:
         """Add user list condition to feature flag."""
         flag = self.get_flag(flag_name)
@@ -493,14 +481,13 @@ class FeatureFlagManager:
         self._clear_flag_cache(flag_name)
         self._notify_change_callbacks(flag_name, flag)
 
-    def _get_cached_result(self, cache_key: str) -> Optional[bool]:
+    def _get_cached_result(self, cache_key: str) -> bool | None:
         """Get cached evaluation result."""
         if cache_key in self._cache:
             result, timestamp = self._cache[cache_key]
             if time.time() - timestamp < self._cache_ttl:
                 return result
-            else:
-                del self._cache[cache_key]
+            del self._cache[cache_key]
         return None
 
     def _cache_result(self, cache_key: str, result: bool) -> None:
@@ -509,9 +496,7 @@ class FeatureFlagManager:
 
     def _clear_flag_cache(self, flag_name: str) -> None:
         """Clear cache entries for specific flag."""
-        keys_to_remove = [
-            key for key in self._cache.keys() if key.startswith(f"{flag_name}:")
-        ]
+        keys_to_remove = [key for key in self._cache if key.startswith(f"{flag_name}:")]
         for key in keys_to_remove:
             del self._cache[key]
 
@@ -530,9 +515,9 @@ class FeatureFlagManager:
             try:
                 callback(flag_name, flag)
             except Exception as e:
-                logger.error(f"Error in feature flag change callback: {e}")
+                logger.exception(f"Error in feature flag change callback: {e}")
 
-    def get_flag_stats(self, flag_name: str) -> Dict[str, Any]:
+    def get_flag_stats(self, flag_name: str) -> dict[str, Any]:
         """Get statistics for specific flag."""
         with self._lock:
             flag = self._flags.get(flag_name)
@@ -549,7 +534,7 @@ class FeatureFlagManager:
                 "tags": flag.tags,
             }
 
-    def get_overall_stats(self) -> Dict[str, Any]:
+    def get_overall_stats(self) -> dict[str, Any]:
         """Get overall feature flag statistics."""
         with self._lock:
             total_flags = len(self._flags)
@@ -586,7 +571,7 @@ class FeatureFlagManager:
                 "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
-    def export_flags(self) -> Dict[str, Any]:
+    def export_flags(self) -> dict[str, Any]:
         """Export all feature flags to dictionary."""
         with self._lock:
             return {
@@ -595,7 +580,7 @@ class FeatureFlagManager:
                 "constitutional_hash": "cdd01ef066bc6cf2",
             }
 
-    def import_flags(self, data: Dict[str, Any]) -> None:
+    def import_flags(self, data: dict[str, Any]) -> None:
         """Import feature flags from dictionary."""
         if "flags" not in data:
             raise ConfigurationError("Invalid import data: missing 'flags' key")
@@ -621,25 +606,25 @@ class FeatureFlagManager:
                     self._evaluations[flag_name] = 0
 
                 except Exception as e:
-                    logger.error(f"Failed to import flag '{flag_name}': {e}")
+                    logger.exception(f"Failed to import flag '{flag_name}': {e}")
 
     def _create_condition_from_dict(
-        self, data: Dict[str, Any]
-    ) -> Optional[FeatureFlagCondition]:
+        self, data: dict[str, Any]
+    ) -> FeatureFlagCondition | None:
         """Create condition from dictionary data."""
         condition_type = data.get("type")
 
         if condition_type == "percentage":
             return PercentageCondition(data["percentage"], data.get("salt", ""))
-        elif condition_type == "user_list":
+        if condition_type == "user_list":
             return UserListCondition(data["user_ids"], data.get("include", True))
-        elif condition_type == "attribute":
+        if condition_type == "attribute":
             return AttributeCondition(
                 data["attribute"], data["operator"], data["value"]
             )
-        elif condition_type == "group":
+        if condition_type == "group":
             return GroupCondition(data["groups"], data.get("require_all", False))
-        elif condition_type == "time_based":
+        if condition_type == "time_based":
             start_time = (
                 datetime.fromisoformat(data["start_time"])
                 if data.get("start_time")
@@ -651,16 +636,15 @@ class FeatureFlagManager:
                 else None
             )
             return TimeBasedCondition(start_time, end_time)
-        elif condition_type == "composite":
+        if condition_type == "composite":
             conditions = []
             for cond_data in data.get("conditions", []):
                 condition = self._create_condition_from_dict(cond_data)
                 if condition:
                     conditions.append(condition)
             return CompositeCondition(conditions, data.get("operator", "and"))
-        else:
-            logger.warning(f"Unknown condition type: {condition_type}")
-            return None
+        logger.warning(f"Unknown condition type: {condition_type}")
+        return None
 
 
 # Global feature flag manager
@@ -683,8 +667,8 @@ def create_feature_flag(
     name: str,
     description: str = "",
     enabled: bool = False,
-    percentage: float = None,
-    user_ids: List[str] = None,
+    percentage: float | None = None,
+    user_ids: list[str] | None = None,
 ) -> FeatureFlag:
     """Create a feature flag with optional rollout."""
     manager = get_feature_flag_manager()

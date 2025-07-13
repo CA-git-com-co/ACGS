@@ -17,6 +17,7 @@ Key Features:
 import asyncio
 import json
 import logging
+import operator
 import threading
 import time
 import uuid
@@ -225,7 +226,9 @@ class FragmentLevelCache:
 
             if total_fragments > 0:
                 avg_access_count = total_accesses / total_fragments
-                most_accessed = max(self.fragment_stats.items(), key=lambda x: x[1])
+                most_accessed = max(
+                    self.fragment_stats.items(), key=operator.itemgetter(1)
+                )
             else:
                 avg_access_count = 0
                 most_accessed = ("none", 0)
@@ -296,14 +299,6 @@ class UltraLowLatencyOptimizer:
         recommendations = []
 
         # Pre-allocate result structure for performance
-        result_template = {
-            "decision": None,
-            "confidence": 0.0,
-            "latency_ms": 0.0,
-            "cache_hit": False,
-            "optimization_level": optimization_level.value,
-            "constitutional_hash": "cdd01ef066bc6cf2",
-        }
 
         try:
             # Step 1: Check multi-tier cache (target: <2ms)
@@ -383,7 +378,7 @@ class UltraLowLatencyOptimizer:
             return result
 
         except Exception as e:
-            logger.error(f"Error in policy decision optimization: {e}")
+            logger.exception(f"Error in policy decision optimization: {e}")
             # Return error result
             error_latency = (time.time() - start_time) * 1000
             return OptimizationResult(
@@ -468,10 +463,12 @@ class UltraLowLatencyOptimizer:
             recommendations.append("Optimize cache lookup - consider in-memory caching")
 
         if eval_time > 20:
-            recommendations.append(
-                "Optimize policy evaluation - consider rule simplification"
+            recommendations.extend(
+                (
+                    "Optimize policy evaluation - consider rule simplification",
+                    "Enable fragment-level caching for complex policies",
+                )
             )
-            recommendations.append("Enable fragment-level caching for complex policies")
 
         if level == OptimizationLevel.STANDARD:
             recommendations.append("Consider upgrading to ENHANCED optimization level")
@@ -655,16 +652,15 @@ class UltraLowLatencyOptimizer:
         errors = 0
 
         # Generate test requests
-        test_requests = []
-        for i in range(num_requests):
-            test_requests.append(
-                {
-                    "user_id": f"test_user_{i % 10}",  # 10 different users
-                    "resource": f"resource_{i % 5}",  # 5 different resources
-                    "action": "read" if i % 2 == 0 else "write",
-                    "timestamp": time.time(),
-                }
-            )
+        test_requests = [
+            {
+                "user_id": f"test_user_{i % 10}",  # 10 different users
+                "resource": f"resource_{i % 5}",  # 5 different resources
+                "action": "read" if i % 2 == 0 else "write",
+                "timestamp": time.time(),
+            }
+            for i in range(num_requests)
+        ]
 
         # Execute benchmark
         for i, request in enumerate(test_requests):
@@ -679,7 +675,7 @@ class UltraLowLatencyOptimizer:
 
             except Exception as e:
                 errors += 1
-                logger.error(f"Benchmark request {i} failed: {e}")
+                logger.exception(f"Benchmark request {i} failed: {e}")
 
         benchmark_duration = time.time() - benchmark_start
 

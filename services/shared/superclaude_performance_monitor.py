@@ -13,14 +13,13 @@ import statistics
 import time
 from collections import defaultdict, deque
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, List, Optional, Set, Union
+from datetime import datetime, timezone
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
 from .blackboard import BlackboardService, KnowledgeItem
-from .constitutional_mcp_integration import MCPTool
 from .superclaude_persona_integration import SuperClaudePersona
 
 # Configure logging
@@ -32,10 +31,10 @@ class PerformanceMetrics:
     """Performance metrics for SuperClaude operations"""
 
     operation_type: str
-    persona: Optional[str] = None
+    persona: str | None = None
     start_time: float = field(default_factory=time.time)
-    end_time: Optional[float] = None
-    latency_ms: Optional[float] = None
+    end_time: float | None = None
+    latency_ms: float | None = None
     constitutional_overhead_ms: float = 0.0
     mcp_overhead_ms: float = 0.0
     memory_usage_mb: float = 0.0
@@ -58,10 +57,10 @@ class PerformanceReport(BaseModel):
     throughput_rps: float
     constitutional_overhead_avg_ms: float
     mcp_overhead_avg_ms: float
-    performance_targets_met: Dict[str, bool]
-    persona_performance: Dict[str, Dict[str, float]]
-    mcp_tool_performance: Dict[str, Dict[str, float]]
-    recommendations: List[str]
+    performance_targets_met: dict[str, bool]
+    persona_performance: dict[str, dict[str, float]]
+    mcp_tool_performance: dict[str, dict[str, float]]
+    recommendations: list[str]
     timestamp: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 
 
@@ -115,7 +114,7 @@ class SuperClaudePerformanceMonitor:
         self.mcp_tool_metrics = defaultdict(list)
 
         # Real-time tracking
-        self.active_operations: Dict[str, PerformanceMetrics] = {}
+        self.active_operations: dict[str, PerformanceMetrics] = {}
         self.hourly_stats = defaultdict(lambda: defaultdict(list))
 
         # Performance alerting
@@ -129,8 +128,8 @@ class SuperClaudePerformanceMonitor:
         self,
         operation_id: str,
         operation_type: str,
-        persona: Optional[SuperClaudePersona] = None,
-        context: Optional[Dict[str, Any]] = None,
+        persona: SuperClaudePersona | None = None,
+        context: dict[str, Any] | None = None,
     ) -> str:
         """Start tracking a SuperClaude operation"""
 
@@ -156,7 +155,7 @@ class SuperClaudePerformanceMonitor:
         constitutional_overhead_ms: float = 0.0,
         mcp_overhead_ms: float = 0.0,
         memory_usage_mb: float = 0.0,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> PerformanceMetrics:
         """End tracking a SuperClaude operation"""
 
@@ -250,7 +249,7 @@ class SuperClaudePerformanceMonitor:
             await self._log_performance_alert(alert, metrics)
 
     async def _log_performance_alert(
-        self, alert: Dict[str, Any], metrics: PerformanceMetrics
+        self, alert: dict[str, Any], metrics: PerformanceMetrics
     ) -> None:
         """Log performance alert to blackboard"""
 
@@ -285,7 +284,7 @@ class SuperClaudePerformanceMonitor:
 
         await self.blackboard.add_knowledge(knowledge_item)
 
-    def get_current_performance(self) -> Dict[str, Any]:
+    def get_current_performance(self) -> dict[str, Any]:
         """Get current performance metrics"""
 
         if not self.metrics_history:
@@ -358,7 +357,7 @@ class SuperClaudePerformanceMonitor:
 
         return current_performance
 
-    def get_persona_performance(self) -> Dict[str, Dict[str, float]]:
+    def get_persona_performance(self) -> dict[str, dict[str, float]]:
         """Get performance metrics by persona"""
 
         persona_performance = {}
@@ -390,7 +389,7 @@ class SuperClaudePerformanceMonitor:
 
         return persona_performance
 
-    def get_mcp_tool_performance(self) -> Dict[str, Dict[str, float]]:
+    def get_mcp_tool_performance(self) -> dict[str, dict[str, float]]:
         """Get performance metrics by MCP tool"""
 
         # Filter metrics by MCP operations
@@ -539,13 +538,13 @@ class SuperClaudePerformanceMonitor:
 
     def _generate_recommendations(
         self,
-        targets_met: Dict[str, bool],
+        targets_met: dict[str, bool],
         avg_latency_ms: float,
         p99_latency_ms: float,
         throughput_rps: float,
         success_rate: float,
         constitutional_compliance_rate: float,
-    ) -> List[str]:
+    ) -> list[str]:
         """Generate performance recommendations"""
 
         recommendations = []

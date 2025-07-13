@@ -10,19 +10,18 @@ import json
 import logging
 import os
 import threading
-from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Type, Union
+from typing import Any
 
 import yaml
+from shared.resilience.exceptions import ConfigurationError
+from shared.validation.validators import SchemaValidator, ValidationResult
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
-
-from ..resilience.exceptions import ConfigurationError
-from ..validation.validators import SchemaValidator, ValidationResult
 
 logger = logging.getLogger(__name__)
 
@@ -50,12 +49,12 @@ class ConfigSchema:
     """Schema definition for configuration validation."""
 
     name: str
-    schema: Dict[str, Any]
-    required_fields: List[str] = field(default_factory=list)
-    default_values: Dict[str, Any] = field(default_factory=dict)
-    validators: List[Callable[[Dict[str, Any]], bool]] = field(default_factory=list)
+    schema: dict[str, Any]
+    required_fields: list[str] = field(default_factory=list)
+    default_values: dict[str, Any] = field(default_factory=dict)
+    validators: list[Callable[[dict[str, Any]], bool]] = field(default_factory=list)
 
-    def validate(self, config: Dict[str, Any]) -> ValidationResult:
+    def validate(self, config: dict[str, Any]) -> ValidationResult:
         """Validate configuration against schema."""
         validator = SchemaValidator(self.schema, f"config_schema_{self.name}")
         return asyncio.run(validator.validate(config))
@@ -66,15 +65,18 @@ class ConfigValidator:
     """Configuration validator with business rules."""
 
     name: str
-    validation_func: Callable[[Dict[str, Any]], ValidationResult]
+    validation_func: Callable[[dict[str, Any]], ValidationResult]
     description: str = ""
 
-    def validate(self, config: Dict[str, Any]) -> ValidationResult:
+    def validate(self, config: dict[str, Any]) -> ValidationResult:
         """Validate configuration."""
         try:
             return self.validation_func(config)
         except Exception as e:
-            from ..validation.validators import ValidationResult, ValidationSeverity
+            from shared.validation.validators import (
+                ValidationResult,
+                ValidationSeverity,
+            )
 
             result = ValidationResult(is_valid=False)
             result.add_issue(
@@ -89,15 +91,15 @@ class ConfigValidator:
 class ConfigChangeHandler:
     """Handler for configuration changes."""
 
-    def __init__(self, callback: Callable[[str, Dict[str, Any]], None]):
+    def __init__(self, callback: Callable[[str, dict[str, Any]], None]):
         self.callback = callback
 
-    def on_change(self, config_name: str, new_config: Dict[str, Any]) -> None:
+    def on_change(self, config_name: str, new_config: dict[str, Any]) -> None:
         """Handle configuration change."""
         try:
             self.callback(config_name, new_config)
         except Exception as e:
-            logger.error(f"Error in config change handler: {e}")
+            logger.exception(f"Error in config change handler: {e}")
 
 
 class FileWatcher(FileSystemEventHandler):
@@ -112,7 +114,7 @@ class FileWatcher(FileSystemEventHandler):
             return
 
         file_path = Path(event.src_path)
-        if file_path.suffix in [".json", ".yaml", ".yml", ".toml"]:
+        if file_path.suffix in {".json", ".yaml", ".yml", ".toml"}:
             logger.info(f"Configuration file changed: {file_path}")
             asyncio.create_task(self.config_manager.reload_config_file(str(file_path)))
 
@@ -120,11 +122,11 @@ class FileWatcher(FileSystemEventHandler):
 class EnvironmentConfig:
     """Environment-specific configuration manager."""
 
-    def __init__(self, environment: str = None):
+    def __init__(self, environment: str | None = None):
         self.environment = environment or os.getenv("ENVIRONMENT", "development")
         self.prefix = f"ACGS_{self.environment.upper()}_"
 
-    def get_env_vars(self) -> Dict[str, str]:
+    def get_env_vars(self) -> dict[str, str]:
         """Get environment variables for this environment."""
         env_vars = {}
         for key, value in os.environ.items():
@@ -133,7 +135,7 @@ class EnvironmentConfig:
                 env_vars[config_key] = value
         return env_vars
 
-    def get_config_files(self) -> List[str]:
+    def get_config_files(self) -> list[str]:
         """Get configuration files for this environment."""
         config_dir = Path("config")
         files = []
@@ -156,13 +158,13 @@ class EnvironmentConfig:
 class ConfigManager:
     """Centralized configuration management system."""
 
-    def __init__(self, environment: str = None):
+    def __init__(self, environment: str | None = None):
         self.environment = environment or os.getenv("ENVIRONMENT", "development")
-        self._configs: Dict[str, Dict[str, Any]] = {}
-        self._schemas: Dict[str, ConfigSchema] = {}
-        self._validators: List[ConfigValidator] = []
-        self._change_handlers: List[ConfigChangeHandler] = []
-        self._file_watcher: Optional[Observer] = None
+        self._configs: dict[str, dict[str, Any]] = {}
+        self._schemas: dict[str, ConfigSchema] = {}
+        self._validators: list[ConfigValidator] = []
+        self._change_handlers: list[ConfigChangeHandler] = []
+        self._file_watcher: Observer | None = None
         self._watched_files: set = set()
         self._lock = threading.RLock()
 
@@ -203,7 +205,7 @@ class ConfigManager:
     async def load_config_file(
         self,
         file_path: str,
-        config_name: str = None,
+        config_name: str | None = None,
         format: ConfigFormat = None,
         watch: bool = True,
     ) -> None:
@@ -299,7 +301,7 @@ class ConfigManager:
         logger.info(f"Watching configuration file: {file_path}")
 
     async def _validate_config(
-        self, config_name: str, config_data: Dict[str, Any]
+        self, config_name: str, config_data: dict[str, Any]
     ) -> None:
         """Validate configuration data."""
         # Schema validation
@@ -323,16 +325,16 @@ class ConfigManager:
                 raise ConfigurationError(f"Validator error ({validator.name}): {e}")
 
     async def _notify_change_handlers(
-        self, config_name: str, new_config: Dict[str, Any]
+        self, config_name: str, new_config: dict[str, Any]
     ) -> None:
         """Notify configuration change handlers."""
         for handler in self._change_handlers:
             try:
                 handler.on_change(config_name, new_config)
             except Exception as e:
-                logger.error(f"Error in configuration change handler: {e}")
+                logger.exception(f"Error in configuration change handler: {e}")
 
-    def get_config(self, config_name: str, default: Any = None) -> Dict[str, Any]:
+    def get_config(self, config_name: str, default: Any = None) -> dict[str, Any]:
         """Get configuration by name."""
         with self._lock:
             return self._configs.get(config_name, default)
@@ -368,13 +370,13 @@ class ConfigManager:
                 self._configs[config_name] = {}
             self._configs[config_name][key] = value
 
-    def merge_config(self, config_name: str, new_config: Dict[str, Any]) -> None:
+    def merge_config(self, config_name: str, new_config: dict[str, Any]) -> None:
         """Merge new configuration with existing."""
         with self._lock:
             if config_name not in self._configs:
                 self._configs[config_name] = {}
 
-            def deep_merge(base_dict: Dict, update_dict: Dict) -> Dict:
+            def deep_merge(base_dict: dict, update_dict: dict) -> dict:
                 """Deep merge two dictionaries."""
                 result = base_dict.copy()
                 for key, value in update_dict.items():
@@ -392,12 +394,12 @@ class ConfigManager:
                 self._configs[config_name], new_config
             )
 
-    def list_configs(self) -> List[str]:
+    def list_configs(self) -> list[str]:
         """List all configuration names."""
         with self._lock:
             return list(self._configs.keys())
 
-    def get_all_configs(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_configs(self) -> dict[str, dict[str, Any]]:
         """Get all configurations."""
         with self._lock:
             return self._configs.copy()
@@ -410,7 +412,7 @@ class ConfigManager:
             try:
                 await self.load_config_file(file_path)
             except Exception as e:
-                logger.error(f"Failed to load config file {file_path}: {e}")
+                logger.exception(f"Failed to load config file {file_path}: {e}")
 
     def export_config(
         self, config_name: str, format: ConfigFormat = ConfigFormat.JSON
@@ -422,16 +424,15 @@ class ConfigManager:
 
         if format == ConfigFormat.JSON:
             return json.dumps(config, indent=2)
-        elif format == ConfigFormat.YAML:
+        if format == ConfigFormat.YAML:
             return yaml.dump(config, default_flow_style=False)
-        elif format == ConfigFormat.TOML:
+        if format == ConfigFormat.TOML:
             import tomli_w
 
             return tomli_w.dumps(config)
-        else:
-            raise ConfigurationError(f"Unsupported export format: {format}")
+        raise ConfigurationError(f"Unsupported export format: {format}")
 
-    def get_config_stats(self) -> Dict[str, Any]:
+    def get_config_stats(self) -> dict[str, Any]:
         """Get configuration statistics."""
         with self._lock:
             return {
@@ -541,8 +542,8 @@ def setup_default_config() -> None:
     config_manager.add_schema(create_cache_schema())
 
     # Add constitutional compliance validator
-    def constitutional_validator(config: Dict[str, Any]) -> "ValidationResult":
-        from ..validation.validators import ValidationResult, ValidationSeverity
+    def constitutional_validator(config: dict[str, Any]) -> "ValidationResult":
+        from shared.validation.validators import ValidationResult, ValidationSeverity
 
         result = ValidationResult(is_valid=True)
 

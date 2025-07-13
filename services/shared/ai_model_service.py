@@ -10,7 +10,7 @@ import logging
 import os
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional, Union
+from typing import Any
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -53,10 +53,10 @@ class ModelRequest(BaseModel):
     provider: ModelProvider
     model_name: str
     prompt: str
-    parameters: Dict[str, Any] = Field(default_factory=dict)
-    context: Optional[Dict[str, Any]] = None
-    max_tokens: Optional[int] = None
-    temperature: Optional[float] = None
+    parameters: dict[str, Any] = Field(default_factory=dict)
+    context: dict[str, Any] | None = None
+    max_tokens: int | None = None
+    temperature: float | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -66,10 +66,10 @@ class ModelResponse(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid4()))
     request_id: str
     content: str
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-    usage: Optional[Dict[str, Any]] = None
-    confidence_score: Optional[float] = None
-    processing_time_ms: Optional[int] = None
+    metadata: dict[str, Any] = Field(default_factory=dict)
+    usage: dict[str, Any] | None = None
+    confidence_score: float | None = None
+    processing_time_ms: int | None = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
 
@@ -89,8 +89,8 @@ class AIModelService:
     def __init__(self, default_provider: ModelProvider = ModelProvider.OPENAI):
         self.logger = logging.getLogger(__name__)
         self.default_provider = default_provider
-        self.request_history: List[ModelRequest] = []
-        self.response_history: List[ModelResponse] = []
+        self.request_history: list[ModelRequest] = []
+        self.response_history: list[ModelResponse] = []
         self.max_history = 1000
 
         # Model configurations
@@ -139,7 +139,7 @@ class AIModelService:
                     "OpenRouter API key not found or OpenAI library not available"
                 )
         except Exception as e:
-            self.logger.error(f"Failed to initialize OpenRouter client: {e}")
+            self.logger.exception(f"Failed to initialize OpenRouter client: {e}")
 
     async def generate_response(self, request: ModelRequest) -> ModelResponse:
         """Generate a response using the specified AI model"""
@@ -191,11 +191,11 @@ class AIModelService:
             return response
 
         except Exception as e:
-            self.logger.error(f"Error generating response: {e}")
+            self.logger.exception(f"Error generating response: {e}")
             # Return error response
             return ModelResponse(
                 request_id=request.id,
-                content=f"Error: {str(e)}",
+                content=f"Error: {e!s}",
                 metadata={"error": True, "error_message": str(e)},
                 confidence_score=0.0,
             )
@@ -207,16 +207,15 @@ class AIModelService:
 
         if request.provider == ModelProvider.OPENAI:
             return await self._generate_openai_content(request)
-        elif request.provider == ModelProvider.ANTHROPIC:
+        if request.provider == ModelProvider.ANTHROPIC:
             return await self._generate_anthropic_content(request)
-        elif request.provider == ModelProvider.GROQ:
+        if request.provider == ModelProvider.GROQ:
             return await self._generate_groq_content(request)
-        elif request.provider == ModelProvider.OPENROUTER:
+        if request.provider == ModelProvider.OPENROUTER:
             return await self._generate_openrouter_content(request)
-        elif request.provider == ModelProvider.LOCAL:
+        if request.provider == ModelProvider.LOCAL:
             return await self._generate_local_content(request)
-        else:
-            raise ValueError(f"Unsupported provider: {request.provider}")
+        raise ValueError(f"Unsupported provider: {request.provider}")
 
     async def _generate_openai_content(self, request: ModelRequest) -> str:
         """Generate content using OpenAI models"""
@@ -225,12 +224,11 @@ class AIModelService:
 
         if request.model_type == ModelType.CHAT:
             return f"OpenAI {request.model_name} response to: {request.prompt[:50]}..."
-        elif request.model_type == ModelType.COMPLETION:
+        if request.model_type == ModelType.COMPLETION:
             return f"OpenAI completion: {request.prompt[:30]}... [completed]"
-        elif request.model_type == ModelType.EMBEDDING:
+        if request.model_type == ModelType.EMBEDDING:
             return "[0.1, 0.2, 0.3, ...]"  # Placeholder embedding
-        else:
-            return f"OpenAI {request.model_type} response"
+        return f"OpenAI {request.model_type} response"
 
     async def _generate_anthropic_content(self, request: ModelRequest) -> str:
         """Generate content using Anthropic models"""
@@ -238,8 +236,7 @@ class AIModelService:
 
         if request.model_type == ModelType.CHAT:
             return f"Claude {request.model_name} response to: {request.prompt[:50]}..."
-        else:
-            return f"Anthropic {request.model_type} response"
+        return f"Anthropic {request.model_type} response"
 
     async def _generate_groq_content(self, request: ModelRequest) -> str:
         """Generate content using Groq models"""
@@ -287,8 +284,8 @@ class AIModelService:
             return completion.choices[0].message.content
 
         except Exception as e:
-            self.logger.error(f"OpenRouter API error: {e}")
-            return f"OpenRouter error: {str(e)}"
+            self.logger.exception(f"OpenRouter API error: {e}")
+            return f"OpenRouter error: {e!s}"
 
     async def _generate_local_content(self, request: ModelRequest) -> str:
         """Generate content using local models"""
@@ -296,8 +293,7 @@ class AIModelService:
 
         if request.model_type == ModelType.CLASSIFICATION:
             return "positive"  # Placeholder classification
-        else:
-            return f"Local {request.model_type} response to: {request.prompt[:50]}..."
+        return f"Local {request.model_type} response to: {request.prompt[:50]}..."
 
     def _is_model_available(
         self, provider: ModelProvider, model_type: ModelType, model_name: str
@@ -313,13 +309,12 @@ class AIModelService:
         return model_name in provider_config[model_type]
 
     async def get_available_models(
-        self, provider: Optional[ModelProvider] = None
-    ) -> Dict[str, List[str]]:
+        self, provider: ModelProvider | None = None
+    ) -> dict[str, list[str]]:
         """Get available models for a provider or all providers"""
         if provider:
             return self.model_configs.get(provider, {})
-        else:
-            return self.model_configs
+        return self.model_configs
 
     async def analyze_text(
         self, text: str, analysis_type: str = "sentiment"
@@ -334,7 +329,7 @@ class AIModelService:
         )
         return await self.generate_response(request)
 
-    async def classify_text(self, text: str, categories: List[str]) -> ModelResponse:
+    async def classify_text(self, text: str, categories: list[str]) -> ModelResponse:
         """Convenience method for text classification"""
         request = ModelRequest(
             model_type=ModelType.CLASSIFICATION,
@@ -349,7 +344,7 @@ class AIModelService:
         self,
         prompt: str,
         model_name: str = "gpt-4",
-        provider: Optional[ModelProvider] = None,
+        provider: ModelProvider | None = None,
     ) -> ModelResponse:
         """Convenience method for chat completion"""
         request = ModelRequest(
@@ -360,11 +355,11 @@ class AIModelService:
         )
         return await self.generate_response(request)
 
-    def get_request_history(self, limit: int = 100) -> List[ModelRequest]:
+    def get_request_history(self, limit: int = 100) -> list[ModelRequest]:
         """Get recent request history"""
         return self.request_history[-limit:] if limit else self.request_history
 
-    def get_response_history(self, limit: int = 100) -> List[ModelResponse]:
+    def get_response_history(self, limit: int = 100) -> list[ModelResponse]:
         """Get recent response history"""
         return self.response_history[-limit:] if limit else self.response_history
 
@@ -374,7 +369,7 @@ class AIModelService:
         self.response_history.clear()
         self.logger.info("AI model service history cleared")
 
-    def get_performance_metrics(self) -> Dict[str, Any]:
+    def get_performance_metrics(self) -> dict[str, Any]:
         """Get performance metrics for the AI model service"""
         if not self.response_history:
             return {
@@ -411,7 +406,7 @@ class AIModelService:
         }
 
     async def validate_constitutional_compliance(
-        self, content: str, context: Optional[Dict[str, Any]] = None
+        self, content: str, context: dict[str, Any] | None = None
     ) -> ModelResponse:
         """
         Validate content for constitutional compliance using OpenRouter models.
@@ -457,7 +452,7 @@ class AIModelService:
         return await self.generate_response(request)
 
     async def analyze_governance_decision(
-        self, decision: Dict[str, Any], stakeholders: List[str]
+        self, decision: dict[str, Any], stakeholders: list[str]
     ) -> ModelResponse:
         """
         Analyze a governance decision for ethical and constitutional implications.
@@ -498,7 +493,7 @@ class AIModelService:
         return await self.generate_response(request)
 
     async def evaluate_agent_behavior(
-        self, agent_id: str, behavior_log: List[Dict[str, Any]]
+        self, agent_id: str, behavior_log: list[dict[str, Any]]
     ) -> ModelResponse:
         """
         Evaluate agent behavior for constitutional compliance and safety.

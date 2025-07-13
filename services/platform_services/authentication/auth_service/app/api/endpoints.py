@@ -1,17 +1,16 @@
 import os
 import secrets
 
+from app import crud, schemas
+from app.core import security
+from app.core.limiter import limiter  # Import the limiter instance
+from app.db.database import get_async_db
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse  # Added JSONResponse import
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_csrf_protect import CsrfProtect
 from shared import models
 from sqlalchemy.ext.asyncio import AsyncSession
-
-from .. import crud, schemas
-from ..core import security
-from ..core.limiter import limiter  # Import the limiter instance
-from ..db.database import get_async_db
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -228,8 +227,8 @@ async def logout(
                     security.revoke_token(
                         jti
                     )  # Add access token JTI to in-memory blacklist
-        except Exception as e:  # Catch if decode fails for any reason
-            print(f"Error decoding access token during logout: {e}")
+        except Exception:  # Catch if decode fails for any reason
+            pass
 
     refresh_token_from_cookie = request.cookies.get("refresh_token")
     if refresh_token_from_cookie:
@@ -239,8 +238,8 @@ async def logout(
                 refresh_jti = refresh_payload.get("jti")
                 if refresh_jti:
                     crud.revoke_refresh_token_by_jti(db, jti=refresh_jti)
-        except Exception as e:
-            print(f"Could not revoke refresh token during logout: {e}")
+        except Exception:
+            pass
 
     response.delete_cookie(
         "access_token", path="/", samesite="lax", secure=SECURE_COOKIE
@@ -275,8 +274,7 @@ async def create_user_endpoint(
     db_user_by_email = await crud.get_user_by_email(db, email=user.email)
     if db_user_by_email:
         raise HTTPException(status_code=400, detail="Email already registered")
-    created_user = await crud.create_user(db=db, obj_in=user)
-    return created_user
+    return await crud.create_user(db=db, obj_in=user)
 
 
 @router.get("/users/me", response_model=schemas.UserResponse)
@@ -298,7 +296,7 @@ async def get_csrf_cookie(
     fastapi-csrf-protect automatically sets the cookie on responses if methods are protected.
     This endpoint ensures a cookie is set on a simple GET request.
     """
-    response = JSONResponse(content={"message": "CSRF cookie should be set."})
+    return JSONResponse(content={"message": "CSRF cookie should be set."})
     # csrf_protect.set_csrf_cookie(response) # fastapi-csrf-protect usually handles this automatically on protected POSTs
     # If the cookie is not being set automatically on GET, or if you need to customize it:
     # By default, the CsrfProtect middleware might only set cookies on responses from
@@ -318,4 +316,3 @@ async def get_csrf_cookie(
     # csrf_token = csrf_protect.generate_csrf() # Generate a new token if needed
     # response.set_cookie(key="csrf_access_token", value=csrf_token, ...) # if we were manually setting
     # return {"csrf_token": csrf_token}
-    return response

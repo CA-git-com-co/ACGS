@@ -69,18 +69,11 @@ class ACServiceClient:
             response.raise_for_status()
             data = response.json()
             return ACPrinciple(**data)
-        except httpx.HTTPStatusError as e:
-            print(
-                f"AC Client: HTTP error fetching principle {principle_id}: {e.response.status_code} - {e.response.text}"
-            )
+        except httpx.HTTPStatusError:
             return None
-        except httpx.RequestError as e:
-            print(f"AC Client: Request error fetching principle {principle_id}: {e!s}")
+        except httpx.RequestError:
             return None
-        except Exception as e:
-            print(
-                f"AC Client: Unexpected error fetching principle {principle_id}: {e!s}"
-            )
+        except Exception:
             return None
 
     async def list_principles_by_ids(
@@ -109,13 +102,11 @@ ac_service_client = ACServiceClient(base_url=AC_SERVICE_URL)
 
 # Example Usage
 if __name__ == "__main__":
-    pass
 
     async def test_ac_client_for_fv():
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        print(f"Testing AC Client for FV Service against URL: {AC_SERVICE_URL}")
         # test_token = "admin_token" # Placeholder token for ac_service
         # fetched_principle = await ac_service_client.get_principle_by_id(1, auth_token=test_token)
         # if fetched_principle:
@@ -125,7 +116,5 @@ if __name__ == "__main__":
         # fetched_principles_list = await ac_service_client.list_principles_by_ids([1,2], auth_token=test_token)
         # print(f"Fetched {len(fetched_principles_list)} principles by list.")
         await ac_service_client.close()
-        print("Run with a live AC service to see results.")
 
     # asyncio.run(test_ac_client_for_fv())
-    print("AC Service client for FV defined.")

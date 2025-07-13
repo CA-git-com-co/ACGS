@@ -5,12 +5,8 @@ Tests for enhanced audit event types, centralized aggregation, and integration.
 Constitutional Hash: cdd01ef066bc6cf2
 """
 
-import asyncio
-import json
 import uuid
-from datetime import datetime, timezone
-from typing import Any, Dict
-from unittest.mock import AsyncMock, MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -53,8 +49,7 @@ except ImportError:
 def audit_client():
     """Create test client for audit aggregator service."""
     try:
-        client = TestClient(app)
-        return client
+        return TestClient(app)
     except:
         return MagicMock()
 

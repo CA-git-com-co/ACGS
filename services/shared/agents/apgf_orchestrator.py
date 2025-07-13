@@ -23,13 +23,14 @@ Key Features:
 
 import asyncio
 import logging
+import operator
 import time
 import uuid
 from collections import defaultdict, deque
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any
 
 # Import for document-based communication
 from pydantic import BaseModel, Field
@@ -166,7 +167,7 @@ class DocumentChannel:
     Implements MetaGPT's assembly line paradigm with typed document exchange.
     """
 
-    def __init__(self, schema: type[BaseModel], channel_name: str = None):
+    def __init__(self, schema: type[BaseModel], channel_name: str | None = None):
         self.schema = schema
         self.channel_name = channel_name or schema.__name__.lower()
         self.documents: dict[str, BaseModel] = {}
@@ -195,16 +196,16 @@ class DocumentChannel:
         logger.info(f"Document {document_id} published to channel {self.channel_name}")
         return document_id
 
-    async def get_document(self, document_id: str) -> Optional[BaseModel]:
+    async def get_document(self, document_id: str) -> BaseModel | None:
         """Retrieve a document by ID"""
         return self.documents.get(document_id)
 
-    async def get_latest_document(self) -> Optional[BaseModel]:
+    async def get_latest_document(self) -> BaseModel | None:
         """Get the most recently published document"""
         if not self.document_history:
             return None
 
-        latest_entry = max(self.document_history, key=lambda x: x["timestamp"])
+        latest_entry = max(self.document_history, key=operator.itemgetter("timestamp"))
         return self.documents.get(latest_entry["document_id"])
 
     async def subscribe(self, agent_id: str) -> None:
@@ -233,11 +234,11 @@ class PolicyGenerationWorkflow:
     workflow_steps: list[dict[str, Any]]
     current_step: int
     start_time: datetime
-    estimated_completion: Optional[datetime]
-    actual_completion: Optional[datetime]
+    estimated_completion: datetime | None
+    actual_completion: datetime | None
     success_metrics: dict[str, float]
     error_log: list[dict[str, Any]]
-    resource_usage: dict[str, Union[int, float]]
+    resource_usage: dict[str, int | float]
 
 
 @dataclass
@@ -341,7 +342,7 @@ class APGFOrchestrator:
             logger.info("APGFOrchestrator initialization completed")
 
         except Exception as e:
-            logger.error(f"Failed to initialize APGFOrchestrator: {e!s}")
+            logger.exception(f"Failed to initialize APGFOrchestrator: {e!s}")
             raise
 
     async def initiate_policy_generation_workflow(self, request: dict[str, Any]) -> str:
@@ -425,7 +426,7 @@ class APGFOrchestrator:
             return workflow_id
 
         except Exception as e:
-            logger.error(f"Failed to initiate workflow: {e!s}")
+            logger.exception(f"Failed to initiate workflow: {e!s}")
             await self.alerting_system.send_alert(
                 {
                     "severity": "high",
@@ -491,7 +492,7 @@ class APGFOrchestrator:
             return plan
 
         except Exception as e:
-            logger.error(f"Failed to create structured workflow: {e!s}")
+            logger.exception(f"Failed to create structured workflow: {e!s}")
             raise
 
     async def create_dynamic_agent(self, agent_specification: dict[str, Any]) -> str:
@@ -556,7 +557,7 @@ class APGFOrchestrator:
             return agent_config.agent_id
 
         except Exception as e:
-            logger.error(f"Failed to create dynamic agent: {e!s}")
+            logger.exception(f"Failed to create dynamic agent: {e!s}")
             raise
 
     async def coordinate_multi_agent_task(
@@ -606,7 +607,7 @@ class APGFOrchestrator:
             return plan_id
 
         except Exception as e:
-            logger.error(f"Failed to coordinate multi-agent task: {e!s}")
+            logger.exception(f"Failed to coordinate multi-agent task: {e!s}")
             raise
 
     async def get_workflow_status(self, workflow_id: str) -> dict[str, Any]:
@@ -677,11 +678,11 @@ class APGFOrchestrator:
                 workflow.current_step = step_index
                 await self._execute_workflow_step(workflow, step)
 
-                if workflow.state in [WorkflowState.FAILED, WorkflowState.CANCELLED]:
+                if workflow.state in {WorkflowState.FAILED, WorkflowState.CANCELLED}:
                     break
 
             # Complete workflow
-            if workflow.state not in [WorkflowState.FAILED, WorkflowState.CANCELLED]:
+            if workflow.state not in {WorkflowState.FAILED, WorkflowState.CANCELLED}:
                 workflow.state = WorkflowState.COMPLETED
                 self.performance_metrics["workflows_completed"] += 1
 
@@ -746,7 +747,7 @@ class APGFOrchestrator:
                 }
             )
 
-            logger.error(f"Workflow {workflow.workflow_id} execution failed: {e!s}")
+            logger.exception(f"Workflow {workflow.workflow_id} execution failed: {e!s}")
             await self.alerting_system.send_alert(
                 {
                     "severity": "high",
@@ -873,7 +874,7 @@ class APGFOrchestrator:
                 workflow.assigned_agents.append(agent_id)
 
             except Exception as e:
-                logger.error(f"Failed to create agent: {e!s}")
+                logger.exception(f"Failed to create agent: {e!s}")
                 # Continue with other agents
 
         if not workflow.assigned_agents:

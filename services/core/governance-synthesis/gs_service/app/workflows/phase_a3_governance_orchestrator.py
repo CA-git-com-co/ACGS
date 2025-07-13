@@ -23,6 +23,7 @@ Key Features:
 
 import asyncio
 import logging
+import operator
 import sys
 import time
 import uuid
@@ -155,7 +156,7 @@ class ServiceClient:
             }
 
         except Exception as e:
-            logger.error(f"Service call failed: {service}/{endpoint} - {e}")
+            logger.exception(f"Service call failed: {service}/{endpoint} - {e}")
             return {"success": False, "error": str(e), "execution_time_ms": 0}
 
 
@@ -522,7 +523,7 @@ class PhaseA3GovernanceOrchestrator:
 
         except Exception as e:
             workflow.status = WorkflowStatus.FAILED
-            logger.error(f"Workflow {workflow.workflow_id} execution failed: {e}")
+            logger.exception(f"Workflow {workflow.workflow_id} execution failed: {e}")
 
     async def _execute_step(
         self, workflow: WorkflowInstance, step: WorkflowStep
@@ -571,7 +572,7 @@ class PhaseA3GovernanceOrchestrator:
             step.execution_time_ms = (time.time() - step_start_time) * 1000
             step.completed_at = datetime.now(timezone.utc)
 
-            logger.error(f"Step {step.name} execution failed: {e}")
+            logger.exception(f"Step {step.name} execution failed: {e}")
             return False
 
     async def get_workflow_status(self, workflow_id: str) -> dict[str, Any] | None:
@@ -648,7 +649,7 @@ class PhaseA3GovernanceOrchestrator:
                 break
 
         # Sort by creation time (newest first)
-        workflows.sort(key=lambda w: w["created_at"], reverse=True)
+        workflows.sort(key=operator.itemgetter("created_at"), reverse=True)
 
         return workflows
 
@@ -659,11 +660,11 @@ class PhaseA3GovernanceOrchestrator:
 
         workflow = self.active_workflows[workflow_id]
 
-        if workflow.status in [
+        if workflow.status in {
             WorkflowStatus.COMPLETED,
             WorkflowStatus.FAILED,
             WorkflowStatus.CANCELLED,
-        ]:
+        }:
             return False
 
         workflow.status = WorkflowStatus.CANCELLED

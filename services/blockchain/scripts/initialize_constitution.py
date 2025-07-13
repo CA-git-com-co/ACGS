@@ -101,7 +101,7 @@ class ConstitutionInitializer:
 
             # Save constitution data locally
             constitution_file = self.project_root / "constitution_data.json"
-            with open(constitution_file, "w") as f:
+            with open(constitution_file, "w", encoding="utf-8") as f:
                 json.dump(
                     {
                         "constitution": self.constitution_data,
@@ -115,7 +115,7 @@ class ConstitutionInitializer:
             return constitution_account_data
 
         except Exception as e:
-            logger.error(f"Failed to initialize constitution account: {e}")
+            logger.exception(f"Failed to initialize constitution account: {e}")
             raise
 
     async def deploy_initial_policies(self):
@@ -172,7 +172,7 @@ class ConstitutionInitializer:
 
         # Save policies data
         policies_file = self.project_root / "initial_policies.json"
-        with open(policies_file, "w") as f:
+        with open(policies_file, "w", encoding="utf-8") as f:
             json.dump(initial_policies, f, indent=2)
 
         logger.info(f"Initial policies saved to: {policies_file}")
@@ -204,7 +204,7 @@ class ConstitutionInitializer:
 
         # Save governance configuration
         governance_file = self.project_root / "governance_accounts.json"
-        with open(governance_file, "w") as f:
+        with open(governance_file, "w", encoding="utf-8") as f:
             json.dump(governance_config, f, indent=2)
 
         logger.info(f"Governance accounts configuration saved to: {governance_file}")
@@ -234,7 +234,7 @@ class ConstitutionInitializer:
         # Check constitution hash
         constitution_file = self.project_root / "constitution_data.json"
         if constitution_file.exists():
-            with open(constitution_file) as f:
+            with open(constitution_file, encoding="utf-8") as f:
                 data = json.load(f)
                 stored_hash = data["constitution"]["hash"]
                 expected_hash = self.constitution_data["hash"]
@@ -284,7 +284,7 @@ class ConstitutionInitializer:
             self.project_root
             / f"constitution_initialization_report_{self.cluster}.json"
         )
-        with open(report_file, "w") as f:
+        with open(report_file, "w", encoding="utf-8") as f:
             json.dump(report, f, indent=2)
 
         logger.info(f"Initialization report saved to: {report_file}")
@@ -332,7 +332,7 @@ async def main():
                     logger.error(f"  {check}: {result}")
 
     except Exception as e:
-        logger.error(f"Constitution initialization failed: {e}")
+        logger.exception(f"Constitution initialization failed: {e}")
         sys.exit(1)
 
 

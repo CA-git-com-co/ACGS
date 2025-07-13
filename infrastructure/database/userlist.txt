@@ -1,3 +1,5 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+
 # PgBouncer User Authentication File
 # Format: "username" "password_hash"
 # SECURITY UPGRADE: Migrated from MD5 to SCRAM-SHA-256 for enhanced security

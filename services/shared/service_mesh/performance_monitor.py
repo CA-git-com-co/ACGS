@@ -4,6 +4,7 @@ Real-time monitoring with alerting for >99.9% availability and <500ms response t
 """
 
 import asyncio
+import contextlib
 import logging
 import statistics
 import time
@@ -198,10 +199,8 @@ class PerformanceMonitor:
 
         if self._monitoring_task:
             self._monitoring_task.cancel()
-            try:
+            with contextlib.suppress(asyncio.CancelledError):
                 await self._monitoring_task
-            except asyncio.CancelledError:
-                pass
 
         logger.info("Performance monitoring stopped")
 
@@ -217,7 +216,7 @@ class PerformanceMonitor:
             except asyncio.CancelledError:
                 break
             except Exception as e:
-                logger.error(f"Error in monitoring loop: {e}")
+                logger.exception(f"Error in monitoring loop: {e}")
                 await asyncio.sleep(5)
 
     async def _collect_and_analyze_metrics(self):
@@ -417,7 +416,7 @@ class PerformanceMonitor:
             try:
                 callback(alert)
             except Exception as e:
-                logger.error(f"Error in alert callback: {e}")
+                logger.exception(f"Error in alert callback: {e}")
 
         logger.warning(f"Performance alert triggered: {alert.message}")
 
@@ -476,7 +475,7 @@ class PerformanceMonitor:
             [m.availability_percent for m in recent_metrics]
         )
         avg_error_rate = statistics.mean([m.error_rate_percent for m in recent_metrics])
-        total_connections = sum([m.concurrent_connections for m in recent_metrics])
+        total_connections = sum(m.concurrent_connections for m in recent_metrics)
 
         # Determine overall health
         health_score = 100.0
@@ -634,7 +633,7 @@ class AlertingSystem:
             try:
                 channel(alert)
             except Exception as e:
-                logger.error(f"Failed to send alert notification: {e}")
+                logger.exception(f"Failed to send alert notification: {e}")
 
 
 def console_alert_handler(alert: PerformanceAlert):
@@ -649,16 +648,9 @@ def console_alert_handler(alert: PerformanceAlert):
         AlertSeverity.EMERGENCY: "🔥",
     }
 
-    emoji = severity_emoji.get(alert.severity, "❓")
-    print(f"\n{emoji} ACGS-1 ALERT [{alert.severity.value.upper()}]")
-    print(f"Service: {alert.service_type}")
+    severity_emoji.get(alert.severity, "❓")
     if alert.instance_id:
-        print(f"Instance: {alert.instance_id}")
-    print(f"Message: {alert.message}")
-    print(
-        f"Time: {time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(alert.timestamp))}"
-    )
-    print("-" * 50)
+        pass
 
 
 async def get_performance_monitor() -> PerformanceMonitor:

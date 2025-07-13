@@ -79,7 +79,7 @@ class ConstitutionalCouncilDashboard:
             try:
                 await websocket.close()
             except Exception as e:
-                logger.error(f"Error closing websocket {connection_id}: {e}")
+                logger.exception(f"Error closing websocket {connection_id}: {e}")
 
         self.websocket_connections.clear()
         logger.info("Stopped Constitutional Council dashboard")
@@ -115,7 +115,7 @@ class ConstitutionalCouncilDashboard:
             initial_data = await self.get_dashboard_data()
             await websocket.send_text(json.dumps(initial_data))
         except Exception as e:
-            logger.error(f"Error sending initial dashboard data: {e}")
+            logger.exception(f"Error sending initial dashboard data: {e}")
 
         return connection_id
 
@@ -153,7 +153,7 @@ class ConstitutionalCouncilDashboard:
                 await asyncio.sleep(self.update_interval)
 
             except Exception as e:
-                logger.error(f"Error in dashboard update loop: {e}")
+                logger.exception(f"Error in dashboard update loop: {e}")
                 await asyncio.sleep(5)
 
     async def _broadcast_to_websockets(self, data: dict[str, Any]) -> None:
@@ -177,7 +177,9 @@ class ConstitutionalCouncilDashboard:
             except WebSocketDisconnect:
                 disconnected_clients.append(connection_id)
             except Exception as e:
-                logger.error(f"Error sending WebSocket message to {connection_id}: {e}")
+                logger.exception(
+                    f"Error sending WebSocket message to {connection_id}: {e}"
+                )
                 disconnected_clients.append(connection_id)
 
         # Remove disconnected clients
@@ -202,7 +204,7 @@ class ConstitutionalCouncilDashboard:
             # Get real-time alerts
             alerts = await self._get_real_time_alerts()
 
-            dashboard_data = {
+            return {
                 "timestamp": datetime.utcnow().isoformat(),
                 "amendment_workflows": amendment_metrics,
                 "stakeholder_engagement": stakeholder_metrics,
@@ -213,10 +215,8 @@ class ConstitutionalCouncilDashboard:
                 "dashboard_status": "active" if self.dashboard_active else "inactive",
             }
 
-            return dashboard_data
-
         except Exception as e:
-            logger.error(f"Failed to generate dashboard data: {e}")
+            logger.exception(f"Failed to generate dashboard data: {e}")
             return {
                 "error": str(e),
                 "timestamp": datetime.utcnow().isoformat(),
@@ -281,7 +281,7 @@ class ConstitutionalCouncilDashboard:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get amendment workflow metrics: {e}")
+            logger.exception(f"Failed to get amendment workflow metrics: {e}")
             return {"error": str(e)}
 
     async def _get_stakeholder_engagement_metrics(self) -> dict[str, Any]:
@@ -344,7 +344,7 @@ class ConstitutionalCouncilDashboard:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get stakeholder engagement metrics: {e}")
+            logger.exception(f"Failed to get stakeholder engagement metrics: {e}")
             return {"error": str(e)}
 
     async def _get_voting_progress_data(self) -> dict[str, Any]:
@@ -424,7 +424,7 @@ class ConstitutionalCouncilDashboard:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get voting progress data: {e}")
+            logger.exception(f"Failed to get voting progress data: {e}")
             return {"error": str(e)}
 
     async def _get_performance_metrics(self) -> dict[str, Any]:
@@ -479,13 +479,12 @@ class ConstitutionalCouncilDashboard:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get performance metrics: {e}")
+            logger.exception(f"Failed to get performance metrics: {e}")
             return {"error": str(e)}
 
     async def _get_real_time_alerts(self) -> dict[str, Any]:
         """Get real-time alerts and notifications."""
         try:
-            alerts = []
             current_time = datetime.utcnow()
 
             # Check for stalled amendments (no activity in 48 hours)
@@ -500,17 +499,17 @@ class ConstitutionalCouncilDashboard:
             stalled_result = await self.db.execute(stalled_query)
             stalled_amendments = stalled_result.scalars().all()
 
-            for amendment in stalled_amendments:
-                alerts.append(
-                    {
-                        "id": f"stalled_{amendment.id}",
-                        "type": "workflow_stalled",
-                        "severity": "warning",
-                        "message": f"Amendment {amendment.id} has been stalled for over 48 hours",
-                        "amendment_id": amendment.id,
-                        "timestamp": current_time.isoformat(),
-                    }
-                )
+            alerts = [
+                {
+                    "id": f"stalled_{amendment.id}",
+                    "type": "workflow_stalled",
+                    "severity": "warning",
+                    "message": f"Amendment {amendment.id} has been stalled for over 48 hours",
+                    "amendment_id": amendment.id,
+                    "timestamp": current_time.isoformat(),
+                }
+                for amendment in stalled_amendments
+            ]
 
             # Check for voting deadlines approaching (within 24 hours)
             deadline_cutoff = current_time + timedelta(hours=24)
@@ -565,7 +564,7 @@ class ConstitutionalCouncilDashboard:
             }
 
         except Exception as e:
-            logger.error(f"Failed to get real-time alerts: {e}")
+            logger.exception(f"Failed to get real-time alerts: {e}")
             return {"error": str(e)}
 
     async def broadcast_amendment_update(
@@ -591,7 +590,7 @@ class ConstitutionalCouncilDashboard:
             )
 
         except Exception as e:
-            logger.error(f"Failed to broadcast amendment update: {e}")
+            logger.exception(f"Failed to broadcast amendment update: {e}")
 
     async def broadcast_voting_update(
         self, amendment_id: int, vote_data: dict[str, Any]
@@ -608,7 +607,7 @@ class ConstitutionalCouncilDashboard:
             await self._broadcast_to_websockets(voting_message)
 
         except Exception as e:
-            logger.error(f"Failed to broadcast voting update: {e}")
+            logger.exception(f"Failed to broadcast voting update: {e}")
 
     async def broadcast_stakeholder_activity(
         self, activity_type: str, data: dict[str, Any]
@@ -625,7 +624,7 @@ class ConstitutionalCouncilDashboard:
             await self._broadcast_to_websockets(activity_message)
 
         except Exception as e:
-            logger.error(f"Failed to broadcast stakeholder activity: {e}")
+            logger.exception(f"Failed to broadcast stakeholder activity: {e}")
 
 
 # Global dashboard instance

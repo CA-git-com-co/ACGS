@@ -254,7 +254,7 @@ class ConstitutionalVerificationEngine:
 
         except Exception as e:
             verification_time = (time.time() - start_time) * 1000
-            logger.error(
+            logger.exception(
                 f"Constitutional verification {verification_id} failed after {verification_time:.2f}ms: {e}"
             )
 
@@ -311,13 +311,15 @@ class ConstitutionalVerificationEngine:
 
             # Step 3: Attempt to prove property
             proof_steps = []
-            proof_steps.append(f"// Formal verification of {proof_type.value}")
-            proof_steps.append(f"// requires: {property_specification}")
-            proof_steps.append("// ensures: Constitutional compliance verified")
-            proof_steps.append(
-                f"// sha256: {hashlib.sha256(property_specification.encode()).hexdigest()[:16]}"
+            proof_steps.extend(
+                (
+                    f"// Formal verification of {proof_type.value}",
+                    f"// requires: {property_specification}",
+                    "// ensures: Constitutional compliance verified",
+                    f"// sha256: {hashlib.sha256(property_specification.encode()).hexdigest()[:16]}",
+                    "",
+                )
             )
-            proof_steps.append("")
 
             # Add constraint assumptions
             for i, constraint in enumerate(policy_constraints):
@@ -332,11 +334,13 @@ class ConstitutionalVerificationEngine:
 
             if result == z3.unsat:
                 # Property is proven (constraints imply property)
-                proof_steps.append(f"prove property: {property_specification}")
-                proof_steps.append(
-                    "// Property verified: constraints => property (UNSAT)"
+                proof_steps.extend(
+                    (
+                        f"prove property: {property_specification}",
+                        "// Property verified: constraints => property (UNSAT)",
+                        "// QED: Constitutional compliance proven",
+                    )
                 )
-                proof_steps.append("// QED: Constitutional compliance proven")
 
                 formal_proof = FormalProof(
                     proof_id=proof_id,
@@ -357,12 +361,14 @@ class ConstitutionalVerificationEngine:
                 model = solver.model()
                 counter_example = str(model)
 
-                proof_steps.append(f"attempt_prove property: {property_specification}")
-                proof_steps.append(
-                    "// Property NOT verified: counter-example found (SAT)"
+                proof_steps.extend(
+                    (
+                        f"attempt_prove property: {property_specification}",
+                        "// Property NOT verified: counter-example found (SAT)",
+                        f"// Counter-example: {counter_example}",
+                        "// Constitutional compliance NOT proven",
+                    )
                 )
-                proof_steps.append(f"// Counter-example: {counter_example}")
-                proof_steps.append("// Constitutional compliance NOT proven")
 
                 formal_proof = FormalProof(
                     proof_id=proof_id,
@@ -381,10 +387,14 @@ class ConstitutionalVerificationEngine:
 
             else:
                 # Unknown result (timeout or other issue)
-                proof_steps.append(f"attempt_prove property: {property_specification}")
-                proof_steps.append("// Property verification INCONCLUSIVE (UNKNOWN)")
-                proof_steps.append("// Solver timeout or complexity limit reached")
-                proof_steps.append("// Constitutional compliance UNCERTAIN")
+                proof_steps.extend(
+                    (
+                        f"attempt_prove property: {property_specification}",
+                        "// Property verification INCONCLUSIVE (UNKNOWN)",
+                        "// Solver timeout or complexity limit reached",
+                        "// Constitutional compliance UNCERTAIN",
+                    )
+                )
 
                 formal_proof = FormalProof(
                     proof_id=proof_id,
@@ -415,7 +425,7 @@ class ConstitutionalVerificationEngine:
 
         except Exception as e:
             verification_time = (time.time() - start_time) * 1000
-            logger.error(
+            logger.exception(
                 f"Formal proof generation {proof_id} failed after {verification_time:.2f}ms: {e}"
             )
 
@@ -461,7 +471,7 @@ class ConstitutionalVerificationEngine:
             }
 
         except Exception as e:
-            logger.error(
+            logger.exception(
                 f"Property verification failed for {property.property_id}: {e}"
             )
             return {

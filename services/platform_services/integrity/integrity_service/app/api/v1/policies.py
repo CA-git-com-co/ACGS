@@ -43,10 +43,7 @@ async def create_policy_rule_endpoint(  # Changed to async def
     ),  # Changed to AsyncSession and get_async_db
     current_user: User = Depends(require_internal_service),
 ):
-    created_rule = await crud.create_policy_rule(
-        db=db, policy_rule=policy_rule
-    )  # Added await
-    return created_rule
+    return await crud.create_policy_rule(db=db, policy_rule=policy_rule)  # Added await
 
 
 @router.get("/{rule_id}", response_model=schemas.PolicyRule)

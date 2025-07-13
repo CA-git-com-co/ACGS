@@ -4,6 +4,7 @@ Formal Verification Service Configuration
 Manages configuration for formal verification and validation engine.
 """
 
+
 class Settings:
     """Formal verification service configuration settings."""
 

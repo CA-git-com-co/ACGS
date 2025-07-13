@@ -14,7 +14,8 @@ import logging
 import os
 import time
 from dataclasses import dataclass
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
 import aiohttp
 
 # Constitutional compliance hash
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class DashboardConfig:
     """Configuration for a Grafana dashboard."""
-    
+
     name: str
     title: str
     file_path: str
@@ -39,7 +40,7 @@ class DashboardConfig:
 @dataclass
 class DashboardDeploymentStatus:
     """Status of dashboard deployment."""
-    
+
     dashboards_deployed: int = 0
     total_dashboards: int = 0
     grafana_connected: bool = False
@@ -50,14 +51,14 @@ class DashboardDeploymentStatus:
 
 class GrafanaDashboardDeployer:
     """Deploy comprehensive Grafana dashboards for ACGS services."""
-    
+
     def __init__(self, grafana_url: str = "http://localhost:3000"):
         self.grafana_url = grafana_url
         self.grafana_user = "admin"
         self.grafana_password = "acgs_admin_2024"
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.deployment_status = DashboardDeploymentStatus()
-        
+
         # Dashboard configurations
         self.dashboards = [
             DashboardConfig(
@@ -66,7 +67,7 @@ class GrafanaDashboardDeployer:
                 "infrastructure/monitoring/grafana/dashboards/acgs_performance_dashboard.json",
                 ["acgs", "performance", "constitutional-compliance"],
                 "5s",
-                "1h"
+                "1h",
             ),
             DashboardConfig(
                 "acgs-coordination",
@@ -74,7 +75,7 @@ class GrafanaDashboardDeployer:
                 "infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json",
                 ["acgs", "coordination", "agents"],
                 "5s",
-                "30m"
+                "30m",
             ),
             DashboardConfig(
                 "acgs-constitutional",
@@ -82,7 +83,7 @@ class GrafanaDashboardDeployer:
                 "infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json",
                 ["acgs", "constitutional", "compliance"],
                 "5s",
-                "1h"
+                "1h",
             ),
             DashboardConfig(
                 "acgs-infrastructure",
@@ -90,14 +91,14 @@ class GrafanaDashboardDeployer:
                 "infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json",
                 ["acgs", "infrastructure", "database", "cache"],
                 "10s",
-                "1h"
+                "1h",
             ),
         ]
-        
+
         self.deployment_status.total_dashboards = len(self.dashboards)
-        
+
         logger.info(f"Dashboard deployer initialized [hash: {CONSTITUTIONAL_HASH}]")
-    
+
     def generate_coordination_dashboard(self) -> Dict[str, Any]:
         """Generate multi-agent coordination dashboard."""
         return {
@@ -117,7 +118,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "avg(agent_coordination_efficiency_percent)",
-                                "legendFormat": "Coordination Efficiency"
+                                "legendFormat": "Coordination Efficiency",
                             }
                         ],
                         "fieldConfig": {
@@ -127,15 +128,15 @@ class GrafanaDashboardDeployer:
                                     "steps": [
                                         {"color": "red", "value": 0},
                                         {"color": "yellow", "value": 80},
-                                        {"color": "green", "value": 90}
+                                        {"color": "green", "value": 90},
                                     ]
                                 },
                                 "unit": "percent",
                                 "min": 0,
-                                "max": 100
+                                "max": 100,
                             }
                         },
-                        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0}
+                        "gridPos": {"h": 8, "w": 6, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -144,7 +145,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "histogram_quantile(0.95, sum(rate(task_distribution_duration_seconds_bucket[5m])) by (le))",
-                                "legendFormat": "P95 Distribution Time"
+                                "legendFormat": "P95 Distribution Time",
                             }
                         ],
                         "fieldConfig": {
@@ -154,13 +155,13 @@ class GrafanaDashboardDeployer:
                                     "steps": [
                                         {"color": "green", "value": 0},
                                         {"color": "yellow", "value": 0.003},
-                                        {"color": "red", "value": 0.005}
+                                        {"color": "red", "value": 0.005},
                                     ]
                                 },
-                                "unit": "s"
+                                "unit": "s",
                             }
                         },
-                        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0}
+                        "gridPos": {"h": 8, "w": 6, "x": 6, "y": 0},
                     },
                     {
                         "id": 3,
@@ -169,7 +170,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "sum(agent_active_count)",
-                                "legendFormat": "Active Agents"
+                                "legendFormat": "Active Agents",
                             }
                         ],
                         "fieldConfig": {
@@ -179,13 +180,13 @@ class GrafanaDashboardDeployer:
                                     "steps": [
                                         {"color": "red", "value": 0},
                                         {"color": "yellow", "value": 5},
-                                        {"color": "green", "value": 10}
+                                        {"color": "green", "value": 10},
                                     ]
                                 },
-                                "unit": "short"
+                                "unit": "short",
                             }
                         },
-                        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0}
+                        "gridPos": {"h": 8, "w": 6, "x": 12, "y": 0},
                     },
                     {
                         "id": 4,
@@ -194,7 +195,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "sum(task_queue_length)",
-                                "legendFormat": "Queued Tasks"
+                                "legendFormat": "Queued Tasks",
                             }
                         ],
                         "fieldConfig": {
@@ -204,13 +205,13 @@ class GrafanaDashboardDeployer:
                                     "steps": [
                                         {"color": "green", "value": 0},
                                         {"color": "yellow", "value": 50},
-                                        {"color": "red", "value": 100}
+                                        {"color": "red", "value": 100},
                                     ]
                                 },
-                                "unit": "short"
+                                "unit": "short",
                             }
                         },
-                        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0}
+                        "gridPos": {"h": 8, "w": 6, "x": 18, "y": 0},
                     },
                     {
                         "id": 5,
@@ -219,7 +220,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "avg(agent_performance_score) by (agent_type)",
-                                "legendFormat": "{{agent_type}}"
+                                "legendFormat": "{{agent_type}}",
                             }
                         ],
                         "yAxes": [
@@ -227,10 +228,10 @@ class GrafanaDashboardDeployer:
                                 "label": "Performance Score",
                                 "unit": "short",
                                 "min": 0,
-                                "max": 100
+                                "max": 100,
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
                     },
                     {
                         "id": 6,
@@ -239,27 +240,21 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "rate(tasks_completed_total[5m])",
-                                "legendFormat": "Completed Tasks/sec"
+                                "legendFormat": "Completed Tasks/sec",
                             },
                             {
                                 "expr": "rate(tasks_failed_total[5m])",
-                                "legendFormat": "Failed Tasks/sec"
-                            }
+                                "legendFormat": "Failed Tasks/sec",
+                            },
                         ],
-                        "yAxes": [
-                            {
-                                "label": "Tasks/sec",
-                                "unit": "short",
-                                "min": 0
-                            }
-                        ],
-                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
-                    }
-                ]
+                        "yAxes": [{"label": "Tasks/sec", "unit": "short", "min": 0}],
+                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+                    },
+                ],
             },
-            "overwrite": True
+            "overwrite": True,
         }
-    
+
     def generate_constitutional_dashboard(self) -> Dict[str, Any]:
         """Generate constitutional compliance dashboard."""
         return {
@@ -278,8 +273,8 @@ class GrafanaDashboardDeployer:
                         "type": "stat",
                         "targets": [
                             {
-                                "expr": "avg(constitutional_compliance_rate{constitutional_hash=\"cdd01ef066bc6cf2\"})",
-                                "legendFormat": "Compliance Rate"
+                                "expr": 'avg(constitutional_compliance_rate{constitutional_hash="cdd01ef066bc6cf2"})',
+                                "legendFormat": "Compliance Rate",
                             }
                         ],
                         "fieldConfig": {
@@ -289,15 +284,15 @@ class GrafanaDashboardDeployer:
                                     "steps": [
                                         {"color": "red", "value": 0},
                                         {"color": "yellow", "value": 99},
-                                        {"color": "green", "value": 99.9}
+                                        {"color": "green", "value": 99.9},
                                     ]
                                 },
                                 "unit": "percent",
                                 "min": 99,
-                                "max": 100
+                                "max": 100,
                             }
                         },
-                        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0}
+                        "gridPos": {"h": 8, "w": 8, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -306,7 +301,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "histogram_quantile(0.99, sum(rate(constitutional_validation_duration_seconds_bucket[5m])) by (le))",
-                                "legendFormat": "P99 Validation Time"
+                                "legendFormat": "P99 Validation Time",
                             }
                         ],
                         "fieldConfig": {
@@ -316,13 +311,13 @@ class GrafanaDashboardDeployer:
                                     "steps": [
                                         {"color": "green", "value": 0},
                                         {"color": "yellow", "value": 0.0003},
-                                        {"color": "red", "value": 0.0005}
+                                        {"color": "red", "value": 0.0005},
                                     ]
                                 },
-                                "unit": "s"
+                                "unit": "s",
                             }
                         },
-                        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0}
+                        "gridPos": {"h": 8, "w": 8, "x": 8, "y": 0},
                     },
                     {
                         "id": 3,
@@ -331,7 +326,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "sum(constitutional_compliance_violations_total)",
-                                "legendFormat": "Total Violations"
+                                "legendFormat": "Total Violations",
                             }
                         ],
                         "fieldConfig": {
@@ -340,19 +335,19 @@ class GrafanaDashboardDeployer:
                                 "thresholds": {
                                     "steps": [
                                         {"color": "green", "value": 0},
-                                        {"color": "red", "value": 1}
+                                        {"color": "red", "value": 1},
                                     ]
                                 },
-                                "unit": "short"
+                                "unit": "short",
                             }
                         },
-                        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0}
-                    }
-                ]
+                        "gridPos": {"h": 8, "w": 8, "x": 16, "y": 0},
+                    },
+                ],
             },
-            "overwrite": True
+            "overwrite": True,
         }
-    
+
     def generate_infrastructure_dashboard(self) -> Dict[str, Any]:
         """Generate infrastructure monitoring dashboard."""
         return {
@@ -372,21 +367,15 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "database_connections_active",
-                                "legendFormat": "Active Connections"
+                                "legendFormat": "Active Connections",
                             },
                             {
                                 "expr": "database_connections_max",
-                                "legendFormat": "Max Connections"
-                            }
+                                "legendFormat": "Max Connections",
+                            },
                         ],
-                        "yAxes": [
-                            {
-                                "label": "Connections",
-                                "unit": "short",
-                                "min": 0
-                            }
-                        ],
-                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+                        "yAxes": [{"label": "Connections", "unit": "short", "min": 0}],
+                        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
                     },
                     {
                         "id": 2,
@@ -395,7 +384,7 @@ class GrafanaDashboardDeployer:
                         "targets": [
                             {
                                 "expr": "cache_hits_total / (cache_hits_total + cache_misses_total) * 100",
-                                "legendFormat": "Cache Hit Rate"
+                                "legendFormat": "Cache Hit Rate",
                             }
                         ],
                         "yAxes": [
@@ -403,21 +392,21 @@ class GrafanaDashboardDeployer:
                                 "label": "Hit Rate",
                                 "unit": "percent",
                                 "min": 80,
-                                "max": 100
+                                "max": 100,
                             }
                         ],
-                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
-                    }
-                ]
+                        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+                    },
+                ],
             },
-            "overwrite": True
+            "overwrite": True,
         }
-    
+
     async def test_grafana_connection(self) -> bool:
         """Test connection to Grafana."""
         try:
             auth = aiohttp.BasicAuth(self.grafana_user, self.grafana_password)
-            
+
             async with aiohttp.ClientSession(auth=auth) as session:
                 async with session.get(f"{self.grafana_url}/api/health") as response:
                     if response.status == 200:
@@ -427,56 +416,67 @@ class GrafanaDashboardDeployer:
                     else:
                         logger.error(f"❌ Grafana connection failed: {response.status}")
                         return False
-        
+
         except Exception as e:
             logger.error(f"❌ Grafana connection error: {e}")
             return False
-    
+
     async def deploy_dashboards(self) -> bool:
         """Deploy all dashboards to Grafana."""
         start_time = time.perf_counter()
-        
+
         try:
             logger.info("Starting dashboard deployment...")
-            
+
             # Test Grafana connection
             if not await self.test_grafana_connection():
                 return False
-            
+
             # Create dashboard directories
             os.makedirs("infrastructure/monitoring/grafana/dashboards", exist_ok=True)
-            
+
             # Generate additional dashboards
             coordination_dashboard = self.generate_coordination_dashboard()
-            with open("infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json", "w") as f:
+            with open(
+                "infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json",
+                "w",
+            ) as f:
                 json.dump(coordination_dashboard, f, indent=2)
-            
+
             constitutional_dashboard = self.generate_constitutional_dashboard()
-            with open("infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json", "w") as f:
+            with open(
+                "infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json",
+                "w",
+            ) as f:
                 json.dump(constitutional_dashboard, f, indent=2)
-            
+
             infrastructure_dashboard = self.generate_infrastructure_dashboard()
-            with open("infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json", "w") as f:
+            with open(
+                "infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json",
+                "w",
+            ) as f:
                 json.dump(infrastructure_dashboard, f, indent=2)
-            
+
             logger.info("✅ Dashboard files generated")
-            
+
             # Update deployment status
             self.deployment_status.dashboards_deployed = len(self.dashboards)
             self.deployment_status.datasource_configured = True
-            self.deployment_status.refresh_rate_target_met = True  # All dashboards use ≤10s refresh
-            
+            self.deployment_status.refresh_rate_target_met = (
+                True  # All dashboards use ≤10s refresh
+            )
+
             deployment_time = time.perf_counter() - start_time
             self.deployment_status.deployment_time = deployment_time
-            
+
             logger.info(f"✅ Dashboard deployment completed in {deployment_time:.2f}s")
-            
+
             return True
-            
+
         except Exception as e:
             logger.error(f"❌ Dashboard deployment failed: {e}")
             return False
-    
+
     def get_deployment_summary(self) -> Dict[str, Any]:
         """Get comprehensive deployment summary."""
         return {
@@ -513,29 +513,39 @@ async def main():
     print("HASH-OK:cdd01ef066bc6cf2")
     print("Grafana Dashboard Deployment for ACGS Services")
     print("=" * 55)
-    
+
     deployer = GrafanaDashboardDeployer()
-    
+
     # Deploy dashboards
     success = await deployer.deploy_dashboards()
-    
+
     if success:
         # Get deployment summary
         summary = deployer.get_deployment_summary()
-        
+
         print("\n" + "=" * 55)
         print("DASHBOARD DEPLOYMENT RESULTS:")
         print("HASH-OK:cdd01ef066bc6cf2")
-        print(f"✅ Dashboards deployed: {summary['deployment_status']['dashboards_deployed']}/{summary['deployment_status']['total_dashboards']}")
-        print(f"✅ Grafana connected: {summary['deployment_status']['grafana_connected']}")
-        print(f"✅ Datasource configured: {summary['deployment_status']['datasource_configured']}")
-        print(f"✅ Refresh rate target met: {summary['deployment_status']['refresh_rate_target_met']}")
-        print(f"✅ Deployment time: {summary['deployment_status']['deployment_time_seconds']:.2f}s")
-        
+        print(
+            f"✅ Dashboards deployed: {summary['deployment_status']['dashboards_deployed']}/{summary['deployment_status']['total_dashboards']}"
+        )
+        print(
+            f"✅ Grafana connected: {summary['deployment_status']['grafana_connected']}"
+        )
+        print(
+            f"✅ Datasource configured: {summary['deployment_status']['datasource_configured']}"
+        )
+        print(
+            f"✅ Refresh rate target met: {summary['deployment_status']['refresh_rate_target_met']}"
+        )
+        print(
+            f"✅ Deployment time: {summary['deployment_status']['deployment_time_seconds']:.2f}s"
+        )
+
         print(f"\nDASHBOARDS CREATED:")
-        for dashboard in summary['dashboards']:
+        for dashboard in summary["dashboards"]:
             print(f"✅ {dashboard['title']} - {dashboard['refresh_rate']} refresh")
-        
+
         print("\n🎉 GRAFANA DASHBOARDS DEPLOYED SUCCESSFULLY!")
         print("✅ Performance dashboard: Real-time ACGS metrics")
         print("✅ Coordination dashboard: Multi-agent efficiency")
@@ -544,7 +554,7 @@ async def main():
         print("✅ <5 second refresh rate achieved")
         print("✅ Real-time monitoring for all 8 ACGS services")
         print("✅ Ready for production monitoring")
-        
+
         return 0
     else:
         print("❌ Dashboard deployment failed")
@@ -553,4 +563,5 @@ async def main():
 
 if __name__ == "__main__":
     import sys
+
     sys.exit(asyncio.run(main()))

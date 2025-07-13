@@ -11,10 +11,10 @@ from collections.abc import (  # AsyncGenerator for async fixture
 import pytest
 
 try:
-    from ..core.config import settings
-    from ..db.base_class import Base
-    from ..db.session import get_async_db
-    from ..main import app as fastapi_app  # Your FastAPI application, aliased
+    from app.core.config import settings
+    from app.db.base_class import Base
+    from app.db.session import get_async_db
+    from app.main import app as fastapi_app  # Your FastAPI application, aliased
 except ImportError:
     # Mock imports for testing when modules are not available
     class MockSettings:
