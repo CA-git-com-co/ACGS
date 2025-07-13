@@ -4,7 +4,7 @@
 # Core Framework Dependencies
 numpy==1.24.3                    # Numerical computing for correlation matrices
 scipy==1.11.1                    # Statistical functions for confidence intervals
-scikit-learn==1.3.0             # Machine learning utilities
+scikit-learn==1.5.0             # Machine learning utilities
 
 # Explainable AI & Model Interpretation
 shap==0.45.0                     # SHAP values for principle importance analysis
@@ -32,11 +32,11 @@ pytest-asyncio==0.21.1           # Async testing support
 pytest-cov==4.1.0                # Coverage reporting
 pytest-mock==3.12.0              # Mocking utilities
 mypy==1.7.1                      # Static type checking
-black==23.11.0                   # Code formatting
+black==24.3.0                   # Code formatting
 ruff==0.1.6                      # Fast linting
 
 # Security & Secrets Management
-cryptography==41.0.7             # Cryptographic operations
+cryptography==44.0.1             # Cryptographic operations
 keyring==24.3.0                  # Secure credential storage
 python-jose[cryptography]==3.3.0 # JWT handling
 
@@ -51,7 +51,7 @@ uvicorn[standard]==0.24.0        # ASGI server
 httpx==0.25.2                    # Async HTTP client
 
 # Data Processing & Serialization
-orjson==3.9.10                   # Fast JSON serialization
+orjson==3.9.15                   # Fast JSON serialization
 msgpack==1.0.7                   # Binary serialization
 pandas==2.1.3                    # Data manipulation (for analytics)
 
@@ -73,7 +73,7 @@ rich==13.7.0                     # Rich terminal output
 typer==0.9.0                     # CLI framework
 
 # Production Deployment
-gunicorn==21.2.0                 # WSGI server for production
+gunicorn==23.0.0                 # WSGI server for production
 supervisor==4.2.5                # Process management
 psutil==5.9.6                    # System monitoring
 
