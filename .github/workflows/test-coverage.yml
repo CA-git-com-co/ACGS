@@ -158,7 +158,7 @@ jobs:
         path: |
           coverage.xml
           coverage.json
-          htmlcov/
+          reports/coverage/htmlcov/
           test_report.json
           coverage.svg
       continue-on-error: true

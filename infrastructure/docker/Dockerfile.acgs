@@ -199,7 +199,7 @@ RUN pip install --no-cache-dir \
     jupyter
 
 # Copy development configuration
-COPY .env.development /app/.env
+COPY config/environments/development.env.development /app/config/environments/development.env
 
 # Switch back to acgs user
 USER acgs

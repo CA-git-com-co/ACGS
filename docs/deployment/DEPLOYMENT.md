@@ -46,17 +46,17 @@ cd acgs-mcp-stack
 
 # Copy the required files:
 # - docker-compose.yml
-# - .env.template
+# - config/environments/developmentconfig/environments/template.env
 # - docs/coordination-policy.md
 ```
 
 2. **Create environment configuration:**
 ```bash
 # Copy template and customize
-cp .env.template .env
+cp config/environments/developmentconfig/environments/template.env config/environments/development.env
 
 # Edit environment variables (REQUIRED)
-nano .env
+nano config/environments/development.env
 
 # Minimum required changes:
 # - Set GITHUB_TOKEN with your GitHub Personal Access Token
@@ -79,16 +79,16 @@ sudo chown -R 1000:1000 workspace logs cache
 1. **Generate GitHub Personal Access Token:**
    - Visit: https://github.com/settings/tokens
    - Create token with scopes: `repo`, `read:org`, `read:user`
-   - Add token to `.env` file: `GITHUB_TOKEN=ghp_your_token_here`
+   - Add token to `config/environments/development.env` file: `GITHUB_TOKEN=ghp_your_token_here`
 
 2. **Verify security settings:**
 ```bash
 # Check file permissions
-ls -la .env
+ls -la config/environments/development.env
 # Should show: -rw------- (600 permissions)
 
 # Set secure permissions if needed
-chmod 600 .env
+chmod 600 config/environments/development.env
 ```
 
 ### Step 3: Service Deployment
@@ -315,10 +315,10 @@ tar -czf logs-$(date +%Y%m%d).tar.gz logs/
 
 | Issue | Symptoms | Solution |
 |-------|----------|----------|
-| **Service won't start** | Container exits immediately | Check logs: `docker-compose logs [service]`<br>Verify environment variables in `.env` |
+| **Service won't start** | Container exits immediately | Check logs: `docker-compose logs [service]`<br>Verify environment variables in `config/environments/development.env` |
 | **Health check failing** | Service shows as unhealthy | Wait 2-3 minutes for startup<br>Check port conflicts: `netstat -tulpn` |
 | **GitHub integration fails** | 401/403 errors in logs | Verify `GITHUB_TOKEN` is valid<br>Check token scopes and rate limits |
-| **Browser service crashes** | Browser container restarts frequently | Increase memory limit in `.env`<br>Check shared memory: `df -h /dev/shm` |
+| **Browser service crashes** | Browser container restarts frequently | Increase memory limit in `config/environments/development.env`<br>Check shared memory: `df -h /dev/shm` |
 | **High memory usage** | System becomes slow | Adjust memory limits in `docker-compose.yml`<br>Monitor with `docker stats` |
 | **Network connectivity issues** | Services can't communicate | Check Docker network: `docker network ls`<br>Verify firewall settings |
 
@@ -377,7 +377,7 @@ docker-compose down
 
 # Restore from backup (if available)
 cp docker-compose.yml.backup docker-compose.yml
-cp .env.backup .env
+cp config/environments/development.env.backup config/environments/development.env
 
 # Restart with previous configuration
 docker-compose up -d
@@ -442,7 +442,7 @@ docker-compose up -d
 1. **Token rotation (every 90 days):**
 ```bash
 # Generate new GitHub token
-# Update .env file
+# Update config/environments/development.env file
 # Restart GitHub service
 docker-compose restart mcp_github
 ```
@@ -462,7 +462,7 @@ docker-compose build --pull
 3. **Access control review:**
 ```bash
 # Review file permissions
-ls -la .env
+ls -la config/environments/development.env
 ls -la workspace/
 
 # Review network access
@@ -479,7 +479,7 @@ netstat -tulpn | grep :3000
 ```bash
 # Backup configuration files
 tar -czf acgs-mcp-config-$(date +%Y%m%d).tar.gz \
-  docker-compose.yml .env docs/
+  docker-compose.yml config/environments/development.env docs/
 
 # Store in secure location
 ```

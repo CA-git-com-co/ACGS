@@ -59,7 +59,7 @@ jobs:
 
                 Please update your PR description to include all required sections from the PR template.
 
-                **Constitutional Hash**: \`${process.env.CONSTITUTIONAL_HASH}\` must be validated in all changes.`
+                **Constitutional Hash**: \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\` must be validated in all changes.`
               });
             } else {
               console.log('✅ PR template compliance check passed');
@@ -98,7 +98,7 @@ jobs:
               services/*/api/*|services/*/main.py|services/*/app.py)
                 API_CHANGED=true
                 ;;
-              config/*|*.env|pyproject.toml|pytest.ini)
+              config/*|*config/environments/development.env|pyproject.toml|pytest.ini)
                 CONFIG_CHANGED=true
                 ;;
               services/*)
@@ -188,10 +188,10 @@ jobs:
 
               Based on the files changed in this PR, the following documentation updates are required:
 
-              ${process.env.missing_docs}
+              ${processconfig/environments/development.env.missing_docs}
 
               Please update the relevant documentation files and ensure:
-              - Constitutional hash \`${process.env.CONSTITUTIONAL_HASH}\` is included where appropriate
+              - Constitutional hash \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\` is included where appropriate
               - Performance targets are updated if changed
               - Port configurations are documented if modified
               - API examples include constitutional hash in responses
@@ -259,14 +259,14 @@ jobs:
 
               The following files have constitutional hash violations:
 
-              ${process.env.hash_violations}
+              ${processconfig/environments/development.env.hash_violations}
 
               **Required Action:**
-              - Add constitutional hash \`${process.env.CONSTITUTIONAL_HASH}\` to all files that reference constitutional compliance
+              - Add constitutional hash \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\` to all files that reference constitutional compliance
               - Include constitutional hash in all API response examples
               - Ensure consistency across all documentation files
 
-              **Constitutional Hash**: \`${process.env.CONSTITUTIONAL_HASH}\``
+              **Constitutional Hash**: \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\``
             });
 
   # Performance Target Validation
@@ -358,10 +358,10 @@ jobs:
 
             if (allPassed) {
               summary += `\n🎉 All documentation requirements satisfied!\n`;
-              summary += `Constitutional Hash: \`${process.env.CONSTITUTIONAL_HASH}\` ✅`;
+              summary += `Constitutional Hash: \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\` ✅`;
             } else {
               summary += `\n📋 Please address the issues above before merging.\n`;
-              summary += `Constitutional Hash: \`${process.env.CONSTITUTIONAL_HASH}\` must be validated.`;
+              summary += `Constitutional Hash: \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\` must be validated.`;
             }
 
             await github.rest.issues.createComment({

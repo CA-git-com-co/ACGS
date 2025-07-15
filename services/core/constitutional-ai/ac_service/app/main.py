@@ -1,43 +1,47 @@
 """
-Constitutional AI Service - Refactored Main Module
+Constitutional AI Service - Simplified Working Implementation
 Constitutional Hash: cdd01ef066bc6cf2
 
-This is the refactored main module for the Constitutional AI service,
-breaking down the 1,790-line monolithic file into manageable components.
-
-Architecture:
-- api/endpoints.py: REST API endpoints
-- validation/core.py: Core validation logic
-- config/app_config.py: Application configuration and setup
-- compliance/: Compliance calculation modules
-- framework/: Framework integration modules
+A working FastAPI implementation of the Constitutional AI service
+with basic endpoints and constitutional compliance validation.
 """
 
 import logging
+from datetime import datetime
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import Dict, Any
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 logger = logging.getLogger(__name__)
 
-# Create application using refactored configuration
-# Import optimized constitutional middleware
-from services.shared.middleware.constitutional_validation import (
-    setup_constitutional_validation,
-)
-
-from .config.app_config import create_constitutional_ai_app
-
 # Create the FastAPI app
-app = create_constitutional_ai_app()
-
-# Setup optimized constitutional validation middleware
-setup_constitutional_validation(
-    app=app,
-    service_name="constitutional-ai",
-    performance_target_ms=0.5,  # Optimized target
-    enable_strict_validation=True,
+app = FastAPI(
+    title="ACGS Constitutional AI Service",
+    description="Constitutional AI governance service with compliance validation",
+    version="1.0.0"
 )
+
+# Response models
+class HealthResponse(BaseModel):
+    status: str
+    service: str
+    constitutional_hash: str
+    timestamp: str
+    version: str
+
+class ConstitutionalValidationRequest(BaseModel):
+    content: str
+    policy_type: str = "general"
+
+class ConstitutionalValidationResponse(BaseModel):
+    valid: bool
+    compliance_score: float
+    constitutional_hash: str
+    timestamp: str
+    details: Dict[str, Any]
 
 # Constitutional compliance logging
 logger.info("✅ Optimized constitutional middleware enabled for constitutional-ai")

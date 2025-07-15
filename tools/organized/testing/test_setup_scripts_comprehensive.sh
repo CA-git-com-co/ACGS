@@ -309,7 +309,7 @@ test_comprehensive_reporting() {
 # Main test execution
 main() {
     log "🧪 Starting ACGS-PGP Setup Scripts Comprehensive Test Suite"
-    echo "============================================================"
+    echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional hash: $CONSTITUTIONAL_HASH"
     echo "Compliance threshold: $COMPLIANCE_THRESHOLD"
     echo "Response time threshold: ${RESPONSE_TIME_THRESHOLD}ms"
@@ -331,9 +331,9 @@ main() {
     
     # Generate test report
     echo ""
-    echo "============================================================"
+    echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🧪 ACGS-PGP Setup Scripts Test Results"
-    echo "============================================================"
+    echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Total tests: $TOTAL_TESTS"
     echo "Passed: $PASSED_TESTS"
     echo "Failed: $FAILED_TESTS"

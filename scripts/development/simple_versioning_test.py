@@ -102,7 +102,7 @@ def test_file_structure():
     expected_files = [
         "services/shared/versioning/__init__.py",
         "services/shared/versioning/version_manager.py",
-        "services/shared/versioning/compatibility_manager.py",
+        "services/shared/versioning/compatibility_manager.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         "services/shared/versioning/response_transformers.py",
         "services/shared/versioning/versioned_router.py",
         "services/shared/api_models.py",

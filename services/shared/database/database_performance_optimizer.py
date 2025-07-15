@@ -262,7 +262,7 @@ class OptimizedRedisConnectionPool:
     async def initialize(self):
         """Initialize Redis connection pool."""
         try:
-            import aioredis
+            import redis.asyncio as aioredis
 
             # Create optimized Redis pool
             self.pool = aioredis.ConnectionPool.from_url(
@@ -301,7 +301,7 @@ class OptimizedRedisConnectionPool:
         if not self.pool:
             raise RuntimeError("Redis pool not initialized")
 
-        import aioredis
+        import redis.asyncio as aioredis
 
         return aioredis.Redis(connection_pool=self.pool)
 

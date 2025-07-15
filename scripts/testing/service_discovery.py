@@ -483,7 +483,7 @@ def main():
                        default='cdd01ef066bc6cf2',
                        help='Constitutional hash for compliance validation')
     parser.add_argument('--output-config',
-                       default='service_discovery_config.json',
+                       default='config/services/discovery.json',
                        help='Output file for service configuration')
     parser.add_argument('--output-matrix',
                        help='Output file for GitHub Actions matrix')

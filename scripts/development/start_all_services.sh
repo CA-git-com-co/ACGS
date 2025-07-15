@@ -328,12 +328,12 @@ start_service() {
     stop_service "$service_name" "$port"
     
     # Set common environment variables
-    export DATABASE_URL="sqlite+aiosqlite:///./acgs_test.db"
+    export DATABASE_URL=os.environ.get("DATABASE_URL")
     export REDIS_URL="redis://localhost:6379/0"
     export LOG_LEVEL="INFO"
     export SERVICE_PORT="$port"
-    export SECRET_KEY="acgs-development-secret-key-2024-phase3-completion-testing-$(date +%s)"
-    export CSRF_SECRET_KEY="acgs-development-csrf-secret-key-2024-phase3-completion"
+    export SECRET_KEY="acgs-development-secret-key-2024-phase3-completion-testing-$(date +%s)"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    export CSRF_SECRET_KEY="acgs-development-csrf-secret-key-2024-phase3-completion"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     export PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/services:$PYTHONPATH"
 
     # Constitutional governance configuration
@@ -469,7 +469,7 @@ main() {
 
     echo ""
     print_success "🎉 Service Startup Completed!"
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ Total services started: $started_services/$total_services"
     echo ""
 
@@ -529,7 +529,7 @@ main() {
     
     echo ""
     echo "📊 ACGS-PGP System Validation Summary"
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ Services Started: $started_services/$total_services"
     echo "✅ Health Checks: $healthy_services/$total_services"
     echo "✅ Constitutional Compliance: $compliant_services/$total_services"

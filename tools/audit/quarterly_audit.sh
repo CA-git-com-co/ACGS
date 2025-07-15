@@ -71,7 +71,7 @@ This report presents the findings of the quarterly documentation audit for ACGS,
 EOF
 
 echo "🚀 ACGS Quarterly Documentation Audit - $AUDIT_QUARTER"
-echo "======================================================"
+echo "======================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
 echo "Audit Date: $(date)"
 echo "Repository: $REPO_ROOT"
@@ -498,9 +498,9 @@ EOF
 
 # Display summary
 echo ""
-echo "======================================================"
+echo "======================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 log_section "AUDIT COMPLETED"
-echo "======================================================"
+echo "======================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo ""
 log_info "Overall Score: $TOTAL_SCORE/$TOTAL_POSSIBLE ($OVERALL_PERCENTAGE%)"
 log_info "Status: $STATUS_EMOJI $OVERALL_STATUS"

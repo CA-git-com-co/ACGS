@@ -189,6 +189,6 @@ spec:
       fromFieldPath: spec.parameters.region
       toFieldPath: spec.forProvider.region
     - type: FromCompositeFieldPath
-      fromFieldPath: spec.parameters.environment
+      fromFieldPath: spec.parametersconfig/environments/development.environment
       toFieldPath: spec.forProvider.tags.Environment
 constitutional_hash: cdd01ef066bc6cf2

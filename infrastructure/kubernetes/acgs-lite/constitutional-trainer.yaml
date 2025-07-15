@@ -51,8 +51,8 @@ metadata:
 type: Opaque
 data:
   # Base64 encoded values - replace with actual secrets
-  jwt_secret: Y29uc3RpdHV0aW9uYWwtdHJhaW5lci1qd3Qtc2VjcmV0LWtleQ==
-  api_key: Y29uc3RpdHV0aW9uYWwtdHJhaW5lci1hcGkta2V5
+  jwt_secret: Y29uc3RpdHV0aW9uYWwtdHJhaW5lci1qd3Qtc2VjcmV0LWtleQ==  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  api_key: os.environ.get("API_KEY")
 
 ---
 # PersistentVolumeClaim for Model Storage
@@ -357,7 +357,7 @@ spec:
 
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             - weight: 100
               podAffinityTerm:
                 labelSelector:

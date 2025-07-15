@@ -24,7 +24,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 try:
-    from services.core.governance_synthesis.gs_service.app.services.ac_client import (
+    from services.core.governance-synthesis.gs_service.app.services.ac_client import (
         ac_service_client,
     )
 except ImportError:

@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
+CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
+
 
 set -e
 

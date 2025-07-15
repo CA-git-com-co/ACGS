@@ -14,8 +14,8 @@ from unittest.mock import patch
 import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
-from services.core.constitutional_ai.main import app
-from services.core.constitutional_ai.models import ConstitutionalValidation
+from services.core.constitutional-ai.main import app
+from services.core.constitutional-ai.models import ConstitutionalValidation
 
 from services.shared.testing.constitutional_test_case import ConstitutionalAsyncTestCase
 
@@ -311,7 +311,7 @@ class TestConstitutionalAIService(ConstitutionalAsyncTestCase):
         headers = self.create_test_headers(tenant_context)
 
         with patch(
-            "services.core.constitutional_ai.clients.integrity_client.create_audit_entry"
+            "services.core.constitutional-ai.clients.integrity_client.create_audit_entry"
         ) as mock_audit:
             mock_audit.return_value = {"audit_id": "test-audit-123"}
 
@@ -355,7 +355,7 @@ class TestConstitutionalAIService(ConstitutionalAsyncTestCase):
 
         # Simulate service error
         with patch(
-            "services.core.constitutional_ai.services.validation_service.validate_content"
+            "services.core.constitutional-ai.services.validation_service.validate_content"
         ) as mock_validate:
             mock_validate.side_effect = Exception("Simulated service error")
 

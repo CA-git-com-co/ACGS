@@ -177,8 +177,8 @@ createdb acgs_gs
 alembic upgrade head
 
 # 3. Configure environment
-cp .env.example .env
-# Edit .env with your API keys and configuration
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# Edit config/environments/development.env with your API keys and configuration
 
 # 4. Start Nano-vLLM (optional)
 ./scripts/start_nano_vllm.sh
@@ -192,7 +192,7 @@ uv run uvicorn main:app --reload --port 8004
 ````bash
 # Using Docker
 docker build -t acgs-gs-service .
-docker run -p 8004:8004 --env-file .env acgs-gs-service
+docker run -p 8004:8004 --env-file config/environments/development.env acgs-gs-service
 
 # Using Docker Compose
 docker-compose up -d gs-service
@@ -494,7 +494,7 @@ python tests/performance/stress_test_consensus.py --models=3 --concurrent=10
 - **Health Check**: http://localhost:8004/health
 - **Interactive API Docs**: http://localhost:8004/docs
 - **Logs**: `/logs/gs_service.log`
-- **Configuration**: `services/core/governance-synthesis/gs_service/.env`
+- **Configuration**: `services/core/governance-synthesis/gs_service/config/environments/development.env`
 
 ```
 

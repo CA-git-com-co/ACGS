@@ -100,14 +100,14 @@ class PostCleanupRemediation:
 
         # Keep only essential environment files in root
         essential_env_files = [
-            ".env",
-            ".env.example",
-            ".env.production",
-            ".env.staging",
+            "config/environments/development.env",
+            "config/environments/developmentconfig/environments/example.env",
+            "config/environments/developmentconfig/environments/production.env.backup",
+            "config/environments/development.env.staging",
         ]
 
         # Remove redundant environment files from root
-        for env_file in self.project_root.glob(".env*"):
+        for env_file in self.project_root.glob("config/environments/development.env*"):
             if env_file.name not in essential_env_files:
                 if env_file.is_file():
                     env_file.unlink()

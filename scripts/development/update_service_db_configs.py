@@ -77,7 +77,7 @@ class ServiceConfigUpdater:
         # Update different configuration file types
         updated = False
 
-        # Update .env files
+        # Update config/environments/development.env files
         if self.update_env_file(service_dir, config):
             updated = True
 
@@ -96,8 +96,8 @@ class ServiceConfigUpdater:
         return updated
 
     def update_env_file(self, service_dir: Path, config) -> bool:
-        """Update .env file with PgBouncer configuration."""
-        env_files = [".env", ".env.example", ".env.local"]
+        """Update config/environments/development.env file with PgBouncer configuration."""
+        env_files = ["config/environments/development.env", "config/environments/developmentconfig/environments/example.env", "config/environments/development.env.local"]
         updated = False
 
         for env_file in env_files:
@@ -267,7 +267,7 @@ class ServiceConfigUpdater:
                     import re
 
                     content = re.sub(
-                        r"DATABASE_URL=postgresql://[^@]+@[^:]+:\d+/\w+",
+                        r"DATABASE_URL=os.environ.get("DATABASE_URL"),
                         f"DATABASE_URL={config.get_connection_url()}",
                         content,
                     )

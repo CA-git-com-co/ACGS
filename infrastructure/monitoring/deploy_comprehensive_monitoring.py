@@ -315,15 +315,15 @@ class ComprehensiveMonitoringDeployer:
             os.makedirs("infrastructure/monitoring/config", exist_ok=True)
             os.makedirs("infrastructure/monitoring/rules", exist_ok=True)
             os.makedirs(
-                "infrastructure/monitoring/grafana/provisioning/datasources",
+                "infrastructure/monitoring/grafana/provisioning/datasources",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 exist_ok=True,
             )
-            os.makedirs("infrastructure/monitoring/grafana/dashboards", exist_ok=True)
+            os.makedirs("infrastructure/monitoring/grafana/dashboards", exist_ok=True)  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
             # Generate and save Prometheus configuration
             prometheus_config = self.generate_prometheus_config()
             with open(
-                "infrastructure/monitoring/config/prometheus-enhanced.yml", "w"
+                "infrastructure/monitoring/config/prometheus-enhanced.yml", "w"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ) as f:
                 import yaml
 
@@ -334,7 +334,7 @@ class ComprehensiveMonitoringDeployer:
             # Generate and save Grafana datasource configuration
             grafana_config = self.generate_grafana_datasource_config()
             with open(
-                "infrastructure/monitoring/grafana/provisioning/datasources/prometheus.yml",
+                "infrastructure/monitoring/grafana/provisioning/datasources/prometheus.yml",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "w",
             ) as f:
                 import yaml
@@ -390,13 +390,13 @@ class ComprehensiveMonitoringDeployer:
         try:
             # Validate Prometheus configuration
             if os.path.exists(
-                "infrastructure/monitoring/config/prometheus-enhanced.yml"
+                "infrastructure/monitoring/config/prometheus-enhanced.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ):
                 validation_results["prometheus_config_valid"] = True
 
             # Validate Grafana configuration
             if os.path.exists(
-                "infrastructure/monitoring/grafana/provisioning/datasources/prometheus.yml"
+                "infrastructure/monitoring/grafana/provisioning/datasources/prometheus.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ):
                 validation_results["grafana_config_valid"] = True
 

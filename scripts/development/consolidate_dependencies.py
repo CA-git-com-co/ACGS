@@ -190,7 +190,7 @@ safety>=2.3.0
         for test_dir in test_dirs:
             req_file = self.project_root / test_dir / "requirements.txt"
             if req_file.exists():
-                relative_path = "../../services/shared/requirements/requirements-test.txt"
+                relative_path = "../../services/shared/requirements/requirements-test.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 
                 content = f'''# {test_dir.replace("/", " ").title()} Requirements
 # Constitutional Hash: cdd01ef066bc6cf2
@@ -218,7 +218,7 @@ safety>=2.3.0
         
         tools_req = self.project_root / "tools" / "requirements.txt"
         if tools_req.exists():
-            relative_path = "../services/shared/requirements/requirements-dev.txt"
+            relative_path = "../services/shared/requirements/requirements-dev.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             
             content = f'''# Tools Requirements
 # Constitutional Hash: cdd01ef066bc6cf2

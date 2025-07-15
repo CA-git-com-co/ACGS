@@ -413,7 +413,7 @@ jobs:
           path: |
             ${{ steps.testing.outputs.service_path }}/coverage.xml
             ${{ steps.testing.outputs.service_path }}/coverage.json
-            ${{ steps.testing.outputs.service_path }}/htmlcov/
+            ${{ steps.testing.outputs.service_path }}/reports/coverage/htmlcov/
             ${{ steps.testing.outputs.service_path }}/test_report.json
             ${{ steps.testing.outputs.service_path }}/coverage.svg
             ${{ steps.testing.outputs.service_path }}/benchmark_results.json

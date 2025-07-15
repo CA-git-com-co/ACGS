@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 set -e
 
@@ -59,13 +61,13 @@ check_prerequisites() {
     fi
     
     # Check if required environment files exist
-    if [ ! -f "config/environments/production.env" ]; then
-        log_error "Production environment file not found: config/environments/production.env"
+    if [ ! -f "config/environments/productionconfig/environments/development.env" ]; then
+        log_error "Production environment file not found: config/environments/productionconfig/environments/development.env"
         exit 1
     fi
     
-    if [ ! -f "docker-compose.production.yml" ]; then
-        log_error "Production Docker Compose file not found: docker-compose.production.yml"
+    if [ ! -f "config/docker/docker-compose.production.yml" ]; then
+        log_error "Production Docker Compose file not found: config/docker/docker-compose.production.yml"
         exit 1
     fi
     
@@ -85,9 +87,9 @@ generate_secrets() {
         SECRET_KEY=$(openssl rand -hex 32)
         JWT_SECRET_KEY=$(openssl rand -hex 32)
         ENCRYPTION_KEY=$(openssl rand -hex 32)
-        POSTGRES_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
-        REDIS_PASSWORD=$(openssl rand -base64 32 | tr -d "=+/" | cut -c1-25)
-        GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 16 | tr -d "=+/" | cut -c1-12)
+        POSTGRES_PASSWORD=os.environ.get("PASSWORD")=+/" | cut -c1-25)
+        REDIS_PASSWORD=os.environ.get("PASSWORD")=+/" | cut -c1-25)
+        GRAFANA_ADMIN_PASSWORD=os.environ.get("PASSWORD")=+/" | cut -c1-12)
         
         # Create secrets file
         cat > "$SECRETS_FILE" << EOF
@@ -98,9 +100,9 @@ generate_secrets() {
 SECRET_KEY=$SECRET_KEY
 JWT_SECRET_KEY=$JWT_SECRET_KEY
 ENCRYPTION_KEY=$ENCRYPTION_KEY
-POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-REDIS_PASSWORD=$REDIS_PASSWORD
-GRAFANA_ADMIN_PASSWORD=$GRAFANA_ADMIN_PASSWORD
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
+REDIS_PASSWORD=os.environ.get("PASSWORD")
+GRAFANA_ADMIN_PASSWORD=os.environ.get("PASSWORD")
 
 # Deployment Information
 DEPLOYMENT_VERSION=$DEPLOYMENT_VERSION
@@ -170,9 +172,9 @@ build_images() {
     
     # Use Docker Compose to build all services
     if command -v docker-compose &> /dev/null; then
-        docker-compose -f docker-compose.production.yml build --parallel
+        docker-compose -f config/docker/docker-compose.production.yml build --parallel
     else
-        docker compose -f docker-compose.production.yml build --parallel
+        docker compose -f config/docker/docker-compose.production.yml build --parallel
     fi
     
     log_success "Docker images built successfully"
@@ -185,17 +187,17 @@ deploy_services() {
     # Stop any existing services
     log_info "Stopping existing services..."
     if command -v docker-compose &> /dev/null; then
-        docker-compose -f docker-compose.production.yml down --remove-orphans || true
+        docker-compose -f config/docker/docker-compose.production.yml down --remove-orphans || true
     else
-        docker compose -f docker-compose.production.yml down --remove-orphans || true
+        docker compose -f config/docker/docker-compose.production.yml down --remove-orphans || true
     fi
     
     # Start services
     log_info "Starting production services..."
     if command -v docker-compose &> /dev/null; then
-        docker-compose -f docker-compose.production.yml up -d
+        docker-compose -f config/docker/docker-compose.production.yml up -d
     else
-        docker compose -f docker-compose.production.yml up -d
+        docker compose -f config/docker/docker-compose.production.yml up -d
     fi
     
     log_success "Services deployed successfully"
@@ -256,9 +258,9 @@ show_status() {
     echo "=================="
     
     if command -v docker-compose &> /dev/null; then
-        docker-compose -f docker-compose.production.yml ps
+        docker-compose -f config/docker/docker-compose.production.yml ps
     else
-        docker compose -f docker-compose.production.yml ps
+        docker compose -f config/docker/docker-compose.production.yml ps
     fi
     
     echo ""
@@ -304,9 +306,9 @@ case "${1:-deploy}" in
     "stop")
         log_info "Stopping ACGS-1 services..."
         if command -v docker-compose &> /dev/null; then
-            docker-compose -f docker-compose.production.yml down
+            docker-compose -f config/docker/docker-compose.production.yml down
         else
-            docker compose -f docker-compose.production.yml down
+            docker compose -f config/docker/docker-compose.production.yml down
         fi
         log_success "Services stopped"
         ;;
@@ -315,9 +317,9 @@ case "${1:-deploy}" in
         ;;
     "logs")
         if command -v docker-compose &> /dev/null; then
-            docker-compose -f docker-compose.production.yml logs -f
+            docker-compose -f config/docker/docker-compose.production.yml logs -f
         else
-            docker compose -f docker-compose.production.yml logs -f
+            docker compose -f config/docker/docker-compose.production.yml logs -f
         fi
         ;;
     *)

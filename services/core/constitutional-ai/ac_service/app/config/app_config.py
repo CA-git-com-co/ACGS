@@ -86,15 +86,23 @@ class ConstitutionalAIConfig:
     def load_environment_config(self):
         """Load configuration from environment variables."""
         self.debug = os.getenv("DEBUG", "false").lower() == "true"
-        self.environment = os.getenv("ENVIRONMENT", "development")
+        selfconfig/environments/development.environment = os.getenv("ENVIRONMENT", "development")
         self.allowed_hosts = os.getenv("ALLOWED_HOSTS", "*").split(",")
-        self.cors_origins = os.getenv("CORS_ORIGINS", "*").split(",")
+        # SECURITY: Never allow all origins in production
+        # Constitutional Hash: cdd01ef066bc6cf2
+        cors_env = os.getenv("CORS_ORIGINS", "https://acgs.production.com,https://acgs.staging.com,http://localhost:3000,http://localhost:8000")
+        self.cors_origins = cors_env.split(",") if cors_env != "*" else [
+            "https://acgs.production.com",
+            "https://acgs.staging.com", 
+            "http://localhost:3000",
+            "http://localhost:8000"
+        ]
 
         # Database and cache configuration - using shared ACGS config
         self.redis_url = self.shared_config.get_redis_url()
         self.postgres_dsn = self.shared_config.get_postgres_url()
 
-        logger.info(f"Environment: {self.environment}")
+        logger.info(f"Environment: {selfconfig/environments/development.environment}")
         logger.info(f"Debug mode: {self.debug}")
         logger.info(f"Redis URL: {self.redis_url}")
         logger.info(f"PostgreSQL DSN: {self.postgres_dsn.replace('password', '***')}")
@@ -120,17 +128,26 @@ class ConstitutionalAIConfig:
             )
 
     def get_cors_config(self) -> dict:
-        """Get CORS configuration."""
-        if self.environment == "production":
+        """Get CORS configuration with security hardening."""
+        # Constitutional Hash: cdd01ef066bc6cf2
+        if selfconfig/environments/development.environment == "production":
             return {
                 "allow_origins": self.cors_origins,
                 "allow_credentials": True,
-                "allow_methods": ["GET", "POST", "PUT", "DELETE"],
-                "allow_headers": ["*"],
+                "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+                "allow_headers": [
+                    "Authorization",
+                    "Content-Type", 
+                    "X-Constitutional-Hash",
+                    "X-Request-ID",
+                    "X-Tenant-ID"
+                ],
+                "expose_headers": ["X-Constitutional-Hash", "X-Request-ID"],
+                "max_age": 86400,  # 24 hours
             }
-        # More permissive for development
+        # Development environment - still secure but more permissive
         return {
-            "allow_origins": ["*"],
+            "allow_origins": self.cors_origins,
             "allow_credentials": True,
             "allow_methods": ["*"],
             "allow_headers": ["*"],
@@ -352,7 +369,7 @@ class MiddlewareManager:
             )
 
             apply_acgs_security_middleware(
-                app, self.config.service_name, self.config.environment
+                app, self.config.service_name, self.configconfig/environments/development.environment
             )
             setup_security_monitoring(app, self.config.service_name)
 
@@ -369,7 +386,7 @@ class MiddlewareManager:
 
     def _setup_trusted_host_middleware(self, app: FastAPI):
         """Setup trusted host middleware."""
-        if self.config.environment == "production":
+        if self.configconfig/environments/development.environment == "production":
             app.add_middleware(
                 TrustedHostMiddleware, allowed_hosts=self.config.allowed_hosts
             )

@@ -12,7 +12,7 @@ Usage:
     python requesty_example.py
 
 Setup:
-1. Ensure the .env file contains your ROUTER_API_KEY
+1. Ensure the config/environments/development.env file contains your ROUTER_API_KEY
 2. Install required dependencies: pip install openai python-dotenv
 3. Run the script to test the integration
 
@@ -33,7 +33,7 @@ from openai import OpenAI
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-# Load environment variables from .env file
+# Load environment variables from config/environments/development.env file
 load_dotenv()
 
 
@@ -177,7 +177,7 @@ def main():
     except ValueError as e:
         print(f"❌ Configuration error: {e}")
         print("\n🔧 Setup checklist:")
-        print("1. Ensure .env file exists with ROUTER_API_KEY")
+        print("1. Ensure config/environments/development.env file exists with ROUTER_API_KEY")
         print("2. Install dependencies: pip install openai python-dotenv")
         return 1
 
@@ -197,7 +197,7 @@ if __name__ == "__main__":
     1. Install dependencies:
        pip install openai python-dotenv
 
-    2. Ensure .env file contains:
+    2. Ensure config/environments/development.env file contains:
        ROUTER_API_KEY=your_api_key_here
 
     3. Run the script:

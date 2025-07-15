@@ -32,10 +32,10 @@ class ImportPathFixer:
         """Create mapping of old import paths to new paths"""
         return {
             # Backend service mappings
-            'src.backend.ac_service': 'services.core.constitutional_ai',
-            'src.backend.gs_service': 'services.core.governance_synthesis', 
-            'src.backend.pgc_service': 'services.core.policy_governance',
-            'src.backend.fv_service': 'services.core.formal_verification',
+            'src.backend.ac_service': 'services.core.constitutional-ai',
+            'src.backend.gs_service': 'services.core.governance-synthesis', 
+            'src.backend.pgc_service': 'services.core.policy-governance',
+            'src.backend.fv_service': 'services.core.formal-verification',
             'src.backend.auth_service': 'services.platform.authentication',
             'src.backend.integrity_service': 'services.platform.integrity',
             'src.backend.workflow_service': 'services.platform.workflow',
@@ -299,8 +299,8 @@ class ImportPathFixer:
     
     def _fix_env_files(self):
         """Fix environment files with updated service URLs"""
-        env_files = list(self.root_path.rglob("*.env"))
-        env_files.extend(list(self.root_path.rglob(".env*")))
+        env_files = list(self.root_path.rglob("*config/environments/development.env"))
+        env_files.extend(list(self.root_path.rglob("config/environments/development.env*")))
         
         for env_file in env_files:
             if self._should_skip_file(env_file):

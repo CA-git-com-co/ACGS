@@ -12,8 +12,13 @@ ensuring 100% constitutional compliance and <5ms validation latency.
 import asyncio
 import time
 
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
 import pytest
-from services.core.policy_governance.pgc_service.core.constitutional_hash_validator import (
+from services.core.policy-governance.pgc_service.core.constitutional_hash_validator import (
     ConstitutionalContext,
     ConstitutionalHashStatus,
     ConstitutionalHashValidator,

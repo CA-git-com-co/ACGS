@@ -329,7 +329,7 @@ jobs:
         run: |
           echo "🔄 Rolling back deployment..."
 
-          ROLLBACK_ENV="${{ steps.rollback_env.outputs.environment }}"
+          ROLLBACK_ENV="${{ steps.rollback_env.outputsconfig/environments/development.environment }}"
 
           # Make deployment script executable
           chmod +x scripts/deploy.sh
@@ -345,7 +345,7 @@ jobs:
       - name: Notify rollback
         run: |
           echo "📢 Deployment rollback notification"
-          echo "Environment: ${{ steps.rollback_env.outputs.environment }}"
+          echo "Environment: ${{ steps.rollback_env.outputsconfig/environments/development.environment }}"
           echo "Reason: Deployment failure"
           echo "Action: Automatic rollback executed"
 

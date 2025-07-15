@@ -26,9 +26,11 @@ class EmergencySecurityPatcher:
         # Critical package updates based on vulnerability analysis
         self.critical_updates = {
             'Pillow': '>=10.2.0,<11.0.0',       # Critical: Arbitrary code execution
-            'cryptography': '>=42.0.0,<43.0.0', # Critical: NULL pointer dereference
+            'cryptography': '>=43.0.1,<44.0.0', # Critical: NULL pointer dereference
             'nltk': '>=3.8.2,<4.0.0',           # High: Unsafe deserialization
-            'transformers': '>=4.36.0,<5.0.0',  # High: ReDoS vulnerability
+            'transformers': '>=4.52.1,<5.0.0',  # Critical: Multiple RCE vulnerabilities
+            'aiohttp': '>=3.10.11,<4.0.0',      # Critical: Directory traversal, DoS
+            'orjson': '>=3.9.15,<4.0.0',        # High: Uncontrolled recursion
             'requests': '>=2.31.0,<3.0.0',      # High: Security improvements
             'urllib3': '>=2.0.7,<3.0.0',        # High: Security fixes
             'black': '>=24.0.0,<25.0.0',        # Medium: ReDoS

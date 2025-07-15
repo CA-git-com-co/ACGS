@@ -69,13 +69,13 @@ def validate_security_configuration() -> dict:
         "issues": [],
     }
 
-    # Check .env.template exists
-    env_template = Path(".env.template")
+    # Check config/environments/developmentconfig/environments/template.env exists
+    env_template = Path("config/environments/developmentconfig/environments/template.env")
     if env_template.exists():
         results["env_template_exists"] = True
         print("✅ Environment template created")
     else:
-        results["issues"].append("Missing .env.template")
+        results["issues"].append("Missing config/environments/developmentconfig/environments/template.env")
         results["status"] = "WARN"
 
     # Check .gitignore has security patterns
@@ -83,7 +83,7 @@ def validate_security_configuration() -> dict:
     if gitignore.exists():
         with open(gitignore) as f:
             content = f.read()
-            if "*.env" in content and "auth_tokens" in content:
+            if "*config/environments/development.env" in content and "auth_tokens" in content:
                 results["gitignore_updated"] = True
                 print("✅ .gitignore security patterns updated")
             else:
@@ -91,7 +91,7 @@ def validate_security_configuration() -> dict:
                 results["status"] = "WARN"
 
     # Check for remaining sensitive files
-    sensitive_patterns = ["auth_tokens.json", "auth_tokens.env", "cookies.txt"]
+    sensitive_patterns = ["auth_tokens.json", "auth_tokensconfig/environments/development.env", "cookies.txt"]
     for pattern in sensitive_patterns:
         if list(Path().glob(f"**/{pattern}")):
             results["sensitive_files_removed"] = False

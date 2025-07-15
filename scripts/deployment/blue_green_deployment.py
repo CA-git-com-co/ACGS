@@ -830,7 +830,7 @@ async def main():
     try:
         if args.action == "deploy":
             result = await deployer.deploy_blue_green_system(
-                args.environment, args.image_tag
+                argsconfig/environments/development.environment, args.image_tag
             )
         elif args.action == "status":
             result = await deployer.get_current_deployment_state()

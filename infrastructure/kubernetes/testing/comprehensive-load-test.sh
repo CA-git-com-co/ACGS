@@ -364,7 +364,7 @@ generate_test_report() {
         echo "Target RPS: $TARGET_RPS"
         echo "Target Response Time: ${TARGET_RESPONSE_TIME}s"
         echo "Constitutional Threshold: $CONSTITUTIONAL_THRESHOLD"
-        echo "========================================"
+        echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Test Summary:"

@@ -1,0 +1,971 @@
+{
+  "dataset_type": "transformer_efficiency",
+  "description": "Transformer efficiency optimization training examples",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "id": "transformer_demo_0000",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 4,
+          "layers": 6
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 18.6,
+          "approximation_error": 0.0275,
+          "memory_reduction": 0.643,
+          "latency_improvement": 8.9
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 1536,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0001",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 768,
+          "heads": 8,
+          "layers": 24
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 23.1,
+          "approximation_error": 0.0255,
+          "memory_reduction": 0.417,
+          "latency_improvement": 10.0
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 9216,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0002",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 512,
+          "heads": 4,
+          "layers": 12
+        },
+        "optimization_technique": "performer_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "performer_attention",
+          "num_random_features": 64,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 28.0,
+          "approximation_error": 0.0336,
+          "memory_reduction": 0.513,
+          "latency_improvement": 3.6
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "performer_attention",
+        "model_size": 12288,
+        "complexity_class": "quadratic"
+      }
+    },
+    {
+      "id": "transformer_demo_0003",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 768,
+          "heads": 12,
+          "layers": 6
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 5.4,
+          "approximation_error": 0.0701,
+          "memory_reduction": 0.377,
+          "latency_improvement": 8.5
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 18432,
+        "complexity_class": "quadratic"
+      }
+    },
+    {
+      "id": "transformer_demo_0004",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 512,
+          "heads": 4,
+          "layers": 24
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 20.8,
+          "approximation_error": 0.0355,
+          "memory_reduction": 0.337,
+          "latency_improvement": 2.2
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 6144,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0005",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 512,
+          "heads": 12,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "performer_attention",
+          "num_random_features": 64,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 14.8,
+          "approximation_error": 0.0602,
+          "memory_reduction": 0.697,
+          "latency_improvement": 7.4
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "performer_attention",
+        "model_size": 6144,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0006",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 512,
+          "heads": 4,
+          "layers": 24
+        },
+        "optimization_technique": "sparse_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "sparse_attention",
+          "num_random_features": null,
+          "sparsity_ratio": 0.24730664032091443,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 7.6,
+          "approximation_error": 0.0262,
+          "memory_reduction": 0.739,
+          "latency_improvement": 5.8
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "sparse_attention",
+        "model_size": 12288,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0007",
+      "input": {
+        "model_config": {
+          "seq_len": 512,
+          "dim": 256,
+          "heads": 4,
+          "layers": 24
+        },
+        "optimization_technique": "performer_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "performer_attention",
+          "num_random_features": 64,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 9.6,
+          "approximation_error": 0.015,
+          "memory_reduction": 0.717,
+          "latency_improvement": 4.3
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "performer_attention",
+        "model_size": 1536,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0008",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 512,
+          "heads": 4,
+          "layers": 12
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 18.4,
+          "approximation_error": 0.0401,
+          "memory_reduction": 0.792,
+          "latency_improvement": 4.6
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 12288,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0009",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 768,
+          "heads": 8,
+          "layers": 12
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 26.1,
+          "approximation_error": 0.005,
+          "memory_reduction": 0.493,
+          "latency_improvement": 8.5
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 9216,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0010",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 512,
+          "heads": 12,
+          "layers": 24
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 26.6,
+          "approximation_error": 0.0751,
+          "memory_reduction": 0.755,
+          "latency_improvement": 4.2
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 6144,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0011",
+      "input": {
+        "model_config": {
+          "seq_len": 512,
+          "dim": 768,
+          "heads": 4,
+          "layers": 24
+        },
+        "optimization_technique": "sparse_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "sparse_attention",
+          "num_random_features": null,
+          "sparsity_ratio": 0.24401026235653733,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 28.3,
+          "approximation_error": 0.0703,
+          "memory_reduction": 0.366,
+          "latency_improvement": 2.3
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "sparse_attention",
+        "model_size": 18432,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0012",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 768,
+          "heads": 12,
+          "layers": 24
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 7.4,
+          "approximation_error": 0.0504,
+          "memory_reduction": 0.557,
+          "latency_improvement": 6.4
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 4608,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0013",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 768,
+          "heads": 4,
+          "layers": 24
+        },
+        "optimization_technique": "performer_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "performer_attention",
+          "num_random_features": 64,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 3.3,
+          "approximation_error": 0.0115,
+          "memory_reduction": 0.408,
+          "latency_improvement": 9.8
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "performer_attention",
+        "model_size": 4608,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0014",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 512,
+          "heads": 12,
+          "layers": 24
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 17.0,
+          "approximation_error": 0.0611,
+          "memory_reduction": 0.399,
+          "latency_improvement": 5.3
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 6144,
+        "complexity_class": "quadratic"
+      }
+    },
+    {
+      "id": "transformer_demo_0015",
+      "input": {
+        "model_config": {
+          "seq_len": 512,
+          "dim": 256,
+          "heads": 8,
+          "layers": 12
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 7.0,
+          "approximation_error": 0.0511,
+          "memory_reduction": 0.581,
+          "latency_improvement": 6.5
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 6144,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0016",
+      "input": {
+        "model_config": {
+          "seq_len": 512,
+          "dim": 768,
+          "heads": 4,
+          "layers": 6
+        },
+        "optimization_technique": "sparse_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "sparse_attention",
+          "num_random_features": null,
+          "sparsity_ratio": 0.23467569534079794,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 20.5,
+          "approximation_error": 0.0246,
+          "memory_reduction": 0.573,
+          "latency_improvement": 2.9
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "sparse_attention",
+        "model_size": 18432,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0017",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 256,
+          "heads": 12,
+          "layers": 24
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 27.0,
+          "approximation_error": 0.0692,
+          "memory_reduction": 0.57,
+          "latency_improvement": 4.2
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 6144,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0018",
+      "input": {
+        "model_config": {
+          "seq_len": 512,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 31.5,
+          "approximation_error": 0.0158,
+          "memory_reduction": 0.325,
+          "latency_improvement": 3.2
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 1536,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0019",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 256,
+          "heads": 12,
+          "layers": 6
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 3.1,
+          "approximation_error": 0.0325,
+          "memory_reduction": 0.519,
+          "latency_improvement": 1.6
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 1536,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0020",
+      "input": {
+        "model_config": {
+          "seq_len": 512,
+          "dim": 768,
+          "heads": 8,
+          "layers": 24
+        },
+        "optimization_technique": "low_rank_approximation",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "low_rank_approximation",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 24.4,
+          "approximation_error": 0.002,
+          "memory_reduction": 0.442,
+          "latency_improvement": 1.5
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "low_rank_approximation",
+        "model_size": 4608,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0021",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 256,
+          "heads": 8,
+          "layers": 12
+        },
+        "optimization_technique": "quantization",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "quantization",
+          "num_random_features": null,
+          "sparsity_ratio": null,
+          "quantization_bits": 8
+        },
+        "performance_metrics": {
+          "complexity_reduction": 5.6,
+          "approximation_error": 0.0261,
+          "memory_reduction": 0.629,
+          "latency_improvement": 9.3
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "quantization",
+        "model_size": 1536,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0022",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 512,
+          "heads": 8,
+          "layers": 24
+        },
+        "optimization_technique": "sparse_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "sparse_attention",
+          "num_random_features": null,
+          "sparsity_ratio": 0.14363208241036018,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 13.9,
+          "approximation_error": 0.0921,
+          "memory_reduction": 0.381,
+          "latency_improvement": 4.7
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "sparse_attention",
+        "model_size": 12288,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0023",
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 12,
+          "layers": 12
+        },
+        "optimization_technique": "performer_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "performer_attention",
+          "num_random_features": 64,
+          "sparsity_ratio": null,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 3.8,
+          "approximation_error": 0.0776,
+          "memory_reduction": 0.752,
+          "latency_improvement": 5.0
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "performer_attention",
+        "model_size": 1536,
+        "complexity_class": "linear"
+      }
+    },
+    {
+      "id": "transformer_demo_0024",
+      "input": {
+        "model_config": {
+          "seq_len": 1024,
+          "dim": 256,
+          "heads": 12,
+          "layers": 24
+        },
+        "optimization_technique": "sparse_attention",
+        "performance_requirements": {
+          "p99_latency_ms": 5.0,
+          "min_throughput_rps": 100.0,
+          "max_approximation_error": 0.05
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_config": {
+          "technique_applied": "sparse_attention",
+          "num_random_features": null,
+          "sparsity_ratio": 0.40811487423408066,
+          "quantization_bits": null
+        },
+        "performance_metrics": {
+          "complexity_reduction": 31.7,
+          "approximation_error": 0.0014,
+          "memory_reduction": 0.554,
+          "latency_improvement": 2.8
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "technique": "sparse_attention",
+        "model_size": 3072,
+        "complexity_class": "linear"
+      }
+    }
+  ],
+  "metadata": {
+    "total_examples": 25,
+    "techniques_covered": [
+      "low_rank_approximation",
+      "sparse_attention",
+      "quantization",
+      "performer_attention"
+    ],
+    "model_sizes": [
+      2048,
+      1024,
+      512
+    ]
+  }
+}

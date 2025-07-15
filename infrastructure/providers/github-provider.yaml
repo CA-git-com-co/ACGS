@@ -57,7 +57,7 @@ type: Opaque
 data:
   # Base64 encoded GitHub token
   # Replace with your actual GitHub token: echo -n "your-github-token" | base64
-  token: Z2hwX3lvdXJfZ2l0aHViX3Rva2VuX2hlcmU=
+  token: os.environ.get("AUTH_TOKEN")
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1

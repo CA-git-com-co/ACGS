@@ -227,7 +227,7 @@ python3.10 simple_security_scanner.py
 ```bash
 # Validate configurations
 ls -la /home/ubuntu/ACGS/config/shared/
-cat /home/ubuntu/ACGS/config/shared/resource-limits.yaml
+cat /home/ubuntu/ACGS/config/shared/resource-limits.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Environment configs
 ls -la /home/ubuntu/ACGS/config/environments/

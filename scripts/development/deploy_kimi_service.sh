@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS Kimi-Dev-72B Deployment Script
@@ -5,14 +7,14 @@
 
 set -euo pipefail
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Configuration
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 COMPOSE_FILE="$PROJECT_ROOT/infrastructure/docker/docker-compose.kimi.yml"
 SWE_COMPOSE_FILE="$PROJECT_ROOT/infrastructure/docker/docker-compose.kimi-swe.yml"
-ENV_FILE="$PROJECT_ROOT/.env"
+ENV_FILE="$PROJECT_ROOT/config/environments/development.env"
 LOG_FILE="$PROJECT_ROOT/logs/kimi-deployment-$(date +%Y%m%d-%H%M%S).log"
 
 # Colors for output
@@ -22,9 +24,9 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Logging Functions
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 log_info() {
     echo -e "${BLUE}[INFO]${NC} $1" | tee -a "$LOG_FILE"
 }
@@ -41,9 +43,9 @@ log_error() {
     echo -e "${RED}[ERROR]${NC} $1" | tee -a "$LOG_FILE"
 }
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Validation Functions
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 check_prerequisites() {
     log_info "Checking prerequisites..."
     
@@ -120,9 +122,9 @@ create_directories() {
     log_success "Directories created"
 }
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Network Management
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 setup_network() {
     log_info "Setting up Docker network..."
     
@@ -134,9 +136,9 @@ setup_network() {
     fi
 }
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Service Management
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 pull_images() {
     log_info "Pulling Docker images..."
     
@@ -184,9 +186,9 @@ wait_for_service() {
     return 1
 }
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Validation Functions
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 validate_deployment() {
     log_info "Validating deployment..."
     
@@ -220,9 +222,9 @@ validate_deployment() {
     log_success "Deployment validation completed successfully"
 }
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Main Execution
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 main() {
     log_info "Starting Kimi-Dev-72B deployment..."
     log_info "Log file: $LOG_FILE"
@@ -246,9 +248,9 @@ main() {
     fi
 }
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Script Execution
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi

@@ -482,7 +482,7 @@ See runbooks in infrastructure/monitoring/runbooks/
                 "generic",
                 "acgs-postgres-secret",
                 "--from-literal=username=acgs_user",
-                "--from-literal=password=acgs_password",
+                "--from-literal=password=os.environ.get("PASSWORD"),
                 "-n",
                 "acgs-shared",
                 "--dry-run=client",
@@ -499,7 +499,7 @@ See runbooks in infrastructure/monitoring/runbooks/
                 "secret",
                 "generic",
                 "acgs-secrets",
-                "--from-literal=jwt-secret-key=acgs-jwt-secret-key-2024",
+                "--from-literal=jwt-secret-key=acgs-jwt-secret-key-2024",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "-n",
                 "acgs-blue",
                 "--dry-run=client",
@@ -515,7 +515,7 @@ See runbooks in infrastructure/monitoring/runbooks/
                 "secret",
                 "generic",
                 "acgs-secrets",
-                "--from-literal=jwt-secret-key=acgs-jwt-secret-key-2024",
+                "--from-literal=jwt-secret-key=acgs-jwt-secret-key-2024",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "-n",
                 "acgs-green",
                 "--dry-run=client",

@@ -30,7 +30,7 @@ services:
     container_name: acgs_postgres_constitutional
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs_constitutional}
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
       CONSTITUTIONAL_COMPLIANCE: active
@@ -102,7 +102,7 @@ services:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - CONSTITUTIONAL_COMPLIANCE=active
     - INFRASTRUCTURE_PORT_VALIDATION=enabled
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis_constitutional:6379/0
     - LOG_LEVEL=${LOG_LEVEL:-INFO}
     - LOG_FORMAT=json
@@ -167,7 +167,7 @@ services:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - CONSTITUTIONAL_COMPLIANCE=active
     - INFRASTRUCTURE_PORT_VALIDATION=enabled
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis_constitutional:6379/1
     - LOG_LEVEL=${LOG_LEVEL:-INFO}
     - LOG_FORMAT=json
@@ -228,12 +228,12 @@ services:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - CONSTITUTIONAL_COMPLIANCE=active
     - INFRASTRUCTURE_PORT_VALIDATION=enabled
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis_constitutional:6379/2
     - LOG_LEVEL=${LOG_LEVEL:-INFO}
     - LOG_FORMAT=json
     - STRUCTURED_LOGGING=enabled
-    working_dir: /app/services/platform/integrity/integrity_service
+    working_dir: /app/services/platform/integrity/integrity_service  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     command:
     - uvicorn
     - app.main:app
@@ -289,7 +289,7 @@ services:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - CONSTITUTIONAL_COMPLIANCE=active
     - INFRASTRUCTURE_PORT_VALIDATION=enabled
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_constitutional:5432/${POSTGRES_DB:-acgs_constitutional}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis_constitutional:6379/4
     - LOG_LEVEL=${LOG_LEVEL:-INFO}
     - LOG_FORMAT=json
@@ -431,12 +431,12 @@ services:
     container_name: acgs_grafana_constitutional
     environment:
     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
-    - ./config/monitoring/grafana/constitutional-provisioning:/etc/grafana/provisioning:ro
-    - ./config/monitoring/grafana/constitutional-dashboards:/var/lib/grafana/dashboards:ro
+    - ./config/monitoring/grafana/constitutional-provisioning:/etc/grafana/provisioning:ro  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    - ./config/monitoring/grafana/constitutional-dashboards:/var/lib/grafana/dashboards:ro  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     ports:
     - 3000:3000
     networks:

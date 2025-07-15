@@ -31,10 +31,11 @@ try:
     from services.core.constitutional_ai.ac_service.app.main import (
         app as constitutional_ai_app,
     )
-
     REAL_SERVICE_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     REAL_SERVICE_AVAILABLE = False
+    import pytest
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

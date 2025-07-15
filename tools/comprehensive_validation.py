@@ -278,8 +278,8 @@ class ComprehensiveValidator:
 
         # Check Quantumagi programs
         programs = {
-            "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",
-            "appeals_program": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",
+            "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "appeals_program": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         }
 
         program_results = {}

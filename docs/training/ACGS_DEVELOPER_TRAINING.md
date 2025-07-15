@@ -636,7 +636,7 @@ class AdvancedAIService:
 - [API Documentation](../api/README.md)
 
 ### Tools and Scripts
-- Production deployment scripts: `scripts/deploy_production.sh`
+- Production deployment scripts: `scripts/scripts/deployment/deploy_production.sh`
 - Monitoring setup: `scripts/setup_monitoring.py`
 - Health checks: `scripts/health_check.py`
 - Security audit: `scripts/security_audit.py`

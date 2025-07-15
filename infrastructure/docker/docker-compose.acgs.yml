@@ -155,7 +155,7 @@ services:
     environment:
     - SERVICE_NAME=api_gateway
     - SERVICE_PORT=8080
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/0
     - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY environment variable required}
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -225,7 +225,7 @@ services:
     environment:
     - SERVICE_NAME=auth_service
     - SERVICE_PORT=8016
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/1
     - SECRET_KEY=${AUTH_SECRET_KEY:?AUTH_SECRET_KEY environment variable required}
     - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY environment variable required}
@@ -291,7 +291,7 @@ services:
     environment:
     - SERVICE_NAME=constitutional_core
     - SERVICE_PORT=8001
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/1
     - API_GATEWAY_URL=http://api_gateway:8080
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -354,7 +354,7 @@ services:
     environment:
     - SERVICE_NAME=integrity_service
     - SERVICE_PORT=8002
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/2
     - API_GATEWAY_URL=http://api_gateway:8080
     - CONSTITUTIONAL_CORE_URL=http://constitutional_core:8001
@@ -415,7 +415,7 @@ services:
     environment:
     - SERVICE_NAME=governance_engine
     - SERVICE_PORT=8004
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/4
     - AUTH_SERVICE_URL=http://auth_service:8016
     - AC_SERVICE_URL=http://constitutional_core:8001
@@ -481,7 +481,7 @@ services:
     environment:
     - SERVICE_NAME=ec_service
     - SERVICE_PORT=8006
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/6
     - AUTH_SERVICE_URL=http://auth_service:8016
     - AC_SERVICE_URL=http://constitutional_core:8001
@@ -633,7 +633,7 @@ services:
     container_name: acgs_agent_hitl
     environment:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/agent_hitl
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379
     - AGENT_IDENTITY_SERVICE_URL=http://auth_service:8016
     - CONSTITUTIONAL_AI_SERVICE_URL=http://constitutional_core:8001
@@ -698,67 +698,13 @@ services:
         limits:
           memory: 512M
           cpus: '0.5'
-  xai_integration_service:
-    build:
-      context: ../..
-      dockerfile: services/core/xai-integration/Dockerfile
-    container_name: acgs_xai_integration
-    environment:
-    - SERVICE_NAME=xai_integration_service
-    - SERVICE_PORT=8014
-    - XAI_API_KEY=${XAI_API_KEY}
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
-    - REDIS_URL=redis://redis:6379/14
-    - AUTH_SERVICE_URL=http://auth_service:8016
-    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
-    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
-    - GOVERNANCE_ENGINE_URL=http://governance_engine:8004
-    - ENVIRONMENT=${ENVIRONMENT:-development}
-    - LOG_LEVEL=${LOG_LEVEL:-INFO}
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - XAI_TARGET_LATENCY_MS=5000
-    - XAI_CACHE_SIZE=1000
-    - XAI_DEFAULT_MODEL=grok-4-0709
-    ports:
-    - 8014:8014
-    volumes:
-    - acgs_logs:/app/logs
-    - acgs_data:/app/data
-    networks:
-    - acgs_network
-    depends_on:
-    - postgres
-    - redis
-    - auth_service
-    - constitutional_core
-    healthcheck:
-      test:
-      - CMD
-      - curl
-      - -f
-      - http://localhost:8014/health
-      - '||'
-      - exit
-      - '1'
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          memory: 1G
-          cpus: '0.5'
-        reservations:
-          memory: 512M
-          cpus: '0.25'
+
   grafana:
     image: grafana/grafana:10.2.0
     container_name: acgs_grafana
     environment:
     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:?GRAFANA_ADMIN_USER environment variable required}
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD environment variable required}
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
     - ${ACGS_ROOT}/infrastructure/scripts/docker/grafana/provisioning:/etc/grafana/provisioning:ro

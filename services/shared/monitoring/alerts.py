@@ -19,7 +19,7 @@ from enum import Enum
 from typing import Any
 
 import aiohttp
-from shared.resilience.retry import retry_with_exponential_backoff
+from services.shared.resilience.retry import retry_with_exponential_backoff
 
 from .metrics import get_metrics_collector
 
@@ -232,7 +232,7 @@ class EmailAlertChannel(AlertChannel):
         self.smtp_host = smtp_host
         self.smtp_port = smtp_port
         self.username = username
-        self.password = password
+        self.password = os.environ.get("PASSWORD")
         self.recipients = recipients
         self.from_email = from_email or username
         self.min_severity = min_severity

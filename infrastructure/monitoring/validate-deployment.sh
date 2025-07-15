@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Monitoring Infrastructure Deployment Validation Script
 # Subtask 13.8: Comprehensive deployment validation and health checks
@@ -66,7 +68,7 @@ initialize_validation() {
     
     # Initialize validation log
     echo "ACGS-1 Monitoring Infrastructure Deployment Validation - $TIMESTAMP" > "$VALIDATION_LOG"
-    echo "=======================================================================" >> "$VALIDATION_LOG"
+    echo "=======================================================================" >> "$VALIDATION_LOG"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Check Docker services
@@ -306,8 +308,8 @@ check_security_configuration() {
     log "Checking security configuration..."
     
     # Check if environment file exists and is secure
-    if [[ -f "/etc/acgs/monitoring.env" ]]; then
-        local file_perms=$(stat -c "%a" /etc/acgs/monitoring.env)
+    if [[ -f "/etc/acgs/monitoringconfig/environments/development.env" ]]; then
+        local file_perms=$(stat -c "%a" /etc/acgs/monitoringconfig/environments/development.env)
         if [[ "$file_perms" == "600" ]]; then
             success "Monitoring environment file has secure permissions"
         else
@@ -436,9 +438,9 @@ EOF
 # Display validation summary
 display_validation_summary() {
     echo ""
-    echo "======================================================="
+    echo "======================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🔍 ACGS-1 Monitoring Infrastructure Validation Summary"
-    echo "======================================================="
+    echo "======================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     echo "📊 Validation Results:"
     echo "  Total Checks: $TOTAL_CHECKS"
@@ -465,7 +467,7 @@ display_validation_summary() {
     echo "  3. Run performance validation if needed"
     echo "  4. Proceed with production deployment"
     echo ""
-    echo "======================================================="
+    echo "======================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Main validation function

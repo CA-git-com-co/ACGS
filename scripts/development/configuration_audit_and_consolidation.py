@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ACGS-1 Configuration Management Consolidation
-=============================================
+=============================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 Comprehensive audit and consolidation of scattered configuration files
 into a centralized, hierarchical configuration system with environment-specific overrides.
@@ -38,7 +38,7 @@ class ConfigurationManager:
 
         # Configuration file patterns to search for
         config_patterns = [
-            "*.env*",
+            "*config/environments/development.env*",
             "*config*.json",
             "*config*.yaml",
             "*config*.yml",
@@ -88,7 +88,7 @@ class ConfigurationManager:
         """Classify configuration file by type and purpose"""
         name = config_file.name.lower()
 
-        if name.startswith(".env"):
+        if name.startswith("config/environments/development.env"):
             return "environment"
         if "docker" in name:
             return "docker"
@@ -210,7 +210,7 @@ class ConfigurationManager:
         logger.info("🌍 Consolidating environment configurations...")
 
         # Find all environment files
-        env_files = list(self.project_root.rglob(".env*"))
+        env_files = list(self.project_root.rglob("config/environments/development.env*"))
         env_files = [
             f
             for f in env_files

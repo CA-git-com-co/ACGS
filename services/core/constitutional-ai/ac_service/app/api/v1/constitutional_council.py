@@ -13,7 +13,7 @@ from .core.auth import (
     require_constitutional_council_role,
 )
 from .core.constitutional_council_scalability import (
-    ConstitutionalCouncilScalabilityFramework,
+    ConstitutionalCouncilScalabilityFramework,  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     ScalabilityConfig,
 )
 from .crud import (
@@ -342,7 +342,7 @@ async def get_scalability_metrics_endpoint(
             async_voting_enabled=True,
             performance_monitoring_enabled=True,
         )
-        framework = ConstitutionalCouncilScalabilityFramework(config)
+        framework = ConstitutionalCouncilScalabilityFramework(config)  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
         # Get scalability metrics
         metrics = await framework.get_scalability_metrics(db)
@@ -379,16 +379,12 @@ async def transition_amendment_state_endpoint(
             raise HTTPException(status_code=404, detail="Amendment not found")
 
         # Initialize state machine and trigger transition
-        from .core.amendment_state_machine import (
-            date_governance_input,
-            date_policy_input,
-            date_user_input,
-            import,
-            imports,
-            ty,
-            validation,
-            vices.shared.security_validation,
+        from services.shared.security_validation import (
+            validate_governance_input,
+            validate_policy_input,
+            validate_user_input,
         )
+        from .core.amendment_state_machine import (
             AmendmentEvent,
             AmendmentState,
             WorkflowContext,

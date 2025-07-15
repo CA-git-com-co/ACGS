@@ -222,7 +222,7 @@ Report_Deliverables:
   Quality: "Coverage|complexity|duplication → Issues→Severity→Resolution"
 
 Artifact_Deliverables:
-  Configs: ".env|settings|deployment | Scripts: build|test|deploy|migrate"
+  Configs: "config/environments/development.env|settings|deployment | Scripts: build|test|deploy|migrate"
   Schemas: "Database|API|validation | Assets: Images|styles|components"
 ```
 

@@ -258,7 +258,7 @@ class CodebaseCleanup:
             ".Python",
             "venv/",
             ".venv/",
-            ".env",
+            "config/environments/development.env",
             "*.egg-info/",
             "",
             "# Node.js",
@@ -298,7 +298,7 @@ class CodebaseCleanup:
             "*_report.json",
             "*_report.html",
             "coverage.xml",
-            "htmlcov/",
+            "reports/coverage/htmlcov/",
         ]
 
         try:

@@ -1,4 +1,6 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "$schema": "https://opencode.ai/theme.json",
   "defs": {
     "darkBg0": "#282828",
@@ -239,6 +241,5 @@
       "light": "lightFg1"
     }
   },
-  "_constitutional_hash": "cdd01ef066bc6cf2",
-  "constitutional_hash": "cdd01ef066bc6cf2"
+  "_constitutional_hash": "cdd01ef066bc6cf2"
 }

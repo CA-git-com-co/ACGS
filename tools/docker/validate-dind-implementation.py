@@ -44,13 +44,13 @@ class DinDImplementationValidator:
                 "scripts/docker/deploy-acgs-dind.py",
                 "tests/dind/test_dind_integration.py",
                 "docs/docker-in-docker-guide.md",
-                "infrastructure/monitoring/grafana/dashboards/acgs_dind_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_dind_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ],
             "directories": [
                 "infrastructure/docker/dind",
                 "scripts/docker",
                 "tests/dind",
-                "infrastructure/monitoring/grafana/dashboards",
+                "infrastructure/monitoring/grafana/dashboards",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ],
             "services": [
                 "docker-dind",
@@ -263,7 +263,7 @@ class DinDImplementationValidator:
         # Check Grafana dashboard
         dashboard_file = (
             self.project_root
-            / "infrastructure/monitoring/grafana/dashboards/acgs_dind_dashboard.json"
+            / "infrastructure/monitoring/grafana/dashboards/acgs_dind_dashboard.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
 
         try:

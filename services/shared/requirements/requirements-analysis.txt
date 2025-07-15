@@ -4,7 +4,7 @@
 
 # Static Analysis and Code Quality
 ruff>=0.8.4
-black>=24.10.0
+black>=24.3.0
 mypy>=1.13.0
 bandit>=1.7.10
 safety>=3.2.11
@@ -20,7 +20,7 @@ coverage>=7.6.9
 sphinx>=7.1.2
 sphinx-rtd-theme>=3.0.2
 mkdocs>=1.6.1
-mkdocs-material>=9.5.50
+mkdocs-material>=9.5.32
 
 # Code Complexity Analysis
 radon>=6.0.1

@@ -120,6 +120,7 @@ class TestOPAEvaluationEngine:
 
     # Basic Evaluation Tests
 
+    @pytest.mark.asyncio
     async def test_single_policy_evaluation(self, opa_engine, sample_context):
         """Test single policy evaluation."""
         decision = await opa_engine.evaluate_policy(
@@ -133,6 +134,7 @@ class TestOPAEvaluationEngine:
         assert len(decision.policies_evaluated) == 1
         assert decision.evaluation_time_ms > 0
 
+    @pytest.mark.asyncio
     async def test_multiple_policy_evaluation(self, opa_engine, sample_context):
         """Test multiple policy evaluation."""
         policies = [
@@ -148,6 +150,7 @@ class TestOPAEvaluationEngine:
         assert all(isinstance(d, PolicyDecision) for d in decisions)
         assert all(d.constitutional_hash == "cdd01ef066bc6cf2" for d in decisions)
 
+    @pytest.mark.asyncio
     async def test_constitutional_policy_evaluation(self, opa_engine, sample_context):
         """Test constitutional policy evaluation logic."""
         decision = await opa_engine.evaluate_policy(
@@ -168,6 +171,7 @@ class TestOPAEvaluationEngine:
         for score in principle_scores.values():
             assert 0 <= score <= 1
 
+    @pytest.mark.asyncio
     async def test_evolutionary_policy_evaluation(self, opa_engine):
         """Test evolutionary governance policy evaluation."""
         context = PolicyEvaluationContext(
@@ -191,6 +195,7 @@ class TestOPAEvaluationEngine:
         assert "safety_score" in decision.metadata
         assert decision.metadata["risk_score"] < 0.6  # Moderate risk
 
+    @pytest.mark.asyncio
     async def test_security_policy_evaluation(self, opa_engine):
         """Test security policy evaluation."""
         context = PolicyEvaluationContext(
@@ -214,6 +219,7 @@ class TestOPAEvaluationEngine:
         assert "threat_score" in decision.metadata
         assert decision.metadata["authentication_score"] > 0.5  # MFA gives good score
 
+    @pytest.mark.asyncio
     async def test_multi_tenant_policy_evaluation(self, opa_engine):
         """Test multi-tenant policy evaluation."""
         context = PolicyEvaluationContext(
@@ -232,6 +238,7 @@ class TestOPAEvaluationEngine:
 
     # Caching Tests
 
+    @pytest.mark.asyncio
     async def test_evaluation_caching(self, opa_engine, sample_context):
         """Test evaluation result caching."""
         # First evaluation
@@ -245,6 +252,7 @@ class TestOPAEvaluationEngine:
         assert decision2.evaluation_time_ms <= time1
         assert opa_engine.metrics.cache_hit_rate > 0
 
+    @pytest.mark.asyncio
     async def test_cache_invalidation(self, opa_engine):
         """Test cache invalidation based on time."""
         context = PolicyEvaluationContext(
@@ -261,6 +269,7 @@ class TestOPAEvaluationEngine:
 
     # Error Handling Tests
 
+    @pytest.mark.asyncio
     async def test_policy_evaluation_error_handling(self, opa_engine, sample_context):
         """Test error handling in policy evaluation."""
         # Simulate error by using non-existent policy
@@ -354,6 +363,7 @@ class TestAdvancedGovernanceSynthesisEngine:
 
     # Synthesis Tests
 
+    @pytest.mark.asyncio
     async def test_basic_governance_synthesis(self, synthesis_engine, complex_context):
         """Test basic governance synthesis."""
         result = await synthesis_engine.synthesize_governance_decision(complex_context)
@@ -571,6 +581,7 @@ class TestAdvancedGovernanceSynthesisEngine:
     # Performance Tests
 
     @pytest.mark.performance
+    @pytest.mark.asyncio
     async def test_synthesis_performance(self, synthesis_engine, complex_context):
         """Test synthesis performance under load."""
         start_time = time.time()
@@ -584,7 +595,7 @@ class TestAdvancedGovernanceSynthesisEngine:
                 principal=complex_context.principal,
                 resource=complex_context.resource,
                 action=complex_context.action,
-                environment=complex_context.environment,
+                environment=complex_contextconfig/environments/development.environment,
                 constitutional_requirements=complex_context.constitutional_requirements,
             )
             tasks.append(synthesis_engine.synthesize_governance_decision(context_copy))
@@ -721,6 +732,7 @@ class TestGovernanceSynthesisIntegration:
             mock_post.return_value = mock_response
             yield mock_post
 
+    @pytest.mark.asyncio
     async def test_end_to_end_synthesis(self, synthesis_engine):
         """Test end-to-end governance synthesis."""
         # Complex multi-domain request

@@ -69,7 +69,7 @@ class SecurityCleanup:
                     logger.warning(f"Could not scan {py_file}: {e}")
 
         # Scan configuration files
-        for config_file in self.project_root.glob("**/*.env*"):
+        for config_file in self.project_root.glob("**/*config/environments/development.env*"):
             if config_file.is_file():
                 suspicious_files.append(str(config_file))
 
@@ -126,12 +126,12 @@ class SecurityCleanup:
 
         security_patterns = [
             "# Security and sensitive files",
-            "*.env",
-            "*.env.local",
-            "*.env.production",
-            ".env.*",
+            "*config/environments/development.env",
+            "*config/environments/development.env.local",
+            "*config/environments/developmentconfig/environments/production.env.backup",
+            "config/environments/development.env.*",
             "auth_tokens.json",
-            "auth_tokens.env",
+            "auth_tokensconfig/environments/development.env",
             "cookies.txt",
             "*.key",
             "*.pem",
@@ -155,7 +155,7 @@ class SecurityCleanup:
             "*.pyd",
             ".pytest_cache/",
             ".coverage",
-            "htmlcov/",
+            "reports/coverage/htmlcov/",
             "# Node.js",
             "node_modules/",
             "npm-debug.log*",
@@ -202,7 +202,7 @@ class SecurityCleanup:
 
         sensitive_files = [
             "auth_tokens.json",
-            "auth_tokens.env",
+            "auth_tokensconfig/environments/development.env",
             "cookies.txt",
             "*.key",
             "*.pem",
@@ -225,18 +225,18 @@ class SecurityCleanup:
         logger.info("📝 Creating security environment template...")
 
         env_template = """# ACGS-1 Environment Variables Template
-# Copy this file to .env and fill in your actual values
+# Copy this file to config/environments/development.env and fill in your actual values
 
 # Database Configuration
-DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/acgs_db
+DATABASE_URL=os.environ.get("DATABASE_URL")
 POSTGRES_USER=acgs_user
-POSTGRES_PASSWORD=your_secure_password
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
 POSTGRES_DB=acgs_pgp_db
 
 # Authentication
-SECRET_KEY=your-secret-key-here
-JWT_SECRET_KEY=your-jwt-secret-key-here
-AUTH_SERVICE_SECRET_KEY=your-auth-service-secret-key
+SECRET_KEY=your-secret-key-here  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+JWT_SECRET_KEY=your-jwt-secret-key-here  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+AUTH_SERVICE_SECRET_KEY=your-auth-service-secret-key  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # API Keys
 OPENAI_API_KEY=your-openai-api-key
@@ -262,7 +262,7 @@ BACKEND_CORS_ORIGINS=http://localhost:3000,http://localhost:3001
 ENVIRONMENT=development
 """
 
-        env_template_path = self.project_root / ".env.template"
+        env_template_path = self.project_root / "config/environments/developmentconfig/environments/template.env"
         try:
             with open(env_template_path, "w") as f:
                 f.write(env_template)

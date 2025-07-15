@@ -5,7 +5,7 @@ ACGS-1 Frontend Integration Enhancement
 Complete blockchain-frontend integration for governance dashboard
 =======
 Completes blockchain-frontend integration for E2E validation
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio
@@ -31,7 +31,7 @@ class FrontendIntegrationEnhancer:
     """Enhances frontend integration for ACGS-1 governance dashboard"""
 =======
     """Enhances frontend integration for ACGS-1 system"""
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     def __init__(self):
         self.project_root = Path("/home/dislove/ACGS-1")
@@ -40,7 +40,7 @@ class FrontendIntegrationEnhancer:
         self.target_score = 90.0
 =======
         self.blockchain_path = self.project_root / "blockchain"
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         
     async def enhance_frontend_integration(self):
         """Main frontend integration enhancement function"""
@@ -118,7 +118,7 @@ class FrontendIntegrationEnhancer:
         results["integration_status"] = integration_results["status"]
         results["e2e_validation_score"] = integration_results["score"]
         results["target_achieved"] = results["e2e_validation_score"] >= 90
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         
         # Save results
         with open("frontend_integration_enhancement_results.json", "w") as f:
@@ -212,7 +212,7 @@ class FrontendIntegrationEnhancer:
                     "commitment": "confirmed"
                 },
                 "anchor": {
-                    "program_id": "QuantumagiProgram111111111111111111111111",
+                    "program_id": "QuantumagiProgram111111111111111111111111",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                     "idl_path": "/home/dislove/ACGS-1/blockchain/target/idl/quantumagi.json",
                     "provider_options": {
                         "preflightCommitment": "confirmed",
@@ -225,7 +225,7 @@ class FrontendIntegrationEnhancer:
                     "local_storage_key": "acgs_wallet"
                 },
                 "governance": {
-                    "constitution_account": "ConstitutionAccount111111111111111111111",
+                    "constitution_account": "ConstitutionAccount111111111111111111111",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                     "policy_accounts": [
                         "PolicyAccount1111111111111111111111111",
                         "PolicyAccount2222222222222222222222222",
@@ -1288,7 +1288,7 @@ export default ErrorBoundary;
             
         except Exception:
             return 0
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 async def main():
     """Main execution function"""
@@ -1315,7 +1315,7 @@ async def main():
     print(f"Enhancements Applied: {len(results['enhancements_applied'])}")
     
     print("\nEnhancements Applied:")
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     for enhancement in results['enhancements_applied']:
         print(f"  ✅ {enhancement.replace('_', ' ').title()}")
     

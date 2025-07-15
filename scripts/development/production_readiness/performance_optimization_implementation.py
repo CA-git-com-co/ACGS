@@ -337,7 +337,7 @@ services:
     build: ./services/core/{service}
     environment:
       - REDIS_URL=redis://redis:6379
-      - DATABASE_URL=postgresql://postgres:password@postgres:5432/acgs
+      - DATABASE_URL=os.environ.get("DATABASE_URL")
       - SERVICE_PORT={port}
     deploy:
       replicas: {service_config["min_instances"]}
@@ -373,7 +373,7 @@ services:
     environment:
       - POSTGRES_DB=acgs
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_PASSWORD=os.environ.get("PASSWORD")
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:

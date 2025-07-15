@@ -612,7 +612,7 @@ EOF
 # Main validation function
 main() {
     log_info "Starting ACGS GitOps Comprehensive Validation..."
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     test_file_structure
     test_yaml_syntax

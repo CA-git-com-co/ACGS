@@ -29,10 +29,10 @@ project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
 # Import GS Engine components
-from services.core.governance_synthesis.app.core.wina_llm_integration import (
+from services.core.governance-synthesis.gs_service.app.core.wina_llm_integration import (
     WINAOptimizedLLMClient,
 )
-from services.core.governance_synthesis.app.schemas import (
+from services.core.governance-synthesis.gs_service.app.schemas import (
     LLMInterpretationInput,
 )
 

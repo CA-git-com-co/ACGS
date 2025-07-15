@@ -28,10 +28,11 @@ sys.path.insert(
 try:
     from fastapi.testclient import TestClient
     from services.core.formal_verification.fv_service.main import app as fv_app
-
     REAL_SERVICE_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     REAL_SERVICE_AVAILABLE = False
+    import pytest
+    pytest.skip(f"Required module not available: {e}", allow_module_level=True)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

@@ -407,7 +407,7 @@ class ManualCodeSecurityReview:
             config_files = [
                 "config/security.py",
                 "services/shared/config.py",
-                ".env.example",
+                "config/environments/developmentconfig/environments/example.env",
             ]
 
             findings = []

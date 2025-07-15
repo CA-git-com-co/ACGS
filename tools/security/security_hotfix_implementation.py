@@ -45,7 +45,7 @@ class SecureTokenValidator:
     
     def __init__(self):
         self.constitutional_hash = CONSTITUTIONAL_HASH
-        self.secret_key = "acgs_secure_key_2025"  # In production, use environment variable
+        self.secret_key = "acgs_secure_key_2025"  # In production, use environment variable  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         self.algorithm = "HS256"
     
     def validate_token(self, token: str) -> TokenValidationResult:
@@ -324,7 +324,7 @@ async def login_secure(request: dict):
     """Secure login endpoint with constitutional compliance"""
     
     username = request.get("username", "")
-    password = request.get("password", "")
+    password = os.environ.get("PASSWORD")password", "")
     
     # Basic input validation (prevent injection)
     if not username or not password:

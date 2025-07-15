@@ -214,7 +214,7 @@ class PerformanceAlertingSystem:
         """Load baseline metrics for regression detection."""
         try:
             baseline_file = (
-                "infrastructure/monitoring/performance/baselines/latest_baseline.json"
+                "infrastructure/monitoring/performance/baselines/latest_baseline.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             )
 
             with open(baseline_file) as f:

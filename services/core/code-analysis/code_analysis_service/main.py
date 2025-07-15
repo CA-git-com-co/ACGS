@@ -198,9 +198,9 @@ app = FastAPI(
     """,
     version="1.0.0",
     lifespan=lifespan,
-    docs_url="/docs" if settings.environment != "production" else None,
-    redoc_url="/redoc" if settings.environment != "production" else None,
-    openapi_url="/openapi.json" if settings.environment != "production" else None,
+    docs_url="/docs" if settingsconfig/environments/development.environment != "production" else None,
+    redoc_url="/redoc" if settingsconfig/environments/development.environment != "production" else None,
+    openapi_url="/openapi.json" if settingsconfig/environments/development.environment != "production" else None,
 )
 
 # Add middleware in correct order (last added = first executed)
@@ -347,7 +347,7 @@ async def global_exception_handler(request: Request, exc: Exception):
             "message": "An internal server error occurred",
             "details": (
                 {"type": type(exc).__name__}
-                if settings.environment != "production"
+                if settingsconfig/environments/development.environment != "production"
                 else {}
             ),
             "timestamp": "2024-01-15T10:30:00Z",  # Would use actual timestamp
@@ -364,17 +364,17 @@ def main():
         "app": "main:app",
         "host": settings.host,
         "port": settings.port,
-        "workers": settings.workers if settings.environment == "production" else 1,
+        "workers": settings.workers if settingsconfig/environments/development.environment == "production" else 1,
         "log_level": settings.log_level.lower(),
         "access_log": settings.access_log,
-        "reload": settings.environment == "development",
+        "reload": settingsconfig/environments/development.environment == "development",
         "reload_dirs": (
-            ["app", "config"] if settings.environment == "development" else None
+            ["app", "config"] if settingsconfig/environments/development.environment == "development" else None
         ),
     }
 
     # Add SSL configuration for production
-    if settings.environment == "production" and settings.ssl_cert_file:
+    if settingsconfig/environments/development.environment == "production" and settings.ssl_cert_file:
         uvicorn_config.update(
             {
                 "ssl_certfile": settings.ssl_cert_file,
@@ -385,7 +385,7 @@ def main():
     logger.info(
         f"Starting ACGS Code Analysis Engine on {settings.host}:{settings.port}"
     )
-    logger.info(f"Environment: {settings.environment}")
+    logger.info(f"Environment: {settingsconfig/environments/development.environment}")
     logger.info(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
 
     # Start the server

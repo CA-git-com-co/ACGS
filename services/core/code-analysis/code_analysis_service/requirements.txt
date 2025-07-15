@@ -6,7 +6,7 @@
 # ============================================================================
 
 # FastAPI and ASGI server
-fastapi==0.104.1
+fastapi>=0.115.6
 uvicorn[standard]==0.24.0
 pydantic[email]==2.5.0
 pydantic-settings==2.1.0
@@ -24,7 +24,6 @@ pgvector==0.2.4
 
 # Redis for caching
 redis[hiredis]==5.0.1
-aioredis==2.0.1
 
 # ============================================================================
 # CODE ANALYSIS AND PARSING
@@ -45,11 +44,11 @@ watchdog==6.0.0
 # ============================================================================
 
 # Sentence transformers for embeddings
-sentence-transformers==2.2.2
-transformers==4.36.0
-torch==2.1.1
-numpy==1.24.4
-scikit-learn==1.3.2
+sentence-transformers>=3.1.0
+transformers>=4.52.1
+torch>=2.7.1
+numpy>=1.24.4
+scikit-learn>=1.5.0
 
 # Vector similarity and search
 faiss-cpu==1.7.4
@@ -60,7 +59,7 @@ faiss-cpu==1.7.4
 
 # HTTP client for service integration
 httpx==0.25.2
-aiohttp==3.9.1
+aiohttp>=3.10.11
 
 # ============================================================================
 # MONITORING AND OBSERVABILITY
@@ -79,8 +78,8 @@ python-json-logger==3.3.0
 # ============================================================================
 
 # JWT handling
-pyjwt[crypto]==2.8.0
-cryptography==41.0.8
+pyjwt[crypto]>=2.10.1
+cryptography>=43.0.1
 
 # Password hashing
 passlib[bcrypt]==1.7.4
@@ -97,7 +96,7 @@ python-dateutil==2.8.2
 pytz==2023.3
 
 # JSON handling
-orjson==3.9.10
+orjson>=3.9.15
 
 # Async utilities
 asyncio-throttle==1.0.2
@@ -111,7 +110,7 @@ aiofiles==23.2.1
 # ============================================================================
 
 # Testing framework
-pytest==7.4.3
+pytest>=8.3.4
 pytest-asyncio==0.21.1
 pytest-cov==4.1.0
 pytest-mock==3.12.0
@@ -130,12 +129,12 @@ faker==20.1.0
 # ============================================================================
 
 # Linting and formatting
-ruff==0.1.6
-black==23.11.0
+ruff>=0.8.4
+black>=24.3.0
 isort==5.12.0
 
 # Type checking
-mypy==1.7.1
+mypy>=1.13.0
 types-redis==4.6.0.11
 types-requests==2.31.0.10
 
@@ -145,14 +144,14 @@ types-requests==2.31.0.10
 
 # API documentation
 mkdocs==1.5.3
-mkdocs-material==9.4.8
+mkdocs-material>=9.5.32
 
 # ============================================================================
 # PRODUCTION DEPLOYMENT
 # ============================================================================
 
 # Process management
-gunicorn==21.2.0
+gunicorn>=23.0.0
 
 # Health checks
 psutil==5.9.6
@@ -169,9 +168,9 @@ hashlib2==1.0.1
 # ============================================================================
 
 # Ensure secure versions
-certifi>=2023.7.22
-urllib3>=2.0.7
-requests>=2.31.0
+certifi>=2025.6.15
+urllib3>=2.5.0
+requests>=2.32.4
 
 # ============================================================================
 # OPTIONAL DEPENDENCIES FOR ENHANCED FEATURES
@@ -194,10 +193,10 @@ requests>=2.31.0
 
 # Core dependencies with exact versions for production stability
 click==8.1.7
-anyio==3.7.1
+anyio>=4.4.0
 sniffio==1.3.0
-idna==3.6
-h11==0.14.0
+idna>=3.7
+h11>=0.16.0
 typing-extensions==4.8.0
 
 # ============================================================================
@@ -242,8 +241,8 @@ typing-extensions==4.8.0
 #    python -c "import tree_sitter_python; import tree_sitter_javascript"
 
 # 5. Set up environment variables:
-#    cp .env.example .env
-#    # Edit .env with your configuration
+#    cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+#    # Edit config/environments/development.env with your configuration
 
 # 6. Initialize database:
 #    alembic upgrade head

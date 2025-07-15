@@ -496,7 +496,7 @@ class SecurityHardeningTester:
         try:
             # Check for hardcoded secrets in common files
             config_files = [
-                ".env",
+                "config/environments/development.env",
                 "docker-compose.yml",
                 "config/security/enhanced-security-config.yml",
             ]

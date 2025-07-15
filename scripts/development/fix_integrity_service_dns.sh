@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Integrity Service DNS Resolution Fix
@@ -7,7 +9,7 @@
 set -e
 
 echo "🔧 ACGS-1 Integrity Service DNS Resolution Fix"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Date: $(date)"
 echo "Priority: CRITICAL"
 echo ""
@@ -43,7 +45,7 @@ if [ ! -f "docker-compose.yml" ]; then
 fi
 
 print_status "Step 1: Diagnosing Integrity Service DNS Issue"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Check current service status
 print_status "Checking current service status..."
@@ -54,7 +56,7 @@ print_status "Checking integrity service logs for DNS errors..."
 docker-compose logs --tail=50 integrity_service | grep -i "dns\|resolve\|connection" || true
 
 print_status "Step 2: Identifying Database Connection"
-echo "========================================"
+echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Get database container IP
 DB_CONTAINER_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker-compose ps -q postgres) 2>/dev/null || echo "")
@@ -77,16 +79,16 @@ print_status "Step 3: Updating Database Configuration"
 echo "======================================="
 
 # Backup current environment file
-if [ -f ".env" ]; then
-    cp .env .env.backup.$(date +%Y%m%d_%H%M%S)
-    print_success "Backed up current .env file"
+if [ -f "config/environments/development.env" ]; then
+    cp config/environments/development.env config/environments/development.env.backup.$(date +%Y%m%d_%H%M%S)
+    print_success "Backed up current config/environments/development.env file"
 fi
 
 # Update database URL in environment
 print_status "Updating DATABASE_URL configuration..."
 
-# Create or update .env file with correct database URL
-cat > .env.integrity << EOF
+# Create or update config/environments/development.env file with correct database URL
+cat > config/environments/developmentconfig/environments/integrity.env << EOF
 # Integrity Service Database Configuration
 # Updated: $(date)
 DATABASE_URL=postgresql://acgs_user:acgs_password@${DB_CONTAINER_IP}:5432/acgs_db
@@ -94,7 +96,7 @@ POSTGRES_HOST=${DB_CONTAINER_IP}
 POSTGRES_PORT=5432
 POSTGRES_DB=acgs_db
 POSTGRES_USER=acgs_user
-POSTGRES_PASSWORD=acgs_password
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
 
 # Redis Configuration
 REDIS_URL=redis://localhost:6379/0
@@ -176,7 +178,7 @@ else
 fi
 
 print_status "Step 6: Comprehensive Service Validation"
-echo "========================================"
+echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Run comprehensive health check
 if [ -f "scripts/comprehensive_health_check.py" ]; then
@@ -202,7 +204,7 @@ echo ""
 echo "✅ Service Status: $(docker-compose ps integrity_service | grep integrity_service | awk '{print $4}')"
 echo "✅ Health Endpoint: http://localhost:8002/health"
 echo "✅ Database IP: $DB_CONTAINER_IP"
-echo "✅ Configuration: Updated in .env.integrity"
+echo "✅ Configuration: Updated in config/environments/developmentconfig/environments/integrity.env"
 echo ""
 
 # Generate summary report
@@ -213,7 +215,7 @@ Date: $(date)
 Status: COMPLETED
 Database IP: $DB_CONTAINER_IP
 Service Port: 8002
-Configuration File: .env.integrity
+Configuration File: config/environments/developmentconfig/environments/integrity.env
 
 Next Steps:
 1. Run full system health check: python scripts/comprehensive_health_check.py

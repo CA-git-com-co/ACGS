@@ -83,7 +83,7 @@ spec:
             - name: elasticsearch-data
               mountPath: /usr/share/elasticsearch/data
             - name: elasticsearch-config
-              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
               subPath: elasticsearch.yml
           resources:
             requests:

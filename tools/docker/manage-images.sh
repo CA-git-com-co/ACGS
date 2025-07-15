@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Docker Image Management Script
@@ -252,7 +254,7 @@ scan_image() {
     # Check if trivy is installed
     if ! command -v trivy >/dev/null 2>&1; then
         log_warning "Trivy not installed, installing..."
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     fi
     
     # Run vulnerability scan
@@ -317,7 +319,7 @@ deploy_images() {
             compose_file="infrastructure/docker/docker-compose.development.yml"
             ;;
         "production-runtime")
-            compose_file="docker-compose.production.yml"
+            compose_file="config/docker/docker-compose.production.yml"
             ;;
         *)
             compose_file="infrastructure/docker/docker-compose.yml"

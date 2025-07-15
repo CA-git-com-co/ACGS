@@ -503,7 +503,7 @@ jobs:
           
           # Build with advanced caching and multi-stage optimization
           docker buildx build \
-            --file Dockerfile.uv \
+            --file config/docker/Dockerfile.uv \
             --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:$IMAGE_TAG \
             --cache-from=type=gha \
             --cache-to=type=gha,mode=max \
@@ -524,7 +524,7 @@ jobs:
       - name: Calculate pipeline performance
         run: |
           echo "📊 ACGS Optimized CI/CD Performance Report"
-          echo "=========================================="
+          echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           echo "Commit: ${{ github.sha }}"
           echo "Branch: ${{ github.ref_name }}"
           echo "Trigger: ${{ github.event_name }}"

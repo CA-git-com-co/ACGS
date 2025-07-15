@@ -283,7 +283,7 @@ class ReorganizationValidator:
                         content = f.read()
 
                     # Check for old import patterns
-                    old_patterns = ["from shared.", "import shared.", "src.backend."]
+                    old_patterns = ["from services.shared.", "import services.shared.", "src.backend."]
                     has_old_imports = any(
                         pattern in content for pattern in old_patterns
                     )

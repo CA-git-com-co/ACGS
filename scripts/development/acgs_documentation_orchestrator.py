@@ -689,8 +689,8 @@ cd acgs
 
 ### 2. Environment Setup
 ```bash
-cp .env.example .env
-# Edit .env with your configuration
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# Edit config/environments/development.env with your configuration
 ```
 
 ### 3. Infrastructure Deployment

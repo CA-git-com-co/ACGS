@@ -2,7 +2,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 
 # Core Web Framework
-fastapi==0.104.1
+fastapi>=0.115.6
 uvicorn[standard]==0.24.0
 pydantic[email]==2.5.0
 pydantic-settings==2.1.0
@@ -14,11 +14,10 @@ alembic==1.13.1
 
 # Redis for caching
 redis[hiredis]==5.0.1
-aioredis==2.0.1
 
 # HTTP Client
 httpx==0.25.2
-aiohttp==3.9.1
+aiohttp>=3.10.11
 
 # Monitoring and Logging
 prometheus-client==0.19.0
@@ -38,4 +37,4 @@ rich==13.7.0
 watchdog==3.0.0
 
 # Testing (for health checks)
-requests==2.31.0
+requests>=2.32.4

@@ -26,7 +26,7 @@ def generate_program_id(program_name: str) -> str:
 
 def main():
     programs = {
-        "quantumagi_core": "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",  # Keep existing
+        "quantumagi_core": "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",  # Keep existing  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         "appeals": generate_program_id("appeals"),
         "logging": generate_program_id("logging"),
     }
@@ -43,11 +43,11 @@ def main():
     # Replace program IDs in both localnet and devnet sections
     for program, program_id in programs.items():
         content = content.replace(
-            f'{program} = "AppeaLs1111111111111111111111111111111111111"',
+            f'{program} = "AppeaLs1111111111111111111111111111111111111"',  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             f'{program} = "{program_id}"',
         )
         content = content.replace(
-            f'{program} = "Logg1ng1111111111111111111111111111111111111"',
+            f'{program} = "Logg1ng1111111111111111111111111111111111111"',  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             f'{program} = "{program_id}"',
         )
 
@@ -68,9 +68,9 @@ def main():
 
             # Replace declare_id! statements
             old_id = (
-                "AppeaLs1111111111111111111111111111111111111"
+                "AppeaLs1111111111111111111111111111111111111"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 if program == "appeals"
-                else "Logg1ng1111111111111111111111111111111111111"
+                else "Logg1ng1111111111111111111111111111111111111"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             )
             content = content.replace(
                 f'declare_id!("{old_id}");', f'declare_id!("{programs[program]}");'

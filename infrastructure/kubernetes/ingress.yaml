@@ -352,7 +352,7 @@ metadata:
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
     nginx.ingress.kubernetes.io/auth-type: basic
-    nginx.ingress.kubernetes.io/auth-secret: monitoring-basic-auth
+    nginx.ingress.kubernetes.io/auth-secret: monitoring-basic-auth  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     nginx.ingress.kubernetes.io/auth-realm: "ACGS Monitoring - Authentication Required"
     nginx.ingress.kubernetes.io/configuration-snippet: |
       add_header X-Constitutional-Hash "cdd01ef066bc6cf2" always;
@@ -399,7 +399,7 @@ type: Opaque
 stringData:
   # Basic auth credentials (admin:admin_password)
   # Generate with: htpasswd -c auth admin
-  auth: "admin:$2y$10$hqZ3HqAKBz.Q8eF8LK0K6OE1R9vT2nJ8Y3XqA1P9b4eL7zN8qY9aC"
+  auth: "admin:$2y$10$hqZ3HqAKBz.Q8eF8LK0K6OE1R9vT2nJ8Y3XqA1P9b4eL7zN8qY9aC"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 ---
 # Network Policy for Ingress

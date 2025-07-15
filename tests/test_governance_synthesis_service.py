@@ -13,6 +13,12 @@ from unittest.mock import AsyncMock, Mock, patch
 import pytest
 from fastapi.testclient import TestClient
 
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
+
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
@@ -21,7 +27,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 def gs_client():
     """Test client for Governance Synthesis service."""
     try:
-        from services.core.governance_synthesis.gs_service.app.main import app
+        from services.core.governance-synthesis.gs_service.app.main import app
 
         return TestClient(app)
     except ImportError:

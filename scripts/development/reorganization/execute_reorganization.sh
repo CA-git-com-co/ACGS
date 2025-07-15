@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Codebase Reorganization Script
 # Safely reorganizes the codebase while preserving git history
@@ -9,7 +11,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 echo "🚀 Starting ACGS-1 Codebase Reorganization"
 echo "Root directory: $ROOT_DIR"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Backup current state
 backup_current_state() {
@@ -343,7 +345,7 @@ main() {
     
     echo ""
     echo "🎉 ACGS-1 Reorganization Complete!"
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ All components moved to new structure"
     echo "✅ Git history preserved"
     echo "✅ Changes committed"

@@ -120,8 +120,8 @@ jobs:
             "integrity")
               if [ -f "services/platform/integrity/integrity_service/requirements.txt" ]; then
                 pip install -r "services/platform/integrity/integrity_service/requirements.txt"
-              elif [ -f "services/platform/integrity/requirements.txt" ]; then
-                pip install -r "services/platform/integrity/requirements.txt"
+              elif [ -f "services/platform/integrity/requirements.txt" ]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+                pip install -r "services/platform/integrity/requirements.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
               fi
               ;;
             "fv")
@@ -403,7 +403,7 @@ jobs:
       - name: Generate summary
         run: |
           echo "📊 Enhanced Parallel CI/CD Pipeline Results"
-          echo "========================================="
+          echo "========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           echo "Python Services: ${{ needs.python_services.result }}"
           echo "Security Scan: ${{ needs.security_scan.result }}"
           echo ""

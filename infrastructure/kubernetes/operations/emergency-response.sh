@@ -35,7 +35,7 @@ emergency_shutdown() {
     
     # Create emergency backup first
     log_emergency "Creating emergency backup..."
-    ./infrastructure/kubernetes/operations/backup-restore.sh emergency
+    ./infrastructure/kubernetes/operations/backup-restore.sh emergency  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Scale down all deployments
     log_emergency "Scaling down all services..."
@@ -105,7 +105,7 @@ constitutional_violation_response() {
     
     # 3. Verify constitutional hash
     log_emergency "Verifying constitutional hash..."
-    local current_hash=$(kubectl get deployment constitutional-ai-service -n $NAMESPACE -o jsonpath='{.spec.template.spec.containers[0].env[?(@.name=="CONSTITUTIONAL_HASH")].value}')
+    local current_hash=$(kubectl get deployment constitutional-ai-service -n $NAMESPACE -o jsonpath='{.spec.template.spec.containers[0]config/environments/development.env[?(@.name=="CONSTITUTIONAL_HASH")].value}')
     
     if [[ "$current_hash" != "$CONSTITUTIONAL_HASH" ]]; then
         log_emergency "❌ Constitutional hash mismatch detected!"

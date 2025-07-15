@@ -62,7 +62,7 @@ class ScalabilityAssessment:
     scaling_needed: bool
 
 
-class ConstitutionalCouncilScalabilityFramework:
+class ConstitutionalCouncilScalabilityFramework:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     """
     Framework for managing Constitutional Council scalability and co-evolution.
 

@@ -155,7 +155,7 @@ class PgBouncerMetricsCollector:
                 port=self.pgbouncer_port,
                 database="pgbouncer",
                 user="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 timeout=10,
             )
 

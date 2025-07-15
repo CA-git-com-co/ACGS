@@ -1,5 +1,9 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 // ACGS-1 Governance Specialist Protocol v2.0 Validation Test
-// sha256:a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456
+// sha256:a1b2c3d4e5f6789012345678901234567890abcdef1234567890abcdef123456  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 // Formal verification: requires: deployed_programs ∧ local_validator_running
 //                     ensures: test_pass_rate ≥ 90% ∧ sol_cost < 0.01 ∧ response_time < 2s
 
@@ -43,21 +47,21 @@ describe('ACGS-1 Validation Test Suite - Protocol v2.0', () => {
   describe('Program Deployment Validation', () => {
     it('should validate quantumagi_core program deployment', async () => {
       expect(quantumagiProgram.programId.toString()).to.equal(
-        'sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC'
+        'sQyjPfFt4wueY6w2QF9iL1HJ3ZkQFoM3dq1MSaC5ztC'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       );
       console.log('✅ Quantumagi Core program deployed correctly');
     });
 
     it('should validate appeals program deployment', async () => {
       expect(appealsProgram.programId.toString()).to.equal(
-        '278awDwWu5NZRyDCLufPXQk1p9Q16WAhn9cvsFwFtsfY'
+        '278awDwWu5NZRyDCLufPXQk1p9Q16WAhn9cvsFwFtsfY'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       );
       console.log('✅ Appeals program deployed correctly');
     });
 
     it('should validate logging program deployment', async () => {
       expect(loggingProgram.programId.toString()).to.equal(
-        '7ZVxgkky5V12gvpfDh174nsDT8vfT7vQhN77C6csamsw'
+        '7ZVxgkky5V12gvpfDh174nsDT8vfT7vQhN77C6csamsw'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       );
       console.log('✅ Logging program deployed correctly');
     });

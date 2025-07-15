@@ -1,0 +1,2294 @@
+{
+  "dataset_type": "multi_agent_coordination",
+  "description": "Multi-agent coordination training examples for agent collaboration and conflict resolution",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "id": "multi_agent_demo_0000",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "operational",
+            "performance"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between operational, performance agents",
+            "priority": "low",
+            "deadline": "1 hour",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "operational",
+                "performance"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "operational",
+                "performance"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "operational"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "operational",
+                "performance"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "operational": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "performance": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.899,
+          "consensus_score": 0.824,
+          "constitutional_compliance": 0.972
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 2,
+        "complexity": "complex",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0001",
+      "input": {
+        "coordination_request": {
+          "scenario": "conflict_resolution",
+          "involved_agents": [
+            "ethics",
+            "operational",
+            "legal",
+            "performance"
+          ],
+          "task": {
+            "description": "Demo conflict_resolution task requiring coordination between ethics, operational, legal, performance agents",
+            "priority": "low",
+            "deadline": "1 week",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "ethics",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "ethics",
+                "operational",
+                "legal",
+                "performance"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "ethics"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "ethics",
+                "operational",
+                "legal",
+                "performance"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "ethics": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.924,
+          "consensus_score": 0.874,
+          "constitutional_compliance": 0.953
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "conflict_resolution",
+        "agent_count": 4,
+        "complexity": "complex",
+        "conflict_level": "none"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0002",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "ethics",
+            "performance",
+            "legal"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between ethics, performance, legal agents",
+            "priority": "critical",
+            "deadline": "4 hours",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "ethics",
+                "performance"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "ethics",
+                "performance",
+                "legal"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "ethics"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "ethics",
+                "performance",
+                "legal"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "ethics": [
+            "task_1"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.885,
+          "consensus_score": 0.838,
+          "constitutional_compliance": 0.952
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 3,
+        "complexity": "complex",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0003",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "legal",
+            "operational",
+            "performance",
+            "ethics"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between legal, operational, performance, ethics agents",
+            "priority": "high",
+            "deadline": "1 week",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "operational",
+                "performance",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "operational",
+                "performance",
+                "ethics"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "operational": [
+            "task_1",
+            "task_2"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "ethics": [
+            "task_1",
+            "task_2"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.837,
+          "consensus_score": 0.763,
+          "constitutional_compliance": 0.96
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 4,
+        "complexity": "complex",
+        "conflict_level": "none"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0004",
+      "input": {
+        "coordination_request": {
+          "scenario": "conflict_resolution",
+          "involved_agents": [
+            "ethics",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo conflict_resolution task requiring coordination between ethics, operational agents",
+            "priority": "low",
+            "deadline": "1 week",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "ethics",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "ethics",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "ethics"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "ethics",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "ethics": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.975,
+          "consensus_score": 0.7,
+          "constitutional_compliance": 0.973
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "conflict_resolution",
+        "agent_count": 2,
+        "complexity": "complex",
+        "conflict_level": "low"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0005",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "ethics",
+            "legal",
+            "performance",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between ethics, legal, performance, operational agents",
+            "priority": "medium",
+            "deadline": "1 hour",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "ethics",
+                "legal"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "ethics",
+                "legal",
+                "performance",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "ethics"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "ethics",
+                "legal",
+                "performance",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "ethics": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.95,
+          "consensus_score": 0.895,
+          "constitutional_compliance": 0.961
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 4,
+        "complexity": "moderate",
+        "conflict_level": "none"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0006",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "performance",
+            "security"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between performance, security agents",
+            "priority": "medium",
+            "deadline": "1 hour",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1"
+          ],
+          "security": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.814,
+          "consensus_score": 0.869,
+          "constitutional_compliance": 0.999
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 2,
+        "complexity": "simple",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0007",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "ethics",
+            "operational",
+            "performance",
+            "legal"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between ethics, operational, performance, legal agents",
+            "priority": "medium",
+            "deadline": "24 hours",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "ethics",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "ethics",
+                "operational",
+                "performance",
+                "legal"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "ethics"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "ethics",
+                "operational",
+                "performance",
+                "legal"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "ethics": [
+            "task_1"
+          ],
+          "operational": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.993,
+          "consensus_score": 0.94,
+          "constitutional_compliance": 0.977
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 4,
+        "complexity": "complex",
+        "conflict_level": "none"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0008",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "security",
+            "ethics"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between security, ethics agents",
+            "priority": "high",
+            "deadline": "1 week",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "security",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "security",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "security"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "security",
+                "ethics"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "security": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "ethics": [
+            "task_1",
+            "task_2"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.896,
+          "consensus_score": 0.804,
+          "constitutional_compliance": 0.971
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 2,
+        "complexity": "simple",
+        "conflict_level": "low"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0009",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "legal",
+            "performance",
+            "security"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between legal, performance, security agents",
+            "priority": "critical",
+            "deadline": "4 hours",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "performance"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "performance",
+                "security"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "performance",
+                "security"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1"
+          ],
+          "performance": [
+            "task_1"
+          ],
+          "security": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 1.0,
+          "consensus_score": 0.93,
+          "constitutional_compliance": 0.989
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 3,
+        "complexity": "moderate",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0010",
+      "input": {
+        "coordination_request": {
+          "scenario": "task_delegation",
+          "involved_agents": [
+            "performance",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo task_delegation task requiring coordination between performance, operational agents",
+            "priority": "low",
+            "deadline": "1 hour",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.937,
+          "consensus_score": 0.904,
+          "constitutional_compliance": 0.981
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "task_delegation",
+        "agent_count": 2,
+        "complexity": "simple",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0011",
+      "input": {
+        "coordination_request": {
+          "scenario": "task_delegation",
+          "involved_agents": [
+            "security",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo task_delegation task requiring coordination between security, operational agents",
+            "priority": "high",
+            "deadline": "4 hours",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "security",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "security",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "security"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "security",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "security": [
+            "task_1"
+          ],
+          "operational": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.836,
+          "consensus_score": 0.975,
+          "constitutional_compliance": 0.966
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "task_delegation",
+        "agent_count": 2,
+        "complexity": "complex",
+        "conflict_level": "medium"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0012",
+      "input": {
+        "coordination_request": {
+          "scenario": "task_delegation",
+          "involved_agents": [
+            "legal",
+            "ethics",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo task_delegation task requiring coordination between legal, ethics, operational agents",
+            "priority": "high",
+            "deadline": "24 hours",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "ethics",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "ethics",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "ethics": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.915,
+          "consensus_score": 0.94,
+          "constitutional_compliance": 0.958
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "task_delegation",
+        "agent_count": 3,
+        "complexity": "simple",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0013",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "security",
+            "performance",
+            "legal",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between security, performance, legal, operational agents",
+            "priority": "high",
+            "deadline": "1 hour",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "security",
+                "performance"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "security",
+                "performance",
+                "legal",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "security"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "security",
+                "performance",
+                "legal",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "security": [
+            "task_1"
+          ],
+          "performance": [
+            "task_1"
+          ],
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "operational": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.836,
+          "consensus_score": 0.786,
+          "constitutional_compliance": 0.959
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 4,
+        "complexity": "complex",
+        "conflict_level": "medium"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0014",
+      "input": {
+        "coordination_request": {
+          "scenario": "conflict_resolution",
+          "involved_agents": [
+            "security",
+            "operational",
+            "ethics"
+          ],
+          "task": {
+            "description": "Demo conflict_resolution task requiring coordination between security, operational, ethics agents",
+            "priority": "high",
+            "deadline": "1 hour",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "security",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "security",
+                "operational",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "security"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "security",
+                "operational",
+                "ethics"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "security": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1",
+            "task_2"
+          ],
+          "ethics": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.997,
+          "consensus_score": 0.896,
+          "constitutional_compliance": 0.972
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "conflict_resolution",
+        "agent_count": 3,
+        "complexity": "moderate",
+        "conflict_level": "low"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0015",
+      "input": {
+        "coordination_request": {
+          "scenario": "task_delegation",
+          "involved_agents": [
+            "performance",
+            "security"
+          ],
+          "task": {
+            "description": "Demo task_delegation task requiring coordination between performance, security agents",
+            "priority": "low",
+            "deadline": "24 hours",
+            "complexity": "moderate"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "security": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.85,
+          "consensus_score": 0.933,
+          "constitutional_compliance": 0.952
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "task_delegation",
+        "agent_count": 2,
+        "complexity": "moderate",
+        "conflict_level": "medium"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0016",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "operational",
+            "performance",
+            "security",
+            "legal"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between operational, performance, security, legal agents",
+            "priority": "high",
+            "deadline": "1 week",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "operational",
+                "performance"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "operational",
+                "performance",
+                "security",
+                "legal"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "operational"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "operational",
+                "performance",
+                "security",
+                "legal"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "operational": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "security": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.907,
+          "consensus_score": 0.934,
+          "constitutional_compliance": 0.978
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 4,
+        "complexity": "moderate",
+        "conflict_level": "medium"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0017",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "legal",
+            "security"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between legal, security agents",
+            "priority": "high",
+            "deadline": "1 hour",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "security"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "security"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "security"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1"
+          ],
+          "security": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.947,
+          "consensus_score": 0.902,
+          "constitutional_compliance": 0.977
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 2,
+        "complexity": "simple",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0018",
+      "input": {
+        "coordination_request": {
+          "scenario": "resource_allocation",
+          "involved_agents": [
+            "performance",
+            "security",
+            "legal"
+          ],
+          "task": {
+            "description": "Demo resource_allocation task requiring coordination between performance, security, legal agents",
+            "priority": "low",
+            "deadline": "1 hour",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "security"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "security",
+                "legal"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "security",
+                "legal"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "security": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.876,
+          "consensus_score": 0.996,
+          "constitutional_compliance": 0.969
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "resource_allocation",
+        "agent_count": 3,
+        "complexity": "simple",
+        "conflict_level": "low"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0019",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "legal",
+            "ethics",
+            "operational"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between legal, ethics, operational agents",
+            "priority": "high",
+            "deadline": "24 hours",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "ethics",
+                "operational"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "ethics",
+                "operational"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "ethics": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.894,
+          "consensus_score": 0.807,
+          "constitutional_compliance": 0.998
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 3,
+        "complexity": "complex",
+        "conflict_level": "high"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0020",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "legal",
+            "performance"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between legal, performance agents",
+            "priority": "high",
+            "deadline": "4 hours",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits",
+            "Must complete within deadline"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "performance"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "performance"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "performance"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1",
+            "task_2"
+          ],
+          "performance": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.968,
+          "consensus_score": 0.892,
+          "constitutional_compliance": 0.985
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 2,
+        "complexity": "simple",
+        "conflict_level": "medium"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0021",
+      "input": {
+        "coordination_request": {
+          "scenario": "conflict_resolution",
+          "involved_agents": [
+            "performance",
+            "legal",
+            "ethics",
+            "security"
+          ],
+          "task": {
+            "description": "Demo conflict_resolution task requiring coordination between performance, legal, ethics, security agents",
+            "priority": "high",
+            "deadline": "24 hours",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "legal"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "legal",
+                "ethics",
+                "security"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "legal",
+                "ethics",
+                "security"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2"
+          ],
+          "ethics": [
+            "task_1",
+            "task_2"
+          ],
+          "security": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.999,
+          "consensus_score": 0.782,
+          "constitutional_compliance": 0.965
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "conflict_resolution",
+        "agent_count": 4,
+        "complexity": "moderate",
+        "conflict_level": "none"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0022",
+      "input": {
+        "coordination_request": {
+          "scenario": "conflict_resolution",
+          "involved_agents": [
+            "legal",
+            "operational",
+            "security",
+            "performance"
+          ],
+          "task": {
+            "description": "Demo conflict_resolution task requiring coordination between legal, operational, security, performance agents",
+            "priority": "high",
+            "deadline": "1 week",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "legal",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "legal",
+                "operational",
+                "security",
+                "performance"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "legal"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "legal",
+                "operational",
+                "security",
+                "performance"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "operational": [
+            "task_1"
+          ],
+          "security": [
+            "task_1",
+            "task_2"
+          ],
+          "performance": [
+            "task_1",
+            "task_2"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.812,
+          "consensus_score": 0.752,
+          "constitutional_compliance": 0.965
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "conflict_resolution",
+        "agent_count": 4,
+        "complexity": "simple",
+        "conflict_level": "none"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0023",
+      "input": {
+        "coordination_request": {
+          "scenario": "consensus_building",
+          "involved_agents": [
+            "performance",
+            "operational",
+            "legal",
+            "security"
+          ],
+          "task": {
+            "description": "Demo consensus_building task requiring coordination between performance, operational, legal, security agents",
+            "priority": "low",
+            "deadline": "24 hours",
+            "complexity": "simple"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance",
+            "Cannot exceed resource limits"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "operational"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "operational",
+                "legal",
+                "security"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "operational",
+                "legal",
+                "security"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "operational": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ],
+          "security": [
+            "task_1",
+            "task_2",
+            "task_3"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.951,
+          "consensus_score": 0.735,
+          "constitutional_compliance": 0.982
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "consensus_building",
+        "agent_count": 4,
+        "complexity": "simple",
+        "conflict_level": "low"
+      }
+    },
+    {
+      "id": "multi_agent_demo_0024",
+      "input": {
+        "coordination_request": {
+          "scenario": "task_delegation",
+          "involved_agents": [
+            "performance",
+            "legal",
+            "ethics"
+          ],
+          "task": {
+            "description": "Demo task_delegation task requiring coordination between performance, legal, ethics agents",
+            "priority": "high",
+            "deadline": "1 week",
+            "complexity": "complex"
+          },
+          "constraints": [
+            "Must maintain constitutional compliance"
+          ]
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "coordination_plan": {
+          "phases": [
+            {
+              "phase": "analysis",
+              "duration": "30 minutes",
+              "agents": [
+                "performance",
+                "legal"
+              ]
+            },
+            {
+              "phase": "deliberation",
+              "duration": "1 hour",
+              "agents": [
+                "performance",
+                "legal",
+                "ethics"
+              ]
+            },
+            {
+              "phase": "decision",
+              "duration": "15 minutes",
+              "agents": [
+                "performance"
+              ]
+            },
+            {
+              "phase": "implementation",
+              "duration": "2 hours",
+              "agents": [
+                "performance",
+                "legal",
+                "ethics"
+              ]
+            }
+          ],
+          "communication_protocol": "blackboard_system",
+          "conflict_resolution_method": "weighted_voting"
+        },
+        "agent_assignments": {
+          "performance": [
+            "task_1",
+            "task_2"
+          ],
+          "legal": [
+            "task_1",
+            "task_2"
+          ],
+          "ethics": [
+            "task_1"
+          ]
+        },
+        "success_metrics": {
+          "coordination_efficiency": 0.804,
+          "consensus_score": 0.72,
+          "constitutional_compliance": 0.961
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario_type": "task_delegation",
+        "agent_count": 3,
+        "complexity": "complex",
+        "conflict_level": "medium"
+      }
+    }
+  ],
+  "metadata": {
+    "total_examples": 25,
+    "scenarios_covered": [
+      "consensus_building",
+      "resource_allocation",
+      "conflict_resolution",
+      "task_delegation"
+    ],
+    "agents_involved": [
+      "performance",
+      "legal",
+      "operational",
+      "ethics",
+      "security"
+    ]
+  }
+}

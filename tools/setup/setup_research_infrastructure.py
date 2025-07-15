@@ -144,7 +144,7 @@ class ResearchInfrastructureSetup:
             async with httpx.AsyncClient() as client:
                 # Create constitutional compliance pipeline
                 response = await client.post(
-                    f"{self.research_service_url}/api/v1/automation/pipelines/constitutional-compliance"
+                    f"{self.research_service_url}/api/v1/automation/pipelines/constitutional-compliance"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 )
                 if response.status_code == 200:
                     logger.info("✅ Created constitutional compliance pipeline")
@@ -166,7 +166,7 @@ class ResearchInfrastructureSetup:
 
                 # Create performance monitoring pipeline
                 response = await client.post(
-                    f"{self.research_service_url}/api/v1/automation/pipelines/performance-monitoring"
+                    f"{self.research_service_url}/api/v1/automation/pipelines/performance-monitoring"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 )
                 if response.status_code == 200:
                     logger.info("✅ Created performance monitoring pipeline")

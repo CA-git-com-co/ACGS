@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 #
 # ACGS Enterprise Monitoring Stack Startup Script
@@ -70,8 +72,8 @@ create_directories() {
     local dirs=(
         "$PROJECT_ROOT/infrastructure/monitoring/config"
         "$PROJECT_ROOT/infrastructure/monitoring/rules"
-        "$PROJECT_ROOT/infrastructure/monitoring/grafana/provisioning/datasources"
-        "$PROJECT_ROOT/infrastructure/monitoring/grafana/provisioning/dashboards"
+        "$PROJECT_ROOT/infrastructure/monitoring/grafana/provisioning/datasources"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        "$PROJECT_ROOT/infrastructure/monitoring/grafana/provisioning/dashboards"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         "$PROJECT_ROOT/data/prometheus"
         "$PROJECT_ROOT/data/grafana"
         "$PROJECT_ROOT/data/alertmanager"
@@ -191,7 +193,7 @@ check_service_status() {
 # Main function
 main() {
     echo "🚀 ACGS Enterprise Monitoring Stack Startup"
-    echo "==========================================="
+    echo "==========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     
     check_prerequisites

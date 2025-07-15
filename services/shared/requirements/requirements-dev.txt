@@ -4,10 +4,10 @@
 -r requirements-test.txt
 
 # Code Quality
-black>=24.0.0
+black>=24.3.0
 isort>=5.13.0
-ruff>=0.3.0
-mypy>=1.9.0
+ruff>=0.8.4
+mypy>=1.13.0
 bandit>=1.7.0
 
 # Development Tools

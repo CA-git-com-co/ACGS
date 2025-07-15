@@ -17,9 +17,9 @@ AVAILABLE_LLMS = [
     "claude-3-5-sonnet-20240620",
     "claude-3-5-sonnet-20241022",
     # OpenAI models
-    "gpt-4o-mini-2024-07-18",
-    "gpt-4o-2024-05-13",
-    "gpt-4o-2024-08-06",
+    "gemini-2.0-flash-mini-2024-07-18",
+    "gemini-2.0-flash-2024-05-13",
+    "gemini-2.0-flash-2024-08-06",
     "o1-preview-2024-09-12",
     "o1-mini-2024-09-12",
     "o1-2024-12-17",
@@ -27,17 +27,17 @@ AVAILABLE_LLMS = [
     # OpenRouter models
     "llama3.1-405b",
     # Anthropic Claude models via Amazon Bedrock
-    "bedrock/anthropic.claude-3-sonnet-20240229-v1:0",
+    "bedrock/anthropic.claude-3.5-sonnet-20240229-v1:0",
     "bedrock/anthropic.claude-3-5-sonnet-20240620-v1:0",
     "bedrock/anthropic.claude-3-5-sonnet-20241022-v2:0",
     "bedrock/anthropic.claude-3-haiku-20240307-v1:0",
-    "bedrock/anthropic.claude-3-opus-20240229-v1:0",
+    "bedrock/anthropic.claude-3.5-sonnet-20240229-v1:0",
     "bedrock/us.anthropic.claude-3-5-sonnet-20241022-v2:0",
     # Anthropic Claude models Vertex AI
-    "vertex_ai/claude-3-opus@20240229",
+    "vertex_ai/claude-3.5-sonnet@20240229",
     "vertex_ai/claude-3-5-sonnet@20240620",
     "vertex_ai/claude-3-5-sonnet-v2@20241022",
-    "vertex_ai/claude-3-sonnet@20240229",
+    "vertex_ai/claude-3.5-sonnet@20240229",
     "vertex_ai/claude-3-haiku@20240307",
     # DeepSeek models
     "deepseek-chat",
@@ -108,9 +108,9 @@ def get_batch_responses_from_llm(
         msg_history = []
 
     if model in [
-        "gpt-4o-2024-05-13",
-        "gpt-4o-mini-2024-07-18",
-        "gpt-4o-2024-08-06",
+        "gemini-2.0-flash-2024-05-13",
+        "gemini-2.0-flash-mini-2024-07-18",
+        "gemini-2.0-flash-2024-08-06",
     ]:
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
@@ -226,7 +226,7 @@ def get_response_from_llm(
                 ],
             }
         ]
-    elif model.startswith("gpt-4o-"):
+    elif model.startswith("gemini-2.0-flash-"):
         new_msg_history = msg_history + [{"role": "user", "content": msg}]
         response = client.chat.completions.create(
             model=model,

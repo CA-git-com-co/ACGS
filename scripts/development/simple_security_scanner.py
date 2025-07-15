@@ -356,7 +356,7 @@ class SimpleSecurityScanner:
                 self.results["summary"]["high_findings"] += 1
 
             # Check for exposed configuration files
-            sensitive_files = [".env", "config.json", "secrets.json", "private.key"]
+            sensitive_files = ["config/environments/development.env", "config.json", "secrets.json", "private.key"]
 
             for sensitive_file in sensitive_files:
                 for found_file in self.project_root.rglob(sensitive_file):

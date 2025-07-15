@@ -4,6 +4,13 @@ Enhanced Performance Optimizer for ACGS Services
 Provides comprehensive performance optimization including O(1) lookups,
 advanced caching strategies, connection pooling, and real-time monitoring.
 """
+"""
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+"""
+
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 import asyncio
 import hashlib

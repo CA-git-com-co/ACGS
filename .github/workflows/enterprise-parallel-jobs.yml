@@ -703,7 +703,7 @@ jobs:
           path: |
             test-results-${{ matrix.service }}.xml
             coverage.xml
-            htmlcov/
+            reports/coverage/htmlcov/
           retention-days: 7
 
   # Enterprise Results Aggregation

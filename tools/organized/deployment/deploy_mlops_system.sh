@@ -520,7 +520,7 @@ main() {
     log "Environment: $environment"
     log "Constitutional Hash: $CONSTITUTIONAL_HASH"
     log "Timestamp: $TIMESTAMP"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Set environment variable
     export ENVIRONMENT="$environment"
@@ -546,7 +546,7 @@ main() {
     generate_deployment_report
     
     log_success "🎉 ACGS-PGP MLOps System Deployment Complete!"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Environment: $environment"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Storage Root: $MLOPS_STORAGE_ROOT"

@@ -74,15 +74,15 @@ class ApplicationsStructureValidator:
     def test_shared_components(self) -> bool:
         """Test that shared components were moved correctly"""
         expected_shared_files = [
-            "applications/shared/components/dashboard/DashboardCards.tsx",
-            "applications/shared/components/layout/CommandBar.tsx",
-            "applications/shared/components/layout/Sidebar.tsx",
-            "applications/shared/components/layout/ThemeToggle.tsx",
-            "applications/shared/components/ui/Button.tsx",
+            "applications/shared/components/dashboard/DashboardCards.tsx",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "applications/shared/components/layout/CommandBar.tsx",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "applications/shared/components/layout/Sidebar.tsx",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "applications/shared/components/layout/ThemeToggle.tsx",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "applications/shared/components/ui/Button.tsx",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "applications/shared/components/ui/Card.tsx",
             "applications/shared/components/ui/Input.tsx",
             "applications/shared/hooks/useKeyboard.ts",
-            "applications/shared/hooks/useLocalStorage.ts",
+            "applications/shared/hooks/useLocalStorage.ts",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "applications/shared/types/governance.ts",
         ]
 

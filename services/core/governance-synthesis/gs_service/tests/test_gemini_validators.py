@@ -21,13 +21,19 @@ import os
 import unittest
 from unittest.mock import AsyncMock, patch
 
-from services.core.governance_synthesis.gs_service.app.core.heterogeneous_validator import (
+from services.core.governance-synthesis.gs_service.app.core.heterogeneous_validator import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     GovernanceContext,
     ValidationResult,
 )
 
 # Import the validators to test
-from services.core.governance_synthesis.gs_service.app.validators.gemini_validators import (
+from services.core.governance-synthesis.gs_service.app.validators.gemini_validators import (
     GeminiFlashValidator,
     GeminiProValidator,
 )
@@ -285,7 +291,7 @@ class TestHeterogeneousValidatorIntegration(unittest.TestCase):
     @patch.dict(os.environ, {"GEMINI_API_KEY": "test_api_key"})
     def test_gemini_validators_registration(self):
         """Test that Gemini validators are properly registered."""
-        from services.core.governance_synthesis.gs_service.app.core.heterogeneous_validator import (
+        from services.core.governance-synthesis.gs_service.app.core.heterogeneous_validator import (
             HeterogeneousValidator,
         )
 
@@ -302,7 +308,7 @@ class TestHeterogeneousValidatorIntegration(unittest.TestCase):
     @patch.dict(os.environ, {}, clear=True)
     def test_graceful_degradation_without_api_key(self):
         """Test graceful degradation when Gemini API key is not available."""
-        from services.core.governance_synthesis.gs_service.app.core.heterogeneous_validator import (
+        from services.core.governance-synthesis.gs_service.app.core.heterogeneous_validator import (
             HeterogeneousValidator,
         )
 

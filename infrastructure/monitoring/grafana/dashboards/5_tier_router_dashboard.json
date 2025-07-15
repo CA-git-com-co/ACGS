@@ -1,0 +1,167 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "5-Tier Hybrid Inference Router Dashboard",
+    "tags": ["acgs", "router", "constitutional-ai"],
+    "style": "dark",
+    "timezone": "browser",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Router Health Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "router_health_status{constitutional_hash=\"cdd01ef066bc6cf2\"}",
+            "legendFormat": "{{service}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "id": 2,
+        "title": "Requests per Tier",
+        "type": "piechart",
+        "targets": [
+          {
+            "expr": "rate(router_requests_total{constitutional_hash=\"cdd01ef066bc6cf2\"}[5m])",
+            "legendFormat": "{{tier}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0}
+      },
+      {
+        "id": 3,
+        "title": "Latency by Tier",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, rate(router_latency_seconds_bucket{constitutional_hash=\"cdd01ef066bc6cf2\"}[5m]))",
+            "legendFormat": "{{tier}} P95"
+          },
+          {
+            "expr": "histogram_quantile(0.99, rate(router_latency_seconds_bucket{constitutional_hash=\"cdd01ef066bc6cf2\"}[5m]))",
+            "legendFormat": "{{tier}} P99"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Latency (seconds)",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 8}
+      },
+      {
+        "id": 4,
+        "title": "Performance Targets Met",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "router_performance_target_met{constitutional_hash=\"cdd01ef066bc6cf2\"}",
+            "legendFormat": "{{tier}} {{target_type}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "green", "value": 1}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 16}
+      },
+      {
+        "id": 5,
+        "title": "Constitutional Compliance Score",
+        "type": "gauge",
+        "targets": [
+          {
+            "expr": "router_constitutional_compliance_score{constitutional_hash=\"cdd01ef066bc6cf2\"}",
+            "legendFormat": "{{tier}}"
+          }
+        ],
+        "fieldConfig": {
+          "defaults": {
+            "min": 0,
+            "max": 1,
+            "thresholds": {
+              "steps": [
+                {"color": "red", "value": 0},
+                {"color": "yellow", "value": 0.8},
+                {"color": "green", "value": 0.9}
+              ]
+            }
+          }
+        },
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 16}
+      },
+      {
+        "id": 6,
+        "title": "Cost per Request by Tier",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "router_cost_per_request_dollars{constitutional_hash=\"cdd01ef066bc6cf2\"}",
+            "legendFormat": "{{tier}}"
+          }
+        ],
+        "yAxes": [
+          {
+            "label": "Cost (USD)",
+            "min": 0
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 24}
+      },
+      {
+        "id": 7,
+        "title": "Tier Usage Distribution",
+        "type": "bargauge",
+        "targets": [
+          {
+            "expr": "router_tier_usage_total{constitutional_hash=\"cdd01ef066bc6cf2\"}",
+            "legendFormat": "{{tier}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 32}
+      }
+    ],
+    "time": {
+      "from": "now-1h",
+      "to": "now"
+    },
+    "refresh": "30s",
+    "annotations": {
+      "list": [
+        {
+          "name": "Constitutional Hash",
+          "datasource": "prometheus",
+          "enable": true,
+          "expr": "changes(router_health_status{constitutional_hash=\"cdd01ef066bc6cf2\"}[1h])",
+          "iconColor": "blue",
+          "titleFormat": "Constitutional Compliance Event"
+        }
+      ]
+    }
+  }
+}

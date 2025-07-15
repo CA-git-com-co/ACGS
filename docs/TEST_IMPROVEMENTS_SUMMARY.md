@@ -7,7 +7,7 @@
 
 ### ✅ Configuration Fixes
 - **JWT Secret Key Validation**: Modified `services/shared/utils.py` to allow default JWT secrets in testing environment
-- **Test Environment Configuration**: Created `config/test.env` with test-safe configuration values
+- **Test Environment Configuration**: Created `config/testconfig/environments/development.env` with test-safe configuration values
 - **Environment Detection**: Added automatic testing environment detection via `PYTEST_CURRENT_TEST` and `ENVIRONMENT` variables
 
 ### ✅ Import Issues Fixed
@@ -25,7 +25,7 @@
 
 - **Python Path Configuration**: Enhanced `conftest.py` to include additional paths:
   - Added `scripts/` and `tools/` directories to Python path
-  - Automatic test environment loading from `config/test.env`
+  - Automatic test environment loading from `config/testconfig/environments/development.env`
 
 ### ✅ Project Structure Fixes
 - **pytest.ini**: Created proper pytest configuration file
@@ -110,7 +110,7 @@ pip install coverage>=7.0.0 pytest-cov>=4.0.0
 ## 📝 Files Created/Modified
 
 ### New Files
-- `config/test.env` - Test environment configuration
+- `config/testconfig/environments/development.env` - Test environment configuration
 - `pytest.ini` - Pytest configuration
 - `requirements-missing.txt` - Missing dependencies list
 - Multiple `__init__.py` files for service directories

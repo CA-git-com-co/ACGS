@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Performance Test Setup
     outputs:
-      test_environment: ${{ steps.setup.outputs.environment }}
+      test_environment: ${{ steps.setup.outputsconfig/environments/development.environment }}
       base_url: ${{ steps.setup.outputs.base_url }}
     steps:
       - name: Check out repository

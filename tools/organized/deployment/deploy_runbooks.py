@@ -229,7 +229,7 @@ python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py health
 python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py restart
 
 # Constitutional compliance check
-curl -f http://localhost:8005/api/v1/governance/compliance/status
+curl -f http://localhost:8005/api/v1/governance/compliance/status  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Database connectivity test
 psql -h localhost -U acgs_user -d acgs_db -c "SELECT 1;"

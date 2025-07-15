@@ -69,7 +69,7 @@ metadata:
   namespace: cert-manager
 type: Opaque
 stringData:
-  api-token: 'CLOUDFLARE_API_TOKEN_PLACEHOLDER'
+  api-token: os.environ.get("AUTH_TOKEN")
 
 ---
 apiVersion: networking.k8s.io/v1

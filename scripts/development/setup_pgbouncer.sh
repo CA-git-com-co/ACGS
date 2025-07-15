@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 PgBouncer Setup Script
 # Phase 2 - Enterprise Scalability & Performance
@@ -71,8 +73,8 @@ sudo chown postgres:postgres "$PGBOUNCER_CONFIG_DIR/userlist.txt"
 
 # Generate proper password hashes for userlist.txt
 print_status "Generating password hashes..."
-ACGS_PASSWORD="acgs_password"
-POSTGRES_PASSWORD="postgres"
+ACGS_PASSWORD=os.environ.get("PASSWORD")
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
 
 # Generate MD5 hashes (format: md5 + md5(password + username))
 ACGS_HASH="md5$(echo -n "${ACGS_PASSWORD}acgs_user" | md5sum | cut -d' ' -f1)"
@@ -124,7 +126,7 @@ fi
 
 # Test connection through PgBouncer
 print_status "Testing connection through PgBouncer..."
-if PGPASSWORD="$ACGS_PASSWORD" psql -h localhost -p 6432 -U acgs_user -d acgs_db -c "SELECT 1;" > /dev/null 2>&1; then
+if PGPASSWORD=os.environ.get("PASSWORD") psql -h localhost -p 6432 -U acgs_user -d acgs_db -c "SELECT 1;" > /dev/null 2>&1; then
     print_success "PgBouncer connection test successful"
 else
     print_warning "PgBouncer connection test failed - this may be normal if database doesn't exist yet"

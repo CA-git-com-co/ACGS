@@ -76,8 +76,8 @@ ACGS-2/
 5. **Configure environment variables**:
 
    ```bash
-   cp config/test.env .env
-   # Edit .env with your API keys and database URLs
+   cp config/testconfig/environments/development.env config/environments/development.env
+   # Edit config/environments/development.env with your API keys and database URLs
    ```
 
 5. **Build Anchor programs**:

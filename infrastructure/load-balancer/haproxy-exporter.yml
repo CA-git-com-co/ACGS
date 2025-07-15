@@ -5,7 +5,7 @@ haproxy_exporter:
   - 2,3,4,5,6,7,8,9,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44
   haproxy_timeout: 5s
   haproxy_username: admin
-  haproxy_password: acgs_haproxy_admin_2024
+  haproxy_password: os.environ.get("PASSWORD")
   web_listen_address: :9101
   web_telemetry_path: /metrics
   log_level: info
@@ -64,7 +64,7 @@ docker_service:
   - --log.level=info
   environment:
   - HAPROXY_USERNAME=admin
-  - HAPROXY_PASSWORD=acgs_haproxy_admin_2024
+  - HAPROXY_PASSWORD=os.environ.get("PASSWORD")
   networks:
   - acgs-monitoring
   depends_on:

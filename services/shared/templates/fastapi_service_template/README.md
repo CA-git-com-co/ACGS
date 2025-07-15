@@ -44,7 +44,7 @@ SERVICE_DESCRIPTION = os.getenv("SERVICE_DESCRIPTION", "Your service description
 
 ### 3. Configure Environment Variables
 
-Create a `.env` file:
+Create a `config/environments/development.env` file:
 
 ```bash
 # Service identification
@@ -119,7 +119,7 @@ your-service-name/
 │       └── routes.py      # API route definitions
 ├── tests/                 # Service tests
 ├── requirements.txt       # Python dependencies
-├── .env                   # Environment configuration
+├── config/environments/development.env                   # Environment configuration
 └── README.md             # Service-specific documentation
 ```
 

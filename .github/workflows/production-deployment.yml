@@ -15,7 +15,7 @@ jobs:
         PRODUCTION_KEY: ${{ secrets.PRODUCTION_SSH_KEY }}
         PRODUCTION_USER: ${{ secrets.PRODUCTION_USER }}
       name: Deploy to production
-      run: ./scripts/cicd/deploy_production.sh
+      run: ./scripts/cicd/scripts/deployment/deploy_production.sh
     - name: Run comprehensive health checks
       run: ./scripts/cicd/health_check.sh production
       timeout-minutes: 10
@@ -23,7 +23,7 @@ jobs:
       run: python -m pytest tests/smoke/ -v --tb=short --env=production
     - if: failure()
       name: Rollback on failure
-      run: ./scripts/cicd/rollback_production.sh ${{ github.event.inputs.rollback_version
+      run: ./scripts/cicd/scripts/deployment/rollback_production.sh ${{ github.event.inputs.rollback_version
         }}
     timeout-minutes: 30
 name: ACGS-2 Production Deployment

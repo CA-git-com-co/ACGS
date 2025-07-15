@@ -41,7 +41,7 @@ metadata:
       access_by_lua_block {
         local config = ngx.shared.config
         local active_env = config:get("active-environment") or "blue"
-        ngx.var.environment = active_env
+        ngx.varconfig/environments/development.environment = active_env
         ngx.var.namespace = "acgs-" .. active_env
       }
 spec:

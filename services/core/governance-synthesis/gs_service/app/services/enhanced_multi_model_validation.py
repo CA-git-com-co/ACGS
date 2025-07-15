@@ -493,7 +493,7 @@ class EnhancedMultiModelValidator:
         self, query: str, context: ValidationContext, max_models: int
     ) -> list[str]:
         """Select optimal models based on context."""
-        available_models = ["gpt-4", "claude-3", "gemini-pro", "llama-2", "mistral-7b"]
+        available_models = ["gpt-4", "claude-3", "gemini-pro", "llama-2", "qwen3-4b"]
 
         if context.target_cluster:
             # Use cluster-based selection

@@ -94,7 +94,7 @@ class TestMultiTenantIsolation:
     def jwt_handler(self):
         """Create JWT handler for testing."""
         return MultiTenantJWTHandler(
-            secret_key="test_secret_key_for_compliance_testing", algorithm="HS256"
+            secret_key="test_secret_key_for_compliance_testing", algorithm="HS256"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
 
     @pytest.fixture
@@ -434,7 +434,7 @@ class TestMultiTenantIsolationStressTests:
 
         # Create JWT handler
         jwt_handler = MultiTenantJWTHandler(
-            secret_key="concurrent_test_secret", algorithm="HS256"
+            secret_key="concurrent_test_secret", algorithm="HS256"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
 
         # Generate tokens concurrently

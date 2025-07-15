@@ -50,7 +50,7 @@ class StagingDeploymentManager:
     - Rollback capabilities
     """
 
-    def __init__(self, staging_config_path: str = "config/environments/staging.env"):
+    def __init__(self, staging_config_path: str = "config/environments/stagingconfig/environments/development.env"):
         self.staging_config_path = staging_config_path
         self.deployment_results: list[DeploymentResult] = []
         self.feature_flags = {

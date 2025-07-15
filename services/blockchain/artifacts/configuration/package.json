@@ -1,0 +1,59 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
+  "name": "quantumagi_core",
+  "version": "0.1.0",
+  "description": "Quantumagi: On-Chain Constitutional Governance Framework for Solana",
+  "main": "index.js",
+  "scripts": {
+    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+    "test": "anchor test",
+    "build": "anchor build",
+    "deploy": "anchor deploy",
+    "clean": "anchor clean"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.29.0",
+    "@solana/web3.js": "^1.98.2",
+    "ioredis": "^5.6.1"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.0",
+    "@types/chai": "^4.3.20",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.0",
+    "mocha": "^11.6.0",
+    "prettier": "^2.6.2",
+    "ts-mocha": "^10.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "overrides": {
+    "serialize-javascript": ">=6.0.2"
+  },
+  "keywords": [
+    "solana",
+    "blockchain",
+    "governance",
+    "constitutional-ai",
+    "alphaevolve",
+    "acgs",
+    "prompt-governance"
+  ],
+  "author": "Quantumagi Team",
+  "license": "MIT",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "acgs": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "last_updated": "2025-07-02T20:21:23.127419+00:00"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@latest"
+}

@@ -20,7 +20,7 @@ from prometheus_client import (
     Info,
     generate_latest,
 )
-from shared.config.infrastructure_config import (
+from services.shared.config.infrastructure_config import (
     CONSTITUTIONAL_HASH,
     get_acgs_config,
     get_database_manager,

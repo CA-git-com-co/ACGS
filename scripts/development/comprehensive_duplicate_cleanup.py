@@ -99,7 +99,7 @@ class ComprehensiveDuplicateCleanup:
                 "node_modules/",
                 "target/debug/",
                 ".coverage",
-                "htmlcov/",
+                "reports/coverage/htmlcov/",
             ],
         }
 

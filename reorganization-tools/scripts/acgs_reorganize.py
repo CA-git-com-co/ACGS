@@ -118,7 +118,7 @@ class ACGSReorganizer:
                 name="acgs-infrastructure",
                 description="Infrastructure components (Docker, K8s, Terraform)",
                 paths=["infrastructure"],
-                additional_files=[".env.example", "docker-compose.yml"],
+                additional_files=["config/environments/developmentconfig/environments/example.env", "docker-compose.yml"],
             ),
             "acgs-tools": RepositoryConfig(
                 name="acgs-tools",

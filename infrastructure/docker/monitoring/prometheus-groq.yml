@@ -1,0 +1,238 @@
+# Prometheus Configuration for GroqCloud Policy Integration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'acgs-groq-policy'
+    constitutional_hash: 'cdd01ef066bc6cf2'
+
+rule_files:
+  - "/etc/prometheus/rules/groq-policy-alerts.yml"
+  - "/etc/prometheus/rules/acgs-core-alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # GroqCloud Policy Integration Service
+  - job_name: 'groq-policy-integration'
+    static_configs:
+      - targets: ['groq-policy-integration:9090']
+    metrics_path: '/metrics'
+    scrape_interval: 15s
+    scrape_timeout: 10s
+    honor_labels: true
+    honor_timestamps: true
+    params:
+      format: ['prometheus']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'groq_policy_.*'
+        target_label: service
+        replacement: 'groq-policy-integration'
+      - source_labels: [__name__]
+        regex: 'groq_cloud_.*'
+        target_label: service
+        replacement: 'groq-cloud-client'
+      - source_labels: [__name__]
+        regex: 'wasm_policy_.*'
+        target_label: service
+        replacement: 'wasm-policy-engine'
+
+  # GroqCloud Policy Integration Health Check
+  - job_name: 'groq-policy-health'
+    static_configs:
+      - targets: ['groq-policy-integration:8015']
+    metrics_path: '/health'
+    scrape_interval: 30s
+    scrape_timeout: 5s
+
+  # OPA with WASM Support
+  - job_name: 'opa'
+    static_configs:
+      - targets: ['opa:8181']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Redis Metrics
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # PostgreSQL Metrics
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # HAProxy Load Balancer
+  - job_name: 'haproxy'
+    static_configs:
+      - targets: ['haproxy:8404']
+    metrics_path: '/stats/prometheus'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # WASM Compiler Service
+  - job_name: 'wasm-compiler'
+    static_configs:
+      - targets: ['wasm-compiler:8181']
+    metrics_path: '/metrics'
+    scrape_interval: 60s
+    scrape_timeout: 10s
+
+  # Self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+
+  # Node Exporter (if available)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+# Recording rules for GroqCloud Policy Integration
+recording_rules:
+  - name: groq_policy_aggregations
+    interval: 30s
+    rules:
+      # Request rate aggregations
+      - record: groq_policy:request_rate_5m
+        expr: rate(groq_policy_requests_total[5m])
+      
+      - record: groq_policy:error_rate_5m
+        expr: rate(groq_policy_requests_total{status=~"5.."}[5m]) / rate(groq_policy_requests_total[5m])
+      
+      - record: groq_policy:success_rate_5m
+        expr: rate(groq_policy_requests_total{status=~"2.."}[5m]) / rate(groq_policy_requests_total[5m])
+
+      # Latency aggregations
+      - record: groq_policy:latency_p50_5m
+        expr: histogram_quantile(0.50, rate(groq_policy_request_duration_seconds_bucket[5m]))
+      
+      - record: groq_policy:latency_p95_5m
+        expr: histogram_quantile(0.95, rate(groq_policy_request_duration_seconds_bucket[5m]))
+      
+      - record: groq_policy:latency_p99_5m
+        expr: histogram_quantile(0.99, rate(groq_policy_request_duration_seconds_bucket[5m]))
+
+      # Compliance aggregations
+      - record: groq_policy:compliance_rate_5m
+        expr: rate(groq_policy_compliant_requests_total[5m]) / rate(groq_policy_requests_total[5m])
+      
+      - record: groq_policy:constitutional_compliance_rate_5m
+        expr: rate(groq_policy_constitutional_compliant_requests_total[5m]) / rate(groq_policy_requests_total[5m])
+
+      # Security aggregations
+      - record: groq_policy:jailbreak_rate_5m
+        expr: rate(groq_policy_jailbreak_attempts_total[5m])
+      
+      - record: groq_policy:human_escalation_rate_5m
+        expr: rate(groq_policy_human_escalations_total[5m]) / rate(groq_policy_requests_total[5m])
+
+      # Performance aggregations
+      - record: groq_policy:cache_hit_rate_5m
+        expr: rate(groq_policy_cache_hits_total[5m]) / (rate(groq_policy_cache_hits_total[5m]) + rate(groq_policy_cache_misses_total[5m]))
+      
+      - record: groq_policy:tokens_per_second_5m
+        expr: rate(groq_policy_tokens_generated_total[5m])
+
+      # WASM engine aggregations
+      - record: wasm_policy:evaluation_rate_5m
+        expr: rate(wasm_policy_evaluations_total[5m])
+      
+      - record: wasm_policy:compilation_rate_5m
+        expr: rate(wasm_policy_compilations_total[5m])
+      
+      - record: wasm_policy:avg_compilation_time_5m
+        expr: rate(wasm_policy_compilation_duration_seconds_sum[5m]) / rate(wasm_policy_compilations_total[5m])
+
+      # GroqCloud API aggregations
+      - record: groq_cloud:api_request_rate_5m
+        expr: rate(groq_cloud_api_requests_total[5m])
+      
+      - record: groq_cloud:api_error_rate_5m
+        expr: rate(groq_cloud_api_requests_total{status=~"5.."}[5m]) / rate(groq_cloud_api_requests_total[5m])
+      
+      - record: groq_cloud:api_latency_p95_5m
+        expr: histogram_quantile(0.95, rate(groq_cloud_api_duration_seconds_bucket[5m]))
+
+  - name: groq_policy_quality_metrics
+    interval: 60s
+    rules:
+      # Quality score aggregations
+      - record: groq_policy:avg_quality_score_5m
+        expr: avg_over_time(groq_policy_quality_score[5m])
+      
+      - record: groq_policy:avg_bias_score_5m
+        expr: avg_over_time(groq_policy_bias_score[5m])
+      
+      - record: groq_policy:safety_failure_rate_5m
+        expr: rate(groq_policy_safety_failures_total[5m]) / rate(groq_policy_requests_total[5m])
+
+  - name: groq_policy_sli_slo
+    interval: 30s
+    rules:
+      # Service Level Indicators (SLIs)
+      - record: groq_policy:sli_availability_5m
+        expr: (rate(groq_policy_requests_total{status!~"5.."}[5m]) / rate(groq_policy_requests_total[5m]))
+      
+      - record: groq_policy:sli_latency_5m
+        expr: (rate(groq_policy_request_duration_seconds_bucket{le="0.010"}[5m]) / rate(groq_policy_requests_total[5m]))
+      
+      - record: groq_policy:sli_compliance_5m
+        expr: (rate(groq_policy_compliant_requests_total[5m]) / rate(groq_policy_requests_total[5m]))
+
+      # Service Level Objectives (SLOs) - 99.9% availability, 95% < 10ms, 99% compliant
+      - record: groq_policy:slo_availability_target
+        expr: 0.999
+      
+      - record: groq_policy:slo_latency_target
+        expr: 0.95
+      
+      - record: groq_policy:slo_compliance_target
+        expr: 0.99
+
+      # Error budgets
+      - record: groq_policy:error_budget_availability
+        expr: 1 - groq_policy:sli_availability_5m
+      
+      - record: groq_policy:error_budget_latency
+        expr: 1 - groq_policy:sli_latency_5m
+      
+      - record: groq_policy:error_budget_compliance
+        expr: 1 - groq_policy:sli_compliance_5m
+
+# Storage configuration
+storage:
+  tsdb:
+    path: /prometheus
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true
+
+# Remote write configuration (optional, for long-term storage)
+# remote_write:
+#   - url: "https://prometheus-remote-write.example.com/api/v1/write"
+#     basic_auth:
+#       username: prometheus
+#       password: secret
+
+# Remote read configuration (optional)
+# remote_read:
+#   - url: "https://prometheus-remote-read.example.com/api/v1/read"

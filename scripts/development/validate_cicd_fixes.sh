@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 CI/CD Pipeline Validation Script
@@ -18,7 +20,7 @@ SOLANA_CLI_VERSION="1.18.22"
 ANCHOR_CLI_VERSION="0.29.0"
 
 echo -e "${BLUE}🔧 ACGS-1 CI/CD Pipeline Validation${NC}"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Function to print status
 print_status() {
@@ -171,7 +173,7 @@ print_status "success" "Performance targets documented"
 
 # Summary
 echo -e "\n${BLUE}Validation Summary${NC}"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 print_status "success" "CI/CD pipeline fixes validation completed"
 echo -e "${GREEN}✅ Ready for PR #117 merge validation${NC}"
 echo -e "${YELLOW}⚠️ Remember to test the actual CI/CD pipeline after pushing changes${NC}"

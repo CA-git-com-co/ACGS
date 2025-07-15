@@ -312,7 +312,7 @@ def main():
 
         # Generate summary
         summary = deployment.create_monitoring_summary(results)
-        summary_file = Path(args.workspace_path) / "MONITORING_DEPLOYMENT_SUMMARY.md"
+        summary_file = Path(args.workspace_path) / "MONITORING_docs/deployment/DEPLOYMENT_SUMMARY.md"
         with open(summary_file, "w") as f:
             f.write(summary)
 

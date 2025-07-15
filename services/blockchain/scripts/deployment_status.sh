@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Quantumagi Deployment Status Check
@@ -6,7 +8,7 @@
 set -e
 
 echo "🏛️ ACGS-1 Quantumagi Deployment Status Report"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Generated: $(date)"
 echo ""
 
@@ -135,7 +137,7 @@ else
 fi
 echo ""
 
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "🎯 Summary:"
 echo "   • All three programs successfully deployed to devnet"
 echo "   • Build artifacts and IDL files present"

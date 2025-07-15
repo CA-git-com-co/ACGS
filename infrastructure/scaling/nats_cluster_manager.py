@@ -332,7 +332,7 @@ cluster {{
         users: [
             {{
                 user: "acgs_service"
-                password: "constitutional_hash_{CONSTITUTIONAL_HASH}"
+                password: os.environ.get("PASSWORD")
                 permissions: {{
                     publish: ["constitutional.>", "service.>", "audit.>"]
                     subscribe: ["constitutional.>", "service.>", "audit.>"]
@@ -363,7 +363,7 @@ accounts {{
         users: [
             {{
                 user: "constitutional_validator"
-                password: "{CONSTITUTIONAL_HASH}"
+                password: os.environ.get("PASSWORD")
                 permissions: {{
                     publish: ["constitutional.>"]
                     subscribe: ["constitutional.>"]

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ACGS-1 Test Infrastructure Reconstruction
-=========================================
+=========================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 Comprehensive reconstruction of the test infrastructure to achieve >80% test coverage
 while organizing scattered test files into a standardized, maintainable structure.

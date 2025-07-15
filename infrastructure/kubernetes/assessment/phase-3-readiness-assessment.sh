@@ -470,9 +470,9 @@ EOF
     
     # Display certification summary
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🏆 ACGE Phase 3 Readiness Certification"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Overall Score: $overall_score%"
     echo "Readiness Level: $readiness_level"
     echo "Certification Status: $certification_status"

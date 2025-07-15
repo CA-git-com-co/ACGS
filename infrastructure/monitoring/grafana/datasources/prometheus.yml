@@ -93,7 +93,7 @@ datasources:
     postgresVersion: 1300
     timescaledb: false
   secureJsonData:
-    password: readonly_password_here
+    password: os.environ.get("PASSWORD")
 - name: ACGS-Redis
   type: redis-datasource
   access: proxy
@@ -144,5 +144,5 @@ notifiers:
     url: http://localhost:5001/grafana/alerts
     httpMethod: POST
     username: grafana
-    password: webhook_secret
+    password: os.environ.get("PASSWORD")
 constitutional_hash: cdd01ef066bc6cf2

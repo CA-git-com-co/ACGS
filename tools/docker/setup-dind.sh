@@ -215,8 +215,8 @@ EOF
 setup_environment_files() {
     log_info "Setting up environment files..."
     
-    # Create .env file for DinD
-    cat > "$DIND_DIR/.env" << EOF
+    # Create config/environments/development.env file for DinD
+    cat > "$DIND_DIR/config/environments/development.env" << EOF
 # ACGS Docker-in-Docker Environment Configuration
 COMPOSE_PROJECT_NAME=acgs-dind
 CONSTITUTIONAL_HASH=$CONSTITUTIONAL_HASH
@@ -224,13 +224,13 @@ CONSTITUTIONAL_HASH=$CONSTITUTIONAL_HASH
 # Database Configuration
 POSTGRES_DB=acgs
 POSTGRES_USER=acgs_user
-POSTGRES_PASSWORD=acgs_secure_password
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
 
 # Redis Configuration
-REDIS_PASSWORD=acgs_redis_password
+REDIS_PASSWORD=os.environ.get("PASSWORD")
 
 # Grafana Configuration
-GF_SECURITY_ADMIN_PASSWORD=acgs_grafana_admin
+GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
 
 # Docker Configuration
 DOCKER_TLS_VERIFY=1

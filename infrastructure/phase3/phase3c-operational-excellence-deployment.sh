@@ -628,7 +628,7 @@ generate_operational_report() {
         echo "Phase: $PHASE"
         echo "MTTD Target: $MTTD_TARGET_MINUTES minutes"
         echo "Scaling Target: ${SCALING_TARGET_MULTIPLIER}x"
-        echo "=============================================="
+        echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Advanced Observability (Jaeger):"

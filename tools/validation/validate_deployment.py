@@ -229,7 +229,7 @@ class DeploymentValidator:
             "blockchain/package.json",
             "services/shared/config/service_registry.py",
             "infrastructure/docker/docker-compose.yml",
-            "config/environments/development.env",
+            "config/environments/developmentconfig/environments/development.env",
         ]
 
         missing_configs = []

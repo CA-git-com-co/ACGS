@@ -15,7 +15,13 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi import HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials
-from services.core.governance_synthesis.app.services.security_compliance import (
+from services.core.governance-synthesis.gs_service.app.services.security_compliance import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     AuditLogger,
     InputValidator,
     JWTManager,

@@ -50,9 +50,9 @@ class DocumentationPathUpdater:
             "services/core/evolutionary-computation/": "services/core/evolutionary-computation/",
             "services/platform/authentication/": "services/platform/authentication/",
             "services/platform/integrity/": "services/platform/integrity/",
-            "config/environments/production.env": "config/environments/production.env",
-            "config/environments/staging.env": "config/environments/staging.env",
-            "config/environments/development.env": "config/environments/development.env",
+            "config/environments/productionconfig/environments/development.env": "config/environments/productionconfig/environments/development.env",
+            "config/environments/stagingconfig/environments/development.env": "config/environments/stagingconfig/environments/development.env",
+            "config/environments/developmentconfig/environments/development.env": "config/environments/developmentconfig/environments/development.env",
         }
 
         # File patterns to scan

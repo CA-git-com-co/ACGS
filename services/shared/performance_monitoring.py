@@ -638,7 +638,56 @@ class PerformanceMonitor:
         self.system_robustness_history = deque(maxlen=1000)
         self.global_alerts = []
 
+        # For test compatibility
+        self.latency_records = []
+        self.throughput_records = []
+
         logger.info("Enhanced performance monitor with CARMA robustness initialized")
+
+    def record_latency(self, operation: str, latency_ms: float):
+        """
+        Record latency measurement for an operation.
+
+        Args:
+            operation: Operation name
+            latency_ms: Latency in milliseconds
+        """
+        self.latency_records.append({
+            "operation": operation,
+            "latency_ms": latency_ms,
+            "timestamp": time.time(),
+            "constitutional_hash": CONSTITUTIONAL_HASH
+        })
+
+    def record_throughput(self, service: str, throughput_rps: float):
+        """
+        Record throughput measurement for a service.
+
+        Args:
+            service: Service name
+            throughput_rps: Throughput in requests per second
+        """
+        self.throughput_records.append({
+            "service": service,
+            "throughput_rps": throughput_rps,
+            "timestamp": time.time(),
+            "constitutional_hash": CONSTITUTIONAL_HASH
+        })
+
+    def get_metrics(self) -> dict[str, Any]:
+        """
+        Get current performance metrics.
+
+        Returns:
+            Dictionary containing current metrics
+        """
+        return {
+            "latency_records": len(self.latency_records),
+            "throughput_records": len(self.throughput_records),
+            "performance_targets": self.performance_targets,
+            "constitutional_hash": CONSTITUTIONAL_HASH,
+            "services_monitored": len(self.service_metrics)
+        }
 
     def register_service(self, service_name: str) -> ServiceMetrics:
         """

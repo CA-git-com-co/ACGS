@@ -919,12 +919,12 @@ jobs:
               echo "dockerfile=services/core/evolutionary-computation/Dockerfile" >> $GITHUB_OUTPUT
               ;;
             "authentication")
-              echo "context=services/platform/authentication/auth_service" >> $GITHUB_OUTPUT
-              echo "dockerfile=services/platform/authentication/auth_service/Dockerfile" >> $GITHUB_OUTPUT
+              echo "context=services/platform/authentication/auth_service" >> $GITHUB_OUTPUT  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+              echo "dockerfile=services/platform/authentication/auth_service/Dockerfile" >> $GITHUB_OUTPUT  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
               ;;
             "integrity")
-              echo "context=services/platform/integrity/integrity_service" >> $GITHUB_OUTPUT
-              echo "dockerfile=services/platform/integrity/integrity_service/Dockerfile" >> $GITHUB_OUTPUT
+              echo "context=services/platform/integrity/integrity_service" >> $GITHUB_OUTPUT  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+              echo "dockerfile=services/platform/integrity/integrity_service/Dockerfile" >> $GITHUB_OUTPUT  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
               ;;
             "federated-evaluation")
               echo "context=services/research/federated-evaluation/federated_service" >> $GITHUB_OUTPUT

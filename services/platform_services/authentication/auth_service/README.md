@@ -58,7 +58,7 @@ The Authentication Service is a production-grade microservice that provides comp
 
 ### Environment Variables
 
-Create `.env` file with the following configuration:
+Create `config/environments/development.env` file with the following configuration:
 
 ```bash
 # Database Configuration
@@ -124,8 +124,8 @@ createdb acgs_auth
 alembic upgrade head
 
 # 3. Configure environment
-cp .env.example .env
-# Edit .env with your configuration
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# Edit config/environments/development.env with your configuration
 
 # 4. Start service
 uv run uvicorn main:app --reload --port 8000
@@ -136,7 +136,7 @@ uv run uvicorn main:app --reload --port 8000
 ```bash
 # Using Docker
 docker build -t acgs-auth-service .
-docker run -p 8000:8000 --env-file .env acgs-auth-service
+docker run -p 8000:8000 --env-file config/environments/development.env acgs-auth-service
 
 # Using systemd
 sudo cp auth-service.service /etc/systemd/system/
@@ -363,4 +363,4 @@ redis-cli keys "session:*" | wc -l
 - **Health Check**: http://localhost:8000/health
 - **Interactive API Docs**: http://localhost:8000/docs
 - **Logs**: `/logs/auth_service.log`
-- **Configuration**: `services/platform/authentication/auth_service/.env`
+- **Configuration**: `services/platform/authentication/auth_service/config/environments/development.env`

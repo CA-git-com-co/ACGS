@@ -6,16 +6,17 @@ Optimized connection pooling for PostgreSQL, Redis, and other services.
 """
 
 import asyncio
+import contextlib
 import logging
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, AsyncContextManager
 
-import aioredis
+import redis.asyncio as aioredis
 import asyncpg
-from shared.resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
-from shared.resilience.retry import retry_with_exponential_backoff
+from services.shared.resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
+from services.shared.resilience.retry import retry_with_exponential_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -502,7 +503,7 @@ def get_connection_pool(name: str) -> ConnectionPool | None:
 
 
 # Convenience context managers
-@asyncio.contextmanager
+@contextlib.asynccontextmanager
 async def get_postgres_connection(
     pool_name: str,
 ) -> AsyncContextManager[asyncpg.Connection]:
@@ -518,7 +519,7 @@ async def get_postgres_connection(
         await pool.release(connection)
 
 
-@asyncio.contextmanager
+@contextlib.asynccontextmanager
 async def get_redis_connection(pool_name: str) -> AsyncContextManager[aioredis.Redis]:
     """Context manager for Redis connections."""
     pool = get_connection_pool(pool_name)

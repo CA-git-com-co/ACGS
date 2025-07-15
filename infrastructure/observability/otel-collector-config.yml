@@ -102,7 +102,7 @@ processors:
       - key: constitutional.hash
         value: "cdd01ef066bc6cf2"
         action: upsert
-      - key: service.environment
+      - key: serviceconfig/environments/development.environment
         value: "production"
         action: upsert
       - key: service.platform

@@ -336,7 +336,7 @@ async def list_model_clusters(
             ModelCluster.FACTUAL_ANALYSIS.value: {
                 "name": "Factual Analysis",
                 "description": "Factual verification and data analysis",
-                "optimal_models": ["gemini-pro", "llama-2", "mistral-7b"],
+                "optimal_models": ["gemini-pro", "llama-2", "qwen3-4b"],
                 "use_cases": [
                     "Fact checking",
                     "Data validation",

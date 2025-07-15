@@ -124,7 +124,7 @@ services:
     - POSTGRES_PASSWORD=acgs123
     - POSTGRES_REPLICATION_MODE=master
     - POSTGRES_REPLICATION_USER=replicator
-    - POSTGRES_REPLICATION_PASSWORD=replicator123
+    - POSTGRES_REPLICATION_PASSWORD=os.environ.get("PASSWORD")
     ports:
     - 5432:5432
     volumes:
@@ -147,7 +147,7 @@ services:
     - POSTGRES_MASTER_SERVICE=postgresql-primary
     - POSTGRES_REPLICATION_MODE=slave
     - POSTGRES_REPLICATION_USER=replicator
-    - POSTGRES_REPLICATION_PASSWORD=replicator123
+    - POSTGRES_REPLICATION_PASSWORD=os.environ.get("PASSWORD")
     - POSTGRES_MASTER_PORT_NUMBER=5432
     ports:
     - 5433:5432
@@ -275,7 +275,7 @@ services:
     command: server /data --console-address ":9001"
     environment:
     - MINIO_ROOT_USER=acgs
-    - MINIO_ROOT_PASSWORD=acgs123456
+    - MINIO_ROOT_PASSWORD=os.environ.get("PASSWORD")
     ports:
     - 9000:9000
     - 9001:9001

@@ -1,0 +1,1353 @@
+{
+  "dataset_type": "performance_optimization",
+  "description": "Performance optimization training examples for ACGS performance targets",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "id": "perf_opt_demo_0000",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 46.22,
+            "throughput_rps": 221.2,
+            "memory_usage_percent": 91.5,
+            "cache_hit_rate": 0.835
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "kubernetes",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "120% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 13.46,
+          "throughput_rps": 536.5,
+          "memory_usage_percent": 55.2
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 2.8,
+          "constitutional_compliance": 0.968
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 46.22,
+        "target_p99": 5.0,
+        "complexity": "high"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0001",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 20.04,
+            "throughput_rps": 293.1,
+            "memory_usage_percent": 91.5,
+            "cache_hit_rate": 0.713
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "docker",
+            "load_pattern": "bursty"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "161% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 3.68,
+          "throughput_rps": 1279.1,
+          "memory_usage_percent": 54.9
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 9.6,
+          "constitutional_compliance": 0.995
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 20.04,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0002",
+      "input": {
+        "optimization_request": {
+          "type": "latency_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 88.84,
+            "throughput_rps": 133.9,
+            "memory_usage_percent": 66.7,
+            "cache_hit_rate": 0.642
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "cloud",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "latency_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "276% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 42.89,
+          "throughput_rps": 217.7,
+          "memory_usage_percent": 58.2
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 7.3,
+          "constitutional_compliance": 0.99
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "latency_optimization",
+        "baseline_p99": 88.84,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0003",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 93.71,
+            "throughput_rps": 380.8,
+            "memory_usage_percent": 73.9,
+            "cache_hit_rate": 0.861
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "kubernetes",
+            "load_pattern": "seasonal"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "298% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 26.26,
+          "throughput_rps": 1127.2,
+          "memory_usage_percent": 58.9
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 7.5,
+          "constitutional_compliance": 0.991
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 93.71,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0004",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 67.02,
+            "throughput_rps": 316.3,
+            "memory_usage_percent": 93.1,
+            "cache_hit_rate": 0.658
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "kubernetes",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "109% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 33.27,
+          "throughput_rps": 1533.5,
+          "memory_usage_percent": 70.3
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 4.9,
+          "constitutional_compliance": 0.961
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 67.02,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0005",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 65.07,
+            "throughput_rps": 404.4,
+            "memory_usage_percent": 85.2,
+            "cache_hit_rate": 0.839
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "kubernetes",
+            "load_pattern": "seasonal"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "140% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 7.54,
+          "throughput_rps": 1194.8,
+          "memory_usage_percent": 62.4
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 2.9,
+          "constitutional_compliance": 0.985
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 65.07,
+        "target_p99": 5.0,
+        "complexity": "medium"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0006",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 56.64,
+            "throughput_rps": 417.3,
+            "memory_usage_percent": 73.5,
+            "cache_hit_rate": 0.763
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "docker",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "223% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 22.84,
+          "throughput_rps": 1384.5,
+          "memory_usage_percent": 61.7
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 8.4,
+          "constitutional_compliance": 0.973
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 56.64,
+        "target_p99": 5.0,
+        "complexity": "medium"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0007",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 63.41,
+            "throughput_rps": 185.1,
+            "memory_usage_percent": 80.0,
+            "cache_hit_rate": 0.692
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "docker",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "252% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 13.43,
+          "throughput_rps": 412.6,
+          "memory_usage_percent": 53.2
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 7.5,
+          "constitutional_compliance": 0.982
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 63.41,
+        "target_p99": 5.0,
+        "complexity": "high"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0008",
+      "input": {
+        "optimization_request": {
+          "type": "cache_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 71.29,
+            "throughput_rps": 301.2,
+            "memory_usage_percent": 72.5,
+            "cache_hit_rate": 0.694
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "cloud",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "cache_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "189% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 35.5,
+          "throughput_rps": 1180.2,
+          "memory_usage_percent": 63.6
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 2.8,
+          "constitutional_compliance": 0.996
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "cache_optimization",
+        "baseline_p99": 71.29,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0009",
+      "input": {
+        "optimization_request": {
+          "type": "latency_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 37.78,
+            "throughput_rps": 456.4,
+            "memory_usage_percent": 65.8,
+            "cache_hit_rate": 0.636
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "kubernetes",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "latency_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "219% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 8.34,
+          "throughput_rps": 2042.4,
+          "memory_usage_percent": 46.9
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 9.1,
+          "constitutional_compliance": 0.967
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "latency_optimization",
+        "baseline_p99": 37.78,
+        "target_p99": 5.0,
+        "complexity": "medium"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0010",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 87.39,
+            "throughput_rps": 386.5,
+            "memory_usage_percent": 65.1,
+            "cache_hit_rate": 0.647
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "cloud",
+            "load_pattern": "seasonal"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "115% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 13.93,
+          "throughput_rps": 1133.0,
+          "memory_usage_percent": 58.0
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 4.4,
+          "constitutional_compliance": 0.981
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 87.39,
+        "target_p99": 5.0,
+        "complexity": "high"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0011",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 28.82,
+            "throughput_rps": 465.0,
+            "memory_usage_percent": 78.6,
+            "cache_hit_rate": 0.606
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "docker",
+            "load_pattern": "bursty"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "270% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 12.81,
+          "throughput_rps": 919.2,
+          "memory_usage_percent": 68.6
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 5.7,
+          "constitutional_compliance": 0.963
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 28.82,
+        "target_p99": 5.0,
+        "complexity": "medium"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0012",
+      "input": {
+        "optimization_request": {
+          "type": "latency_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 11.04,
+            "throughput_rps": 117.1,
+            "memory_usage_percent": 62.5,
+            "cache_hit_rate": 0.87
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "kubernetes",
+            "load_pattern": "bursty"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "latency_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "187% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 1.73,
+          "throughput_rps": 227.1,
+          "memory_usage_percent": 48.8
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 4.9,
+          "constitutional_compliance": 0.987
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "latency_optimization",
+        "baseline_p99": 11.04,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0013",
+      "input": {
+        "optimization_request": {
+          "type": "cache_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 81.56,
+            "throughput_rps": 224.1,
+            "memory_usage_percent": 76.6,
+            "cache_hit_rate": 0.611
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "cloud",
+            "load_pattern": "seasonal"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "cache_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "182% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 14.68,
+          "throughput_rps": 618.1,
+          "memory_usage_percent": 57.1
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 5.7,
+          "constitutional_compliance": 0.99
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "cache_optimization",
+        "baseline_p99": 81.56,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0014",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 65.9,
+            "throughput_rps": 184.6,
+            "memory_usage_percent": 92.4,
+            "cache_hit_rate": 0.794
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "cloud",
+            "load_pattern": "seasonal"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "253% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 16.57,
+          "throughput_rps": 564.4,
+          "memory_usage_percent": 63.4
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 5.6,
+          "constitutional_compliance": 0.959
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 65.9,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0015",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 55.07,
+            "throughput_rps": 134.3,
+            "memory_usage_percent": 63.0,
+            "cache_hit_rate": 0.621
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "kubernetes",
+            "load_pattern": "seasonal"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "255% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 25.34,
+          "throughput_rps": 288.0,
+          "memory_usage_percent": 48.9
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 4.4,
+          "constitutional_compliance": 0.96
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 55.07,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0016",
+      "input": {
+        "optimization_request": {
+          "type": "latency_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 69.97,
+            "throughput_rps": 499.0,
+            "memory_usage_percent": 67.3,
+            "cache_hit_rate": 0.668
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "kubernetes",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "latency_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "287% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 11.19,
+          "throughput_rps": 2384.4,
+          "memory_usage_percent": 46.3
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 3.7,
+          "constitutional_compliance": 0.973
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "latency_optimization",
+        "baseline_p99": 69.97,
+        "target_p99": 5.0,
+        "complexity": "high"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0017",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 14.17,
+            "throughput_rps": 445.6,
+            "memory_usage_percent": 90.3,
+            "cache_hit_rate": 0.706
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "docker",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "89% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 3.37,
+          "throughput_rps": 701.8,
+          "memory_usage_percent": 56.7
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 6.6,
+          "constitutional_compliance": 0.983
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 14.17,
+        "target_p99": 5.0,
+        "complexity": "high"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0018",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 31.68,
+            "throughput_rps": 457.1,
+            "memory_usage_percent": 64.6,
+            "cache_hit_rate": 0.836
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "docker",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "136% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 11.82,
+          "throughput_rps": 1362.0,
+          "memory_usage_percent": 45.9
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 6.7,
+          "constitutional_compliance": 0.969
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 31.68,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0019",
+      "input": {
+        "optimization_request": {
+          "type": "cache_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 75.69,
+            "throughput_rps": 347.2,
+            "memory_usage_percent": 64.8,
+            "cache_hit_rate": 0.62
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "serverless",
+            "deployment": "cloud",
+            "load_pattern": "bursty"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "cache_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "159% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 19.97,
+          "throughput_rps": 820.0,
+          "memory_usage_percent": 47.2
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 8.8,
+          "constitutional_compliance": 0.955
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "cache_optimization",
+        "baseline_p99": 75.69,
+        "target_p99": 5.0,
+        "complexity": "medium"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0020",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 99.83,
+            "throughput_rps": 118.9,
+            "memory_usage_percent": 71.0,
+            "cache_hit_rate": 0.793
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "kubernetes",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "248% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 16.48,
+          "throughput_rps": 454.7,
+          "memory_usage_percent": 53.1
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 8.6,
+          "constitutional_compliance": 0.961
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 99.83,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0021",
+      "input": {
+        "optimization_request": {
+          "type": "latency_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 63.43,
+            "throughput_rps": 234.3,
+            "memory_usage_percent": 71.9,
+            "cache_hit_rate": 0.717
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "kubernetes",
+            "load_pattern": "bursty"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "latency_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "138% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 20.88,
+          "throughput_rps": 702.4,
+          "memory_usage_percent": 63.7
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 7.4,
+          "constitutional_compliance": 0.994
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "latency_optimization",
+        "baseline_p99": 63.43,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0022",
+      "input": {
+        "optimization_request": {
+          "type": "latency_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 69.56,
+            "throughput_rps": 214.9,
+            "memory_usage_percent": 77.3,
+            "cache_hit_rate": 0.745
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "kubernetes",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "latency_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing"
+          ],
+          "expected_improvement": "140% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 21.07,
+          "throughput_rps": 1043.0,
+          "memory_usage_percent": 66.5
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 5.0,
+          "constitutional_compliance": 0.957
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "latency_optimization",
+        "baseline_p99": 69.56,
+        "target_p99": 5.0,
+        "complexity": "medium"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0023",
+      "input": {
+        "optimization_request": {
+          "type": "memory_optimization",
+          "current_metrics": {
+            "p99_latency_ms": 67.55,
+            "throughput_rps": 124.6,
+            "memory_usage_percent": 87.7,
+            "cache_hit_rate": 0.822
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "monolithic",
+            "deployment": "cloud",
+            "load_pattern": "steady"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "memory_optimization_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "216% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 6.96,
+          "throughput_rps": 233.6,
+          "memory_usage_percent": 71.2
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 3.4,
+          "constitutional_compliance": 0.965
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "memory_optimization",
+        "baseline_p99": 67.55,
+        "target_p99": 5.0,
+        "complexity": "high"
+      }
+    },
+    {
+      "id": "perf_opt_demo_0024",
+      "input": {
+        "optimization_request": {
+          "type": "throughput_improvement",
+          "current_metrics": {
+            "p99_latency_ms": 90.6,
+            "throughput_rps": 346.4,
+            "memory_usage_percent": 60.8,
+            "cache_hit_rate": 0.723
+          },
+          "target_metrics": {
+            "p99_latency_ms": 5.0,
+            "throughput_rps": 100.0,
+            "memory_usage_percent": 85.0,
+            "cache_hit_rate": 0.85
+          },
+          "system_context": {
+            "architecture": "microservices",
+            "deployment": "cloud",
+            "load_pattern": "bursty"
+          }
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimization_strategy": {
+          "primary_approach": "throughput_improvement_focused_optimization",
+          "techniques": [
+            "caching_optimization",
+            "database_indexing",
+            "async_processing"
+          ],
+          "expected_improvement": "52% improvement"
+        },
+        "expected_improvements": {
+          "p99_latency_ms": 12.34,
+          "throughput_rps": 917.2,
+          "memory_usage_percent": 38.1
+        },
+        "performance_validation": {
+          "meets_targets": true,
+          "improvement_factor": 5.3,
+          "constitutional_compliance": 0.96
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "optimization_type": "throughput_improvement",
+        "baseline_p99": 90.6,
+        "target_p99": 5.0,
+        "complexity": "low"
+      }
+    }
+  ],
+  "metadata": {
+    "total_examples": 25,
+    "optimization_types": [
+      "memory_optimization",
+      "throughput_improvement",
+      "cache_optimization",
+      "latency_optimization"
+    ],
+    "target_p99_latency": 5.0,
+    "target_throughput": 100.0
+  }
+}

@@ -39,7 +39,7 @@ class KnowledgeBaseCLI:
                 port=self.db_config["DB_PORT"],
                 database=self.db_config["DB_NAME"],
                 user=self.db_config["DB_USER"],
-                password=self.db_config["DB_PASSWORD"],
+                password=os.environ.get("PASSWORD")DB_PASSWORD"],
             )
             return True
         except Exception as e:
@@ -383,7 +383,7 @@ def main():
         return
 
     # Load database configuration
-    config_path = args.config or (Path(__file__).parent.parent / ".env")
+    config_path = args.config or (Path(__file__).parent.parent / "config/environments/development.env")
     if config_path.exists():
         load_dotenv(config_path)
 

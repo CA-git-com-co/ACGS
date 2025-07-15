@@ -36,15 +36,15 @@ class TestOpenRouterIntegration:
         return mock_response
 
     def test_openrouter_provider_in_configs(self, ai_service):
-        """Test that OpenRouter provider is properly configured"""
-        assert ModelProvider.OPENROUTER in ai_service.model_configs
-        openrouter_config = ai_service.model_configs[ModelProvider.OPENROUTER]
+        """Test that Groq provider is properly configured (replacing OpenRouter)"""
+        assert ModelProvider.GROQ in ai_service.model_configs
+        groq_config = ai_service.model_configs[ModelProvider.GROQ]
 
         # Check that constitutional validation models are available
-        assert "constitutional_validation" in openrouter_config
+        assert "constitutional_validation" in groq_config
         assert (
-            "openrouter/cypher-alpha:free"
-            in openrouter_config["constitutional_validation"]
+            "llama-3.3-70b-versatile"
+            in groq_config["constitutional_validation"]
         )
 
     @patch.dict("os.environ", {"OPENROUTER_API_KEY": "test-key"})
@@ -74,10 +74,8 @@ class TestOpenRouterIntegration:
     async def test_constitutional_compliance_validation(
         self, ai_service, mock_openrouter_response
     ):
-        """Test constitutional compliance validation"""
-        with patch.object(ai_service, "openrouter_client") as mock_client:
-            mock_client.chat.completions.create.return_value = mock_openrouter_response
-
+        """Test constitutional compliance validation using Groq"""
+        with patch.object(ai_service, "_call_groq", return_value="Constitutional compliance analysis: The content appears compliant with ACGS principles. No violations detected."):
             response = await ai_service.validate_constitutional_compliance(
                 content="Agent decision to process user data",
                 context={"agent_id": "test-agent", "action": "data_processing"},
@@ -87,7 +85,7 @@ class TestOpenRouterIntegration:
                 response.content
                 == "Constitutional compliance analysis: The content appears compliant with ACGS principles. No violations detected."
             )
-            assert response.metadata["provider"] == ModelProvider.OPENROUTER
+            assert response.metadata["provider"] == ModelProvider.GROQ
 
             # Verify the API was called with correct parameters
             mock_client.chat.completions.create.assert_called_once()
@@ -100,10 +98,8 @@ class TestOpenRouterIntegration:
     async def test_governance_decision_analysis(
         self, ai_service, mock_openrouter_response
     ):
-        """Test governance decision analysis"""
-        with patch.object(ai_service, "openrouter_client") as mock_client:
-            mock_client.chat.completions.create.return_value = mock_openrouter_response
-
+        """Test governance decision analysis using Groq"""
+        with patch.object(ai_service, "_call_groq", return_value="Constitutional compliance analysis: The content appears compliant with ACGS principles. No violations detected."):
             decision = {
                 "type": "policy_update",
                 "description": "Update data retention policy",
@@ -119,10 +115,7 @@ class TestOpenRouterIntegration:
                 response.content
                 == "Constitutional compliance analysis: The content appears compliant with ACGS principles. No violations detected."
             )
-            assert response.metadata["provider"] == ModelProvider.OPENROUTER
-
-            # Verify the API was called
-            mock_client.chat.completions.create.assert_called_once()
+            assert response.metadata["provider"] == ModelProvider.GROQ
 
     @pytest.mark.asyncio
     async def test_agent_behavior_evaluation(

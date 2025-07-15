@@ -97,7 +97,7 @@ jobs:
         image: postgres:15-alpine
         env:
           POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
           POSTGRES_DB: acgs_test
         ports:
           - 5439:5432
@@ -124,14 +124,14 @@ jobs:
       - name: Verify infrastructure
         run: |
           # Test PostgreSQL connection
-          PGPASSWORD=test_password psql -h localhost -p 5439 -U test_user -d acgs_test -c "SELECT 1;"
+          PGPASSWORD=osconfig/environments/development.environ.get("PASSWORD")SELECT 1;"
           
           # Test Redis connection
           redis-cli -h localhost -p 6389 ping
 
       - name: Setup test database
         run: |
-          PGPASSWORD=test_password psql -h localhost -p 5439 -U test_user -d acgs_test -c "
+          PGPASSWORD=osconfig/environments/development.environ.get("PASSWORD")
             CREATE SCHEMA IF NOT EXISTS acgs_test;
             CREATE TABLE IF NOT EXISTS acgs_test.test_table (id SERIAL PRIMARY KEY, name VARCHAR(100));
           "

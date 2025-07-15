@@ -103,7 +103,7 @@ if __name__ == "__main__":
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        # test_token = "internal_service_token" # Placeholder token for integrity_service
+        # test_token = os.environ.get("AUTH_TOKEN") # Placeholder token for integrity_service
         # fetched_rule = await integrity_service_client.get_policy_rule_by_id(1, auth_token=test_token) # Assuming rule ID 1 exists
         # if fetched_rule:
         #     print(f"Fetched rule 1: {fetched_rule.rule_content[:30]}...")

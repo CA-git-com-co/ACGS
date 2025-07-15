@@ -21,7 +21,7 @@ from enum import Enum
 from typing import Any
 
 import structlog
-from shared.redis_client import ACGSRedisClient
+from services.shared.redis_client import ACGSRedisClient
 
 logger = structlog.get_logger(__name__)
 

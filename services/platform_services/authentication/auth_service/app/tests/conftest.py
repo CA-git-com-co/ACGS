@@ -11,14 +11,19 @@ from collections.abc import (  # AsyncGenerator for async fixture
 import pytest
 
 try:
-    from app.core.config import settings
-    from app.db.base_class import Base
-    from app.db.session import get_async_db
-    from app.main import app as fastapi_app  # Your FastAPI application, aliased
+    from services.platform_services.authentication.auth_service.app.core.config import settings
+    from services.platform_services.authentication.auth_service.app.db.base_class import Base
+    from services.platform_services.authentication.auth_service.app.db.session import get_async_db
+    from services.platform_services.authentication.auth_service.app.main import app as fastapi_app
 except ImportError:
     # Mock imports for testing when modules are not available
     class MockSettings:
         SQLALCHEMY_DATABASE_URI = "sqlite+aiosqlite:///./test_auth_app.db"
+        ACCESS_TOKEN_EXPIRE_MINUTES = 30
+        REFRESH_TOKEN_EXPIRE_DAYS = 7
+        SECRET_KEY = "test-secret-key"
+        ALGORITHM = "HS256"
+        ENVIRONMENT = "testing"
 
     settings = MockSettings()
 
@@ -43,7 +48,7 @@ from sqlalchemy.orm import sessionmaker
 
 # Override the database URL for tests.
 # Uses an in-memory SQLite database for testing.
-# TEST_ASYNC_DATABASE_URL can be set in env or .env.
+# TEST_ASYNC_DATABASE_URL can be set in env or config/environments/development.env.
 # Default: sqlite+aiosqlite:///./test_auth_app.db
 
 # Ensure test DB URL is set, default to in-memory SQLite.

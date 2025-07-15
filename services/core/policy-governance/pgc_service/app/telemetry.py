@@ -90,7 +90,7 @@ class TelemetryManager:
         )
         self.otlp_version = self.telemetry_config.get("otlp_version", "v1.37.0")
         self.service_name = self.telemetry_config.get("service_name", "pgc_service")
-        self.environment = self.telemetry_config.get("environment", "production")
+        selfconfig/environments/development.environment = self.telemetry_config.get("environment", "production")
         self.trace_sampling_ratio = self.telemetry_config.get(
             "trace_sampling_ratio",
             self.telemetry_config.get("traces_sample_rate", 0.1),
@@ -130,7 +130,7 @@ class TelemetryManager:
 
         logger.info(
             f"Setting up OpenTelemetry instrumentation (version {self.otlp_version}) "
-            f"for {self.service_name} in {self.environment} environment"
+            f"for {self.service_name} in {selfconfig/environments/development.environment} environment"
         )
 
         try:
@@ -139,7 +139,7 @@ class TelemetryManager:
                 {
                     ResourceAttributes.SERVICE_NAME: self.service_name,
                     ResourceAttributes.SERVICE_VERSION: self.otlp_version,
-                    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: self.environment,
+                    ResourceAttributes.DEPLOYMENT_ENVIRONMENT: selfconfig/environments/development.environment,
                 }
             )
 
@@ -178,7 +178,7 @@ class TelemetryManager:
             )
 
         # Add console exporter in development or as fallback
-        if self.environment == "development" or not OTLP_AVAILABLE:
+        if selfconfig/environments/development.environment == "development" or not OTLP_AVAILABLE:
             self.tracer_provider.add_span_processor(
                 BatchSpanProcessor(ConsoleSpanExporter())
             )
@@ -200,7 +200,7 @@ class TelemetryManager:
             metric_readers.append(PeriodicExportingMetricReader(otlp_metric_exporter))
 
         # Add console exporter in development or as fallback
-        if self.environment == "development" or not OTLP_AVAILABLE:
+        if selfconfig/environments/development.environment == "development" or not OTLP_AVAILABLE:
             metric_readers.append(
                 PeriodicExportingMetricReader(ConsoleMetricExporter())
             )

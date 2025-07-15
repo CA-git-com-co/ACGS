@@ -29,7 +29,7 @@ CLEANUP_PATTERNS = [
     "*.pyd",
     ".mypy_cache/",
     ".coverage",
-    "htmlcov/",
+    "reports/coverage/htmlcov/",
     ".tox/",
     ".cache/",
     "*.egg-info/",

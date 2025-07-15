@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ACGS-1 Comprehensive Codebase Cleanup and Reorganization
-========================================================
+========================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 This script performs a comprehensive cleanup and reorganization of the ACGS-1 codebase
 while preserving all critical functionality including:
@@ -254,7 +254,7 @@ class ACGSReorganizer:
 
             # Consolidate scattered configs
             config_patterns = [
-                "*.env*",
+                "*config/environments/development.env*",
                 "*config*.json",
                 "*config*.yaml",
                 "*config*.yml",

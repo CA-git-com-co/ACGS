@@ -31,7 +31,7 @@ done
 
 # Stop services
 echo "🛑 Stopping ACGS-2 services..."
-docker-compose -f docker-compose.production.yml down
+docker-compose -f config/docker/docker-compose.production.yml down
 
 # Restore database
 echo "🗄️ Restoring database..."
@@ -50,7 +50,7 @@ tar -xzf "$CONFIG_BACKUP" -C /
 
 # Start services
 echo "🚀 Starting ACGS-2 services..."
-docker-compose -f docker-compose.production.yml up -d
+docker-compose -f config/docker/docker-compose.production.yml up -d
 
 # Verify system health
 echo "🏥 Verifying system health..."

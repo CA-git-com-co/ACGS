@@ -150,7 +150,7 @@ async def constitutional_compliance_middleware(request: Request, call_next):
     # Add constitutional headers to request context
     request.state.constitutional_hash = CONSTITUTIONAL_HASH
     request.state.acge_enabled = ACGE_ENABLED
-    request.state.environment = ENVIRONMENT
+    request.stateconfig/environments/development.environment = ENVIRONMENT
     request.state.phase = PHASE
 
     try:

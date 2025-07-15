@@ -343,19 +343,21 @@ class SimpleTenantRepository:
 
     async def find_all(self, **filters):
         """Find all records for current tenant."""
-        query = text(f"SELECT * FROM {self.model_class.__tablename__}")
+        table_name = self.model_class.__tablename__
+        query = text("SELECT * FROM :table_name").bindparam(table_name=table_name)
         if filters:
             conditions = [f"{k} = :{k}" for k in filters]
             query = text(
-                f"SELECT * FROM {self.model_class.__tablename__} WHERE {' AND '.join(conditions)}"
-            )
+                "SELECT * FROM :table_name WHERE " + " AND ".join(conditions)
+            ).bindparam(table_name=table_name)
 
         result = await self.session.execute(query, filters)
         return result.fetchall()
 
     async def find_by_id(self, id: uuid.UUID):
         """Find record by ID within current tenant."""
-        query = text(f"SELECT * FROM {self.model_class.__tablename__} WHERE id = :id")
+        table_name = self.model_class.__tablename__
+        query = text("SELECT * FROM :table_name WHERE id = :id").bindparam(table_name=table_name)
         result = await self.session.execute(query, {"id": id})
         return result.fetchone()
 
@@ -374,9 +376,10 @@ class SimpleTenantRepository:
         # Build insert query dynamically
         columns = ", ".join(data.keys())
         placeholders = ", ".join(f":{k}" for k in data)
+        table_name = self.model_class.__tablename__
         query = text(
-            f"INSERT INTO {self.model_class.__tablename__} ({columns}) VALUES ({placeholders})"
-        )
+            "INSERT INTO :table_name (" + columns + ") VALUES (" + placeholders + ")"
+        ).bindparam(table_name=table_name)
 
         await self.session.execute(query, data)
         await self.session.commit()

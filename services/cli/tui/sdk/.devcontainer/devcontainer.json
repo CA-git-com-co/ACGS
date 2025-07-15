@@ -1,7 +1,7 @@
 // Constitutional Hash: cdd01ef066bc6cf2
 // Constitutional Hash: cdd01ef066bc6cf2
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/debian
+// README at: https://github.com/devcontainers/templates/tree/main/src/debian  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 {
   "name": "Development",
   "image": "mcr.microsoft.com/devcontainers/go:1.23-bookworm",

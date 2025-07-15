@@ -14,10 +14,16 @@ import time
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from services.core.constitutional_ai.ac_service.app.schemas import (
+from services.core.constitutional-ai.ac_service.app.schemas import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     ConstitutionalComplianceRequest,
 )
-from services.core.constitutional_ai.ac_service.app.services.constitutional_validation_service import (
+from services.core.constitutional-ai.ac_service.app.services.constitutional_validation_service import (
     CONSTITUTIONAL_HASH,
     ConstitutionalValidationService,
 )

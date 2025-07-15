@@ -204,10 +204,10 @@ test_deployment_operations() {
     
     # Test 9: Blue-Green Deployment Configuration
     log_test "Testing blue-green deployment configuration..."
-    if [[ -f "infrastructure/kubernetes/production/blue-green-deployment.sh" ]] && \
-       grep -q "acgs-production" "infrastructure/kubernetes/production/blue-green-deployment.sh" && \
-       grep -q "acgs-blue" "infrastructure/kubernetes/production/blue-green-deployment.sh" && \
-       grep -q "acgs-green" "infrastructure/kubernetes/production/blue-green-deployment.sh"; then
+    if [[ -f "infrastructure/kubernetes/production/blue-green-deployment.sh" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "acgs-production" "infrastructure/kubernetes/production/blue-green-deployment.sh" && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "acgs-blue" "infrastructure/kubernetes/production/blue-green-deployment.sh" && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "acgs-green" "infrastructure/kubernetes/production/blue-green-deployment.sh"; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "blue_green_deployment_configuration" "PASS"
     else
         record_test "blue_green_deployment_configuration" "FAIL"
@@ -215,9 +215,9 @@ test_deployment_operations() {
     
     # Test 10: Emergency Response Procedures
     log_test "Testing emergency response procedures..."
-    if [[ -f "infrastructure/kubernetes/operations/emergency-response.sh" ]] && \
-       grep -q "emergency_shutdown" "infrastructure/kubernetes/operations/emergency-response.sh" && \
-       grep -q "constitutional_violation_response" "infrastructure/kubernetes/operations/emergency-response.sh"; then
+    if [[ -f "infrastructure/kubernetes/operations/emergency-response.sh" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "emergency_shutdown" "infrastructure/kubernetes/operations/emergency-response.sh" && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "constitutional_violation_response" "infrastructure/kubernetes/operations/emergency-response.sh"; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "emergency_response_procedures" "PASS"
     else
         record_test "emergency_response_procedures" "FAIL"
@@ -265,8 +265,8 @@ test_monitoring_observability() {
     # Test 14: Prometheus Configuration
     log_test "Testing Prometheus configuration..."
     if [[ -f "infrastructure/kubernetes/prometheus.yaml" ]] && \
-       [[ -f "infrastructure/kubernetes/monitoring/prometheus-rules.yaml" ]] && \
-       grep -q "constitutional_compliance_score" "infrastructure/kubernetes/monitoring/prometheus-rules.yaml"; then
+       [[ -f "infrastructure/kubernetes/monitoring/prometheus-rules.yaml" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "constitutional_compliance_score" "infrastructure/kubernetes/monitoring/prometheus-rules.yaml"; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "prometheus_configuration" "PASS"
     else
         record_test "prometheus_configuration" "FAIL"
@@ -275,8 +275,8 @@ test_monitoring_observability() {
     # Test 15: Grafana Dashboard Configuration
     log_test "Testing Grafana dashboard configuration..."
     if [[ -f "infrastructure/kubernetes/grafana.yaml" ]] && \
-       [[ -f "infrastructure/kubernetes/monitoring/grafana-dashboard.json" ]] && \
-       grep -q "Constitutional Compliance Score" "infrastructure/kubernetes/monitoring/grafana-dashboard.json"; then
+       [[ -f "infrastructure/kubernetes/monitoring/grafana-dashboard.json" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "Constitutional Compliance Score" "infrastructure/kubernetes/monitoring/grafana-dashboard.json"; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "grafana_dashboard_configuration" "PASS"
     else
         record_test "grafana_dashboard_configuration" "FAIL"
@@ -284,9 +284,9 @@ test_monitoring_observability() {
     
     # Test 16: Health Monitoring System
     log_test "Testing health monitoring system..."
-    if [[ -f "infrastructure/kubernetes/operations/health-monitor.sh" ]] && \
-       grep -q "check_constitutional_compliance" "infrastructure/kubernetes/operations/health-monitor.sh" && \
-       grep -q "$CONSTITUTIONAL_HASH" "infrastructure/kubernetes/operations/health-monitor.sh"; then
+    if [[ -f "infrastructure/kubernetes/operations/health-monitor.sh" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "check_constitutional_compliance" "infrastructure/kubernetes/operations/health-monitor.sh" && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "$CONSTITUTIONAL_HASH" "infrastructure/kubernetes/operations/health-monitor.sh"; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "health_monitoring_system" "PASS"
     else
         record_test "health_monitoring_system" "FAIL"
@@ -348,9 +348,9 @@ test_load_testing_performance() {
     
     # Test 20: Load Testing Framework
     log_test "Testing load testing framework..."
-    if [[ -f "infrastructure/kubernetes/testing/comprehensive-load-test.sh" ]] && \
-       grep -q "constitutional_compliance_test" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" && \
-       grep -q "TARGET_RPS" "infrastructure/kubernetes/testing/comprehensive-load-test.sh"; then
+    if [[ -f "infrastructure/kubernetes/testing/comprehensive-load-test.sh" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "constitutional_compliance_test" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "TARGET_RPS" "infrastructure/kubernetes/testing/comprehensive-load-test.sh"; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "load_testing_framework" "PASS"
     else
         record_test "load_testing_framework" "FAIL"
@@ -359,13 +359,13 @@ test_load_testing_performance() {
     # Test 21: Performance Targets Definition
     log_test "Testing performance targets definition..."
     local targets_found=0
-    if grep -q "2.0" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" 2>/dev/null; then
+    if grep -q "2.0" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" 2>/dev/null; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((targets_found++))
     fi
-    if grep -q "1000" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" 2>/dev/null; then
+    if grep -q "1000" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" 2>/dev/null; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((targets_found++))
     fi
-    if grep -q "0.95" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" 2>/dev/null; then
+    if grep -q "0.95" "infrastructure/kubernetes/testing/comprehensive-load-test.sh" 2>/dev/null; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((targets_found++))
     fi
     
@@ -387,7 +387,7 @@ generate_test_report() {
         echo "Generated: $(date '+%Y-%m-%d %H:%M:%S')"
         echo "Test Duration: ${duration} seconds"
         echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
-        echo "========================================"
+        echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Test Summary:"

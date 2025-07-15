@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Monitoring Setup Script
@@ -200,7 +202,7 @@ install_grafana() {
     
     # Create Grafana values file
     cat > /tmp/grafana-values.yml << EOF
-adminPassword: "admin123"  # Change this in production
+adminPassword: os.environ.get("PASSWORD")  # Change this in production
 
 persistence:
   enabled: true
@@ -412,9 +414,9 @@ create_monitoring_dashboard() {
     log_info "Creating monitoring dashboard..."
     
     # Get Grafana admin password
-    GRAFANA_PASSWORD=$(kubectl get secret --namespace "$MONITORING_NAMESPACE" grafana -o jsonpath="{.data.admin-password}" | base64 --decode)
+    GRAFANA_PASSWORD=os.environ.get("PASSWORD")$MONITORING_NAMESPACE" grafana -o jsonpath="{.data.admin-password}" | base64 --decode)
     
-    log_info "Grafana admin password: $GRAFANA_PASSWORD"
+    log_info "Grafana admin password: os.environ.get("PASSWORD")
     log_info "Access Grafana at: http://grafana.acgs-pgp.local"
     log_info "Access Jaeger at: http://jaeger.acgs-pgp.local"
     

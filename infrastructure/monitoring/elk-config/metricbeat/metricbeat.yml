@@ -27,7 +27,7 @@ metricbeat.modules:
     by_memory: 5
   process.cmdline.cache.enabled: true
   process.cgroups.enabled: true
-  process.env.whitelist: []
+  processconfig/environments/development.env.whitelist: []
   process.include_cpu_ticks: false
   cpu.metrics:
   - percentages
@@ -118,7 +118,7 @@ metricbeat.modules:
   hosts:
   - http://elasticsearch-security:9200
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
 - module: logstash
   metricsets:
   - node
@@ -134,7 +134,7 @@ metricbeat.modules:
   hosts:
   - http://kibana-security:5601
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
 processors:
 - add_host_metadata:
     when.not.contains.tags: forwarded
@@ -152,14 +152,14 @@ output.elasticsearch:
   hosts:
   - elasticsearch-security:9200
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
   index: metricbeat-acgs-%{+yyyy.MM.dd}
   template.name: metricbeat-acgs
   template.pattern: metricbeat-acgs-*
 setup.kibana:
   host: kibana-security:5601
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
 setup.template.settings:
   index.number_of_shards: 1
   index.number_of_replicas: 0
@@ -181,7 +181,7 @@ monitoring.elasticsearch:
   hosts:
   - elasticsearch-security:9200
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
 http.enabled: true
 http.host: 0.0.0.0
 http.port: 5067

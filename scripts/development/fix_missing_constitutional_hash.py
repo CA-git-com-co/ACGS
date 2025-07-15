@@ -127,7 +127,7 @@ def find_config_files(repo_root: Path) -> List[Path]:
         ".cfg",  # Config files
         ".config",  # Config files
         ".properties",  # Properties files
-        ".env",  # Environment files
+        "config/environments/development.env",  # Environment files
         ".dockerignore",  # Docker files
         "Dockerfile",  # Docker files
         "docker-compose.yml",  # Docker compose

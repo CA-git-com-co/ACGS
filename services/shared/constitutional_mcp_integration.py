@@ -225,7 +225,7 @@ class ConstitutionalMCPIntegration:
                 tool=tool,
                 operation=operation,
                 result={"error": str(e)},
-                constitutional_validation=ConstitutionalValidationResult(
+                constitutional_validation=ConstitutionalValidationResult(  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                     is_valid=False,
                     operation_type=f"mcp_{tool.value}_{operation}",
                     escalation_required=True,

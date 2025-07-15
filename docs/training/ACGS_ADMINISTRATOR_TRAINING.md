@@ -124,7 +124,7 @@ docker compose logs constitutional-ai-service | grep "Constitutional Hash: cdd01
 ### Lab Exercise 2.1: Production Deployment
 ```bash
 # Practice deployment workflow
-./scripts/deploy_production.sh --dry-run
+./scripts/scripts/deployment/deploy_production.sh --dry-run
 ./scripts/validate_deployment.sh
 ./scripts/performance_test.sh
 ```
@@ -345,7 +345,7 @@ gunzip -t "${BACKUP_DIR}/acgs_db_${TIMESTAMP}.sql.gz"
 ```bash
 # Backup configurations
 tar -czf "/var/backups/acgs/config_${TIMESTAMP}.tar.gz" \
-  config/ docker-compose*.yml .env.production
+  config/ docker-compose*.yml config/environments/developmentconfig/environments/production.env.backup
 ```
 
 ### 6.2 Disaster Recovery
@@ -405,7 +405,7 @@ tar -czf "/var/backups/acgs/config_${TIMESTAMP}.tar.gz" \
 - [API Documentation](../api/README.md)
 
 ### Tools and Scripts
-- Production deployment scripts: `scripts/deploy_production.sh`
+- Production deployment scripts: `scripts/scripts/deployment/deploy_production.sh`
 - Monitoring setup: `scripts/setup_monitoring.py`
 - Health checks: `scripts/health_check.py`
 - Security audit: `scripts/security_audit.py`
@@ -427,7 +427,7 @@ tar -czf "/var/backups/acgs/config_${TIMESTAMP}.tar.gz" \
 - [API Documentation](../api/README.md)
 
 ### Tools and Scripts
-- Production deployment scripts: `scripts/deploy_production.sh`
+- Production deployment scripts: `scripts/scripts/deployment/deploy_production.sh`
 - Monitoring setup: `scripts/setup_monitoring.py`
 - Health checks: `scripts/health_check.py`
 - Security audit: `scripts/security_audit.py`

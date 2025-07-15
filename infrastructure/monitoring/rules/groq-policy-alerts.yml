@@ -1,0 +1,359 @@
+# GroqCloud Policy Integration Alerting Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+- name: groq_policy_performance
+  interval: 30s
+  rules:
+  
+  # High-level service availability
+  - alert: GroqPolicyIntegrationDown
+    expr: up{job="groq-policy-integration"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud Policy Integration service is down"
+      description: "GroqCloud Policy Integration service has been down for more than 1 minute"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-policy-integration-down"
+
+  # End-to-end latency alerts
+  - alert: GroqPolicyHighLatency
+    expr: histogram_quantile(0.99, groq_policy_request_duration_seconds_bucket) > 0.010
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud Policy Integration P99 latency is high"
+      description: "P99 latency is {{ $value }}s, exceeding 10ms target for {{ $labels.instance }}"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-policy-high-latency"
+
+  - alert: GroqPolicyCriticalLatency
+    expr: histogram_quantile(0.99, groq_policy_request_duration_seconds_bucket) > 0.050
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud Policy Integration P99 latency is critically high"
+      description: "P99 latency is {{ $value }}s, exceeding 50ms critical threshold for {{ $labels.instance }}"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-policy-critical-latency"
+
+  # Inference latency specific alerts
+  - alert: GroqInferenceHighLatency
+    expr: histogram_quantile(0.95, groq_inference_duration_seconds_bucket) > 0.005
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud inference latency is high"
+      description: "GroqCloud inference P95 latency is {{ $value }}s, exceeding 5ms target"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-inference-high-latency"
+
+  # Policy evaluation latency alerts
+  - alert: PolicyEvaluationHighLatency
+    expr: histogram_quantile(0.95, policy_evaluation_duration_seconds_bucket) > 0.002
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Policy evaluation latency is high"
+      description: "Policy evaluation P95 latency is {{ $value }}s, exceeding 2ms target"
+      runbook_url: "https://docs.acgs.ai/runbooks/policy-evaluation-high-latency"
+
+  # Error rate alerts
+  - alert: GroqPolicyHighErrorRate
+    expr: rate(groq_policy_requests_total{status=~"5.."}[5m]) / rate(groq_policy_requests_total[5m]) > 0.05
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud Policy Integration error rate is high"
+      description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-policy-high-error-rate"
+
+  - alert: GroqPolicyCriticalErrorRate
+    expr: rate(groq_policy_requests_total{status=~"5.."}[5m]) / rate(groq_policy_requests_total[5m]) > 0.20
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud Policy Integration error rate is critically high"
+      description: "Error rate is {{ $value | humanizePercentage }} for {{ $labels.instance }}"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-policy-critical-error-rate"
+
+  # Throughput alerts
+  - alert: GroqPolicyLowThroughput
+    expr: rate(groq_policy_requests_total[5m]) < 10
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud Policy Integration throughput is low"
+      description: "Request rate is {{ $value }} requests/second, below 10 RPS threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-policy-low-throughput"
+
+- name: groq_policy_compliance
+  interval: 30s
+  rules:
+
+  # Constitutional compliance alerts
+  - alert: ConstitutionalComplianceViolations
+    expr: rate(groq_policy_constitutional_violations_total[5m]) > 0.01
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Constitutional compliance violations detected"
+      description: "Constitutional violations rate is {{ $value }} violations/second"
+      runbook_url: "https://docs.acgs.ai/runbooks/constitutional-violations"
+
+  # Policy compliance rate alerts
+  - alert: LowPolicyComplianceRate
+    expr: rate(groq_policy_compliant_requests_total[5m]) / rate(groq_policy_requests_total[5m]) < 0.95
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Policy compliance rate is low"
+      description: "Policy compliance rate is {{ $value | humanizePercentage }}, below 95% target"
+      runbook_url: "https://docs.acgs.ai/runbooks/low-policy-compliance"
+
+  - alert: CriticalPolicyComplianceRate
+    expr: rate(groq_policy_compliant_requests_total[5m]) / rate(groq_policy_requests_total[5m]) < 0.80
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Policy compliance rate is critically low"
+      description: "Policy compliance rate is {{ $value | humanizePercentage }}, below 80% critical threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/critical-policy-compliance"
+
+  # Human escalation alerts
+  - alert: HighHumanEscalationRate
+    expr: rate(groq_policy_human_escalations_total[5m]) / rate(groq_policy_requests_total[5m]) > 0.10
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "High rate of human escalations"
+      description: "Human escalation rate is {{ $value | humanizePercentage }}, above 10% threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/high-human-escalation"
+
+- name: groq_policy_security
+  interval: 30s
+  rules:
+
+  # Jailbreak detection alerts
+  - alert: JailbreakAttemptsDetected
+    expr: rate(groq_policy_jailbreak_attempts_total[5m]) > 0.1
+    for: 1m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Jailbreak attempts detected"
+      description: "Jailbreak attempt rate is {{ $value }} attempts/second"
+      runbook_url: "https://docs.acgs.ai/runbooks/jailbreak-attempts"
+
+  - alert: HighJailbreakAttempts
+    expr: rate(groq_policy_jailbreak_attempts_total[5m]) > 1.0
+    for: 30s
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "High rate of jailbreak attempts"
+      description: "Jailbreak attempt rate is {{ $value }} attempts/second, indicating possible attack"
+      runbook_url: "https://docs.acgs.ai/runbooks/high-jailbreak-attempts"
+
+  # Bias detection alerts
+  - alert: HighBiasScores
+    expr: avg(groq_policy_bias_score) > 0.3
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "High bias scores detected"
+      description: "Average bias score is {{ $value }}, above 0.3 threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/high-bias-scores"
+
+- name: groq_policy_infrastructure
+  interval: 30s
+  rules:
+
+  # Cache performance alerts
+  - alert: LowCacheHitRate
+    expr: groq_policy_cache_hit_rate < 0.80
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Low cache hit rate"
+      description: "Cache hit rate is {{ $value | humanizePercentage }}, below 80% threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/low-cache-hit-rate"
+
+  # Circuit breaker alerts
+  - alert: CircuitBreakerOpen
+    expr: groq_policy_circuit_breaker_state{state="open"} == 1
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Circuit breaker is open"
+      description: "Circuit breaker for {{ $labels.instance }} is open, blocking requests"
+      runbook_url: "https://docs.acgs.ai/runbooks/circuit-breaker-open"
+
+  # WASM engine alerts
+  - alert: WASMEngineErrors
+    expr: rate(groq_policy_wasm_errors_total[5m]) > 0.01
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "WASM engine errors detected"
+      description: "WASM engine error rate is {{ $value }} errors/second"
+      runbook_url: "https://docs.acgs.ai/runbooks/wasm-engine-errors"
+
+  # Resource utilization alerts
+  - alert: HighMemoryUsage
+    expr: process_resident_memory_bytes{job="groq-policy-integration"} / (1024*1024*1024) > 1.5
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "High memory usage"
+      description: "Memory usage is {{ $value }}GB, above 1.5GB threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/high-memory-usage"
+
+  - alert: HighCPUUsage
+    expr: rate(process_cpu_seconds_total{job="groq-policy-integration"}[5m]) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "High CPU usage"
+      description: "CPU usage is {{ $value }}%, above 80% threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/high-cpu-usage"
+
+- name: groq_policy_dependencies
+  interval: 30s
+  rules:
+
+  # GroqCloud API alerts
+  - alert: GroqCloudAPIErrors
+    expr: rate(groq_cloud_api_errors_total[5m]) > 0.05
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud API errors detected"
+      description: "GroqCloud API error rate is {{ $value }} errors/second"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-cloud-api-errors"
+
+  - alert: GroqCloudAPIHighLatency
+    expr: histogram_quantile(0.95, groq_cloud_api_duration_seconds_bucket) > 0.003
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "GroqCloud API latency is high"
+      description: "GroqCloud API P95 latency is {{ $value }}s, above 3ms threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/groq-cloud-api-high-latency"
+
+  # OPA dependency alerts
+  - alert: OPAServiceDown
+    expr: up{job="opa"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "OPA service is down"
+      description: "OPA service is unavailable, affecting policy evaluation"
+      runbook_url: "https://docs.acgs.ai/runbooks/opa-service-down"
+
+  # Redis dependency alerts
+  - alert: RedisServiceDown
+    expr: up{job="redis"} == 0
+    for: 1m
+    labels:
+      severity: critical
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Redis service is down"
+      description: "Redis service is unavailable, affecting caching"
+      runbook_url: "https://docs.acgs.ai/runbooks/redis-service-down"
+
+- name: groq_policy_quality
+  interval: 60s
+  rules:
+
+  # Quality score alerts
+  - alert: LowOutputQuality
+    expr: avg(groq_policy_quality_score) < 0.7
+    for: 5m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Low output quality scores"
+      description: "Average quality score is {{ $value }}, below 0.7 threshold"
+      runbook_url: "https://docs.acgs.ai/runbooks/low-output-quality"
+
+  # Safety validation alerts
+  - alert: SafetyValidationFailures
+    expr: rate(groq_policy_safety_failures_total[5m]) > 0.01
+    for: 2m
+    labels:
+      severity: warning
+      service: groq-policy-integration
+      constitutional_hash: cdd01ef066bc6cf2
+    annotations:
+      summary: "Safety validation failures detected"
+      description: "Safety validation failure rate is {{ $value }} failures/second"
+      runbook_url: "https://docs.acgs.ai/runbooks/safety-validation-failures"

@@ -244,7 +244,7 @@ All workflow components maintain constitutional hash `cdd01ef066bc6cf2` validati
 2. **`procedures/ACGS_DOCUMENTATION_DEPLOYMENT_GUIDE.md`** - Step-by-step deployment procedures
 3. **`scripts/monitoring/documentation_accuracy_monitor.py`** - Automated monitoring system
 4. **`procedures/ACGS_QUARTERLY_REVIEW_FRAMEWORK.md`** - Long-term maintenance framework
-5. **`reports/ACGS_POST_FINALIZATION_DEPLOYMENT_SUMMARY.md`** - This comprehensive summary
+5. **`reports/ACGS_POST_FINALIZATION_docs/deployment/DEPLOYMENT_SUMMARY.md`** - This comprehensive summary
 
 ### Supporting Documentation
 - Comprehensive stakeholder approval requirements

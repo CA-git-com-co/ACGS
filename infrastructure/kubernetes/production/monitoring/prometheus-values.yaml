@@ -102,7 +102,7 @@ grafana:
     limits:
       memory: 2Gi
       cpu: 1000m
-  adminPassword: CHANGE_ME_IN_PRODUCTION
+  adminPassword: os.environ.get("PASSWORD")
   grafana.ini:
     server:
       domain: monitoring.acgs-pgp.com

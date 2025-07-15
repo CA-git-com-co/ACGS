@@ -210,9 +210,9 @@ class ServiceConfigurationAlignmentValidator:
                         for var in env:
                             if "=" in var:
                                 key, value = var.split("=", 1)
-                                config.env_vars[key] = value
+                                configconfig/environments/development.env_vars[key] = value
                     elif isinstance(env, dict):
-                        config.env_vars.update(env)
+                        configconfig/environments/development.env_vars.update(env)
 
                 configs[service_name] = config
 
@@ -279,7 +279,7 @@ class ServiceConfigurationAlignmentValidator:
                             # Extract environment variables
                             for env in container.get("env", []):
                                 if "name" in env and "value" in env:
-                                    config.env_vars[env["name"]] = env["value"]
+                                    configconfig/environments/development.env_vars[env["name"]] = env["value"]
 
         except Exception as e:
             self.result.add_issue(
@@ -326,7 +326,7 @@ class ServiceConfigurationAlignmentValidator:
                     for key, value in obj.items():
                         if isinstance(value, (str, int, bool, float)):
                             full_key = f"{prefix}.{key}" if prefix else key
-                            config.env_vars[full_key] = str(value)
+                            configconfig/environments/development.env_vars[full_key] = str(value)
                         elif isinstance(value, dict):
                             extract_env_recursive(
                                 value, f"{prefix}.{key}" if prefix else key
@@ -392,7 +392,7 @@ class ServiceConfigurationAlignmentValidator:
                         var_name, port_str = match.groups()
                         if port_str.isdigit():
                             config.ports.add(int(port_str))
-                            config.env_vars[var_name] = port_str
+                            configconfig/environments/development.env_vars[var_name] = port_str
                     else:
                         # Just port value
                         port_str = match.group(1)
@@ -425,11 +425,11 @@ class ServiceConfigurationAlignmentValidator:
                                         and "port" in var_name.lower()
                                     ):
                                         config.ports.add(value)
-                                    config.env_vars[var_name] = str(value)
+                                    configconfig/environments/development.env_vars[var_name] = str(value)
                                 elif isinstance(
                                     node.value, ast.Str
                                 ):  # Python < 3.8 compatibility
-                                    config.env_vars[var_name] = node.value.s
+                                    configconfig/environments/development.env_vars[var_name] = node.value.s
                                 elif isinstance(
                                     node.value, ast.Num
                                 ):  # Python < 3.8 compatibility
@@ -439,7 +439,7 @@ class ServiceConfigurationAlignmentValidator:
                                         and "port" in var_name.lower()
                                     ):
                                         config.ports.add(value)
-                                    config.env_vars[var_name] = str(value)
+                                    configconfig/environments/development.env_vars[var_name] = str(value)
 
         except Exception as e:
             self.result.add_issue(
@@ -466,7 +466,7 @@ class ServiceConfigurationAlignmentValidator:
             target = merged[service_name]
             target.ports.update(config.ports)
             target.image_tags.update(config.image_tags)
-            target.env_vars.update(config.env_vars)
+            targetconfig/environments/development.env_vars.update(configconfig/environments/development.env_vars)
             target.config_files.extend(config.config_files)
             target.source_files.extend(config.source_files)
 
@@ -553,7 +553,7 @@ class ServiceConfigurationAlignmentValidator:
         for var in common_env_vars:
             values_by_service = {}
             for service_name, config in self.configurations.items():
-                for env_key, env_value in config.env_vars.items():
+                for env_key, env_value in configconfig/environments/development.env_vars.items():
                     if var.lower() in env_key.lower():
                         if service_name not in values_by_service:
                             values_by_service[service_name] = []
@@ -699,7 +699,7 @@ class ServiceConfigurationAlignmentValidator:
         # Parse Python code files
         for file_path in code_files:
             config = self.parse_python_code(file_path)
-            if config.ports or config.image_tags or config.env_vars or config.docs_url:
+            if config.ports or config.image_tags or configconfig/environments/development.env_vars or config.docs_url:
                 all_configs.append(config)
 
         # 3. Merge configurations by service name

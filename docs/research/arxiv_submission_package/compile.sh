@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Academic Submission System Compilation Script
 # Simple wrapper for common compilation tasks
@@ -231,9 +233,9 @@ main() {
     done
 
     # Print header
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Academic Submission System Compiler"
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
 
     # Check dependencies

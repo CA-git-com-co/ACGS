@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # PostgreSQL Research Papers Knowledge Base Setup Script
 
@@ -6,7 +8,7 @@ set -e
 # Configuration
 DB_NAME="acgs_research_kb"
 DB_USER="acgs_user"
-DB_PASSWORD="acgs_secure_password_2025"
+DB_PASSWORD=os.environ.get("PASSWORD")
 DB_HOST="localhost"
 DB_PORT="5432"
 
@@ -17,7 +19,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 echo -e "${GREEN}ACGS Research Papers Knowledge Base Setup${NC}"
-echo "========================================"
+echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Function to check if PostgreSQL is running
 check_postgresql() {
@@ -67,7 +69,7 @@ insert_initial_data() {
 
 # Function to create environment file
 create_env_file() {
-    cat > "$(dirname "$0")/.env" << EOF
+    cat > "$(dirname "$0")/config/environments/development.env" << EOF
 # Database Configuration
 DB_HOST=${DB_HOST}
 DB_PORT=${DB_PORT}
@@ -79,7 +81,7 @@ DB_PASSWORD=${DB_PASSWORD}
 DATABASE_URL=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
 EOF
     
-    chmod 600 "$(dirname "$0")/.env"
+    chmod 600 "$(dirname "$0")/config/environments/development.env"
     echo -e "${GREEN}✓ Environment file created${NC}"
 }
 

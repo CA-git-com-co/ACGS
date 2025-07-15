@@ -41,7 +41,7 @@ async def get_alert_manager() -> IntelligentAlertManager:
 
 def verify_webhook_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     """Verify webhook authentication token"""
-    expected_token = "acgs-webhook-secret-2024"
+    expected_token = os.environ.get("AUTH_TOKEN")
     if credentials.credentials != expected_token:
         raise HTTPException(status_code=401, detail="Invalid authentication token")
     return credentials

@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.responses import JSONResponse  # Added JSONResponse import
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_csrf_protect import CsrfProtect
-from shared import models
+from services.shared import models
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Constitutional compliance hash for ACGS
@@ -163,7 +163,7 @@ async def refresh_access_token(
     crud.create_user_refresh_token(
         db=db,
         user_id=user.id,
-        token=new_refresh_token_str,
+        token=os.environ.get("AUTH_TOKEN")
         jti=new_refresh_jti,
         expires_at=new_refresh_expires_at,
     )

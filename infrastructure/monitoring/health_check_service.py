@@ -96,9 +96,9 @@ class ACGSHealthMonitor:
             "solana_rpc": "https://api.devnet.solana.com",
             "constitution_hash": "cdd01ef066bc6cf2",
             "program_ids": {
-                "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",
-                "appeals": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",
-                "logging": "CjZi5hi9qggBzbXDht9YSJhN5cw7Bhz3rHhn63QQcPQo",
+                "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+                "appeals": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+                "logging": "CjZi5hi9qggBzbXDht9YSJhN5cw7Bhz3rHhn63QQcPQo",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             },
         }
 
@@ -297,7 +297,7 @@ class ACGSHealthMonitor:
                 port=config["port"],
                 database=config["database"],
                 user="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 connect_timeout=5,
             )
 

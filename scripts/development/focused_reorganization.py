@@ -179,8 +179,8 @@ class FocusedReorganizer:
         ]
 
         import_mappings = {
-            "from shared.": "from services.shared.",
-            "import shared.": "import services.shared.",
+            "from services.shared.": "from services.shared.",
+            "import services.shared.": "import services.shared.",
             "shared.metrics": "services.shared.metrics",
         }
 

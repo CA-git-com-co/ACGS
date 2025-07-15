@@ -107,7 +107,7 @@ class OPADNSResolver:
             hosts_entry = "127.0.0.1 opa\\n"
 =======
             hosts_entry = "127.0.0.1 opa\n"
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             
             # Check if entry already exists
             with open("/etc/hosts", "r") as f:
@@ -202,7 +202,7 @@ async def main():
     print("\\n" + "="*60)
 =======
     print("\n" + "="*60)
->>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4
+>>>>>>> 7e8c70b4dbb97f17773bac3ac6b95fa8f0905aa4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     print("🔧 OPA DNS RESOLUTION FIX RESULTS")
     print("="*60)
     print(f"OPA Connectivity: {'✅' if results['opa_connectivity'] else '❌'}")

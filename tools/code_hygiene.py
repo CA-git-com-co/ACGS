@@ -43,11 +43,11 @@ class CodeHygieneManager:
 
         # Map of old hyphenated names to new underscore names
         import_mappings = {
-            "services.core.constitutional-ai": "services.core.constitutional_ai",
-            "services.core.governance-synthesis": "services.core.governance_synthesis",
-            "services.core.policy-governance": "services.core.policy_governance",
-            "services.core.formal-verification": "services.core.formal_verification",
-            "services.core.evolutionary-computation": "services.core.evolutionary_computation",
+            "services.core.constitutional-ai": "services.core.constitutional-ai",
+            "services.core.governance-synthesis": "services.core.governance-synthesis",
+            "services.core.policy-governance": "services.core.policy-governance",
+            "services.core.formal-verification": "services.core.formal-verification",
+            "services.core.evolutionary-computation": "services.core.evolutionary-computation",
             "services.core.self-evolving-ai": "services.core.self_evolving_ai",
             "services.core.governance-workflows": "services.core.governance_workflows",
         }

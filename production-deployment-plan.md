@@ -47,10 +47,10 @@ Security:
 ```bash
 # Export production environment
 export ENVIRONMENT=production
-export $(cat .env.acgs | grep -v '^#' | xargs)
+export $(cat config/environments/developmentconfig/environments/acgs.env | grep -v '^#' | xargs)
 
 # Deploy with constitutional compliance
-docker compose -f docker-compose.basic.yml up -d --scale postgres=1 --scale redis=1
+docker compose -f config/docker/docker-compose.basic.yml up -d --scale postgres=1 --scale redis=1
 
 # Verify production health
 curl http://localhost:5439  # Database
@@ -75,7 +75,7 @@ curl http://localhost:6389  # Cache
 ### Health Checks
 ```bash
 # Production health validation
-python staging-health-check.py
+python scripts/monitoring/staging-health-check.py
 ```
 
 ### Expected Results
@@ -96,11 +96,11 @@ python staging-health-check.py
 ### Emergency Rollback
 ```bash
 # Stop production services
-docker compose -f docker-compose.basic.yml down
+docker compose -f config/docker/docker-compose.basic.yml down
 
 # Restore from backup if needed
 # Verify rollback success
-python staging-health-check.py
+python scripts/monitoring/staging-health-check.py
 ```
 
 ## Post-Deployment Validation

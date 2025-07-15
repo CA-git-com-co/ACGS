@@ -396,10 +396,10 @@ class ServiceConfig(BaseSettings):
     api: APIConfig = Field(default_factory=APIConfig)
 
     class Config:
-        env_file = ".env"
+        env_file = "config/environments/development.env"
         env_file_encoding = "utf-8"
         case_sensitive = False
-        # Allow reading from multiple .env files
+        # Allow reading from multiple config/environments/development.env files
         env_nested_delimiter = "__"
 
     @validator("environment")
@@ -422,11 +422,11 @@ class ServiceConfig(BaseSettings):
 
     def is_production(self) -> bool:
         """Check if running in production environment."""
-        return self.environment == "production"
+        return selfconfig/environments/development.environment == "production"
 
     def is_development(self) -> bool:
         """Check if running in development environment."""
-        return self.environment == "development"
+        return selfconfig/environments/development.environment == "development"
 
     def get_cors_settings(self) -> dict[str, Any]:
         """Get CORS settings for FastAPI."""
@@ -464,7 +464,7 @@ def get_settings() -> ServiceConfig:
 def get_development_config() -> ServiceConfig:
     """Get configuration for development environment."""
     config = ServiceConfig()
-    config.environment = "development"
+    configconfig/environments/development.environment = "development"
     config.debug = True
     config.api.enable_docs = True
     config.api.enable_redoc = True
@@ -476,7 +476,7 @@ def get_development_config() -> ServiceConfig:
 def get_production_config() -> ServiceConfig:
     """Get configuration for production environment."""
     config = ServiceConfig()
-    config.environment = "production"
+    configconfig/environments/development.environment = "production"
     config.debug = False
     config.api.enable_docs = False
     config.api.enable_redoc = False
@@ -489,7 +489,7 @@ def get_production_config() -> ServiceConfig:
 def get_test_config() -> ServiceConfig:
     """Get configuration for testing environment."""
     config = ServiceConfig()
-    config.environment = "test"
+    configconfig/environments/development.environment = "test"
     config.debug = True
     config.database.url = "sqlite+aiosqlite:///./test.db"
     config.redis.url = "redis://localhost:6379/15"  # Use separate Redis DB for tests

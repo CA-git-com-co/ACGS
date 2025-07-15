@@ -45,7 +45,7 @@ class ACGSRedisClient:
         try:
             self.connection_pool = redis.ConnectionPool.from_url(
                 REDIS_URL,
-                password=REDIS_PASSWORD,
+                password=os.environ.get("REDIS_PASSWORD"),
                 max_connections=REDIS_MAX_CONNECTIONS,
                 socket_timeout=REDIS_SOCKET_TIMEOUT,
                 socket_connect_timeout=REDIS_SOCKET_CONNECT_TIMEOUT,

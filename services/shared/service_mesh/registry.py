@@ -175,7 +175,7 @@ class ServiceRegistry:
         # ensures: Correct function execution
         # sha256: func_hash
         """Load environment-specific configuration overrides."""
-        env_prefix = f"ACGS_{self.environment.value.upper()}_"
+        env_prefix = f"ACGS_{selfconfig/environments/development.environment.value.upper()}_"
 
         for service_type in ServiceType:
             service_name = service_type.value.upper()
@@ -330,7 +330,7 @@ class ServiceRegistry:
             Environment information dictionary
         """
         return {
-            "environment": self.environment.value,
+            "environment": selfconfig/environments/development.environment.value,
             "total_services": len(self._services),
             "services": {
                 service_type.value: {
@@ -359,7 +359,7 @@ def get_service_registry(environment: Environment | None = None) -> ServiceRegis
     """
     global _registry
 
-    if _registry is None or (environment and _registry.environment != environment):
+    if _registry is None or (environment and _registryconfig/environments/development.environment != environment):
         env = environment or Environment.DEVELOPMENT
         _registry = ServiceRegistry(env)
 

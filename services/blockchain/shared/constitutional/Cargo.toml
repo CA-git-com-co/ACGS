@@ -1,0 +1,21 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+[package]
+name = "acgs-constitutional"
+version = "1.0.0"
+edition = "2021"
+description = "ACGS-2 Constitutional Compliance Validation Library"
+authors = ["ACGS Team"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+
+[features]
+default = []
+blockchain = ["solana-sdk"]
+
+[dependencies.solana-sdk]
+version = "1.18"
+optional = true

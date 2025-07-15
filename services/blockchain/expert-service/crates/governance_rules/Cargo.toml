@@ -1,0 +1,29 @@
+[package]
+name = "governance_rules"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+async-trait = "0.1"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+thiserror = "1.0"
+tokio = { version = "1", features = ["time"] }
+moka = { version = "0.12", features = ["future"] }
+sha2 = "0.10"
+tracing = "0.1"
+# Redis for distributed caching
+redis = { version = "0.24", features = ["tokio-comp", "connection-manager"] }
+# Circuit breaker for resilience (using custom implementation)
+# failsafe = "1.0"
+# OpenAPI schema generation (optional)
+utoipa = { version = "4.2", optional = true }
+# Shared ACGS libraries
+acgs-constitutional = { path = "../../../shared/constitutional" }
+acgs-types = { path = "../../../shared/types" }
+acgs-monitoring = { path = "../../../shared/monitoring" }
+
+[features]
+default = []
+utoipa = ["dep:utoipa"]

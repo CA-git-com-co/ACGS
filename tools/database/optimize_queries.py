@@ -133,7 +133,7 @@ class DatabaseQueryOptimizer:
 
 async def main():
     """Main database optimization function."""
-    database_url = "postgresql://acgs_user:acgs_password@localhost:5432/acgs_production"
+    database_url = os.environ.get("DATABASE_URL")
 
     optimizer = DatabaseQueryOptimizer(database_url)
     await optimizer.initialize_pool()

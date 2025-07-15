@@ -244,7 +244,7 @@ class ACGSComprehensiveTestRunner:
                 print(
                     f"  ✅ Coverage report generated successfully: {coverage_percentage:.1f}%"
                 )
-                print(f"  📁 HTML report: {self.output_dir}/htmlcov/index.html")
+                print(f"  📁 HTML report: {self.output_dir}/reports/coverage/htmlcov/index.html")
                 print(f"  📊 XML report: {self.output_dir}/coverage.xml")
                 print(f"  📋 JSON report: {self.output_dir}/coverage.json")
 
@@ -255,7 +255,7 @@ class ACGSComprehensiveTestRunner:
                 print(
                     f"  ⚠️  Coverage below target: {coverage_percentage:.1f}% < {target_coverage}%"
                 )
-                print(f"  📁 HTML report: {self.output_dir}/htmlcov/index.html")
+                print(f"  📁 HTML report: {self.output_dir}/reports/coverage/htmlcov/index.html")
                 print("  📝 Review missing coverage areas for improvement")
 
             # Store coverage data for summary

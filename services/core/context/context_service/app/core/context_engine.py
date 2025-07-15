@@ -186,7 +186,7 @@ class ContextEngine:
     async def _initialize_constitutional_validation(self):
         """Initialize constitutional compliance validation."""
         try:
-            from services.core.constitutional_ai.ac_service.app.services.constitutional_validation_service import (
+            from services.core.constitutional-ai.ac_service.app.services.constitutional_validation_service import (
                 ConstitutionalValidationService,
             )
 
@@ -651,7 +651,7 @@ class ContextEngine:
             return await self._basic_compliance_validation(content, context_type)
 
         try:
-            from services.core.constitutional_ai.ac_service.app.schemas import (
+            from services.core.constitutional-ai.ac_service.app.schemas import (
                 ConstitutionalComplianceRequest,
             )
 

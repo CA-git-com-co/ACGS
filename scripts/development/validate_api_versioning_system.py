@@ -25,19 +25,19 @@ try:
     import uvicorn
     from fastapi import FastAPI, Request, Response
     from fastapi.responses import JSONResponse
-    from shared.api_models import APIMetadata, APIResponse, APIStatus
-    from shared.versioning.compatibility_manager import (
+    from services.shared.api_models import APIMetadata, APIResponse, APIStatus
+    from services.shared.versioning.compatibility_manager import (
         CompatibilityManager,
         create_compatibility_manager,
     )
-    from shared.versioning.response_transformers import (
+    from services.shared.versioning.response_transformers import (
         CompatibilityTransformer,
         VersionedResponseBuilder,
     )
 
     # Import our versioning components
-    from shared.versioning.version_manager import APIVersion, VersionManager
-    from shared.versioning.versioned_router import (
+    from services.shared.versioning.version_manager import APIVersion, VersionManager
+    from services.shared.versioning.versioned_router import (
         VersionedRouter,
         create_versioned_router,
     )
@@ -323,7 +323,7 @@ class APIVersioningValidator:
 
             # Test that we can import middleware components
             try:
-                from shared.middleware.version_routing_middleware import (
+                from services.shared.middleware.version_routing_middleware import (
                     create_version_routing_middleware,
                 )
 

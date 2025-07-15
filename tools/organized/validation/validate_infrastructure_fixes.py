@@ -290,12 +290,12 @@ class InfrastructureValidator:
     async def test_environment_config(self) -> dict[str, Any]:
         """Test environment configuration."""
         try:
-            # Check if .env file exists and has required variables
-            env_file = self.project_root / ".env"
+            # Check if config/environments/development.env file exists and has required variables
+            env_file = self.project_root / "config/environments/development.env"
             if not env_file.exists():
                 return {
                     "status": "FAIL",
-                    "message": ".env file not found",
+                    "message": "config/environments/development.env file not found",
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                 }
 

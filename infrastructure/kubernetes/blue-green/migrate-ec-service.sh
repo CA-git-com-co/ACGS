@@ -470,9 +470,9 @@ main() {
     
     # Display comprehensive final summary
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎉 ACGE Phase 2 Migration COMPLETED! 🎉"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Final Service: $SERVICE_NAME"
     echo "Migration completed at: $(date)"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"

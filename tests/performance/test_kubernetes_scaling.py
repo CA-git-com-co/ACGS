@@ -39,7 +39,7 @@ class TestKubernetesScaling:
         """Test HPA configuration syntax is valid."""
         hpa_files = [
             "infrastructure/kubernetes/hpa-vpa.yaml",
-            "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml"
+            "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ]
         
         for hpa_file in hpa_files:
@@ -76,7 +76,7 @@ class TestKubernetesScaling:
     
     def test_hpa_metrics_configuration(self):
         """Test HPA metrics are properly configured for performance targets."""
-        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:
+        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             yaml_content = list(yaml.safe_load_all(f))
             
         hpa_count = 0
@@ -109,7 +109,7 @@ class TestKubernetesScaling:
     
     def test_hpa_scaling_behavior(self):
         """Test HPA scaling behavior is optimized for performance."""
-        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:
+        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             yaml_content = list(yaml.safe_load_all(f))
             
         for doc in yaml_content:
@@ -140,7 +140,7 @@ class TestKubernetesScaling:
     
     def test_pod_disruption_budget_configuration(self):
         """Test Pod Disruption Budgets are configured for high availability."""
-        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:
+        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             yaml_content = list(yaml.safe_load_all(f))
             
         pdb_count = 0
@@ -173,7 +173,7 @@ class TestKubernetesScaling:
             'compliance_rate': 0.95
         }
         
-        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:
+        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             yaml_content = list(yaml.safe_load_all(f))
             
         # Check ConfigMap for custom metrics
@@ -198,7 +198,7 @@ class TestKubernetesScaling:
     
     def test_constitutional_compliance_in_scaling(self):
         """Test constitutional compliance is maintained in scaling configurations."""
-        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:
+        with open("infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml", 'r') as f:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             content = f.read()
             
         # Check constitutional hash is present

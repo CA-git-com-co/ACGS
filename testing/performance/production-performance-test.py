@@ -64,7 +64,7 @@ class ProductionPerformanceTester:
                 port=5440,
                 database="acgs",
                 user="acgs_user",
-                password="acgs_production_password_2025",
+                password=os.environ.get("PASSWORD"),
             )
             cursor = conn.cursor()
             cursor.execute("SELECT 1")
@@ -100,7 +100,7 @@ class ProductionPerformanceTester:
         try:
             start_time = time.time()
             r = redis.Redis(
-                host="localhost", port=6390, password="redis_production_password_2025"
+                host="localhost", port=6390, password=os.environ.get("PASSWORD")
             )
             r.ping()
             redis_latency = (time.time() - start_time) * 1000

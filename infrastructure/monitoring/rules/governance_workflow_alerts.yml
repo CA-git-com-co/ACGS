@@ -79,7 +79,7 @@ groups:
       runbook_url: https://docs.acgs.ai/runbooks/low-implementation-rate
 - name: acgs_constitutional_compliance_workflow
   rules:
-  - alert: ConstitutionalComplianceWorkflowFailures
+  - alert: ConstitutionalComplianceWorkflowFailures  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     expr: rate(acgs_governance_workflow_operations_total{workflow_type="constitutional_compliance",result="failed"}[5m])
       > 0.05
     for: 2m

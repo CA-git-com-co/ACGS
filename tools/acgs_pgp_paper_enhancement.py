@@ -159,9 +159,9 @@ class ACGSPGPPaperEnhancer:
                     ),
                     "constitution_hash": "cdd01ef066bc6cf2",
                     "programs_deployed": {
-                        "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",
-                        "appeals": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",
-                        "logging": "4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo",
+                        "quantumagi_core": "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+                        "appeals": "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+                        "logging": "4rEgetuUsuf3PEDcPCpKH4ndjbfnCReRbmdiEKMkMUxo",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                     },
                     "network": "Solana Devnet",
                     "governance_active": True,

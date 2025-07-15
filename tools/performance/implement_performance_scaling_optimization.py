@@ -432,9 +432,9 @@ track_functions = all
                         "environment": [
                             "POSTGRES_DB=acgs_production",
                             "POSTGRES_USER=acgs_user",
-                            "POSTGRES_PASSWORD=acgs_password",
+                            "POSTGRES_PASSWORD=os.environ.get("PASSWORD"),
                             "POSTGRES_REPLICATION_USER=replicator",
-                            "POSTGRES_REPLICATION_PASSWORD=replicator_password",
+                            "POSTGRES_REPLICATION_PASSWORD=os.environ.get("PASSWORD"),
                         ],
                         "volumes": [
                             "./config/database/postgresql.conf:/etc/postgresql/postgresql.conf",
@@ -452,10 +452,10 @@ track_functions = all
                         "image": "postgres:15",
                         "environment": [
                             "PGUSER=replicator",
-                            "POSTGRES_PASSWORD=replicator_password",
+                            "POSTGRES_PASSWORD=os.environ.get("PASSWORD"),
                             "POSTGRES_MASTER_SERVICE=postgres-primary",
                             "POSTGRES_REPLICA_USER=replicator",
-                            "POSTGRES_REPLICA_PASSWORD=replicator_password",
+                            "POSTGRES_REPLICA_PASSWORD=os.environ.get("PASSWORD"),
                         ],
                         "volumes": ["postgres_replica_1_data:/var/lib/postgresql/data"],
                         "ports": ["5433:5432"],
@@ -466,10 +466,10 @@ track_functions = all
                         "image": "postgres:15",
                         "environment": [
                             "PGUSER=replicator",
-                            "POSTGRES_PASSWORD=replicator_password",
+                            "POSTGRES_PASSWORD=os.environ.get("PASSWORD"),
                             "POSTGRES_MASTER_SERVICE=postgres-primary",
                             "POSTGRES_REPLICA_USER=replicator",
-                            "POSTGRES_REPLICA_PASSWORD=replicator_password",
+                            "POSTGRES_REPLICA_PASSWORD=os.environ.get("PASSWORD"),
                         ],
                         "volumes": ["postgres_replica_2_data:/var/lib/postgresql/data"],
                         "ports": ["5434:5432"],
@@ -480,10 +480,10 @@ track_functions = all
                         "image": "postgres:15",
                         "environment": [
                             "PGUSER=replicator",
-                            "POSTGRES_PASSWORD=replicator_password",
+                            "POSTGRES_PASSWORD=os.environ.get("PASSWORD"),
                             "POSTGRES_MASTER_SERVICE=postgres-primary",
                             "POSTGRES_REPLICA_USER=replicator",
-                            "POSTGRES_REPLICA_PASSWORD=replicator_password",
+                            "POSTGRES_REPLICA_PASSWORD=os.environ.get("PASSWORD"),
                         ],
                         "volumes": ["postgres_replica_3_data:/var/lib/postgresql/data"],
                         "ports": ["5435:5432"],
@@ -640,7 +640,7 @@ class DatabaseQueryOptimizer:
 
 async def main():
     """Main database optimization function."""
-    database_url = "postgresql://acgs_user:acgs_password@localhost:5432/acgs_production"
+    database_url = os.environ.get("DATABASE_URL")
 
     optimizer = DatabaseQueryOptimizer(database_url)
     await optimizer.initialize_pool()

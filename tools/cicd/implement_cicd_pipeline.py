@@ -357,7 +357,7 @@ class CICDPipelineImplementor:
                             },
                             {
                                 "name": "Deploy to production",
-                                "run": "./scripts/cicd/deploy_production.sh",
+                                "run": "./scripts/cicd/scripts/deployment/deploy_production.sh",
                                 "env": {
                                     "PRODUCTION_HOST": "${{ secrets.PRODUCTION_HOST }}",
                                     "PRODUCTION_USER": "${{ secrets.PRODUCTION_USER }}",
@@ -376,7 +376,7 @@ class CICDPipelineImplementor:
                             {
                                 "name": "Rollback on failure",
                                 "if": "failure()",
-                                "run": "./scripts/cicd/rollback_production.sh ${{ github.event.inputs.rollback_version }}",
+                                "run": "./scripts/cicd/scripts/deployment/rollback_production.sh ${{ github.event.inputs.rollback_version }}",
                             },
                         ],
                     }
@@ -663,7 +663,7 @@ echo "✅ Rollback script completed"
             scripts_created += 1
 
             rollback_production_path = (
-                self.project_root / "scripts" / "cicd" / "rollback_production.sh"
+                self.project_root / "scripts" / "cicd" / "scripts/deployment/rollback_production.sh"
             )
             with open(rollback_production_path, "w") as f:
                 f.write(rollback_script.replace("${1:-staging}", "production"))
@@ -768,7 +768,7 @@ echo "✅ Rollback script completed"
                 "scripts/cicd/deploy_staging.sh",
                 "scripts/cicd/health_check.sh",
                 "scripts/cicd/rollback_staging.sh",
-                "scripts/cicd/rollback_production.sh",
+                "scripts/cicd/scripts/deployment/rollback_production.sh",
             ],
             "next_steps": [
                 "Configure GitHub repository secrets",

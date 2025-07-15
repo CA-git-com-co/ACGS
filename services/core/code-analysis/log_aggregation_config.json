@@ -1,4 +1,6 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "log_aggregation": {
     "service": "acgs-code-analysis-engine",
     "constitutional_hash": "cdd01ef066bc6cf2",
@@ -14,7 +16,11 @@
         "format": "structured"
       }
     ],
-    "log_levels": ["ERROR", "WARNING", "INFO"],
+    "log_levels": [
+      "ERROR",
+      "WARNING",
+      "INFO"
+    ],
     "retention_days": 30,
     "constitutional_compliance_monitoring": true
   }

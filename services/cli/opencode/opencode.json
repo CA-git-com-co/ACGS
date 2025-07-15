@@ -1,4 +1,6 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "$schema": "./config.schema.json",
   "_constitutional_hash": "cdd01ef066bc6cf2",
   "provider": {
@@ -15,6 +17,19 @@
           "tool_call": true,
           "reasoning": true,
           "temperature": true
+        },
+        "qwen/qwen3-32b-instruct": {
+          "name": "Qwen3 32B (Groq)",
+          "tool_call": true,
+          "reasoning": true,
+          "temperature": true
+        },
+
+        "google/gemini-2.0-flash": {
+          "name": "Gemini 2.0 Flash",
+          "tool_call": true,
+          "reasoning": true,
+          "temperature": true
         }
       },
       "options": {
@@ -22,6 +37,5 @@
       }
     }
   },
-  "model": "openrouter/anthropic/claude-3.5-sonnet",
-  "constitutional_hash": "cdd01ef066bc6cf2"
+  "model": "openrouter/qwen/qwen3-32b-instruct"
 }

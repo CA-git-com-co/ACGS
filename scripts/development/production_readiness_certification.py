@@ -428,7 +428,7 @@ class ProductionReadinessCertification:
                 "api_standardization": Path("API_STANDARDIZATION_SUMMARY.md").exists(),
                 "project_status": Path("ACGS_PROJECT_STATUS_TRACKER.md").exists(),
                 "documentation_index": Path(
-                    "docs/ACGS_DOCUMENTATION_INDEX.md"
+                    "docs/ACGS_docs/DOCUMENTATION_INDEX.md"
                 ).exists(),
                 "developer_guide": Path(
                     "docs/development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md"

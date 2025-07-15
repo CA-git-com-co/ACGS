@@ -2,7 +2,12 @@
   "dashboard": {
     "id": null,
     "title": "ACGS-2 Policy Governance Compiler - Enterprise Monitoring",
-    "tags": ["acgs-2", "policy-governance", "enterprise", "constitutional-compliance"],
+    "tags": [
+      "acgs-2",
+      "policy-governance",
+      "enterprise",
+      "constitutional-compliance"
+    ],
     "style": "dark",
     "timezone": "UTC",
     "refresh": "30s",
@@ -18,7 +23,9 @@
           "enable": true,
           "expr": "acgs_system_info{constitutional_hash=\"cdd01ef066bc6cf2\"}",
           "iconColor": "green",
-          "tags": ["constitutional-compliance"]
+          "tags": [
+            "constitutional-compliance"
+          ]
         }
       ]
     },
@@ -27,7 +34,12 @@
         "id": 1,
         "title": "SLA Overview",
         "type": "stat",
-        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 0},
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
         "targets": [
           {
             "expr": "acgs_rps_current{service=\"pgc\"}",
@@ -55,50 +67,113 @@
             "unit": "short",
             "thresholds": {
               "steps": [
-                {"color": "red", "value": 0},
-                {"color": "yellow", "value": 1000},
-                {"color": "green", "value": 1247}
+                {
+                  "color": "red",
+                  "value": 0
+                },
+                {
+                  "color": "yellow",
+                  "value": 1000
+                },
+                {
+                  "color": "green",
+                  "value": 1247
+                }
               ]
             }
           },
           "overrides": [
             {
-              "matcher": {"id": "byName", "options": "Uptime %"},
+              "matcher": {
+                "id": "byName",
+                "options": "Uptime %"
+              },
               "properties": [
-                {"id": "unit", "value": "percent"},
-                {"id": "thresholds", "value": {
-                  "steps": [
-                    {"color": "red", "value": 0},
-                    {"color": "yellow", "value": 99.0},
-                    {"color": "green", "value": 99.9}
-                  ]
-                }}
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "red",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 99.0
+                      },
+                      {
+                        "color": "green",
+                        "value": 99.9
+                      }
+                    ]
+                  }
+                }
               ]
             },
             {
-              "matcher": {"id": "byName", "options": "Constitutional Compliance %"},
+              "matcher": {
+                "id": "byName",
+                "options": "Constitutional Compliance %"
+              },
               "properties": [
-                {"id": "unit", "value": "percent"},
-                {"id": "thresholds", "value": {
-                  "steps": [
-                    {"color": "red", "value": 0},
-                    {"color": "red", "value": 99.9},
-                    {"color": "green", "value": 100}
-                  ]
-                }}
+                {
+                  "id": "unit",
+                  "value": "percent"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "red",
+                        "value": 0
+                      },
+                      {
+                        "color": "red",
+                        "value": 99.9
+                      },
+                      {
+                        "color": "green",
+                        "value": 100
+                      }
+                    ]
+                  }
+                }
               ]
             },
             {
-              "matcher": {"id": "byName", "options": "P95 Response Time (ms)"},
+              "matcher": {
+                "id": "byName",
+                "options": "P95 Response Time (ms)"
+              },
               "properties": [
-                {"id": "unit", "value": "ms"},
-                {"id": "thresholds", "value": {
-                  "steps": [
-                    {"color": "green", "value": 0},
-                    {"color": "yellow", "value": 5},
-                    {"color": "red", "value": 10}
-                  ]
-                }}
+                {
+                  "id": "unit",
+                  "value": "ms"
+                },
+                {
+                  "id": "thresholds",
+                  "value": {
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": 0
+                      },
+                      {
+                        "color": "yellow",
+                        "value": 5
+                      },
+                      {
+                        "color": "red",
+                        "value": 10
+                      }
+                    ]
+                  }
+                }
               ]
             }
           ]
@@ -108,7 +183,12 @@
         "id": 2,
         "title": "Request Rate (RPS)",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 8
+        },
         "targets": [
           {
             "expr": "acgs_rps_current{service=\"pgc\"}",
@@ -131,10 +211,26 @@
         "alert": {
           "conditions": [
             {
-              "evaluator": {"params": [1000], "type": "lt"},
-              "operator": {"type": "and"},
-              "query": {"params": ["A", "5m", "now"]},
-              "reducer": {"params": [], "type": "avg"},
+              "evaluator": {
+                "params": [
+                  1000
+                ],
+                "type": "lt"
+              },
+              "operator": {
+                "type": "and"
+              },
+              "query": {
+                "params": [
+                  "A",
+                  "5m",
+                  "now"
+                ]
+              },
+              "reducer": {
+                "params": [],
+                "type": "avg"
+              },
               "type": "query"
             }
           ],
@@ -151,7 +247,12 @@
         "id": 3,
         "title": "Response Time Distribution",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 8
+        },
         "targets": [
           {
             "expr": "histogram_quantile(0.50, acgs_request_duration_seconds{service=\"pgc\"}) * 1000",
@@ -186,7 +287,12 @@
         "id": 4,
         "title": "Constitutional Compliance Rate",
         "type": "singlestat",
-        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 16},
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "acgs_constitutional_compliance_rate{service=\"pgc\"} * 100",
@@ -197,7 +303,11 @@
         "format": "percent",
         "thresholds": "99.9,100",
         "colorBackground": true,
-        "colors": ["red", "yellow", "green"],
+        "colors": [
+          "red",
+          "yellow",
+          "green"
+        ],
         "sparkline": {
           "show": true,
           "full": false,
@@ -209,7 +319,12 @@
         "id": 5,
         "title": "Service Uptime",
         "type": "singlestat",
-        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 16},
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "acgs_uptime_percentage{service=\"pgc\"}",
@@ -220,13 +335,22 @@
         "format": "percent",
         "thresholds": "99.0,99.9",
         "colorBackground": true,
-        "colors": ["red", "yellow", "green"]
+        "colors": [
+          "red",
+          "yellow",
+          "green"
+        ]
       },
       {
         "id": 6,
         "title": "HPA Replicas",
         "type": "graph",
-        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 16},
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 12,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "kube_horizontalpodautoscaler_status_current_replicas{horizontalpodautoscaler=\"pgc-hpa\"}",
@@ -251,7 +375,12 @@
         "id": 7,
         "title": "Resource Utilization",
         "type": "graph",
-        "gridPos": {"h": 4, "w": 6, "x": 18, "y": 16},
+        "gridPos": {
+          "h": 4,
+          "w": 6,
+          "x": 18,
+          "y": 16
+        },
         "targets": [
           {
             "expr": "avg(acgs_cpu_utilization_percentage{service=\"pgc\"})",
@@ -276,7 +405,12 @@
         "id": 8,
         "title": "Business Metrics",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 20},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 20
+        },
         "targets": [
           {
             "expr": "rate(acgs_rules_generated_total{service=\"pgc\"}[5m])",
@@ -300,7 +434,12 @@
         "id": 9,
         "title": "Error Rate",
         "type": "graph",
-        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 20},
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 20
+        },
         "targets": [
           {
             "expr": "rate(acgs_requests_total{service=\"pgc\",status=~\"2..\"}[5m])",

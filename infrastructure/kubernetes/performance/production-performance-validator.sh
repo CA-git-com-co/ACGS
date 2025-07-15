@@ -410,9 +410,9 @@ main() {
     
     # Final assessment
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Production Performance Validation Results"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     if [[ "$all_services_pass" == "true" ]]; then
         success "✅ Individual service performance: PASSED"

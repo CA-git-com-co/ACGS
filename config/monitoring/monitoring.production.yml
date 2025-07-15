@@ -1,0 +1,43 @@
+alerting:
+  rules:
+  - alert: RouterHighLatency
+    annotations:
+      constitutional_hash: cdd01ef066bc6cf2
+      summary: 5-Tier Router high latency detected
+    expr: histogram_quantile(0.99, router_latency_seconds) > 0.005
+    for: 5m
+    labels:
+      severity: warning
+  - alert: ConstitutionalComplianceFailure
+    annotations:
+      constitutional_hash: cdd01ef066bc6cf2
+      summary: Constitutional compliance failure
+    expr: router_constitutional_compliance_score < 0.82
+    for: 1m
+    labels:
+      severity: critical
+constitutional_hash: cdd01ef066bc6cf2
+prometheus:
+  global:
+    evaluation_interval: 15s
+    scrape_interval: 15s
+  scrape_configs:
+  - job_name: 5-tier-router
+    metrics_path: /metrics
+    scrape_interval: 10s
+    static_configs:
+    - targets:
+      - hybrid-router:8000
+  - job_name: nginx
+    metrics_path: /nginx_status
+    static_configs:
+    - targets:
+      - nginx:80
+  - job_name: postgres
+    static_configs:
+    - targets:
+      - postgres-exporter:9187
+  - job_name: redis
+    static_configs:
+    - targets:
+      - redis-exporter:9121

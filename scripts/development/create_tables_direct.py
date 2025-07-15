@@ -45,7 +45,7 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     username = Column(String(100), unique=True, index=True, nullable=False)
-    hashed_password = Column(String(255), nullable=False)
+    hashed_password = os.environ.get("PASSWORD")
     email = Column(String(255), unique=True, index=True, nullable=False)
     full_name = Column(String(255), nullable=True)
     role = Column(String(50), default="user", nullable=False, index=True)

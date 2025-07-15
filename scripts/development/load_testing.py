@@ -276,7 +276,7 @@ class LoadTester:
         try:
             conn = await asyncpg.connect(
                 user=user,
-                password=password,
+                password=os.environ.get("PASSWORD")
                 database=database,
                 host=host,
                 port=self.config.database_port,

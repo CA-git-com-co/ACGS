@@ -40,7 +40,7 @@ async def test_basic_reasoning():
     # Get NVIDIA API key from environment or use the provided one
     api_key = os.getenv(
         "NVIDIA_API_KEY",
-        "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",
+        "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",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
 
     if not api_key:
@@ -107,7 +107,7 @@ async def test_constitutional_compliance():
 
     api_key = os.getenv(
         "NVIDIA_API_KEY",
-        "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",
+        "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",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
 
     try:
@@ -160,7 +160,7 @@ async def test_policy_synthesis():
 
     api_key = os.getenv(
         "NVIDIA_API_KEY",
-        "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",
+        "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",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
 
     try:
@@ -225,7 +225,7 @@ async def test_model_capabilities():
 
     api_key = os.getenv(
         "NVIDIA_API_KEY",
-        "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",
+        "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",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
 
     try:

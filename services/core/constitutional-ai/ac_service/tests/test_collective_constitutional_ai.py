@@ -14,7 +14,13 @@ from datetime import datetime, timezone
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from services.core.constitutional_ai.ac_service.app.services.collective_constitutional_ai import (
+from services.core.constitutional-ai.ac_service.app.services.collective_constitutional_ai import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     CONSTITUTIONAL_HASH,
     BiasCategory,
     BiasEvaluationResult,

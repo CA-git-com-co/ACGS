@@ -192,9 +192,9 @@ async def setup_mfa():
     return {
         "message": "MFA setup initiated",
         "secret": "DEMO_SECRET_KEY_FOR_TOTP",
-        "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",
+        "qr_code": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         "backup_codes": ["DEMO-CODE-1", "DEMO-CODE-2", "DEMO-CODE-3"],
-        "provisioning_uri": "otpauth://totp/ACGS-1:demo@example.com?secret=DEMO_SECRET_KEY_FOR_TOTP&issuer=ACGS-1",
+        "provisioning_uri": "otpauth://totp/ACGS-1:demo@example.com?secret=DEMO_SECRET_KEY_FOR_TOTP&issuer=ACGS-1",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     }
 
 

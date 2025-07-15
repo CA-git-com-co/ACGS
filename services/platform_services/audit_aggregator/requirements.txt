@@ -2,9 +2,9 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 
 # Core framework
-fastapi==0.104.1
+fastapi>=0.115.6
 uvicorn[standard]==0.24.0
-pydantic==2.5.0
+pydantic>=2.10.5
 
 # Database and caching
 sqlalchemy[asyncio]==2.0.23
@@ -12,7 +12,7 @@ asyncpg==0.29.0
 redis[hiredis]==5.0.1
 
 # Authentication and security
-cryptography==41.0.8
+cryptography>=43.0.1
 passlib[bcrypt]==1.7.4
 
 # Monitoring and observability
@@ -20,7 +20,7 @@ prometheus-client==0.19.0
 structlog==23.2.0
 
 # Development and testing
-pytest==7.4.3
+pytest>=8.3.4
 pytest-asyncio==0.21.1
 pytest-cov==4.1.0
 httpx==0.25.2

@@ -125,7 +125,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         # Change detection tracking
         self.change_history: list[ChangeDetectionResult] = []
-        self.environment_stability = 1.0
+        selfconfig/environments/development.environment_stability = 1.0
         self.last_adaptation_time = datetime.now(timezone.utc)
 
         # Performance monitoring
@@ -443,13 +443,13 @@ class SlidingWindowUCB(MABAlgorithmBase):
         ]
 
         change_rate = len(recent_changes) / max(1, len(self.arm_windows))
-        self.environment_stability = max(0.1, 1.0 - change_rate)
+        selfconfig/environments/development.environment_stability = max(0.1, 1.0 - change_rate)
 
         # Adapt global window size
-        if self.environment_stability < 0.5:
+        if selfconfig/environments/development.environment_stability < 0.5:
             # Unstable environment - reduce window size
             target_size = int(self.config.initial_window_size * 0.7)
-        elif self.environment_stability > 0.8:
+        elif selfconfig/environments/development.environment_stability > 0.8:
             # Stable environment - increase window size
             target_size = int(self.config.initial_window_size * 1.3)
         else:
@@ -469,7 +469,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
 
         # Update metrics
         self.performance_metrics["average_window_size"] = self.global_window_size
-        self.performance_metrics["environment_stability"] = self.environment_stability
+        self.performance_metrics["environment_stability"] = selfconfig/environments/development.environment_stability
 
     def _send_change_alert(self, change_result: ChangeDetectionResult):
         """Send alert for detected change."""
@@ -538,7 +538,7 @@ class SlidingWindowUCB(MABAlgorithmBase):
         return {
             "total_rounds": self.total_rounds,
             "global_window_size": self.global_window_size,
-            "environment_stability": self.environment_stability,
+            "environment_stability": selfconfig/environments/development.environment_stability,
             "active_arms": len(self.arm_windows),
             "total_changes_detected": len(self.change_history),
             "recent_changes": len(

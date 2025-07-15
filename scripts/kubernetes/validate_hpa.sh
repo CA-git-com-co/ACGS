@@ -93,8 +93,8 @@ validate_hpa_syntax() {
     
     local hpa_files=(
         "infrastructure/kubernetes/hpa-vpa.yaml"
-        "infrastructure/kubernetes/production/autoscaling/hpa.yaml"
-        "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml"
+        "infrastructure/kubernetes/production/autoscaling/hpa.yaml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
     
     for file in "${hpa_files[@]}"; do
@@ -146,9 +146,9 @@ apply_hpa_configs() {
     log "Applying HPA configurations..."
     
     # Apply enhanced HPA first
-    if [[ -f "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml" ]]; then
+    if [[ -f "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml" ]]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         log "Applying enhanced HPA configuration..."
-        $KUBECTL_CMD apply -f "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml"
+        $KUBECTL_CMD apply -f "infrastructure/kubernetes/autoscaling/enhanced-hpa-core.yaml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         success "Enhanced HPA configuration applied"
     fi
     
@@ -229,7 +229,7 @@ generate_report() {
         echo "Constitutional Hash: cdd01ef066bc6cf2"
         echo "Generated: $(date)"
         echo "Namespace: $NAMESPACE"
-        echo "=========================================="
+        echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo ""
         
         echo "HPA Resources:"

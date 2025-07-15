@@ -16,7 +16,7 @@ from typing import Any
 import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
-from shared.repositories.tenant_repository import TenantContext, TenantRepository
+from services.shared.repositories.tenant_repository import TenantContext, TenantRepository
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # Import user service client (use relative import or environment-based import)

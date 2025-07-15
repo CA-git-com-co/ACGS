@@ -97,7 +97,7 @@ class MockModelWeightExtractor(ModelWeightExtractor):
         self.supported_models = [
             "gpt-3.5-turbo",
             "gpt-4",
-            "gpt-4-turbo",
+            "mixtral-8x22b",
             "llama-3.3-70b-versatile",
             "meta-llama/llama-4-maverick-17b-128e-instruct",
             "mock-model-small",
@@ -180,7 +180,7 @@ class OpenAIModelWeightExtractor(ModelWeightExtractor):
         # ensures: Correct function execution
         # sha256: func_hash
         self.api_key = api_key
-        self.supported_models = ["gpt-3.5-turbo", "gpt-4", "gpt-4-turbo"]
+        self.supported_models = ["gpt-3.5-turbo", "gpt-4", "mixtral-8x22b"]
         logger.warning(
             "OpenAI model weight extraction is not available via API. Using mock implementation."
         )

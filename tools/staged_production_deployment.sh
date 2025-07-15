@@ -555,7 +555,7 @@ EOF
 # Main function
 main() {
     log_stage "🔄 ACGS-PGP Staged Production Deployment Started"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Deployment ID: $DEPLOYMENT_ID"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Blue Environment: $BLUE_ENVIRONMENT"
@@ -563,7 +563,7 @@ main() {
     echo "Traffic Stages: ${TRAFFIC_STAGES[*]}"
     echo "Timestamp: $(date)"
     echo "Log File: $LOG_FILE"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Create log directory
     mkdir -p "$(dirname "$LOG_FILE")"
@@ -577,14 +577,14 @@ main() {
     generate_deployment_report
     
     log_success "🎉 ACGS-PGP Staged Production Deployment Completed Successfully! 🎉"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ Blue-green deployment completed"
     echo "✅ All traffic shifted to green environment"
     echo "✅ Performance targets maintained throughout"
     echo "✅ Constitutional compliance verified"
     echo "✅ Zero-downtime deployment achieved"
     echo "✅ Deployment report: /var/log/acgs/staged_deployment_report_${TIMESTAMP}.json"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Script entry point

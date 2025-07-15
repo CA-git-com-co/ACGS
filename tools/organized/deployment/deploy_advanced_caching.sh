@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Deploy Advanced Caching with Redis for ACGS-1 Phase A3
 # Implements enterprise-grade caching across all 7 core services
@@ -134,7 +136,7 @@ class ${service_name^}CacheManager:
         try:
             config = CacheConfig(
                 redis_url="redis://localhost:6379/0",
-                redis_password="acgs_redis_production_2024_secure_cache_key",
+                redis_password=os.environ.get("PASSWORD"),
                 max_connections=10
             )
             

@@ -76,7 +76,7 @@ services:
     - ./grafana/datasources:/etc/grafana/provisioning/datasources
     - ./grafana/plugins:/var/lib/grafana/plugins
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=acgs_observability_admin
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel,grafana-clock-panel
     - GF_FEATURE_TOGGLES_ENABLE=tracing

@@ -44,7 +44,7 @@ class SentryConstitutionalIntegration:
         enable_profiling: bool = True,
     ):
         self.service_name = service_name
-        self.environment = environment
+        selfconfig/environments/development.environment = environment
         self.sample_rate = sample_rate
         self.enable_profiling = enable_profiling
         self._initialized = False
@@ -82,7 +82,7 @@ class SentryConstitutionalIntegration:
         # Initialize Sentry
         sentry_sdk.init(
             dsn=dsn,
-            environment=self.environment,
+            environment=selfconfig/environments/development.environment,
             send_default_pii=False,  # Don't send PII by default
             traces_sample_rate=self._get_sample_rate(),
             profiles_sample_rate=self.sample_rate if self.enable_profiling else 0,
@@ -103,15 +103,15 @@ class SentryConstitutionalIntegration:
         # Set default tags
         sentry_sdk.set_tag("constitutional_hash", CONSTITUTIONAL_HASH)
         sentry_sdk.set_tag("service", self.service_name)
-        sentry_sdk.set_tag("environment", self.environment)
+        sentry_sdk.set_tag("environment", selfconfig/environments/development.environment)
 
         self._initialized = True
 
     def _get_sample_rate(self) -> float:
         """Get appropriate sample rate based on environment"""
-        if self.environment == "production":
+        if selfconfig/environments/development.environment == "production":
             return min(self.sample_rate, 0.2)  # Max 20% in production
-        if self.environment == "staging":
+        if selfconfig/environments/development.environment == "staging":
             return min(self.sample_rate, 0.5)  # Max 50% in staging
         return self.sample_rate  # Full rate in development
 

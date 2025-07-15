@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "training_time_seconds": 0.0014050006866455078,
+  "result": {
+    "model_type": "transformer_efficiency",
+    "training_examples": 22,
+    "complexity_reduction": 16.5,
+    "approximation_error": 0.04,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

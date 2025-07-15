@@ -57,7 +57,7 @@ deploy_metrics_server() {
     
     if ! kubectl get deployment metrics-server -n kube-system >/dev/null 2>&1; then
         log "Deploying metrics server..."
-        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+        kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         
         # Wait for metrics server to be ready (with shorter timeout)
         kubectl wait --for=condition=available deployment/metrics-server -n kube-system --timeout=60s || warning "Metrics server taking longer to start, continuing..."
@@ -260,7 +260,7 @@ generate_report() {
         echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
         echo "Namespace: $NAMESPACE"
         echo "Phase: $PHASE"
-        echo "=============================================="
+        echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "HPA Status:"

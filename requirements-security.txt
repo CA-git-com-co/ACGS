@@ -11,28 +11,28 @@
 Pillow>=10.2.0,<11.0.0
 
 # Cryptographic operations (High/Critical vulnerabilities)
-cryptography>=42.0.0,<43.0.0
+cryptography>=43.0.1
 
 # Natural language processing (High severity deserialization)
 nltk>=3.8.2,<4.0.0
 
 # HTTP and networking security
-requests>=2.31.0,<3.0.0
-urllib3>=2.0.7,<3.0.0
-certifi>=2023.7.22
+requests>=2.32.4
+urllib3>=2.5.0
+certifi>=2025.6.15
 
 # ============================================================================
 # HIGH PRIORITY SECURITY UPDATES
 # ============================================================================
 
 # ML/AI frameworks (ReDoS and input validation vulnerabilities)
-transformers>=4.36.0,<5.0.0
-torch>=2.1.0,<3.0.0
-numpy>=1.24.4,<2.0.0
+transformers>=4.52.1
+torch>=2.7.1
+numpy>=1.24.4
 
 # Web framework security
-fastapi>=0.104.1,<1.0.0
-uvicorn>=0.24.0,<1.0.0
+fastapi>=0.115.6
+uvicorn>=0.34.0
 starlette>=0.27.0,<1.0.0
 
 # Database security
@@ -50,8 +50,8 @@ bcrypt>=4.0.1,<5.0.0
 # ============================================================================
 
 # Code formatting and linting (ReDoS vulnerability)
-black>=24.0.0,<25.0.0
-ruff>=0.1.6,<1.0.0
+black>=24.3.0
+ruff>=0.8.4
 
 # Progress bars and CLI (injection vulnerability)
 tqdm>=4.66.0,<5.0.0
@@ -59,7 +59,7 @@ click>=8.1.7,<9.0.0
 
 # Data processing
 pandas>=2.1.3,<3.0.0
-pydantic>=2.5.0,<3.0.0
+pydantic>=2.10.5
 
 # Configuration and environment
 python-dotenv>=1.0.0,<2.0.0
@@ -76,12 +76,12 @@ pip-audit>=2.6.0,<3.0.0
 semgrep>=1.45.0,<2.0.0
 
 # Testing security
-pytest>=7.4.0,<8.0.0
+pytest>=8.3.4
 pytest-cov>=4.1.0,<5.0.0
 pytest-asyncio>=0.21.0,<1.0.0
 
 # Type checking and quality
-mypy>=1.7.0,<2.0.0
+mypy>=1.13.0
 types-requests>=2.31.0
 types-redis>=4.6.0
 
@@ -121,12 +121,12 @@ jsonschema>=4.19.0,<5.0.0  # Schema validation for constitutional compliance
 # ============================================================================
 
 # Prevent vulnerable transitive dependencies
-setuptools>=68.0.0,<70.0.0  # Fix for arbitrary code execution
+setuptools>=80.9.0  # Fix for arbitrary code execution
 wheel>=0.42.0,<1.0.0
 pip>=23.3.0,<24.0.0
 
 # Networking stack security
-idna>=3.4,<4.0.0
+idna>=3.7
 charset-normalizer>=3.3.0,<4.0.0
 
 # ============================================================================

@@ -14,12 +14,18 @@ import time
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from services.core.governance_synthesis.app.core.opa_integration import (
+from services.core.governance-synthesis.gs_service.app.core.opa_integration import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     OPAIntegrationError,
     PolicyDecisionResponse,
     PolicyValidationResult,
 )
-from services.core.governance_synthesis.app.services.policy_validator import (
+from services.core.governance-synthesis.gs_service.app.services.policy_validator import (
     ComplianceCheckResult,
     ConflictDetectionResult,
     ConstitutionalValidationResult,

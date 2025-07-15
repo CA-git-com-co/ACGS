@@ -110,7 +110,7 @@ class OptimizedConnectionPool:
                 port=self.config.port,
                 database=self.config.database,
                 user=self.config.user,
-                password=self.config.password,
+                password=os.environ.get("PASSWORD")
                 min_size=self.config.min_size,
                 max_size=self.config.max_size,
                 max_queries=self.config.max_queries,

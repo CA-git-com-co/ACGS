@@ -57,7 +57,7 @@ class ACGSRepositoryIndexer:
             "*.toml",
             "*.ini",
             "*.conf",
-            "*.env*",
+            "*config/environments/development.env*",
             "*/config/*",
             "*/configs/*",
             "*/configuration/*",
@@ -284,14 +284,14 @@ class ACGSRepositoryIndexer:
         """Scan a configuration directory for relevant files."""
         config_files = []
 
-        config_extensions = {".yml", ".yaml", ".json", ".toml", ".ini", ".conf", ".env"}
+        config_extensions = {".yml", ".yaml", ".json", ".toml", ".ini", ".conf", "config/environments/development.env"}
 
         for file_path in config_dir.rglob("*"):
             if file_path.is_file():
                 if (
                     file_path.suffix in config_extensions
                     or "docker-compose" in file_path.name.lower()
-                    or file_path.name.lower().startswith(("dockerfile", ".env"))
+                    or file_path.name.lower().startswith(("dockerfile", "config/environments/development.env"))
                 ):
 
                     config_files.append(

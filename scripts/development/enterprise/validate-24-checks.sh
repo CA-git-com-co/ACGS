@@ -1,10 +1,12 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Enterprise CI/CD 24-Check Validation Script
 # Validates all enterprise-grade CI/CD pipeline checks for zero-tolerance compliance
 # requires: All 24 enterprise checks pass, <5 minute builds, >99.5% availability
 # ensures: Enterprise compliance scoring 8-9/10, zero critical vulnerabilities
-# sha256: b7e4f2a1c8d9e6f3b2a5d8c7f4e1b9a6d3f2e5c8b7a4d1f6e9c2b5a8d7f4e1b3
+# sha256: b7e4f2a1c8d9e6f3b2a5d8c7f4e1b9a6d3f2e5c8b7a4d1f6e9c2b5a8d7f4e1b3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 set -euo pipefail
 
@@ -165,7 +167,7 @@ run_24_checks() {
     validate_check "07_cargo_audit" "command -v cargo-audit" "security" "true" || ((total_failures++, critical_failures++))
     validate_check "08_cargo_deny" "command -v cargo-deny" "security" "true" || ((total_failures++, critical_failures++))
     validate_check "09_crypto_patches" "grep -q 'ed25519-dalek.*git' blockchain/Cargo.toml" "security" "true" || ((total_failures++, critical_failures++))
-    validate_check "10_ed25519_patches" "grep -q '1042cb60a07cdaacb59ca209716b69f444460f8f' blockchain/Cargo.toml" "security" "true" || ((total_failures++, critical_failures++))
+    validate_check "10_ed25519_patches" "grep -q '1042cb60a07cdaacb59ca209716b69f444460f8f' blockchain/Cargo.toml" "security" "true" || ((total_failures++, critical_failures++))  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     validate_check "11_audit_config" "[ -f blockchain/audit.toml ]" "security" "true" || ((total_failures++, critical_failures++))
     validate_check "12_deny_config" "[ -f blockchain/deny.toml ]" "security" "true" || ((total_failures++, critical_failures++))
     validate_check "13_trivy_available" "command -v trivy || echo 'trivy via action'" "security" "false" || ((total_failures++))

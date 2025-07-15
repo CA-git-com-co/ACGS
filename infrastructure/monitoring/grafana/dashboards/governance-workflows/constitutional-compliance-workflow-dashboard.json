@@ -84,7 +84,7 @@
       },
       {
         "id": 2,
-        "title": "Validation → Assessment Transition Rate",
+        "title": "Validation \u2192 Assessment Transition Rate",
         "type": "graph",
         "targets": [
           {
@@ -107,7 +107,7 @@
       },
       {
         "id": 3,
-        "title": "Assessment → Enforcement Transition Rate",
+        "title": "Assessment \u2192 Enforcement Transition Rate",
         "type": "graph",
         "targets": [
           {

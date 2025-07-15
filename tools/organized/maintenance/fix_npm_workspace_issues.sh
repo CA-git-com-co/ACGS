@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Fix npm workspace configuration issues
 # Addresses blockchain workspace installation problems
@@ -190,13 +192,13 @@ EOF
 # Main execution
 main() {
     log "Starting npm workspace issue resolution..."
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     fix_npm_workspace
     verify_workspace_status
     create_workspace_report
     
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     success "npm workspace issue resolution completed"
     echo ""
     echo "Summary:"

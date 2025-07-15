@@ -6,7 +6,7 @@ set -e
 
 echo "🔄 Deploying ACGS-1 Lite Evolution Oversight Service"
 echo "Constitutional Hash: cdd01ef066bc6cf2"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Configuration
 SERVICE_NAME="evolution-oversight-service"
@@ -63,7 +63,7 @@ docker run -d \
     --network host \
     -p ${SERVICE_PORT}:${SERVICE_PORT} \
     -p ${METRICS_PORT}:${METRICS_PORT} \
-    -e DATABASE_URL="postgresql://acgs_user:acgs_password@localhost:5432/acgs_evolution" \
+    -e DATABASE_URL=os.environ.get("DATABASE_URL") \
     -e REDIS_URL="redis://localhost:6379/3" \
     -e AUDIT_ENGINE_URL="http://localhost:8003" \
     -e POLICY_ENGINE_URL="http://localhost:8001" \

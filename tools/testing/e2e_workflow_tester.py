@@ -90,7 +90,7 @@ class E2EWorkflowTester:
         """Simulate user authentication."""
         try:
             username = credentials.get("username")
-            password = credentials.get("password")
+            password = os.environ.get("PASSWORD")password")
 
             # Mock authentication logic
             if username and password and len(password) >= 8:

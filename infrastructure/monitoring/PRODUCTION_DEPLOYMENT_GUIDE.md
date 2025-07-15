@@ -136,7 +136,7 @@ tls_server_config:
 
 ```bash
 # Create secure environment file
-cat > /etc/acgs/monitoring.env << EOF
+cat > /etc/acgs/monitoringconfig/environments/development.env << EOF
 # Grafana Configuration
 GRAFANA_ADMIN_PASSWORD=$(openssl rand -base64 32)
 GRAFANA_SECRET_KEY=$(openssl rand -base64 32)
@@ -156,8 +156,8 @@ BACKUP_ENCRYPTION_KEY=$(openssl rand -base64 32)
 EOF
 
 # Secure the environment file
-chmod 600 /etc/acgs/monitoring.env
-chown root:root /etc/acgs/monitoring.env
+chmod 600 /etc/acgs/monitoringconfig/environments/development.env
+chown root:root /etc/acgs/monitoringconfig/environments/development.env
 ```
 
 ### SSL/TLS Configuration

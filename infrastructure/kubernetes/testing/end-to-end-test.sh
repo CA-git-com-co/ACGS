@@ -179,7 +179,7 @@ test_load_testing_framework() {
     
     # Test 9: Load Test Script Validation
     log_test "Testing load test script validation..."
-    if [[ -x "infrastructure/kubernetes/load-test.sh" ]] && [[ -x "infrastructure/kubernetes/testing/comprehensive-load-test.sh" ]]; then
+    if [[ -x "infrastructure/kubernetes/load-test.sh" ]] && [[ -x "infrastructure/kubernetes/testing/comprehensive-load-test.sh" ]]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "load_test_script_validation" "PASS"
     else
         record_test "load_test_script_validation" "FAIL"
@@ -188,13 +188,13 @@ test_load_testing_framework() {
     # Test 10: Performance Targets Definition
     log_test "Testing performance targets definition..."
     local targets_found=0
-    if grep -q "2.0" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then
+    if grep -q "2.0" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((targets_found++))
     fi
-    if grep -q "1000" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then
+    if grep -q "1000" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((targets_found++))
     fi
-    if grep -q "0.95" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then
+    if grep -q "0.95" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((targets_found++))
     fi
     
@@ -206,7 +206,7 @@ test_load_testing_framework() {
     
     # Test 11: Constitutional Compliance Testing
     log_test "Testing constitutional compliance testing framework..."
-    if grep -q "constitutional_compliance_test" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then
+    if grep -q "constitutional_compliance_test" infrastructure/kubernetes/testing/comprehensive-load-test.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "constitutional_compliance_testing" "PASS"
     else
         record_test "constitutional_compliance_testing" "FAIL"
@@ -219,7 +219,7 @@ test_production_deployment() {
     
     # Test 12: Blue-Green Deployment Script
     log_test "Testing blue-green deployment script..."
-    if [[ -x "infrastructure/kubernetes/production/blue-green-deployment.sh" ]]; then
+    if [[ -x "infrastructure/kubernetes/production/blue-green-deployment.sh" ]]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "blue_green_deployment_script" "PASS"
     else
         record_test "blue_green_deployment_script" "FAIL"
@@ -227,7 +227,7 @@ test_production_deployment() {
     
     # Test 13: Traffic Router Configuration
     log_test "Testing traffic router configuration..."
-    if grep -q "acgs-production-router" infrastructure/kubernetes/production/blue-green-deployment.sh; then
+    if grep -q "acgs-production-router" infrastructure/kubernetes/production/blue-green-deployment.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "traffic_router_configuration" "PASS"
     else
         record_test "traffic_router_configuration" "FAIL"
@@ -235,7 +235,7 @@ test_production_deployment() {
     
     # Test 14: Rollback Capability
     log_test "Testing rollback capability..."
-    if grep -q "rollback_deployment" infrastructure/kubernetes/production/blue-green-deployment.sh; then
+    if grep -q "rollback_deployment" infrastructure/kubernetes/production/blue-green-deployment.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "rollback_capability" "PASS"
     else
         record_test "rollback_capability" "FAIL"
@@ -243,8 +243,8 @@ test_production_deployment() {
     
     # Test 15: Emergency Shutdown Procedures
     log_test "Testing emergency shutdown procedures..."
-    if grep -q "emergency_shutdown" infrastructure/kubernetes/operations/emergency-response.sh && \
-       grep -q "30.*min" infrastructure/kubernetes/operations/emergency-response.sh; then
+    if grep -q "emergency_shutdown" infrastructure/kubernetes/operations/emergency-response.sh && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "30.*min" infrastructure/kubernetes/operations/emergency-response.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "emergency_shutdown_procedures" "PASS"
     else
         record_test "emergency_shutdown_procedures" "FAIL"
@@ -287,7 +287,7 @@ test_monitoring_observability() {
     
     # Test 19: Prometheus Configuration
     log_test "Testing Prometheus configuration..."
-    if [[ -f "infrastructure/kubernetes/prometheus.yaml" ]] && [[ -f "infrastructure/kubernetes/monitoring/prometheus-rules.yaml" ]]; then
+    if [[ -f "infrastructure/kubernetes/prometheus.yaml" ]] && [[ -f "infrastructure/kubernetes/monitoring/prometheus-rules.yaml" ]]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "prometheus_configuration" "PASS"
     else
         record_test "prometheus_configuration" "FAIL"
@@ -295,7 +295,7 @@ test_monitoring_observability() {
     
     # Test 20: Grafana Dashboard Configuration
     log_test "Testing Grafana dashboard configuration..."
-    if [[ -f "infrastructure/kubernetes/grafana.yaml" ]] && [[ -f "infrastructure/kubernetes/monitoring/grafana-dashboard.json" ]]; then
+    if [[ -f "infrastructure/kubernetes/grafana.yaml" ]] && [[ -f "infrastructure/kubernetes/monitoring/grafana-dashboard.json" ]]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "grafana_dashboard_configuration" "PASS"
     else
         record_test "grafana_dashboard_configuration" "FAIL"
@@ -303,7 +303,7 @@ test_monitoring_observability() {
     
     # Test 21: Constitutional Compliance Monitoring
     log_test "Testing constitutional compliance monitoring..."
-    if grep -q "constitutional_compliance_score" infrastructure/kubernetes/monitoring/prometheus-rules.yaml; then
+    if grep -q "constitutional_compliance_score" infrastructure/kubernetes/monitoring/prometheus-rules.yaml; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "constitutional_compliance_monitoring" "PASS"
     else
         record_test "constitutional_compliance_monitoring" "FAIL"
@@ -311,8 +311,8 @@ test_monitoring_observability() {
     
     # Test 22: Health Monitoring System
     log_test "Testing health monitoring system..."
-    if [[ -x "infrastructure/kubernetes/operations/health-monitor.sh" ]] && \
-       grep -q "check_constitutional_compliance" infrastructure/kubernetes/operations/health-monitor.sh; then
+    if [[ -x "infrastructure/kubernetes/operations/health-monitor.sh" ]] && \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+       grep -q "check_constitutional_compliance" infrastructure/kubernetes/operations/health-monitor.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         record_test "health_monitoring_system" "PASS"
     else
         record_test "health_monitoring_system" "FAIL"
@@ -343,10 +343,10 @@ test_security_compliance() {
     # Test 25: Constitutional AI Governance
     log_test "Testing constitutional AI governance..."
     local governance_components=0
-    if grep -q "$CONSTITUTIONAL_HASH" infrastructure/kubernetes/services/constitutional-ai-service.yaml; then
+    if grep -q "$CONSTITUTIONAL_HASH" infrastructure/kubernetes/services/constitutional-ai-service.yaml; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((governance_components++))
     fi
-    if grep -q "COMPLIANCE_THRESHOLD" infrastructure/kubernetes/services/constitutional-ai-service.yaml; then
+    if grep -q "COMPLIANCE_THRESHOLD" infrastructure/kubernetes/services/constitutional-ai-service.yaml; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ((governance_components++))
     fi
     
@@ -408,7 +408,7 @@ generate_test_report() {
         echo "Generated: $(date '+%Y-%m-%d %H:%M:%S')"
         echo "Test Duration: ${duration} seconds"
         echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
-        echo "========================================"
+        echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Test Summary:"

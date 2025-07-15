@@ -79,7 +79,7 @@ processors:
         sampling_percentage: 5
   resource:
     attributes:
-    - key: deployment.environment
+    - key: deploymentconfig/environments/development.environment
       value: production
       action: upsert
     - key: service.namespace

@@ -26,9 +26,9 @@ Repository for **Darwin Gödel Machine (DGM)**, a novel self-improving system th
 ```bash
 # API keys, add to ~/.bashrc
 # Copy environment templates
-cp .env.example .env
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
 
-# Configure API keys in .env file
+# Configure API keys in config/environments/development.env file
 ```
 
 ```bash

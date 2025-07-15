@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS Repository Reorganization Quick Start Script
 #
@@ -6,7 +8,7 @@
 set -e
 
 echo "ACGS Repository Reorganization Quick Start"
-echo "=========================================="
+echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Colors for output
 GREEN='\033[0;32m'

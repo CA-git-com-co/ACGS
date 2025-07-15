@@ -14,10 +14,10 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 echo -e "${BLUE}"
-echo "===================================================================================="
+echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "ACGS Production Secrets Initialization"
 echo "Constitutional Hash: cdd01ef066bc6cf2"
-echo "===================================================================================="
+echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo -e "${NC}"
 
 # Check if running as root (not recommended for production)
@@ -47,15 +47,15 @@ generate_jwt_secret() {
 generate_db_passwords() {
     echo -e "${BLUE}Generating database passwords...${NC}"
 
-    echo "# Database Passwords - Generated $(date)" > "$SECRETS_DIR/db_passwords.env"
-    echo "POSTGRES_PASSWORD=$(generate_password 32)" >> "$SECRETS_DIR/db_passwords.env"
-    echo "ACGS_AUTH_DB_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/db_passwords.env"
-    echo "ACGS_CONSTITUTIONAL_DB_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/db_passwords.env"
-    echo "ACGS_INTEGRITY_DB_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/db_passwords.env"
-    echo "ACGS_POLICY_DB_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/db_passwords.env"
-    echo "ACGS_SYNTHESIS_DB_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/db_passwords.env"
+    echo "# Database Passwords - Generated $(date)" > "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    echo "POSTGRES_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    echo "ACGS_AUTH_DB_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    echo "ACGS_CONSTITUTIONAL_DB_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    echo "ACGS_INTEGRITY_DB_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    echo "ACGS_POLICY_DB_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    echo "ACGS_SYNTHESIS_DB_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
 
-    chmod 600 "$SECRETS_DIR/db_passwords.env"
+    chmod 600 "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
     echo -e "${GREEN}✓ Database passwords generated${NC}"
 }
 
@@ -63,13 +63,13 @@ generate_db_passwords() {
 generate_app_secrets() {
     echo -e "${BLUE}Generating application secrets...${NC}"
 
-    echo "# Application Secrets - Generated $(date)" > "$SECRETS_DIR/app_secrets.env"
-    echo "JWT_SECRET_KEY=$(generate_jwt_secret)" >> "$SECRETS_DIR/app_secrets.env"
-    echo "REDIS_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/app_secrets.env"
-    echo "CSRF_SECRET_KEY=$(generate_password 32)" >> "$SECRETS_DIR/app_secrets.env"
-    echo "SESSION_SECRET_KEY=$(generate_password 32)" >> "$SECRETS_DIR/app_secrets.env"
+    echo "# Application Secrets - Generated $(date)" > "$SECRETS_DIR/app_secretsconfig/environments/development.env"
+    echo "JWT_SECRET_KEY=$(generate_jwt_secret)" >> "$SECRETS_DIR/app_secretsconfig/environments/development.env"
+    echo "REDIS_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/app_secretsconfig/environments/development.env"
+    echo "CSRF_SECRET_KEY=$(generate_password 32)" >> "$SECRETS_DIR/app_secretsconfig/environments/development.env"
+    echo "SESSION_SECRET_KEY=$(generate_password 32)" >> "$SECRETS_DIR/app_secretsconfig/environments/development.env"
 
-    chmod 600 "$SECRETS_DIR/app_secrets.env"
+    chmod 600 "$SECRETS_DIR/app_secretsconfig/environments/development.env"
     echo -e "${GREEN}✓ Application secrets generated${NC}"
 }
 
@@ -127,12 +127,12 @@ EOF
 generate_monitoring_secrets() {
     echo -e "${BLUE}Generating monitoring secrets...${NC}"
 
-    echo "# Monitoring Secrets - Generated $(date)" > "$SECRETS_DIR/monitoring_secrets.env"
-    echo "PROMETHEUS_ADMIN_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/monitoring_secrets.env"
-    echo "GRAFANA_ADMIN_PASSWORD=$(generate_password 24)" >> "$SECRETS_DIR/monitoring_secrets.env"
-    echo "ALERTMANAGER_SECRET=$(generate_password 32)" >> "$SECRETS_DIR/monitoring_secrets.env"
+    echo "# Monitoring Secrets - Generated $(date)" > "$SECRETS_DIR/monitoring_secretsconfig/environments/development.env"
+    echo "PROMETHEUS_ADMIN_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/monitoring_secretsconfig/environments/development.env"
+    echo "GRAFANA_ADMIN_PASSWORD=os.environ.get("PASSWORD") >> "$SECRETS_DIR/monitoring_secretsconfig/environments/development.env"
+    echo "ALERTMANAGER_SECRET=$(generate_password 32)" >> "$SECRETS_DIR/monitoring_secretsconfig/environments/development.env"
 
-    chmod 600 "$SECRETS_DIR/monitoring_secrets.env"
+    chmod 600 "$SECRETS_DIR/monitoring_secretsconfig/environments/development.env"
     echo -e "${GREEN}✓ Monitoring secrets generated${NC}"
 }
 
@@ -141,36 +141,36 @@ create_production_env() {
     echo -e "${BLUE}Creating production environment file...${NC}"
 
     # Copy template
-    cp .env.production.template .env.production
+    cp config/environments/developmentconfig/environments/production.template.env config/environments/developmentconfig/environments/production.env.backup
 
     # Source generated secrets
-    source "$SECRETS_DIR/db_passwords.env"
-    source "$SECRETS_DIR/app_secrets.env"
-    source "$SECRETS_DIR/monitoring_secrets.env"
+    source "$SECRETS_DIR/db_passwordsconfig/environments/development.env"
+    source "$SECRETS_DIR/app_secretsconfig/environments/development.env"
+    source "$SECRETS_DIR/monitoring_secretsconfig/environments/development.env"
 
-    # Replace placeholders in .env.production
-    sed -i "s/CHANGE_ME_STRONG_PASSWORD_HERE/$POSTGRES_PASSWORD/g" .env.production
-    sed -i "s/CHANGE_ME_AUTH_PASSWORD/$ACGS_AUTH_DB_PASSWORD/g" .env.production
-    sed -i "s/CHANGE_ME_CONSTITUTIONAL_PASSWORD/$ACGS_CONSTITUTIONAL_DB_PASSWORD/g" .env.production
-    sed -i "s/CHANGE_ME_INTEGRITY_PASSWORD/$ACGS_INTEGRITY_DB_PASSWORD/g" .env.production
-    sed -i "s/CHANGE_ME_POLICY_PASSWORD/$ACGS_POLICY_DB_PASSWORD/g" .env.production
-    sed -i "s/CHANGE_ME_SYNTHESIS_PASSWORD/$ACGS_SYNTHESIS_DB_PASSWORD/g" .env.production
-    sed -i "s/CHANGE_ME_REDIS_PASSWORD/$REDIS_PASSWORD/g" .env.production
-    sed -i "s|CHANGE_ME_GENERATE_RANDOM_64_BYTE_KEY_HERE|$JWT_SECRET_KEY|g" .env.production
+    # Replace placeholders in config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_STRONG_PASSWORD_HERE/$POSTGRES_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_AUTH_PASSWORD/$ACGS_AUTH_DB_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_CONSTITUTIONAL_PASSWORD/$ACGS_CONSTITUTIONAL_DB_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_INTEGRITY_PASSWORD/$ACGS_INTEGRITY_DB_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_POLICY_PASSWORD/$ACGS_POLICY_DB_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_SYNTHESIS_PASSWORD/$ACGS_SYNTHESIS_DB_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s/CHANGE_ME_REDIS_PASSWORD/$REDIS_PASSWORD/g" config/environments/developmentconfig/environments/production.env.backup
+    sed -i "s|CHANGE_ME_GENERATE_RANDOM_64_BYTE_KEY_HERE|$JWT_SECRET_KEY|g" config/environments/developmentconfig/environments/production.env.backup
 
-    chmod 600 .env.production
+    chmod 600 config/environments/developmentconfig/environments/production.env.backup
     echo -e "${GREEN}✓ Production environment file created${NC}"
 }
 
 # Function to display security checklist
 display_security_checklist() {
     echo -e "${YELLOW}"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "PRODUCTION SECURITY CHECKLIST"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🔒 Secrets generated and stored with restricted permissions"
-    echo "🔒 Review and update CORS_ORIGINS in .env.production"
-    echo "🔒 Review and update ALLOWED_HOSTS in .env.production"
+    echo "🔒 Review and update CORS_ORIGINS in config/environments/developmentconfig/environments/production.env.backup"
+    echo "🔒 Review and update ALLOWED_HOSTS in config/environments/developmentconfig/environments/production.env.backup"
     echo "🔒 Configure proper TLS certificates from trusted CA"
     echo "🔒 Configure backup destinations (S3, etc.)"
     echo "🔒 Configure monitoring alerts (Slack, PagerDuty)"
@@ -179,16 +179,16 @@ display_security_checklist() {
     echo "🔒 Test disaster recovery procedures"
     echo "🔒 Secure secrets management (consider HashiCorp Vault)"
     echo "🔒 Regular security updates and vulnerability scanning"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo -e "${NC}"
 }
 
 # Function to display constitutional compliance reminder
 display_constitutional_compliance() {
     echo -e "${BLUE}"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "CONSTITUTIONAL COMPLIANCE VERIFICATION"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional Hash: cdd01ef066bc6cf2"
     echo ""
     echo "Verify that all generated configurations maintain constitutional compliance:"
@@ -197,7 +197,7 @@ display_constitutional_compliance() {
     echo "✓ Access controls follow constitutional principles"
     echo "✓ Data protection meets constitutional requirements"
     echo "✓ Monitoring includes constitutional compliance checks"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo -e "${NC}"
 }
 
@@ -219,17 +219,17 @@ main() {
     create_production_env
 
     echo -e "${GREEN}"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ ACGS Production Secrets Initialization Complete!"
-    echo "===================================================================================="
+    echo "===================================================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo -e "${NC}"
 
     display_security_checklist
     display_constitutional_compliance
 
     echo -e "${BLUE}Next steps:${NC}"
-    echo "1. Review and customize .env.production"
-    echo "2. Deploy using: docker-compose -f docker-compose.production.yml up -d"
+    echo "1. Review and customize config/environments/developmentconfig/environments/production.env.backup"
+    echo "2. Deploy using: docker-compose -f config/docker/docker-compose.production.yml up -d"
     echo "3. Verify all services are healthy"
     echo "4. Configure monitoring and alerting"
     echo "5. Perform security testing"

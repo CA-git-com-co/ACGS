@@ -303,7 +303,7 @@ Thank you for contributing to ACGS-1! Together, we're building the future of con
 set -e
 
 echo "🚀 Welcome to ACGS-1 Development Environment Setup!"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Check prerequisites
 echo "📋 Checking prerequisites..."
@@ -478,9 +478,9 @@ This guide helps existing contributors adapt to the new blockchain-focused direc
 | Old Import | New Import |
 |------------|------------|
 | `from services.core.backend.shared` | `from services.shared` |
-| `from services.core.backend.ac_service` | `from services.core.constitutional_ai.ac_service` |
-| `from shared.models` | `from services.shared.models` |
-| `import src.backend.gs_service` | `import services.core.governance_synthesis.gs_service` |
+| `from services.core.backend.ac_service` | `from services.core.constitutional-ai.ac_service` |
+| `from services.shared.models` | `from services.shared.models` |
+| `import src.backend.gs_service` | `import services.core.governance-synthesis.gs_service` |
 
 ### Docker & Deployment Changes
 
@@ -523,7 +523,7 @@ from services.core.backend.ac_service.app.main import app
 
 # New
 from services.shared.models import User
-from services.core.constitutional_ai.ac_service.app.main import app
+from services.core.constitutional-ai.ac_service.app.main import app
 ```
 
 **TypeScript/JavaScript**:
@@ -639,7 +639,7 @@ COPY services/shared /app/shared
 **Solution**: Update test imports and file paths:
 ```python
 # Update test imports
-from services.core.constitutional_ai.ac_service.app.main import app
+from services.core.constitutional-ai.ac_service.app.main import app
 
 # Update test file paths
 test_file = "services/shared/test_data/sample.json"

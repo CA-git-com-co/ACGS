@@ -28,7 +28,7 @@ class SentrySetupManager:
     """Manages Sentry integration setup for ACGS-2"""
     
     def __init__(self, environment: str = "development"):
-        self.environment = environment
+        selfconfig/environments/development.environment = environment
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.acgs_root = ACGS_ROOT
         self.sentry_config = {}
@@ -102,8 +102,8 @@ class SentrySetupManager:
         """Load Sentry configuration from environment"""
         print(f"📋 Loading Sentry configuration...")
         
-        # Load from .env.sentry if it exists
-        env_file = self.acgs_root / ".env.sentry"
+        # Load from config/environments/development.env.sentry if it exists
+        env_file = self.acgs_root / "config/environments/development.env.sentry"
         if env_file.exists():
             print(f"📁 Loading from {env_file}")
             with open(env_file) as f:
@@ -126,12 +126,12 @@ class SentrySetupManager:
                 
         if missing_vars:
             print(f"❌ Missing required environment variables: {missing_vars}")
-            print(f"💡 Copy .env.sentry.example to .env.sentry and configure")
+            print(f"💡 Copy config/environments/developmentconfig/environments/sentry.example.env to config/environments/development.env.sentry and configure")
             return False
             
         self.sentry_config = {
             "dsn": os.getenv("SENTRY_DSN"),
-            "environment": os.getenv("SENTRY_ENVIRONMENT", self.environment),
+            "environment": os.getenv("SENTRY_ENVIRONMENT", selfconfig/environments/development.environment),
             "release": os.getenv("SENTRY_RELEASE", "acgs-2.0.0"),
             "traces_sample_rate": float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "1.0")),
             "profiles_sample_rate": float(os.getenv("SENTRY_PROFILES_SAMPLE_RATE", "1.0")),
@@ -186,7 +186,7 @@ from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
 
-# Try to import shared Sentry utilities
+# Try to import services.shared Sentry utilities
 try:
     from services.shared.monitoring.sentry_integration import init_sentry
     SHARED_SENTRY_AVAILABLE = True
@@ -462,7 +462,7 @@ if os.getenv("SENTRY_DSN"):
         """Run the complete Sentry setup process"""
         print(f"🚀 Starting ACGS-2 Sentry Integration Setup")
         print(f"📍 Constitutional Hash: {CONSTITUTIONAL_HASH}")
-        print(f"🌍 Environment: {self.environment}")
+        print(f"🌍 Environment: {selfconfig/environments/development.environment}")
         print(f"📁 ACGS Root: {self.acgs_root}")
         print(f"🔧 Services Found: {len(self.services)}")
         print()
@@ -493,7 +493,7 @@ if os.getenv("SENTRY_DSN"):
         print(f"🎉 ACGS-2 Sentry Integration Setup Complete!")
         print()
         print(f"📋 Next Steps:")
-        print(f"1. Configure .env.sentry with your actual Sentry DSN")
+        print(f"1. Configure config/environments/development.env.sentry with your actual Sentry DSN")
         print(f"2. Start the monitoring stack: docker-compose -f infrastructure/docker/docker-compose.monitoring.yml up -d")
         print(f"3. Deploy ACGS-2 services with Sentry monitoring")
         print(f"4. Check Sentry dashboard for constitutional compliance monitoring")
@@ -522,7 +522,7 @@ def main():
     
     args = parser.parse_args()
     
-    setup_manager = SentrySetupManager(environment=args.environment)
+    setup_manager = SentrySetupManager(environment=argsconfig/environments/development.environment)
     
     if setup_manager.run_setup():
         sys.exit(0)

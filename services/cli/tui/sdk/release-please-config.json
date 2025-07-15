@@ -1,4 +1,6 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "packages": {
     ".": {}
   },
@@ -64,6 +66,5 @@
     "internal/version.go",
     "README.md"
   ],
-  "_constitutional_hash": "cdd01ef066bc6cf2",
-  "constitutional_hash": "cdd01ef066bc6cf2"
+  "_constitutional_hash": "cdd01ef066bc6cf2"
 }

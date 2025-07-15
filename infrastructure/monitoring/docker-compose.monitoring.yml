@@ -18,7 +18,7 @@ services:
     - prometheus
     environment:
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
-      GF_SECURITY_ADMIN_PASSWORD: acgs_admin_2025
+      GF_SECURITY_ADMIN_PASSWORD: os.environ.get("PASSWORD")
       GF_USERS_ALLOW_SIGN_UP: 'false'
     image: grafana/grafana:latest
     networks:
@@ -49,8 +49,39 @@ services:
     - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     - ./config/rules:/etc/prometheus/rules:ro
     - prometheus_data:/prometheus
+
+  # 5-Tier Router Metrics Exporter
+  router-metrics-exporter:
+    build:
+      context: ./router-metrics-exporter
+      dockerfile: Dockerfile
+    container_name: acgs-router-metrics-exporter
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      - ROUTER_URL=http://hybrid-router:8000
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - TIER_1_TARGET_LATENCY=50
+      - TIER_2_TARGET_LATENCY=100
+      - TIER_3_TARGET_LATENCY=200
+      - TIER_4_TARGET_LATENCY=600
+      - TIER_5_TARGET_LATENCY=900
+    networks:
+    - acgs-monitoring
+    depends_on:
+    - prometheus
+
+  # Node Exporter for system metrics
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: acgs-node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    networks:
+    - acgs-monitoring
 version: '3.8'
 volumes:
   grafana_data: {}
   prometheus_data: {}
-constitutional_hash: cdd01ef066bc6cf2

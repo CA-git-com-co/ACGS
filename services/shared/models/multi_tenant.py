@@ -11,7 +11,7 @@ import uuid
 from datetime import datetime, timezone
 from enum import Enum
 
-from shared.database import Base
+from services.shared.database import Base
 from sqlalchemy import (
     JSON,
     Boolean,

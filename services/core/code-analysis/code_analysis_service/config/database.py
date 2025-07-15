@@ -43,7 +43,7 @@ class DatabaseManager:
             port: Database port
             database: Database name
             username: Database username
-            password: Database password
+            password: os.environ.get("PASSWORD")
             min_connections: Minimum connections in pool
             max_connections: Maximum connections in pool
             command_timeout: Command timeout in seconds
@@ -52,7 +52,7 @@ class DatabaseManager:
         self.port = port
         self.database = database
         self.username = username
-        self.password = password
+        self.password = os.environ.get("PASSWORD")
         self.min_connections = min_connections
         self.max_connections = max_connections
         self.command_timeout = command_timeout
@@ -89,7 +89,7 @@ class DatabaseManager:
                 port=self.port,
                 database=self.database,
                 user=self.username,
-                password=self.password,
+                password=os.environ.get("PASSWORD")
                 min_size=self.min_connections,
                 max_size=self.max_connections,
                 command_timeout=self.command_timeout,

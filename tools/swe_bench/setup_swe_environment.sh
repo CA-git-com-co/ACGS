@@ -130,25 +130,25 @@ download_swe_data() {
 setup_environment_variables() {
     log_info "Setting up environment variables..."
     
-    # Add to .env file
+    # Add to config/environments/development.env file
     cd "$PROJECT_ROOT"
     
     # Check if PROJECT_FILE_LOC is already set
-    if ! grep -q "PROJECT_FILE_LOC=" .env; then
-        echo "" >> .env
-        echo "# SWE-bench Configuration" >> .env
-        echo "PROJECT_FILE_LOC=$SWE_DATA_DIR" >> .env
-        log_success "Added PROJECT_FILE_LOC to .env"
+    if ! grep -q "PROJECT_FILE_LOC=" config/environments/development.env; then
+        echo "" >> config/environments/development.env
+        echo "# SWE-bench Configuration" >> config/environments/development.env
+        echo "PROJECT_FILE_LOC=$SWE_DATA_DIR" >> config/environments/development.env
+        log_success "Added PROJECT_FILE_LOC to config/environments/development.env"
     else
         log_info "PROJECT_FILE_LOC already configured"
     fi
     
     # Add other SWE-bench related variables
-    if ! grep -q "ENABLE_SWE_BENCH=" .env; then
-        echo "ENABLE_SWE_BENCH=true" >> .env
-        echo "SWE_BENCH_DATASET=swe-bench-verified" >> .env
-        echo "TENSOR_PARALLEL_SIZE=1" >> .env
-        log_success "Added SWE-bench configuration to .env"
+    if ! grep -q "ENABLE_SWE_BENCH=" config/environments/development.env; then
+        echo "ENABLE_SWE_BENCH=true" >> config/environments/development.env
+        echo "SWE_BENCH_DATASET=swe-bench-verified" >> config/environments/development.env
+        echo "TENSOR_PARALLEL_SIZE=1" >> config/environments/development.env
+        log_success "Added SWE-bench configuration to config/environments/development.env"
     fi
 }
 
@@ -330,7 +330,7 @@ validate_installation() {
     fi
     
     # Check environment variables
-    if grep -q "PROJECT_FILE_LOC=" "$PROJECT_ROOT/.env"; then
+    if grep -q "PROJECT_FILE_LOC=" "$PROJECT_ROOT/config/environments/development.env"; then
         log_success "✓ Environment variables configured"
     else
         log_error "✗ Environment variables not configured"

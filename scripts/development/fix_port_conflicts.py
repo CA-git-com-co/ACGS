@@ -161,8 +161,8 @@ PORT_ASSIGNMENTS = {
 
 
 def update_env_file():
-    """Update .env file with all unique port assignments."""
-    env_file_path = ".env"
+    """Update config/environments/development.env file with all unique port assignments."""
+    env_file_path = "config/environments/development.env"
 
     try:
         with open(env_file_path, "r") as f:
@@ -246,11 +246,11 @@ def update_env_file():
         with open(env_file_path, "w") as f:
             f.write("\n".join(new_lines))
 
-        print("✅ Updated .env file with unique port assignments")
+        print("✅ Updated config/environments/development.env file with unique port assignments")
         return True
 
     except Exception as e:
-        print(f"❌ Error updating .env file: {e}")
+        print(f"❌ Error updating config/environments/development.env file: {e}")
         return False
 
 
@@ -266,7 +266,7 @@ def main():
     if success:
         print("🎉 Port conflicts have been resolved!")
         print("📋 Next steps:")
-        print("   1. Review the updated .env file")
+        print("   1. Review the updated config/environments/development.env file")
         print("   2. Update any Docker Compose files that reference hardcoded ports")
         print("   3. Test service startup with new port assignments")
         print("   4. Update documentation with new port mappings")

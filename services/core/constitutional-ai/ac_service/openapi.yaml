@@ -103,7 +103,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConstitutionalComplianceRequest'
+              $ref: '#/components/schemas/ConstitutionalComplianceRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             example:
               policy:
                 id: 'pol_123'
@@ -122,7 +122,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         '400':
           description: Invalid request or constitutional compliance violation
           content:
@@ -147,7 +147,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalHashResponse'
+                $ref: '#/components/schemas/ConstitutionalHashResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   /api/v1/constitutional/validate-advanced:
     post:
@@ -160,14 +160,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdvancedValidationRequest'
+              $ref: '#/components/schemas/AdvancedValidationRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Advanced validation completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdvancedValidationResponse'
+                $ref: '#/components/schemas/AdvancedValidationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   /api/v1/constitutional/analyze:
     post:
@@ -180,14 +180,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConstitutionalAnalysisRequest'
+              $ref: '#/components/schemas/ConstitutionalAnalysisRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Constitutional impact analysis completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalAnalysisResponse'
+                $ref: '#/components/schemas/ConstitutionalAnalysisResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   /api/v1/compliance/status:
     get:
@@ -201,7 +201,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ComplianceStatusResponse'
+                $ref: '#/components/schemas/ComplianceStatusResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   /api/v1/constitutional/violations:
     get:
@@ -377,7 +377,7 @@ components:
 
     AdvancedValidationRequest:
       allOf:
-        - $ref: '#/components/schemas/ConstitutionalComplianceRequest'
+        - $ref: '#/components/schemas/ConstitutionalComplianceRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         - type: object
           properties:
             enable_formal_verification:
@@ -390,7 +390,7 @@ components:
 
     AdvancedValidationResponse:
       allOf:
-        - $ref: '#/components/schemas/ConstitutionalValidationResponse'
+        - $ref: '#/components/schemas/ConstitutionalValidationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         - type: object
           properties:
             advanced_analysis:

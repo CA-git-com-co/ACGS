@@ -6,7 +6,7 @@
 set -e
 
 echo "🚀 ACGS Production Readiness - Service Startup"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Date: $(date)"
 echo "Starting ACGS core services on production ports"
 echo ""
@@ -176,12 +176,12 @@ start_service() {
     stop_service "$service_name" "$port"
     
     # Set environment variables
-    export DATABASE_URL="sqlite+aiosqlite:///./acgs_production.db"
+    export DATABASE_URL=os.environ.get("DATABASE_URL")
     export REDIS_URL="redis://localhost:6379/0"
     export LOG_LEVEL="INFO"
     export SERVICE_PORT="$port"
-    export SECRET_KEY="acgs-production-secret-key-phase1-$(date +%s)"
-    export CSRF_SECRET_KEY="acgs-production-csrf-secret-key-phase1"
+    export SECRET_KEY="acgs-production-secret-key-phase1-$(date +%s)"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    export CSRF_SECRET_KEY="acgs-production-csrf-secret-key-phase1"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     export PYTHONPATH="$PROJECT_ROOT:$PROJECT_ROOT/services:$PYTHONPATH"
 
     # Constitutional compliance configuration
@@ -243,7 +243,7 @@ main() {
     
     echo ""
     print_success "🎉 ACGS Service Startup Completed!"
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ Total services started: $started_services/$total_services"
     echo ""
 
@@ -264,7 +264,7 @@ main() {
 
     echo ""
     echo "📊 ACGS Infrastructure Status"
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ Services Started: $started_services/$total_services"
     echo "✅ Health Checks: $healthy_services/$total_services"
     echo ""

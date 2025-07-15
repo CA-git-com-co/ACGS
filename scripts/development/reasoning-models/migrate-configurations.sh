@@ -122,8 +122,8 @@ update_kubernetes_configs() {
 update_environment_files() {
     log "Updating environment configurations..."
     
-    # Find all .env files
-    find "$PROJECT_ROOT" -name ".env*" -type f | while read -r env_file; do
+    # Find all config/environments/development.env files
+    find "$PROJECT_ROOT" -name "config/environments/development.env*" -type f | while read -r env_file; do
         if grep -q "VLLM\|vllm" "$env_file"; then
             log "Updating $env_file"
             

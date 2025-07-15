@@ -16,11 +16,11 @@ import pytest
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))  # Removed during reorganization
 
 try:
-    from services.core.policy_governance.app.core.opa_client import (
+    from services.core.policy-governance.pgc_service.app.core.opa_client import (
         PolicyEvaluationRequest,
         PolicyEvaluationResponse,
     )
-    from services.core.policy_governance.app.core.wina_enforcement_optimizer import (
+    from services.core.policy-governance.pgc_service.app.core.wina_enforcement_optimizer import (
         EnforcementContext,
         EnforcementStrategy,
         WINAEnforcementMetrics,
@@ -28,7 +28,7 @@ try:
         WINAEnforcementResult,
         get_wina_enforcement_optimizer,
     )
-    from services.core.policy_governance.app.models.policy_models import (
+    from services.core.policy-governance.pgc_service.app.models.policy_models import (
         IntegrityPolicyRule,
     )
 except ImportError:

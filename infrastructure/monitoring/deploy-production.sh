@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Monitoring Infrastructure Production Deployment Script
 # Subtask 13.8: Automated production deployment with comprehensive validation
@@ -135,7 +137,7 @@ initialize_environment() {
     # Initialize deployment log
     echo "ACGS-1 Monitoring Infrastructure Deployment - $TIMESTAMP" > "$DEPLOYMENT_LOG"
     echo "Environment: $ENVIRONMENT" >> "$DEPLOYMENT_LOG"
-    echo "=======================================================" >> "$DEPLOYMENT_LOG"
+    echo "=======================================================" >> "$DEPLOYMENT_LOG"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     success "Environment initialized"
 }
@@ -145,31 +147,31 @@ generate_secure_config() {
     log "Generating secure configuration..."
     
     # Generate random passwords and keys
-    local grafana_admin_password=$(openssl rand -base64 32)
+    local grafana_admin_password=os.environ.get("PASSWORD")
     local grafana_secret_key=$(openssl rand -base64 32)
-    local prometheus_password=$(openssl rand -base64 16)
+    local prometheus_password=os.environ.get("PASSWORD")
     local prometheus_password_hash=$(htpasswd -nbB acgs_monitor "$prometheus_password" | cut -d: -f2)
     local backup_encryption_key=$(openssl rand -base64 32)
     
     # Create secure environment file
-    cat > /etc/acgs/monitoring.env << EOF
+    cat > /etc/acgs/monitoringconfig/environments/development.env << EOF
 # ACGS-1 Monitoring Infrastructure Configuration
 # Generated: $TIMESTAMP
 # Environment: $ENVIRONMENT
 
 # Grafana Configuration
 GRAFANA_ADMIN_USER=acgs_admin
-GRAFANA_ADMIN_PASSWORD=$grafana_admin_password
+GRAFANA_ADMIN_PASSWORD=os.environ.get("PASSWORD")
 GRAFANA_SECRET_KEY=$grafana_secret_key
 
 # Prometheus Configuration
 PROMETHEUS_USER=acgs_monitor
-PROMETHEUS_PASSWORD=$prometheus_password
+PROMETHEUS_PASSWORD=os.environ.get("PASSWORD")
 PROMETHEUS_PASSWORD_HASH=$prometheus_password_hash
 
 # Alertmanager Configuration
 SMTP_USERNAME=${SMTP_USERNAME:-acgs-alerts@acgs.ai}
-SMTP_PASSWORD=${SMTP_PASSWORD:-}
+SMTP_PASSWORD=os.environ.get("PASSWORD")
 SLACK_WEBHOOK_URL=${SLACK_WEBHOOK_URL:-}
 PAGERDUTY_INTEGRATION_KEY=${PAGERDUTY_INTEGRATION_KEY:-}
 
@@ -187,8 +189,8 @@ DEPLOYMENT_TIMESTAMP=$TIMESTAMP
 EOF
     
     # Secure the environment file
-    chmod 600 /etc/acgs/monitoring.env
-    chown root:root /etc/acgs/monitoring.env
+    chmod 600 /etc/acgs/monitoringconfig/environments/development.env
+    chown root:root /etc/acgs/monitoringconfig/environments/development.env
     
     # Save credentials for administrator
     cat > /etc/acgs/admin-credentials.txt << EOF
@@ -198,12 +200,12 @@ Generated: $TIMESTAMP
 Grafana Admin Access:
   URL: http://localhost:3000
   Username: acgs_admin
-  Password: $grafana_admin_password
+  Password: os.environ.get("PASSWORD")
 
 Prometheus Access:
   URL: http://localhost:9090
   Username: acgs_monitor
-  Password: $prometheus_password
+  Password: os.environ.get("PASSWORD")
 
 Alertmanager Access:
   URL: http://localhost:9093
@@ -227,7 +229,7 @@ setup_ssl_certificates() {
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
         -keyout /etc/acgs/certs/monitoring.key \
         -out /etc/acgs/certs/monitoring.crt \
-        -subj "/C=US/ST=State/L=City/O=ACGS/CN=monitoring.acgs.ai" \
+        -subj "/C=US/ST=State/L=City/O=ACGS/CN=monitoring.acgs.ai" \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         -config <(
             echo '[req]'
             echo 'distinguished_name = req'
@@ -255,7 +257,7 @@ deploy_configurations() {
     log "Deploying monitoring configurations..."
     
     # Source environment variables
-    source /etc/acgs/monitoring.env
+    source /etc/acgs/monitoringconfig/environments/development.env
     
     # Deploy Prometheus configuration
     envsubst < "$SCRIPT_DIR/prometheus.yml" > /etc/prometheus/prometheus.yml
@@ -473,9 +475,9 @@ cleanup_deployment() {
 # Display deployment summary
 display_deployment_summary() {
     echo ""
-    echo "======================================================="
+    echo "======================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎉 ACGS-1 Monitoring Infrastructure Deployment Complete"
-    echo "======================================================="
+    echo "======================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     echo "📊 Service Endpoints:"
     echo "  Prometheus:   http://localhost:9090"
@@ -501,7 +503,7 @@ display_deployment_summary() {
     echo "  Operations Team: ops@acgs.ai"
     echo "  Security Team: security@acgs.ai"
     echo ""
-    echo "======================================================="
+    echo "======================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Main deployment function

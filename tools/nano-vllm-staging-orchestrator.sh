@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS Nano-vLLM Staging Deployment Orchestrator
@@ -273,7 +275,7 @@ generate_final_report() {
     local summary_file="$PROJECT_ROOT/logs/staging/deployment-summary.txt"
     {
         echo "ACGS Nano-vLLM Staging Deployment Summary"
-        echo "========================================"
+        echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo "Date: $(date)"
         echo ""
         echo "Services:"
@@ -371,9 +373,9 @@ main() {
     success "ACGS Nano-vLLM staging orchestration completed successfully!"
     
     echo ""
-    echo "========================================"
+    echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "DEPLOYMENT COMPLETE"
-    echo "========================================"
+    echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Access your Nano-vLLM staging environment:"
     echo "  🚀 Service: http://localhost:8100"
     echo "  📊 Monitoring: http://localhost:9191"
@@ -386,7 +388,7 @@ main() {
     echo "  1. Review deployment report in logs/staging/"
     echo "  2. Run extended load tests if needed"
     echo "  3. Proceed with production deployment"
-    echo "========================================"
+    echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Run main function

@@ -6,7 +6,7 @@ set -e
 
 GRAFANA_URL="http://localhost:3001"
 GRAFANA_USER="admin"
-GRAFANA_PASSWORD="acgs_admin_2025"
+GRAFANA_PASSWORD=os.environ.get("PASSWORD")
 DASHBOARD_DIR="./monitoring/dashboards"
 
 echo "Importing ACGS Dashboards to Grafana..."
@@ -62,5 +62,5 @@ echo ""
 echo "All ACGS dashboards imported successfully!"
 echo "Access Grafana at: $GRAFANA_URL"
 echo "Username: $GRAFANA_USER"
-echo "Password: $GRAFANA_PASSWORD"
+echo "Password: os.environ.get("PASSWORD")
 echo "Constitutional Hash: cdd01ef066bc6cf2"

@@ -82,7 +82,7 @@ jobs:
       with:
         name: constitutional-compliance-report
         path: |
-          htmlcov/
+          reports/coverage/htmlcov/
           coverage.xml
           constitutional-compliance-*.json
 
@@ -201,7 +201,7 @@ jobs:
         cd services/shared
         alembic upgrade head
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
     
     - name: Start ACGS services
       run: |
@@ -211,7 +211,7 @@ jobs:
         python services/platform_services/authentication/main.py &
         sleep 15
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         REDIS_URL: redis://localhost:6389/0
         CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     
@@ -222,7 +222,7 @@ jobs:
                --cov=services \
                --cov-report=xml:coverage-integration.xml
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         REDIS_URL: redis://localhost:6389/0
         CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     
@@ -286,7 +286,7 @@ jobs:
         cd services/shared
         alembic upgrade head
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
     
     - name: Start ACGS services for performance testing
       run: |
@@ -295,7 +295,7 @@ jobs:
         python services/platform_services/authentication/main.py &
         sleep 20
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         REDIS_URL: redis://localhost:6389/0
         CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     
@@ -305,7 +305,7 @@ jobs:
                --tb=short \
                --timeout=300
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         REDIS_URL: redis://localhost:6389/0
         CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     
@@ -398,7 +398,7 @@ jobs:
         cd services/shared
         alembic upgrade head
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
     
     - name: Start ACGS services
       run: |
@@ -406,7 +406,7 @@ jobs:
         python services/platform_services/authentication/main.py &
         sleep 15
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         REDIS_URL: redis://localhost:6389/0
         CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     
@@ -415,7 +415,7 @@ jobs:
         pytest -xvs -m multi_tenant \
                --tb=short
       env:
-        DATABASE_URL: postgresql+asyncpg://test:test@localhost:5439/acgs_test
+        DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         REDIS_URL: redis://localhost:6389/0
         CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     

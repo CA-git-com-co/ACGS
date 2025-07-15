@@ -206,8 +206,8 @@ metadata:
 type: Opaque
 data:
   # Base64 encoded values - replace with actual secrets in production
-  database_url: cG9zdGdyZXNxbDovL2F1ZGl0X3VzZXI6YXVkaXRfcGFzc3dvcmRAcG9zdGdyZXNxbDo1NDMyL2F1ZGl0X2Ri
-  encryption_key: YWVzLTI1Ni1nY20ta2V5LWZvci1hdWRpdC1lbmNyeXB0aW9uLXJlcGxhY2UtaW4tcHJvZHVjdGlvbg==
+  database_url: cG9zdGdyZXNxbDovL2F1ZGl0X3VzZXI6YXVkaXRfcGFzc3dvcmRAcG9zdGdyZXNxbDo1NDMyL2F1ZGl0X2Ri  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  encryption_key: YWVzLTI1Ni1nY20ta2V5LWZvci1hdWRpdC1lbmNyeXB0aW9uLXJlcGxhY2UtaW4tcHJvZHVjdGlvbg==  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 ---
 # HorizontalPodAutoscaler for Audit Engine

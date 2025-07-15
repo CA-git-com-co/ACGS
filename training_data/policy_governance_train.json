@@ -1,0 +1,185 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "policy_request": "Generate GDPR compliance rule",
+        "framework": "GDPR",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "package gdpr.data_protection\nallow { ... }",
+        "compliance_score": 0.92,
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    }
+  ]
+}

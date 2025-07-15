@@ -7,7 +7,7 @@ set -e
 echo "🚀 Starting ACGS Phase 3A Multi-Zone Infrastructure Deployment"
 echo "📋 Constitutional Hash: cdd01ef066bc6cf2"
 echo "🎯 Target: 99.9% uptime with multi-zone high availability"
-echo "============================================================"
+echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Color codes for output
 RED='\033[0;31m'
@@ -62,22 +62,22 @@ check_prerequisites() {
 create_env_file() {
     print_status "Creating environment configuration..."
     
-    cat > .env <<EOF
+    cat > config/environments/development.env <<EOF
 # ACGS Phase 3A Environment Configuration
 # Constitutional Hash: cdd01ef066bc6cf2
 
 # PostgreSQL Configuration
-POSTGRES_PASSWORD=acgs_secure_password_2025
-POSTGRES_REPLICATION_PASSWORD=acgs_replication_password_2025
-REPLICATION_PASSWORD=acgs_replication_password_2025
-POSTGRES_EXPORTER_PASSWORD=acgs_exporter_password_2025
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
+POSTGRES_REPLICATION_PASSWORD=os.environ.get("PASSWORD")
+REPLICATION_PASSWORD=os.environ.get("PASSWORD")
+POSTGRES_EXPORTER_PASSWORD=os.environ.get("PASSWORD")
 
 # Grafana Configuration
-GRAFANA_ADMIN_PASSWORD=acgs_grafana_admin_2025
-GRAFANA_DB_PASSWORD=acgs_grafana_db_2025
+GRAFANA_ADMIN_PASSWORD=os.environ.get("PASSWORD")
+GRAFANA_DB_PASSWORD=os.environ.get("PASSWORD")
 
 # Redis Configuration
-REDIS_PASSWORD=acgs_redis_password_2025
+REDIS_PASSWORD=os.environ.get("PASSWORD")
 
 # SSL Configuration
 SSL_CERT_PATH=./config/ssl
@@ -225,10 +225,10 @@ validate_deployment() {
 # Display deployment information
 display_deployment_info() {
     echo ""
-    echo "============================================================"
+    echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎉 ACGS Phase 3A Multi-Zone Infrastructure Deployment Complete!"
     echo "📋 Constitutional Hash: cdd01ef066bc6cf2"
-    echo "============================================================"
+    echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     echo "🌐 Service Endpoints:"
     echo "  Load Balancer:     http://localhost:80 (HTTP)"

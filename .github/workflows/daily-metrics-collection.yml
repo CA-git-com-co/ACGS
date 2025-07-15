@@ -141,8 +141,8 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const metricsDate = process.env.METRICS_DATE;
-            const constitutionalHash = process.env.CONSTITUTIONAL_HASH;
+            const metricsDate = processconfig/environments/development.env.METRICS_DATE;
+            const constitutionalHash = processconfig/environments/development.env.CONSTITUTIONAL_HASH;
             const qualityIssues = `${{ steps.quality_check.outputs.quality_issues }}`;
             const overallScore = '${{ steps.metrics.outputs.overall_score }}';
             const overallStatus = '${{ steps.metrics.outputs.overall_status }}';

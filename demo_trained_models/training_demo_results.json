@@ -1,0 +1,94 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "demo_timestamp": 1752455918.5592701,
+  "training_components": {
+    "constitutional_ai": {
+      "status": "success",
+      "model_path": "demo_trained_models/constitutional_ai_model",
+      "training_examples": 25,
+      "performance_metrics": {
+        "compliance_accuracy": 0.96,
+        "principle_alignment": 0.94,
+        "reasoning_quality": 0.92,
+        "constitutional_compliance": 0.98
+      },
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "training_time_seconds": 0.5007925033569336
+    },
+    "policy_governance": {
+      "status": "success",
+      "model_path": "demo_trained_models/policy_governance_model",
+      "training_examples": 25,
+      "performance_metrics": {
+        "opa_rule_validity": 0.94,
+        "framework_compliance": 0.97,
+        "policy_accuracy": 0.93,
+        "constitutional_compliance": 0.98
+      },
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "training_time_seconds": 0.4010004997253418
+    },
+    "multi_agent_coordination": {
+      "status": "success",
+      "model_path": "demo_trained_models/multi_agent_model",
+      "training_examples": 25,
+      "performance_metrics": {
+        "coordination_efficiency": 0.89,
+        "consensus_score": 0.91,
+        "conflict_resolution": 0.95,
+        "constitutional_compliance": 0.97
+      },
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "training_time_seconds": 0.601412296295166
+    },
+    "performance_optimization": {
+      "status": "success",
+      "model_path": "demo_trained_models/performance_optimization_model",
+      "training_examples": 25,
+      "performance_metrics": {
+        "optimization_accuracy": 0.93,
+        "target_achievement": 0.88,
+        "efficiency_improvement": 0.91,
+        "constitutional_compliance": 0.98
+      },
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "training_time_seconds": 0.3008403778076172
+    },
+    "transformer_efficiency": {
+      "status": "success",
+      "model_path": "demo_trained_models/transformer_efficiency_model",
+      "training_examples": 25,
+      "performance_metrics": {
+        "complexity_reduction": 0.85,
+        "approximation_quality": 0.92,
+        "efficiency_gain": 0.89,
+        "constitutional_compliance": 0.97
+      },
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "training_time_seconds": 0.40100717544555664
+    },
+    "wina_optimization": {
+      "status": "success",
+      "model_path": "demo_trained_models/wina_optimization_model",
+      "training_examples": 25,
+      "performance_metrics": {
+        "gflops_reduction": 0.87,
+        "accuracy_preservation": 0.94,
+        "sparsity_efficiency": 0.91,
+        "constitutional_compliance": 0.98
+      },
+      "constitutional_hash": "cdd01ef066bc6cf2",
+      "training_time_seconds": 0.5010688304901123
+    }
+  },
+  "overall_metrics": {
+    "successful_components": 6,
+    "total_components": 6,
+    "success_rate": 1.0,
+    "total_training_examples": 150,
+    "average_constitutional_compliance": 0.9766666666666666,
+    "meets_compliance_target": true,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "demo_duration_seconds": 2.7081146240234375
+}

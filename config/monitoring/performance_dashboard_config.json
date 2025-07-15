@@ -1,0 +1,81 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "dashboard_title": "ACGS-2 Performance Monitoring Dashboard",
+  "refresh_interval_seconds": 30,
+  "performance_targets": {
+    "p99_latency_ms": 5.0,
+    "min_throughput_rps": 100.0,
+    "min_cache_hit_rate": 0.85,
+    "max_memory_usage_mb": 512.0,
+    "max_cpu_usage_percent": 80.0,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "metrics_panels": [
+    {
+      "title": "P99 Latency",
+      "type": "gauge",
+      "metric": "p99_latency_ms",
+      "target": 5.0,
+      "unit": "ms",
+      "alert_threshold": 4.5
+    },
+    {
+      "title": "Throughput",
+      "type": "gauge",
+      "metric": "throughput_rps",
+      "target": 100.0,
+      "unit": "RPS",
+      "alert_threshold": 110.00000000000001
+    },
+    {
+      "title": "Cache Hit Rate",
+      "type": "gauge",
+      "metric": "cache_hit_rate",
+      "target": 0.85,
+      "unit": "%",
+      "alert_threshold": 0.8075
+    },
+    {
+      "title": "Memory Usage",
+      "type": "line_chart",
+      "metric": "memory_usage_mb",
+      "target": 512.0,
+      "unit": "MB",
+      "alert_threshold": 409.6
+    },
+    {
+      "title": "CPU Usage",
+      "type": "line_chart",
+      "metric": "cpu_usage_percent",
+      "target": 80.0,
+      "unit": "%",
+      "alert_threshold": 64.0
+    }
+  ],
+  "alert_rules": [
+    {
+      "name": "High P99 Latency",
+      "condition": "p99_latency_ms > 4.5",
+      "severity": "warning",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "name": "Critical P99 Latency",
+      "condition": "p99_latency_ms > 5.0",
+      "severity": "critical",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "name": "Low Throughput",
+      "condition": "throughput_rps < 100",
+      "severity": "warning",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    {
+      "name": "Low Cache Hit Rate",
+      "condition": "cache_hit_rate < 0.85",
+      "severity": "warning",
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    }
+  ]
+}

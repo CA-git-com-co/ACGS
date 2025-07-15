@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Development Environment Startup Script
 # This script starts all development services for the ACGS-1 Constitutional Governance System
@@ -62,15 +64,15 @@ check_virtual_env() {
 setup_environment() {
     log "🔧 Setting up environment variables..."
     
-    # Load environment variables if .env file exists
-    if [ -f "config/env/.env" ]; then
-        export $(cat config/env/.env | grep -v '^#' | xargs)
-        success "Environment variables loaded from config/env/.env"
-    elif [ -f ".env" ]; then
-        export $(cat .env | grep -v '^#' | xargs)
-        success "Environment variables loaded from .env"
+    # Load environment variables if config/environments/development.env file exists
+    if [ -f "config/env/config/environments/development.env" ]; then
+        export $(cat config/env/config/environments/development.env | grep -v '^#' | xargs)
+        success "Environment variables loaded from config/env/config/environments/development.env"
+    elif [ -f "config/environments/development.env" ]; then
+        export $(cat config/environments/development.env | grep -v '^#' | xargs)
+        success "Environment variables loaded from config/environments/development.env"
     else
-        warning "No .env file found, using default environment"
+        warning "No config/environments/development.env file found, using default environment"
     fi
     
     # Set default values if not provided
@@ -260,9 +262,9 @@ run_health_checks() {
 # Display service status
 display_status() {
     echo ""
-    echo "=============================================="
+    echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎉 DEVELOPMENT ENVIRONMENT STARTED"
-    echo "=============================================="
+    echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     echo "📋 Service Status:"
     
@@ -309,7 +311,7 @@ display_status() {
 # Main startup function
 main() {
     log "🚀 Starting ACGS-1 Development Environment"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Run startup steps
     create_directories

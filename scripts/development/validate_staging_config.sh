@@ -31,7 +31,7 @@ error() {
 
 # Configuration
 CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
-STAGING_ENV_FILE="config/environments/staging.env"
+STAGING_ENV_FILE="config/environments/stagingconfig/environments/development.env"
 STAGING_COMPOSE_FILE="infrastructure/docker/docker-compose.staging.yml"
 
 # Validate constitutional hash consistency
@@ -39,8 +39,8 @@ validate_constitutional_hash() {
     log "Validating constitutional hash consistency..."
     
     local files_to_check=(
-        "config/environments/staging.env"
-        "config/environments/production.env"
+        "config/environments/stagingconfig/environments/development.env"
+        "config/environments/productionconfig/environments/development.env"
         "config/monitoring/prometheus-acgs.yml"
         "config/opa/policies/constitutional_compliance_simple.rego"
     )
@@ -256,7 +256,7 @@ EOF
 # Main function
 main() {
     log "Starting ACGS-PGP Staging Configuration Validation"
-    log "=================================================="
+    log "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     validate_constitutional_hash
     validate_service_config

@@ -329,7 +329,7 @@ Environment_Types:
 File_Extensions:
   Markdown: [".md", ".markdown"]
   Code: [".js", ".ts", ".tsx", ".jsx", ".py", ".go", ".rs", ".cpp", ".c", ".java"]
-  Config: [".json", ".yml", ".yaml", ".toml", ".ini", ".env"]
+  Config: [".json", ".yml", ".yaml", ".toml", ".ini", "config/environments/development.env"]
   Documentation: [".md", ".rst", ".txt", ".adoc"]
   
 Supported_Frameworks:

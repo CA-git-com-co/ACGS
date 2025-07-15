@@ -186,11 +186,11 @@ class ACGSDeploymentOrchestrator:
 
     async def deploy_full_stack(self, config: DeploymentConfig) -> Dict[str, Any]:
         """Deploy complete ACGS stack."""
-        logger.info(f"🚀 Starting full stack deployment to {config.environment}...")
+        logger.info(f"🚀 Starting full stack deployment to {configconfig/environments/development.environment}...")
 
         deployment_summary = {
             "deployment_start": datetime.now(timezone.utc).isoformat(),
-            "environment": config.environment,
+            "environment": configconfig/environments/development.environment,
             "strategy": config.strategy,
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "infrastructure_deployment": {},
@@ -276,12 +276,12 @@ class ACGSDeploymentOrchestrator:
         try:
             # Generate Docker Compose configuration
             compose_config = self._generate_infrastructure_compose_config(
-                config.environment
+                configconfig/environments/development.environment
             )
 
             # Save compose file
             compose_file = Path(
-                f"deployments/docker-compose/infrastructure-{config.environment}.yml"
+                f"deployments/docker-compose/infrastructure-{configconfig/environments/development.environment}.yml"
             )
             with open(compose_file, "w") as f:
                 yaml.dump(compose_config, f, default_flow_style=False)
@@ -522,7 +522,7 @@ class ACGSDeploymentOrchestrator:
             try:
                 # Generate service configuration
                 service_config = self._generate_service_config(
-                    service_name, config.environment
+                    service_name, configconfig/environments/development.environment
                 )
 
                 # Deploy service
@@ -565,7 +565,7 @@ class ACGSDeploymentOrchestrator:
 
             try:
                 service_config = self._generate_service_config(
-                    service_name, f"{config.environment}-green"
+                    service_name, f"{configconfig/environments/development.environment}-green"
                 )
                 result = await self._deploy_single_service(
                     service_name, service_config, config
@@ -575,7 +575,7 @@ class ACGSDeploymentOrchestrator:
                 if result["status"] != "success":
                     logger.error(f"❌ Green deployment failed for {service_name}")
                     # Rollback green environment
-                    await self._cleanup_green_environment(config.environment)
+                    await self._cleanup_green_environment(configconfig/environments/development.environment)
                     break
 
             except Exception as e:
@@ -589,10 +589,10 @@ class ACGSDeploymentOrchestrator:
         # If all green deployments successful, switch traffic
         if all(r.get("status") == "success" for r in deployment_results.values()):
             logger.info("🔄 Switching traffic from blue to green...")
-            await self._switch_blue_green_traffic(config.environment)
+            await self._switch_blue_green_traffic(configconfig/environments/development.environment)
 
             # Cleanup old blue environment
-            await self._cleanup_blue_environment(config.environment)
+            await self._cleanup_blue_environment(configconfig/environments/development.environment)
 
         return deployment_results
 
@@ -611,7 +611,7 @@ class ACGSDeploymentOrchestrator:
             try:
                 # Deploy canary with 10% traffic
                 service_config = self._generate_service_config(
-                    service_name, f"{config.environment}-canary"
+                    service_name, f"{configconfig/environments/development.environment}-canary"
                 )
                 service_config["traffic_percentage"] = 10
 
@@ -630,11 +630,11 @@ class ACGSDeploymentOrchestrator:
                     if canary_healthy:
                         # Gradually increase traffic
                         await self._increase_canary_traffic(
-                            service_name, config.environment
+                            service_name, configconfig/environments/development.environment
                         )
                     else:
                         # Rollback canary
-                        await self._rollback_canary(service_name, config.environment)
+                        await self._rollback_canary(service_name, configconfig/environments/development.environment)
                         deployment_results[service_name]["status"] = "failed"
                         deployment_results[service_name][
                             "error"
@@ -724,7 +724,7 @@ class ACGSDeploymentOrchestrator:
 
             # Save compose file
             compose_file = Path(
-                f"deployments/docker-compose/{service_name}-{deployment_config.environment}.yml"
+                f"deployments/docker-compose/{service_name}-{deployment_configconfig/environments/development.environment}.yml"
             )
             with open(compose_file, "w") as f:
                 yaml.dump(service_compose, f, default_flow_style=False)

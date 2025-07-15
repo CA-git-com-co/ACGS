@@ -284,9 +284,9 @@ generate_report() {
     log "Generating validation report..."
     
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "ACGE Phase 2 Cluster Validation Report"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Cluster: $CLUSTER_NAME"
     echo "Namespace: $NAMESPACE"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"

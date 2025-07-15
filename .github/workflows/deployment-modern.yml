@@ -76,7 +76,7 @@ jobs:
       - name: Generate deployment configuration
         id: config
         run: |
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           FORCE_DEPLOY="${{ inputs.force_deploy || false }}"
           
           # Set environment-specific variables
@@ -146,10 +146,10 @@ jobs:
           echo "🔍 Validating deployment prerequisites..."
           
           # Check if required Docker Compose files exist
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           case "$ENVIRONMENT" in
             "production")
-              COMPOSE_FILE="docker-compose.production.yml"
+              COMPOSE_FILE="config/docker/config/docker/config/docker/docker-compose.production.yml"
               ;;
             "staging")
               COMPOSE_FILE="infrastructure/docker/docker-compose.staging.yml"
@@ -191,7 +191,7 @@ jobs:
         timeout-minutes: 12
         run: |
           IMAGE_TAG="${{ needs.pre-deployment.outputs.image_tag }}"
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           
           echo "🏗️ Building images for $ENVIRONMENT with tag: $IMAGE_TAG"
           
@@ -225,8 +225,8 @@ jobs:
     needs: [pre-deployment, image-operations]
     timeout-minutes: 20
     environment:
-      name: ${{ inputs.environment }}
-      url: ${{ inputs.environment == 'production' && 'https://api.acgs-pgp.com' || inputs.environment == 'staging' && 'https://staging.acgs-pgp.com' || 'https://dev.acgs-pgp.com' }}
+      name: ${{ inputsconfig/environments/development.environment }}
+      url: ${{ inputsconfig/environments/development.environment == 'production' && 'https://api.acgs-pgp.com' || inputsconfig/environments/development.environment == 'staging' && 'https://staging.acgs-pgp.com' || 'https://dev.acgs-pgp.com' }}
     
     steps:
       - name: Checkout repository
@@ -236,7 +236,7 @@ jobs:
         timeout-minutes: 15
         run: |
           STRATEGY="${{ needs.pre-deployment.outputs.strategy }}"
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           IMAGE_TAG="${{ needs.pre-deployment.outputs.image_tag }}"
           NAMESPACE="${{ needs.pre-deployment.outputs.namespace }}"
           REPLICAS="${{ needs.pre-deployment.outputs.replicas }}"
@@ -252,7 +252,7 @@ jobs:
           # Select appropriate compose file
           case "$ENVIRONMENT" in
             "production")
-              COMPOSE_FILE="docker-compose.production.yml"
+              COMPOSE_FILE="config/docker/config/docker/config/docker/docker-compose.production.yml"
               ;;
             "staging")
               COMPOSE_FILE="infrastructure/docker/docker-compose.staging.yml"
@@ -297,7 +297,7 @@ jobs:
         timeout-minutes: 8
         run: |
           FORCE_DEPLOY="${{ inputs.force_deploy }}"
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           
           if [ "$FORCE_DEPLOY" = "true" ]; then
             echo "⚠️ Force deploy enabled - skipping health checks"
@@ -351,7 +351,7 @@ jobs:
       - name: Generate deployment report
         run: |
           DEPLOYMENT_STATUS="${{ needs.deployment-execution.result }}"
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           IMAGE_TAG="${{ needs.pre-deployment.outputs.image_tag }}"
           STRATEGY="${{ needs.pre-deployment.outputs.strategy }}"
           
@@ -378,14 +378,14 @@ jobs:
       - name: Upload deployment artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: deployment-report-${{ inputs.environment }}
+          name: deployment-report-${{ inputsconfig/environments/development.environment }}
           path: deployment-report.md
           retention-days: 30
 
       - name: Update deployment status
         run: |
           STATUS="${{ needs.deployment-execution.result }}"
-          ENVIRONMENT="${{ inputs.environment }}"
+          ENVIRONMENT="${{ inputsconfig/environments/development.environment }}"
           
           if [ "$STATUS" = "success" ]; then
             echo "✅ Deployment to $ENVIRONMENT completed successfully"
@@ -396,7 +396,7 @@ jobs:
           fi
 
       - name: Cleanup old images (production only)
-        if: inputs.environment == 'production' && needs.deployment-execution.result == 'success'
+        if: inputsconfig/environments/development.environment == 'production' && needs.deployment-execution.result == 'success'
         run: |
           echo "🧹 Cleaning up old production images..."
           # Keep only the last 5 production images

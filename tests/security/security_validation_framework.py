@@ -564,7 +564,7 @@ class SecurityValidationFramework:
             try:
                 # Create test user
                 username = f"testuser_{secrets.token_hex(4)}"
-                password = "StrongP@ssw0rd123!"
+                password = os.environ.get("PASSWORD")
 
                 await client.post(
                     f"{self.target_url}/api/auth/register",

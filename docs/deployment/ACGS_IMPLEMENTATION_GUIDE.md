@@ -94,8 +94,8 @@ All services operate under constitutional principles:
 1. **Clone and prepare the environment:**
    ```bash
    cd /home/dislove/ACGS-2
-   cp .env.example .env
-   # Edit .env with your configuration
+   cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+   # Edit config/environments/development.env with your configuration
    ```
 
 2. **Deploy the full ACGS stack:**

@@ -187,7 +187,7 @@ monitoring:
       enabled: true
       size: 5Gi
     adminUser: admin
-    adminPassword: staging-admin-password
+    adminPassword: os.environ.get("PASSWORD")
     dashboards:
     - name: constitutional-trainer-overview
       file: constitutional-trainer-overview.json

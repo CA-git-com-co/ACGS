@@ -204,7 +204,7 @@ class ConstitutionalComplianceFixer:
             ".conf": "#",
             ".cfg": "#",
             ".properties": "#",
-            ".env": "#",
+            "config/environments/development.env": "#",
             ".toml": "#",
             ".gitignore": "#",
             ".gitattributes": "#",
@@ -289,8 +289,8 @@ class ConstitutionalComplianceFixer:
             "services/blockchain/initial_policies.json",
             # Infrastructure configs
             "infrastructure/docker/acgs_pgp_rules.yml",
-            "infrastructure/docker/monitoring/config/alertmanager.yml",
-            "infrastructure/docker/monitoring/config/prometheus.yml",
+            "infrastructure/docker/monitoring/config/alertmanager.yml",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "infrastructure/docker/monitoring/config/prometheus.yml",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "infrastructure/docker/infrastructure/docker/opa-config.yaml",
         ]
 

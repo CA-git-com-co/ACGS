@@ -27,7 +27,13 @@ import numpy as np
 import pytest
 
 # Import the service to test
-from services.core.governance_synthesis.gs_service.app.services.groq_tensor_service import (
+from services.core.governance-synthesis.gs_service.app.services.groq_tensor_service import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     CircuitBreakerState,
     GovernanceConstraints,
     GroqTensorService,
@@ -60,7 +66,7 @@ class TestGroqTensorService(unittest.TestCase):
 
     def test_service_initialization(self):
         """Test service initialization and configuration."""
-        assert self.service.default_model == "llama-3.1-70b-versatile"
+        assert self.service.default_model == "qwen3-32b-groq-versatile"
         assert self.service.temperature == 0.3
         assert self.service.max_tokens == 4096
         assert self.service.timeout_seconds == 30

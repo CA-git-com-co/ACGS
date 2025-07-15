@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Grafana Dashboard Deployment Script
@@ -13,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DASHBOARDS_DIR="${SCRIPT_DIR}/dashboards"
 GRAFANA_URL="${GRAFANA_URL:-http://localhost:3000}"
 GRAFANA_USER="${GRAFANA_USER:-admin}"
-GRAFANA_PASSWORD="${GRAFANA_PASSWORD:-admin}"
+GRAFANA_PASSWORD=os.environ.get("PASSWORD")
 
 # Colors for output
 RED='\033[0;31m'

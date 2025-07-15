@@ -17,7 +17,6 @@ from pathlib import Path
 from unittest.mock import AsyncMock, Mock
 
 import pytest
-import pytest_asyncio
 
 # Add project root to Python path
 project_root = Path(__file__).parent.parent
@@ -49,12 +48,8 @@ TEST_JWT_SECRET = os.getenv("SECRET_KEY", "test_jwt_secret_for_acgs_testing")
 TEST_JWT_ALGORITHM = "HS256"
 
 
-@pytest.fixture(scope="session")
-def event_loop():
-    """Create an instance of the default event loop for the test session."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
+# Remove the custom event_loop fixture to avoid pytest-asyncio deprecation warnings
+# pytest-asyncio will handle event loop creation automatically
 
 
 @pytest.fixture
@@ -164,8 +159,15 @@ async def mock_constitutional_service():
             "confidence_score": 0.85,
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "validation_details": {
-                "principles_checked": ["democratic_participation", "transparency"],
-                "scores": {"democratic_participation": 0.9, "transparency": 0.8},
+                "principles_checked": ["democratic_participation", "transparency", "privacy"],
+                "scores": {
+                    "democratic_participation": 0.9,
+                    "transparency": 0.8,
+                    "privacy": 0.82,
+                    "fairness": 0.85,
+                    "accountability": 0.83,
+                    "human_dignity": 0.88,
+                },
             },
         }
     )
@@ -248,3 +250,36 @@ pytest_plugins = ["pytest_asyncio"]
 
 # Configure asyncio for testing
 asyncio.set_event_loop_policy(asyncio.DefaultEventLoopPolicy())
+
+
+@pytest.fixture
+def mock_service_health():
+    """Mock service health checks for integration tests."""
+    health_status = {
+        "auth_service": True,
+        "constitutional_ai": True,
+        "integrity_service": True,
+        "formal_verification": True,
+        "governance_synthesis": True,
+        "policy_governance": True,
+        "evolutionary_computation": True,
+        "acgs_pgp": True,
+        "redis": True,
+        "postgresql": True
+    }
+
+    def check_service_health(service_name: str) -> bool:
+        return health_status.get(service_name, False)
+
+    return check_service_health
+
+
+@pytest.fixture
+def mock_performance_targets():
+    """Mock performance metrics that meet ACGS-2 targets."""
+    return {
+        "latency_p99": 3.5,  # ms (target: <5ms)
+        "throughput": 150.0,  # RPS (target: >100 RPS)
+        "cache_hit_rate": 0.92,  # 92% (target: >85%)
+        "constitutional_compliance": 1.0  # 100%
+    }

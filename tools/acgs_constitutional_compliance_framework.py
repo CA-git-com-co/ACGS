@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 import aiohttp
-import aioredis
+import redis.asyncio as aioredis
 import asyncpg
 from pydantic import BaseModel, Field, validator
 

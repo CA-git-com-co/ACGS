@@ -16,10 +16,16 @@ from datetime import datetime
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+from services.core.constitutional-ai.ac_service.services.human_escalation_system import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     EscalationLevel,
 )
-from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
+from services.core.constitutional-ai.ac_service.services.human_in_the_loop_sampler import (
     HITLSamplingConfig,
     HumanInTheLoopSampler,
     SamplingTrigger,

@@ -1,4 +1,6 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "setup_successful": true,
   "overall_status": "SUCCESS",
   "monitoring_results": {
@@ -48,6 +50,5 @@
     }
   },
   "execution_time_seconds": 5.089494228363037,
-  "constitutional_hash": "cdd01ef066bc6cf2",
   "timestamp": "2025-07-05T09:08:43.187702"
 }

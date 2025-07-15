@@ -176,7 +176,7 @@ class ConstitutionalOpenAPIGenerator:
                         "description": "Human-readable message",
                     },
                     "constitutional_metadata": {
-                        "$ref": "#/components/schemas/ConstitutionalMetadata"
+                        "$ref": "#/components/schemas/ConstitutionalMetadata"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                     },
                 },
                 "required": ["success", "constitutional_metadata"],
@@ -234,7 +234,7 @@ class ConstitutionalOpenAPIGenerator:
                         },
                     },
                     "constitutional_metadata": {
-                        "$ref": "#/components/schemas/ConstitutionalMetadata"
+                        "$ref": "#/components/schemas/ConstitutionalMetadata"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                     },
                 },
                 "required": ["success", "error", "constitutional_metadata"],
@@ -372,7 +372,7 @@ class ConstitutionalOpenAPIGenerator:
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/ConstitutionalResponse"
+                                    "$ref": "#/components/schemas/ConstitutionalResponse"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                                 },
                                 "example": {
                                     "success": True,
@@ -453,7 +453,7 @@ class ConstitutionalOpenAPIGenerator:
                             "content": {
                                 "application/json": {
                                     "schema": {
-                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                                     }
                                 }
                             },
@@ -479,7 +479,7 @@ class ConstitutionalOpenAPIGenerator:
                             "content": {
                                 "application/json": {
                                     "schema": {
-                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                                     }
                                 }
                             },
@@ -505,7 +505,7 @@ class ConstitutionalOpenAPIGenerator:
                             "content": {
                                 "application/json": {
                                     "schema": {
-                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                                     }
                                 }
                             },
@@ -531,7 +531,7 @@ class ConstitutionalOpenAPIGenerator:
                             "content": {
                                 "application/json": {
                                     "schema": {
-                                        "$ref": "#/components/schemas/ConstitutionalResponse"
+                                        "$ref": "#/components/schemas/ConstitutionalResponse"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                                     }
                                 }
                             },

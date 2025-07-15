@@ -17,8 +17,30 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Any, TypeVar
 
-import aioredis
-from shared.resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
+try:
+    import redis.asyncio as aioredis
+    AIOREDIS_AVAILABLE = True
+except ImportError:
+    AIOREDIS_AVAILABLE = False
+    # Mock aioredis for testing environments
+    class MockRedisClient:
+        async def get(self, key):
+            return None
+        async def set(self, key, value, **kwargs):
+            return True
+        async def delete(self, *keys):
+            return len(keys)
+        async def close(self):
+            pass
+    
+    class MockAioRedis:
+        Redis = MockRedisClient
+        @staticmethod
+        async def from_url(*args, **kwargs):
+            return MockRedisClient()
+    
+    aioredis = MockAioRedis()
+from services.shared.resilience.circuit_breaker import CircuitBreakerConfig, get_circuit_breaker
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")

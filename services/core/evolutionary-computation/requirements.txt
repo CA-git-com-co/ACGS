@@ -3,16 +3,16 @@
 # ACGS Unified Evolution/Compiler Service Dependencies
 
 # FastAPI and web framework
-fastapi>=0.104.1
+fastapi>=0.115.6
 uvicorn[standard]>=0.24.0
-pydantic>=2.5.0
+pydantic>=2.10.5
 
 # Database
 asyncpg>=0.29.0
 sqlalchemy>=2.0.23
 
 # Cache and Redis
-aioredis>=2.0.1
+redis>=4.5.0
 
 # HTTP client
 httpx>=0.25.2
@@ -27,7 +27,7 @@ python-multipart>=0.0.6
 # Security
 python-jose>=3.5.1
 ecdsa>=0.20.0
-cryptography>=45.0.4
+cryptography>=43.0.1
 
 # Core dependencies
 requests>=2.32.4
@@ -36,7 +36,7 @@ certifi>=2025.6.15
 setuptools>=80.9.0
 
 # Development and testing
-pytest>=7.4.3
+pytest>=8.3.4
 pytest-asyncio>=0.21.1
 
 # Optional: ML/AI dependencies (for advanced evolution)

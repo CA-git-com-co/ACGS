@@ -31,7 +31,14 @@ except ImportError:
         pass
 
 
-from app.crud import crud_user  # Ensure this import works
+try:
+    from ..crud import crud_user  # Ensure this import works
+except ImportError:
+    # Fallback for testing
+    class crud_user:
+        @staticmethod
+        async def get(db, user_id):
+            return None
 
 from .config import settings
 

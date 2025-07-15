@@ -21,8 +21,8 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import structlog
-from shared.redis_client import ACGSRedisClient
-from shared.resource_management.enhanced_resource_manager import (
+from services.shared.redis_client import ACGSRedisClient
+from services.shared.resource_management.enhanced_resource_manager import (
     AlertLevel,
     ResourceType,
 )

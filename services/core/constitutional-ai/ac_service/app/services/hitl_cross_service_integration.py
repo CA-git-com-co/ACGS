@@ -21,7 +21,7 @@ from datetime import datetime
 from typing import Any
 
 import httpx
-from shared import get_config
+from services.shared import get_config
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .human_in_the_loop_sampler import HumanInTheLoopSampler, UncertaintyAssessment

@@ -86,8 +86,8 @@ def test_password_hashing_and_verification():
     # requires: Valid input parameters
     # ensures: Correct function execution
     # sha256: func_hash
-    password = "supersecretpassword"
-    hashed_password = security.get_password_hash(password)
+    password = os.environ.get("PASSWORD")
+    hashed_password = os.environ.get("PASSWORD")
     assert isinstance(hashed_password, str)
     assert hashed_password != password
 

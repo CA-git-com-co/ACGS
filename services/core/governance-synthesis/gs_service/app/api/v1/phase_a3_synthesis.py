@@ -824,7 +824,7 @@ async def get_synthesis_strategies():
             "consensus_engine": "Phase A3 Multi-Model Consensus Engine",
             "supported_models": [
                 "gpt-4",
-                "claude-3-sonnet",
+                "claude-3.5-sonnet",
                 "gemini-2.5-pro",
                 "perplexity-sonar",
                 "cerebras-llama-scout",

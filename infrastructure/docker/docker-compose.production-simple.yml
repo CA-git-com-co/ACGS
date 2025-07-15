@@ -4,7 +4,7 @@ services:
     container_name: acgs_postgres_production
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_production_password_2025}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs}
     ports:
     - 5440:5432
@@ -23,7 +23,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: acgs_redis_production
-    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_production_password_2025}
+    command: redis-server --requirepass ${REDIS_PASSWORD:os.environ.get("PASSWORD")
     ports:
     - 6390:6379
     volumes:
@@ -66,7 +66,7 @@ services:
     ports:
     - 3001:3000
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-acgs_admin_2025}
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     - GF_SECURITY_ADMIN_USER=admin
     volumes:

@@ -1,0 +1,247 @@
+---
+# GroqCloud Policy Integration ConfigMap
+# Constitutional Hash: cdd01ef066bc6cf2
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: groq-policy-config
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    component: governance-synthesis
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  # GroqCloud Configuration
+  groq-config.yml: |
+    groq_cloud:
+      api_base_url: "https://api.groq.com/openai/v1"
+      default_model: "qwen/qwen3-32b"
+      timeout_seconds: 30
+      retry_attempts: 3
+      
+      models:
+        tier_1_nano:
+          model: "allam-2-7b"
+          context_size: 4096
+          performance_target_ms: 1.0
+        tier_2_fast:
+          model: "llama-3.1-8b-instant"
+          context_size: 131072
+          performance_target_ms: 2.0
+        tier_3_balanced:
+          model: "qwen/qwen3-32b"
+          context_size: 131072
+          performance_target_ms: 3.0
+        tier_4_premium:
+          model: "llama-3.3-70b-versatile"
+          context_size: 131072
+          performance_target_ms: 5.0
+
+  # WASM Policy Engine Configuration
+  wasm-config.yml: |
+    wasm_policy_engine:
+      enabled: true
+      runtime: "wasmtime"
+      compilation:
+        timeout_seconds: 30
+        cache_size: 1000
+        enable_cache: true
+      evaluation:
+        timeout_seconds: 5
+        max_memory_mb: 100
+        enable_metrics: true
+
+  # OPA Integration Configuration
+  opa-config.yml: |
+    opa_integration:
+      enabled: true
+      policies_directory: "/app/policies"
+      default_policies:
+        - "groq_model_governance.rego"
+        - "constitutional_compliance.rego"
+        - "security_policies.rego"
+      cache:
+        enabled: true
+        size: 500
+        ttl_seconds: 3600
+
+  # Constitutional Compliance Configuration
+  constitutional-config.yml: |
+    constitutional_compliance:
+      enabled: true
+      hash: "cdd01ef066bc6cf2"
+      validation:
+        pre_execution: true
+        runtime: true
+        post_execution: true
+      performance_targets:
+        p99_latency_ms: 5.0
+        throughput_rps: 100
+        compliance_rate: 0.99
+
+---
+# Service Account for GroqCloud Policy Integration
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: acgs-groq-policy
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    constitutional-hash: cdd01ef066bc6cf2
+
+---
+# Role for GroqCloud Policy Integration
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: groq-policy-role
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    constitutional-hash: cdd01ef066bc6cf2
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "secrets"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch"]
+
+---
+# RoleBinding for GroqCloud Policy Integration
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: groq-policy-rolebinding
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    constitutional-hash: cdd01ef066bc6cf2
+subjects:
+- kind: ServiceAccount
+  name: acgs-groq-policy
+  namespace: acgs
+roleRef:
+  kind: Role
+  name: groq-policy-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# NetworkPolicy for GroqCloud Policy Integration
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: groq-policy-network-policy
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app: groq-policy-integration
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs
+    - podSelector:
+        matchLabels:
+          component: core
+    ports:
+    - protocol: TCP
+      port: 8015
+    - protocol: TCP
+      port: 9090
+  egress:
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 443  # HTTPS for GroqCloud API
+    - protocol: TCP
+      port: 80   # HTTP for health checks
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs
+    ports:
+    - protocol: TCP
+      port: 5432  # PostgreSQL
+    - protocol: TCP
+      port: 6379  # Redis
+    - protocol: TCP
+      port: 8181  # OPA
+
+---
+# PodDisruptionBudget for GroqCloud Policy Integration
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: groq-policy-pdb
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: groq-policy-integration
+
+---
+# HorizontalPodAutoscaler for GroqCloud Policy Integration
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: groq-policy-hpa
+  namespace: acgs
+  labels:
+    app: groq-policy-integration
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: groq-policy-integration
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: groq_policy_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "50"
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60

@@ -332,7 +332,7 @@ constitutional_hash_valid if {
 """
 
         policy_path = (
-            self.project_root / "infrastructure/security/policies/evolution.rego"
+            self.project_root / "infrastructure/security/policies/evolution.rego"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         with open(policy_path, "w") as f:
             f.write(evolution_policy)
@@ -367,7 +367,7 @@ rate_limit_exceeded if {
 """
 
         resource_policy_path = (
-            self.project_root / "infrastructure/security/policies/resources.rego"
+            self.project_root / "infrastructure/security/policies/resources.rego"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         with open(resource_policy_path, "w") as f:
             f.write(resource_policy)
@@ -558,7 +558,7 @@ rate_limit_exceeded if {
         required_files = [
             "services/core/evolutionary-computation/ec_service/security_architecture.py",
             "infrastructure/security/sandbox_configs/default.json",
-            "infrastructure/security/policies/evolution.rego",
+            "infrastructure/security/policies/evolution.rego",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "infrastructure/security/auth/jwt_config.json",
             "infrastructure/security/audit/config.json",
             "config/security_architecture.json",
@@ -579,7 +579,7 @@ rate_limit_exceeded if {
         # Test security component imports
         try:
             sys.path.insert(0, str(self.project_root))
-            from services.core.evolutionary_computation.ec_service.security_architecture import (
+            from services.core.evolutionary-computation.ec_service.security_architecture import (
                 security_architecture,
             )
 

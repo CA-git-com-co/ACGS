@@ -77,8 +77,8 @@ jobs:
       python_changed: ${{ steps.changes.outputs.python_changed }}
       typescript_changed: ${{ steps.changes.outputs.typescript_changed }}
       docs_only: ${{ steps.changes.outputs.docs_only }}
-      target_environment: ${{ steps.environment.outputs.environment }}
-      should_deploy: ${{ steps.environment.outputs.should_deploy }}
+      target_environment: ${{ stepsconfig/environments/development.environment.outputsconfig/environments/development.environment }}
+      should_deploy: ${{ stepsconfig/environments/development.environment.outputs.should_deploy }}
     
     steps:
       - name: Checkout repository

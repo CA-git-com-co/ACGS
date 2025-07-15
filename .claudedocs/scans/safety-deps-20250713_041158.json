@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 {
     "report_meta": {
         "scan_target": "environment",
@@ -31,7 +33,7 @@
         "git": {
             "branch": "main",
             "tag": "",
-            "commit": "a646ccead9f49581950ab6ee703102bcc2fecf1d",
+            "commit": "a646ccead9f49581950ab6ee703102bcc2fecf1d",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "dirty": true,
             "origin": "https://github.com/CA-git-com-co/ACGS.git"
         },
@@ -1729,7 +1731,7 @@
                 ">1.0.5,<3.9.2"
             ],
             "analyzed_version": "3.9.1",
-            "advisory": "The vulnerability lies in the improper configuration of static resource resolution when aiohttp is used as a web server. It occurs when the follow_symlinks option is enabled without proper validation, leading to directory traversal vulnerabilities. Unauthorized access to arbitrary files on the system could potentially occur. The affected versions are >1.0.5, and the issue was patched in version 3.9.2. As a workaround, it is advised to disable the follow_symlinks option outside of a restricted local development environment, especially in a server accepting requests from remote users. Using a reverse proxy server to handle static resources is also recommended.\r\nhttps://github.com/aio-libs/aiohttp/commit/1c335944d6a8b1298baf179b7c0b3069f10c514b",
+            "advisory": "The vulnerability lies in the improper configuration of static resource resolution when aiohttp is used as a web server. It occurs when the follow_symlinks option is enabled without proper validation, leading to directory traversal vulnerabilities. Unauthorized access to arbitrary files on the system could potentially occur. The affected versions are >1.0.5, and the issue was patched in version 3.9.2. As a workaround, it is advised to disable the follow_symlinks option outside of a restricted local development environment, especially in a server accepting requests from remote users. Using a reverse proxy server to handle static resources is also recommended.\r\nhttps://github.com/aio-libs/aiohttp/commit/1c335944d6a8b1298baf179b7c0b3069f10c514b",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "is_transitive": false,
             "published_date": null,
             "fixed_versions": [],

@@ -359,7 +359,7 @@ async def main():
     payer = Keypair()  # Generate or load keypair
     client = QuantumagiSolanaClient(
         rpc_url="https://api.devnet.solana.com",
-        program_id="Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",
+        program_id="Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         payer_keypair=payer,
     )
 

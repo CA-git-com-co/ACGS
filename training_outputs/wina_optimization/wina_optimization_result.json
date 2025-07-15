@@ -1,0 +1,13 @@
+{
+  "success": true,
+  "training_time_seconds": 0.0014209747314453125,
+  "result": {
+    "model_type": "wina_optimization",
+    "training_examples": 20,
+    "sparsity_achieved": 0.58,
+    "gflops_reduction": 0.52,
+    "accuracy_preservation": 0.96,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

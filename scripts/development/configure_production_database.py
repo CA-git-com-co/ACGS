@@ -38,7 +38,7 @@ class ProductionDatabaseConfig:
                 port=self.db_config["port"],
                 database=self.db_config["database"],
                 user=self.db_config["username"],
-                password=self.db_config["password"],
+                password=os.environ.get("PASSWORD")password"],
             )
 
             cursor = conn.cursor()
@@ -69,7 +69,7 @@ DB_HOST={self.db_config["host"]}
 DB_PORT={self.db_config["port"]}
 DB_NAME={self.db_config["database"]}
 DB_USER={self.db_config["username"]}
-DB_PASSWORD={self.db_config["password"]}
+DB_PASSWORD=os.environ.get("PASSWORD")password"]}
 
 # Connection Pool Settings
 DB_POOL_SIZE=20
@@ -99,10 +99,10 @@ STATEMENT_TIMEOUT=30000
 IDLE_IN_TRANSACTION_SESSION_TIMEOUT=60000
 """
 
-        with open(".env.production", "w") as f:
+        with open("config/environments/developmentconfig/environments/production.env.backup", "w") as f:
             f.write(env_content)
 
-        print("  ✅ Production environment file created: .env.production")
+        print("  ✅ Production environment file created: config/environments/developmentconfig/environments/production.env.backup")
 
     def run_database_migrations(self) -> bool:
         """Run Alembic database migrations"""
@@ -351,12 +351,12 @@ track_functions = all
         print("\n" + "=" * 60)
         print("✅ Production Database Configuration Complete!")
         print("\nCreated files:")
-        print("- .env.production (environment configuration)")
+        print("- config/environments/developmentconfig/environments/production.env.backup (environment configuration)")
         print("- monitor_database.sh (health monitoring)")
         print("- backup_database.sh (backup script)")
         print("- postgresql_performance.conf (performance tuning)")
         print("\nNext steps:")
-        print("1. Review and customize .env.production")
+        print("1. Review and customize config/environments/developmentconfig/environments/production.env.backup")
         print("2. Set up automated backups: crontab -e")
         print("3. Apply performance settings to PostgreSQL")
         print("4. Monitor database: ./monitor_database.sh")

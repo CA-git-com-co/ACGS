@@ -230,9 +230,9 @@ import { defineConfig, devices } from '@playwright/test';
 export default defineConfig({
   testDir: './infrastructure/performance-testing/tests',
   fullyParallel: false,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  forbidOnly: !!processconfig/environments/development.env.CI,
+  retries: processconfig/environments/development.env.CI ? 2 : 0,
+  workers: processconfig/environments/development.env.CI ? 1 : undefined,
   reporter: [
     ['html', { outputFolder: './infrastructure/performance-testing/reports/playwright' }],
     ['json', { outputFile: './infrastructure/performance-testing/reports/results.json' }],
@@ -261,7 +261,7 @@ export default defineConfig({
   webServer: {
     command: 'npm start',
     url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: !processconfig/environments/development.env.CI,
     timeout: 120 * 1000,
   },
 });

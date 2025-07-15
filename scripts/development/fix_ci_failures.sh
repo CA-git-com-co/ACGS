@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-PGP CI/CD Failure Remediation Script
@@ -6,7 +8,7 @@
 set -euo pipefail
 
 echo "🔧 ACGS-PGP CI/CD Failure Remediation Script"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Color codes for output
 RED='\033[0;31m'
@@ -125,20 +127,20 @@ fi
 # 3.2 Check for Missing Environment Files
 print_status "Checking environment configuration..."
 
-if [ ! -f ".env.example" ]; then
-    cat > .env.example << EOF
+if [ ! -f "config/environments/developmentconfig/environments/example.env" ]; then
+    cat > config/environments/developmentconfig/environments/example.env << EOF
 # ACGS-PGP Environment Configuration
-DATABASE_URL=postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db
+DATABASE_URL=os.environ.get("DATABASE_URL")
 POSTGRES_USER=acgs_user
-POSTGRES_PASSWORD=acgs_password
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
 POSTGRES_DB=acgs_pgp_db
 
 # Auth Service Configuration
-AUTH_SERVICE_SECRET_KEY=your_strong_jwt_secret_key_for_auth_service
+AUTH_SERVICE_SECRET_KEY=your_strong_jwt_secret_key_for_auth_service  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 AUTH_SERVICE_ALGORITHM=HS256
 AUTH_SERVICE_ACCESS_TOKEN_EXPIRE_MINUTES=30
 AUTH_SERVICE_REFRESH_TOKEN_EXPIRE_DAYS=7
-AUTH_SERVICE_CSRF_SECRET_KEY=your_strong_csrf_secret_key_for_auth_service
+AUTH_SERVICE_CSRF_SECRET_KEY=your_strong_csrf_secret_key_for_auth_service  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # CORS Configuration
 BACKEND_CORS_ORIGINS=http://localhost:3000,http://localhost:3001
@@ -148,9 +150,9 @@ ENVIRONMENT=development
 
 # Monitoring
 GRAFANA_ADMIN_USER=admin
-GRAFANA_ADMIN_PASSWORD=admin123
+GRAFANA_ADMIN_PASSWORD=os.environ.get("PASSWORD")
 EOF
-    print_success "Created .env.example"
+    print_success "Created config/environments/developmentconfig/environments/example.env"
 fi
 
 # Phase 4: Test Infrastructure

@@ -1,0 +1,46 @@
+compliance:
+  constitutional_validation: true
+  data_protection: true
+  privacy_controls: true
+constitutional_hash: cdd01ef066bc6cf2
+network_security:
+  firewall_rules:
+  - action: redirect
+    port: 80
+    protocol: tcp
+  - action: allow
+    port: 443
+    protocol: tcp
+  - action: allow
+    port: 22
+    protocol: tcp
+    source: admin_ips
+  - action: allow
+    port: 9090
+    protocol: tcp
+    source: monitoring_ips
+  rate_limiting:
+    burst_size: 20
+    enabled: true
+    requests_per_minute: 100
+security_policies:
+  audit_logging:
+    enabled: true
+    log_level: INFO
+    retention_days: 90
+  authentication:
+    methods:
+    - api_key
+    - jwt
+    required: true
+    session_timeout: 3600
+  authorization:
+    admin_roles:
+    - admin
+    - operator
+    default_role: user
+    rbac_enabled: true
+  encryption:
+    algorithm: AES-256-GCM
+    at_rest: true
+    in_transit: true

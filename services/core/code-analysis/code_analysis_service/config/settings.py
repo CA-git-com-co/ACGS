@@ -14,9 +14,9 @@ from pydantic_settings import BaseSettings
 class Settings(BaseSettings):
     """Application settings with environment variable support"""
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # SERVICE CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # Service identity
     service_name: str = Field(
@@ -60,9 +60,9 @@ class Settings(BaseSettings):
             raise ValueError(f"Environment must be one of: {allowed}")
         return v
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # DATABASE CONFIGURATION (ACGS PostgreSQL - Port 5439)
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # PostgreSQL connection
     postgresql_host: str = Field(
@@ -113,9 +113,9 @@ class Settings(BaseSettings):
             f"{self.postgresql_database}"
         )
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # REDIS CONFIGURATION (ACGS Redis - Port 6389)
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # Redis connection
     redis_host: str = Field(
@@ -144,9 +144,9 @@ class Settings(BaseSettings):
         auth_part = f":{self.redis_password}@" if self.redis_password else ""
         return f"redis://{auth_part}{self.redis_host}:{self.redis_port}/{self.redis_db}"
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # SERVICE INTEGRATION CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # Auth Service (Port 8016)
     auth_service_url: AnyHttpUrl = Field(
@@ -169,9 +169,9 @@ class Settings(BaseSettings):
         description="ACGS Service Registry URL",
     )
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # CONSTITUTIONAL COMPLIANCE CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # Constitutional compliance
     constitutional_hash: str = Field(
@@ -197,9 +197,9 @@ class Settings(BaseSettings):
             raise ValueError("Invalid constitutional hash")
         return v
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # CODE ANALYSIS CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # File watching
     watch_paths: list[str] = Field(
@@ -247,9 +247,9 @@ class Settings(BaseSettings):
         description="Batch size for embedding generation",
     )
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # PERFORMANCE CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # Cache configuration
     cache_ttl_default: int = Field(
@@ -302,9 +302,9 @@ class Settings(BaseSettings):
         description="Target throughput in requests per second",
     )
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # MONITORING AND LOGGING CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # Logging
     log_level: str = Field(default="INFO", env="LOG_LEVEL", description="Logging level")
@@ -336,9 +336,9 @@ class Settings(BaseSettings):
         default=9091, env="PROMETHEUS_PORT", description="Prometheus metrics port"
     )
 
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # SECURITY CONFIGURATION
-    # ============================================================================
+    # ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     # CORS
     allowed_origins: list[str] = Field(
@@ -375,7 +375,7 @@ class Settings(BaseSettings):
     )
 
     model_config = ConfigDict(
-        env_file=".env",
+        env_file="config/environments/development.env",
         env_file_encoding="utf-8",
         case_sensitive=False,
         validate_assignment=True,

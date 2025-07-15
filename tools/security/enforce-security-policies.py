@@ -129,7 +129,7 @@ class SecurityPolicyEnforcer:
         """Check environment files for security issues."""
         logger.info("Checking environment files for security issues...")
 
-        env_files = list(Path().glob("**/*.env")) + list(Path().glob("**/.*env*"))
+        env_files = list(Path().glob("**/*config/environments/development.env")) + list(Path().glob("**/.*env*"))
 
         for env_file in env_files:
             self._check_single_env_file(env_file)

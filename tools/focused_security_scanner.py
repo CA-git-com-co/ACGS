@@ -350,7 +350,7 @@ class FocusedSecurityScanner:
                 self.results["summary"]["high_findings"] += 1
 
             # Check for exposed configuration files in root
-            sensitive_patterns = ["*.env", "*.key", "*.pem", "secrets.*", "config.json"]
+            sensitive_patterns = ["*config/environments/development.env", "*.key", "*.pem", "secrets.*", "config.json"]
 
             for pattern in sensitive_patterns:
                 for found_file in self.project_root.glob(pattern):

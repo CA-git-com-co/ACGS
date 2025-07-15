@@ -359,9 +359,9 @@ async def root():
     }
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Policy Synthesis API (from governance-synthesis service)
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 @app.post("/api/v1/synthesis/synthesize", response_model=SynthesisResponse)
 async def synthesize_policy(request: SynthesisRequest):
@@ -430,9 +430,9 @@ async def list_policies():
     }
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Policy Enforcement API (from policy-governance service)
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 @app.post("/api/v1/enforcement/enforce", response_model=EnforcementResponse)
 async def enforce_policy(request: EnforcementRequest):
@@ -495,9 +495,9 @@ async def get_policy(policy_id: str):
     }
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Compliance Monitoring API
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 @app.post("/api/v1/compliance/check", response_model=ComplianceResponse)
 async def check_compliance(request: ComplianceRequest):
@@ -558,9 +558,9 @@ async def get_compliance_status():
     }
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Governance Workflows API
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 @app.get("/api/v1/workflows")
 async def list_workflows():

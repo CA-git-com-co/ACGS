@@ -15,8 +15,14 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from services.core.constitutional_ai.ac_service.main import app
+from services.core.constitutional-ai.ac_service.main import app
 from sqlalchemy.ext.asyncio import AsyncSession
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
 
 
 class TestHITLSamplingAPI:
@@ -79,10 +85,10 @@ class TestHITLSamplingAPI:
                     # Mock assessment result
                     from datetime import datetime
 
-                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+                    from services.core.constitutional-ai.ac_service.services.human_escalation_system import (
                         EscalationLevel,
                     )
-                    from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
+                    from services.core.constitutional-ai.ac_service.services.human_in_the_loop_sampler import (
                         SamplingTrigger,
                         UncertaintyAssessment,
                         UncertaintyDimension,
@@ -158,10 +164,10 @@ class TestHITLSamplingAPI:
                         # Mock assessment and escalation
                         from datetime import datetime
 
-                        from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+                        from services.core.constitutional-ai.ac_service.services.human_escalation_system import (
                             EscalationLevel,
                         )
-                        from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
+                        from services.core.constitutional-ai.ac_service.services.human_in_the_loop_sampler import (
                             SamplingTrigger,
                             UncertaintyAssessment,
                         )
@@ -426,10 +432,10 @@ class TestHITLIntegrationWorkflow:
                     # Mock high uncertainty assessment
                     from datetime import datetime
 
-                    from services.core.constitutional_ai.ac_service.services.human_escalation_system import (
+                    from services.core.constitutional-ai.ac_service.services.human_escalation_system import (
                         EscalationLevel,
                     )
-                    from services.core.constitutional_ai.ac_service.services.human_in_the_loop_sampler import (
+                    from services.core.constitutional-ai.ac_service.services.human_in_the_loop_sampler import (
                         SamplingTrigger,
                         UncertaintyAssessment,
                     )

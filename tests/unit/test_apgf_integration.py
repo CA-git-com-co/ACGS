@@ -68,6 +68,9 @@ class TestPolicyBuilder:
     @pytest.mark.asyncio
     async def test_agent_config_creation(self, policy_builder):
         """Test agent configuration creation"""
+        # Await the fixture to get the actual object
+        builder = await policy_builder
+
         agent_request = {
             "name": "Test Agent",
             "role": "policy_analyst",
@@ -76,7 +79,7 @@ class TestPolicyBuilder:
             "priority": "high",
         }
 
-        config = await policy_builder.create_agent_config(agent_request)
+        config = await builder.create_agent_config(agent_request)
 
         assert isinstance(config, AgentConfig)
         assert config.name == "Test Agent"
@@ -88,6 +91,9 @@ class TestPolicyBuilder:
     @pytest.mark.asyncio
     async def test_policy_generation(self, policy_builder):
         """Test policy generation"""
+        # Await the fixture to get the actual object
+        builder = await policy_builder
+
         request = {
             "type": "governance",
             "scope": "domain_specific",
@@ -103,17 +109,20 @@ class TestPolicyBuilder:
             "stakeholders": ["citizens", "government"],
         }
 
-        policy = await policy_builder.generate_policy(request, context)
+        policy = await builder.generate_policy(request, context)
 
         assert isinstance(policy, GeneratedPolicy)
         assert policy.policy_type == PolicyType.GOVERNANCE
         assert policy.scope == PolicyScope.DOMAIN_SPECIFIC
         assert policy.constitutional_compliance_score > 0
-        assert policy.policy_id in policy_builder.generated_policies
+        assert policy.policy_id in builder.generated_policies
 
     @pytest.mark.asyncio
     async def test_policy_validation(self, policy_builder):
         """Test policy validation"""
+        # Await the fixture to get the actual object
+        builder = await policy_builder
+
         # First generate a policy
         request = {
             "type": "governance",
@@ -122,10 +131,10 @@ class TestPolicyBuilder:
             "requirements": {"objective": "Test policy"},
         }
 
-        policy = await policy_builder.generate_policy(request, {})
+        policy = await builder.generate_policy(request, {})
 
         # Now validate it
-        validation_result = await policy_builder.validate_policy(policy)
+        validation_result = await builder.validate_policy(policy)
 
         assert "constitutional_compliance" in validation_result
         assert "safety_checks" in validation_result
@@ -264,17 +273,23 @@ class TestDynamicAgent:
     @pytest.mark.asyncio
     async def test_agent_initialization(self, dynamic_agent):
         """Test agent initialization"""
-        assert dynamic_agent.state == AgentState.ACTIVE
-        assert dynamic_agent.config.agent_id == "test-agent-001"
-        assert len(dynamic_agent.task_queue) == 0
-        assert len(dynamic_agent.active_tasks) == 0
+        # Await the fixture to get the actual object
+        agent = await dynamic_agent
+
+        assert agent.state == AgentState.ACTIVE
+        assert agent.config.agent_id == "test-agent-001"
+        assert len(agent.task_queue) == 0
+        assert len(agent.active_tasks) == 0
 
     @pytest.mark.asyncio
     async def test_task_assignment(self, dynamic_agent):
         """Test task assignment to agent"""
+        # Await the fixture to get the actual object
+        agent = await dynamic_agent
+
         task = AgentTask(
             task_id="test-task-001",
-            agent_id=dynamic_agent.config.agent_id,
+            agent_id=agent.config.agent_id,
             task_type="analysis",
             description="Test task",
             priority=TaskPriority.MEDIUM,
@@ -292,19 +307,22 @@ class TestDynamicAgent:
             execution_logs=[],
         )
 
-        success = await dynamic_agent.assign_task(task)
+        success = await agent.assign_task(task)
 
         assert success is True
-        assert len(dynamic_agent.task_queue) == 1
-        assert task in dynamic_agent.task_queue
+        assert len(agent.task_queue) == 1
+        assert task in agent.task_queue
 
     @pytest.mark.asyncio
     async def test_agent_communication(self, dynamic_agent):
         """Test agent communication"""
+        # Await the fixture to get the actual object
+        agent = await dynamic_agent
+
         message = AgentCommunication(
             communication_id="test-comm-001",
             sender_agent_id="other-agent-001",
-            receiver_agent_id=dynamic_agent.config.agent_id,
+            receiver_agent_id=agent.config.agent_id,
             message_type="status_inquiry",
             content={"request": "status"},
             priority=TaskPriority.MEDIUM,
@@ -314,22 +332,25 @@ class TestDynamicAgent:
             resolved=False,
         )
 
-        await dynamic_agent.receive_message(message)
+        await agent.receive_message(message)
 
-        assert len(dynamic_agent.message_inbox) == 1
-        assert message in dynamic_agent.message_inbox
+        assert len(agent.message_inbox) == 1
+        assert message in agent.message_inbox
 
     @pytest.mark.asyncio
     async def test_agent_status(self, dynamic_agent):
         """Test agent status retrieval"""
-        status = await dynamic_agent.get_status()
+        # Await the fixture to get the actual object
+        agent = await dynamic_agent
+
+        status = await agent.get_status()
 
         assert "agent_id" in status
         assert "state" in status
         assert "role" in status
         assert "capabilities" in status
         assert "uptime_seconds" in status
-        assert status["agent_id"] == dynamic_agent.config.agent_id
+        assert status["agent_id"] == agent.config.agent_id
         assert status["state"] == AgentState.ACTIVE.value
 
 
@@ -376,6 +397,9 @@ class TestAPGFOrchestrator:
     @pytest.mark.asyncio
     async def test_workflow_initiation(self, apgf_orchestrator):
         """Test policy generation workflow initiation"""
+        # Await the fixture to get the actual object
+        orchestrator = await apgf_orchestrator
+
         request = {
             "name": "Test Policy Generation",
             "description": "Test workflow for policy generation",
@@ -386,20 +410,23 @@ class TestAPGFOrchestrator:
             "coordination_strategy": "sequential",
         }
 
-        workflow_id = await apgf_orchestrator.initiate_policy_generation_workflow(
+        workflow_id = await orchestrator.initiate_policy_generation_workflow(
             request
         )
 
         assert workflow_id is not None
-        assert workflow_id in apgf_orchestrator.active_workflows
+        assert workflow_id in orchestrator.active_workflows
 
-        workflow = apgf_orchestrator.active_workflows[workflow_id]
+        workflow = orchestrator.active_workflows[workflow_id]
         assert workflow.name == "Test Policy Generation"
         assert workflow.coordination_strategy.value == "sequential"
 
     @pytest.mark.asyncio
     async def test_agent_creation_through_orchestrator(self, apgf_orchestrator):
         """Test dynamic agent creation through orchestrator"""
+        # Await the fixture to get the actual object
+        orchestrator = await apgf_orchestrator
+
         agent_spec = {
             "name": "Policy Analyst Agent",
             "role": "policy_analyst",
@@ -407,19 +434,22 @@ class TestAPGFOrchestrator:
             "priority": "medium",
         }
 
-        agent_id = await apgf_orchestrator.create_dynamic_agent(agent_spec)
+        agent_id = await orchestrator.create_dynamic_agent(agent_spec)
 
         assert agent_id is not None
-        assert agent_id in apgf_orchestrator.active_agents
-        assert agent_id in apgf_orchestrator.agent_pool
+        assert agent_id in orchestrator.active_agents
+        assert agent_id in orchestrator.agent_pool
 
-        agent = apgf_orchestrator.active_agents[agent_id]
+        agent = orchestrator.active_agents[agent_id]
         assert agent.config.name == "Policy Analyst Agent"
         assert agent.config.role == "policy_analyst"
 
     @pytest.mark.asyncio
     async def test_workflow_status_retrieval(self, apgf_orchestrator):
         """Test workflow status retrieval"""
+        # Await the fixture to get the actual object
+        orchestrator = await apgf_orchestrator
+
         # First create a workflow
         request = {
             "name": "Status Test Workflow",
@@ -427,14 +457,14 @@ class TestAPGFOrchestrator:
             "coordination_strategy": "sequential",
         }
 
-        workflow_id = await apgf_orchestrator.initiate_policy_generation_workflow(
+        workflow_id = await orchestrator.initiate_policy_generation_workflow(
             request
         )
 
         # Wait a moment for workflow to start
         await asyncio.sleep(0.1)
 
-        status = await apgf_orchestrator.get_workflow_status(workflow_id)
+        status = await orchestrator.get_workflow_status(workflow_id)
 
         assert "workflow_id" in status
         assert "name" in status

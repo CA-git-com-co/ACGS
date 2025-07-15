@@ -67,13 +67,13 @@ class ContextualAnalyzer:
         # requires: Valid input parameters
         # ensures: Correct function execution
         # sha256: func_hash
-        self.environmental_factors: dict[str, EnvironmentalFactor] = {}
+        selfconfig/environments/development.environmental_factors: dict[str, EnvironmentalFactor] = {}
         self.context_history: list[dict[str, Any]] = []
         self.similarity_threshold = 0.7  # Threshold for context similarity matching
 
     def add_environmental_factor(self, factor: EnvironmentalFactor) -> None:
         """Add or update an environmental factor."""
-        self.environmental_factors[factor.factor_id] = factor
+        selfconfig/environments/development.environmental_factors[factor.factor_id] = factor
         logger.info(
             f"Added environmental factor: {factor.factor_id} ({factor.factor_type})"
         )
@@ -84,7 +84,7 @@ class ContextualAnalyzer:
         """Get all environmental factors of a specific type."""
         return [
             factor
-            for factor in self.environmental_factors.values()
+            for factor in selfconfig/environments/development.environmental_factors.values()
             if factor.factor_type == factor_type
         ]
 
@@ -151,7 +151,7 @@ class ContextualAnalyzer:
         # Check if factor is relevant based on context keywords
         relevant_factors = [
             factor
-            for factor in self.environmental_factors.values()
+            for factor in selfconfig/environments/development.environmental_factors.values()
             if self._is_factor_relevant(factor, context_lower)
         ]
 
@@ -239,7 +239,7 @@ class ContextualAnalyzer:
         # Look for factors that have changed recently (within last hour for demo)
         current_time = datetime.now(timezone.utc)
 
-        for factor in self.environmental_factors.values():
+        for factor in selfconfig/environments/development.environmental_factors.values():
             if self._is_factor_relevant(factor, context.lower()):
                 # Check if this factor has changed recently
                 time_diff = current_time - factor.timestamp

@@ -353,7 +353,7 @@ class TestDatabaseConnectionOptimization:
                     port=DATABASE_CONFIG["port"],
                     database=DATABASE_CONFIG["database"],
                     user=DATABASE_CONFIG["user"],
-                    password=DATABASE_CONFIG["password"],
+                    password=os.environ.get("PASSWORD")password"],
                     command_timeout=DATABASE_CONFIG["command_timeout"]
                 )
                 

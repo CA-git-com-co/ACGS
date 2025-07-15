@@ -123,7 +123,7 @@ output.logstash:
 setup.kibana:
   host: kibana-security:5601
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
 setup.template.settings:
   index.number_of_shards: 1
   index.number_of_replicas: 0
@@ -144,7 +144,7 @@ monitoring.elasticsearch:
   hosts:
   - elasticsearch-security:9200
   username: elastic
-  password: acgs_security_2024
+  password: os.environ.get("PASSWORD")
 http.enabled: true
 http.host: 0.0.0.0
 http.port: 5066

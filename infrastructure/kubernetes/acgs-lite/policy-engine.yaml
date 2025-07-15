@@ -198,8 +198,8 @@ spec:
             - '--server'
             - '--addr=0.0.0.0:8181'
             - '--diagnostic-addr=0.0.0.0:8282'
-            - '--set=plugins.envoy_ext_authz_grpc.addr=:9191'
-            - '--set=plugins.envoy_ext_authz_grpc.query=data.envoy.authz.allow'
+            - '--set=pluginsconfig/environments/development.envoy_ext_authz_grpc.addr=:9191'
+            - '--set=pluginsconfig/environments/development.envoy_ext_authz_grpc.query=dataconfig/environments/development.envoy.authz.allow'
             - '--set=decision_logs.console=true'
             - '/policies'
           ports:

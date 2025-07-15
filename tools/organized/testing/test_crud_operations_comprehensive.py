@@ -176,9 +176,9 @@ class CRUDTester:
 
         # Try with test user first
         if test_username != "admin_user":
-            form_data = f"username={test_username}&password=TestPass123!"
+            form_data = f"username={test_username}&password=os.environ.get("PASSWORD")
         else:
-            form_data = "username=admin_user&password=AdminPass123!"
+            form_data = "username=admin_user&password=os.environ.get("PASSWORD")
 
         result = self.run_curl_command("POST", url, headers=headers)
         # Manually add form data to curl command

@@ -27,12 +27,12 @@ import numpy as np
 from web3 import Web3
 
 from ..core.metrics import get_metrics
-from .collective_constitutional_ai import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
-    "cdd01ef066bc6cf2",
-    =,
+from .collective_constitutional_ai import (
     get_collective_constitutional_ai,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 logger = logging.getLogger(__name__)
 
@@ -176,7 +176,7 @@ class AdvancedDemocraticParticipation:
                 logger.info("Blockchain connection established")
                 # In production, deploy voting smart contract
                 self.voting_contract_address = (
-                    "0x1234567890123456789012345678901234567890"  # Placeholder
+                    "0x1234567890123456789012345678901234567890"  # Placeholder  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 )
             else:
                 logger.warning("Blockchain connection failed - using local storage")

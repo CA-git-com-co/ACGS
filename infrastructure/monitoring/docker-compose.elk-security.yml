@@ -9,7 +9,7 @@ services:
     - discovery.type=single-node
     - xpack.security.enabled=true
     - xpack.security.enrollment.enabled=true
-    - ELASTIC_PASSWORD=acgs_security_2024
+    - ELASTIC_PASSWORD=os.environ.get("PASSWORD")
     - xpack.security.http.ssl.enabled=false
     - xpack.security.transport.ssl.enabled=false
     - xpack.ml.enabled=true
@@ -22,7 +22,7 @@ services:
     - 9301:9300
     volumes:
     - acgs_elasticsearch_security_data:/usr/share/elasticsearch/data
-    - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+    - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     ulimits:
       memlock:
         soft: -1
@@ -45,7 +45,7 @@ services:
     - xpack.monitoring.enabled=true
     - xpack.monitoring.elasticsearch.hosts=["http://elasticsearch-security:9200"]
     - xpack.monitoring.elasticsearch.username=elastic
-    - xpack.monitoring.elasticsearch.password=acgs_security_2024
+    - xpack.monitoring.elasticsearch.password=os.environ.get("PASSWORD")
     - LS_JAVA_OPTS=-Xms1g -Xmx1g
     ports:
     - 5044:5044
@@ -75,7 +75,7 @@ services:
     - SERVERNAME=acgs-kibana-security
     - ELASTICSEARCH_HOSTS=http://elasticsearch-security:9200
     - ELASTICSEARCH_USERNAME=elastic
-    - ELASTICSEARCH_PASSWORD=acgs_security_2024
+    - ELASTICSEARCH_PASSWORD=os.environ.get("PASSWORD")
     - xpack.security.enabled=true
     - xpack.encryptedSavedObjects.encryptionKey=acgs_security_encryption_key_32_chars
     - xpack.reporting.encryptionKey=acgs_reporting_encryption_key_32_chars
@@ -106,7 +106,7 @@ services:
     - setup.kibana.host=kibana-security:5601
     - output.elasticsearch.hosts=["elasticsearch-security:9200"]
     - output.elasticsearch.username=elastic
-    - output.elasticsearch.password=acgs_security_2024
+    - output.elasticsearch.password=os.environ.get("PASSWORD")
     volumes:
     - ./elk-config/filebeat/filebeat.yml:/usr/share/filebeat/filebeat.yml:ro
     - /var/log/acgs:/var/log/acgs:ro
@@ -128,7 +128,7 @@ services:
     - setup.kibana.host=kibana-security:5601
     - output.elasticsearch.hosts=["elasticsearch-security:9200"]
     - output.elasticsearch.username=elastic
-    - output.elasticsearch.password=acgs_security_2024
+    - output.elasticsearch.password=os.environ.get("PASSWORD")
     volumes:
     - ./elk-config/metricbeat/metricbeat.yml:/usr/share/metricbeat/metricbeat.yml:ro
     - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -149,7 +149,7 @@ services:
     environment:
     - ELASTICSEARCH_HOST=elasticsearch-security:9200
     - ELASTICSEARCH_USERNAME=elastic
-    - ELASTICSEARCH_PASSWORD=acgs_security_2024
+    - ELASTICSEARCH_PASSWORD=os.environ.get("PASSWORD")
     - PROMETHEUS_HOST=prometheus:9090
     - ALERT_WEBHOOK_URL=${SECURITY_ALERT_WEBHOOK_URL:-}
     volumes:

@@ -147,10 +147,8 @@ class TestCrossReferencePatterns(unittest.TestCase):
             test_file_path = Path("/test/docs/test.md")
             lines = test_content.split("\n")
 
-            # Mock the relative_to method
-            with patch.object(
-                test_file_path, "relative_to", return_value=Path("test/docs/test.md")
-            ):
+            # Mock the relative_to method using a different approach
+            with patch.object(Path, "relative_to", return_value=Path("test/docs/test.md")):
                 references = analyzer._extract_cross_references(
                     test_file_path, test_content, lines
                 )
@@ -214,9 +212,7 @@ class TestCrossReferencePatterns(unittest.TestCase):
             test_file_path = Path("/test/docs/test.md")
             lines = test_content.split("\n")
 
-            with patch.object(
-                test_file_path, "relative_to", return_value=Path("test/docs/test.md")
-            ):
+            with patch.object(Path, "relative_to", return_value=Path("test/docs/test.md")):
                 references = analyzer._extract_cross_references(
                     test_file_path, test_content, lines
                 )
@@ -292,9 +288,7 @@ class TestCrossReferencePatterns(unittest.TestCase):
             test_file_path = Path("/test/docs/test.md")
             lines = test_content.split("\n")
 
-            with patch.object(
-                test_file_path, "relative_to", return_value=Path("test/docs/test.md")
-            ):
+            with patch.object(Path, "relative_to", return_value=Path("test/docs/test.md")):
                 references = analyzer._extract_cross_references(
                     test_file_path, test_content, lines
                 )

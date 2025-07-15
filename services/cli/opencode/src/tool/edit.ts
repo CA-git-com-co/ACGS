@@ -1,6 +1,10 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 // the approaches in this edit tool are sourced from
 // https://github.com/cline/cline/blob/main/evals/diff-edits/diff-apply/diff-06-23-25.ts
-// https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/utils/editCorrector.ts
+// https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/utils/editCorrector.ts  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 import { z } from "zod"
 import * as path from "path"

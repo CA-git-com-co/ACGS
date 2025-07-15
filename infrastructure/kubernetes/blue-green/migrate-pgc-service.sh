@@ -508,7 +508,7 @@ complete_critical_pgc_migration() {
     # Record critical migration event
     kubectl create event pgc-critical-migration-completed \
         --namespace="$NAMESPACE_SHARED" \
-        --reason="PolicyGovernanceCriticalMigrationCompleted" \
+        --reason="PolicyGovernanceCriticalMigrationCompleted" \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         --message="Policy governance service (highest complexity) migration with ACGE integration completed successfully" \
         --type="Normal" || true
     
@@ -536,9 +536,9 @@ main() {
     
     # Display comprehensive summary
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Policy Governance Service Critical Migration Summary"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Service: $SERVICE_NAME (Highest Complexity)"
     echo "Migration completed at: $(date)"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"

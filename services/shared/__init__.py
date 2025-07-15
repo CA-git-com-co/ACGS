@@ -17,7 +17,7 @@ except ImportError:
 
 # from . import service_mesh
 
-# You can optionally define __all__ to control what `from shared import *` imports
+# You can optionally define __all__ to control what `from services.shared import *` imports
 __all__ = [
     "CONSTITUTIONAL_HASH",
     # "common",

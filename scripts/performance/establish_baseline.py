@@ -110,7 +110,7 @@ class PerformanceBaselineEstablisher:
     
     def save_baseline(self, baseline_data: Dict[str, Any]) -> None:
         """Save baseline data to file."""
-        baseline_dir = Path("infrastructure/monitoring/performance/baselines")
+        baseline_dir = Path("infrastructure/monitoring/performance/baselines")  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         baseline_dir.mkdir(parents=True, exist_ok=True)
         
         timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")

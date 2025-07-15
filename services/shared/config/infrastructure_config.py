@@ -20,7 +20,7 @@ except ImportError:
     asyncpg = None
 
 try:
-    import aioredis
+    import redis.asyncio as aioredis
 except ImportError:
     aioredis = None
 

@@ -14,6 +14,12 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient
 
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
+
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
@@ -30,7 +36,7 @@ def ac_client():
     """Test client for AC service."""
     # Import the actual service
     try:
-        from services.core.constitutional_ai.ac_service.app.main import app
+        from services.core.constitutional-ai.ac_service.app.main import app
 
         return TestClient(app)
     except ImportError:

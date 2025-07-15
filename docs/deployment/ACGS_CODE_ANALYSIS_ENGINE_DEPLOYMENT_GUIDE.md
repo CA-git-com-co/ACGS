@@ -69,7 +69,7 @@ sudo chown -R $USER:$USER /opt/acgs/code-analysis
 
 ```bash
 # Create production environment file
-cat > config/.env << 'EOF'
+cat > config/config/environments/development.env << 'EOF'
 # Service Configuration
 ENVIRONMENT=production
 ACGS_CODE_ANALYSIS_HOST=0.0.0.0
@@ -140,9 +140,9 @@ services:
       - "8007:8007"
       - "9091:9091"  # Prometheus metrics
     environment:
-      - ENV_FILE=/app/config/.env
+      - ENV_FILE=/app/config/config/environments/development.env
     env_file:
-      - ./config/.env
+      - ./config/config/environments/development.env
     volumes:
       - ./config:/app/config:ro
       - ./logs:/app/logs
@@ -265,7 +265,7 @@ metadata:
   name: acgs-code-analysis-config
   namespace: acgs-code-analysis
 data:
-  .env: |
+  config/environments/development.env: |
     ENVIRONMENT=production
     ACGS_CODE_ANALYSIS_HOST=0.0.0.0
     ACGS_CODE_ANALYSIS_PORT=8007

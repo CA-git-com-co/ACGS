@@ -247,7 +247,7 @@ class ReadReplicaRouter:
                 port=node.port,
                 database=node.database,
                 user=node.username,
-                password=node.password,
+                password=os.environ.get("PASSWORD")
                 timeout=self.config.health_check_timeout,
             )
 
@@ -359,7 +359,7 @@ def get_default_read_replica_config() -> ReadReplicaConfig:
         port=5432,
         database="acgs_db",
         username="acgs_user",
-        password="acgs_password",
+        password=os.environ.get("PASSWORD"),
         replica_type=ReplicaType.PRIMARY,
         weight=1.0,
         max_connections=100,
@@ -373,7 +373,7 @@ def get_default_read_replica_config() -> ReadReplicaConfig:
         #     port=5433,
         #     database="acgs_db",
         #     username="acgs_user",
-        #     password="acgs_password",
+        #     password=os.environ.get("PASSWORD"),
         #     replica_type=ReplicaType.READ_REPLICA,
         #     weight=1.0,
         #     max_connections=80,
@@ -384,7 +384,7 @@ def get_default_read_replica_config() -> ReadReplicaConfig:
         #     port=5434,
         #     database="acgs_db",
         #     username="acgs_user",
-        #     password="acgs_password",
+        #     password=os.environ.get("PASSWORD"),
         #     replica_type=ReplicaType.READ_REPLICA,
         #     weight=0.8,
         #     max_connections=80,

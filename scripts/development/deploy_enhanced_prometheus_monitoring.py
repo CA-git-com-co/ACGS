@@ -562,9 +562,9 @@ async def deploy_executive_dashboards():
 
         # Dashboard files are already created, mark as deployed
         dashboard_files = [
-            "infrastructure/monitoring/grafana/dashboards/executive/executive-overview-dashboard.json",
-            "infrastructure/monitoring/grafana/dashboards/executive/stakeholder-technical-dashboard.json",
-            "infrastructure/monitoring/grafana/dashboards/executive/stakeholder-business-dashboard.json",
+            "infrastructure/monitoring/grafana/dashboards/executive/executive-overview-dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "infrastructure/monitoring/grafana/dashboards/executive/stakeholder-technical-dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "infrastructure/monitoring/grafana/dashboards/executive/stakeholder-business-dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ]
 
         project_root = Path("/home/dislove/ACGS-1")

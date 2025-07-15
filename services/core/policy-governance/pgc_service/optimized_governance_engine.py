@@ -26,7 +26,7 @@ from typing import Any
 
 # For high-performance operations
 try:
-    import aioredis
+    import redis.asyncio as aioredis
     import asyncpg
     import uvloop  # High-performance event loop
 

@@ -5,7 +5,7 @@ services:
     container_name: acgs_postgres_replica1
     environment:
       POSTGRES_USER: acgs_user
-      POSTGRES_PASSWORD: acgs_password
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: acgs_db
       PGUSER: acgs_user
     ports:
@@ -36,7 +36,7 @@ services:
     container_name: acgs_postgres_replica2
     environment:
       POSTGRES_USER: acgs_user
-      POSTGRES_PASSWORD: acgs_password
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: acgs_db
       PGUSER: acgs_user
     ports:
@@ -69,7 +69,7 @@ services:
       DATABASES_HOST: postgres_replica1
       DATABASES_PORT: 5432
       DATABASES_USER: acgs_user
-      DATABASES_PASSWORD: acgs_password
+      DATABASES_PASSWORD: os.environ.get("PASSWORD")
       DATABASES_DBNAME: acgs_db
       POOL_MODE: transaction
       MAX_CLIENT_CONN: 500

@@ -164,8 +164,8 @@ It will check prerequisites, set up services, and validate your installation.
         """Set up environment configuration."""
         print("\n📝 Setting up environment configuration...")
         
-        env_example = self.project_root / ".env.acgs.example"
-        env_target = self.project_root / ".env.acgs"
+        env_example = self.project_root / "config/environments/developmentconfig/environments/acgsconfig/environments/example.env"
+        env_target = self.project_root / "config/environments/developmentconfig/environments/acgs.env"
         
         if env_example.exists():
             if env_target.exists():
@@ -226,7 +226,7 @@ It will check prerequisites, set up services, and validate your installation.
             # Install dependencies
             requirements_files = [
                 "requirements.txt",
-                "services/shared/requirements/requirements-base.txt"
+                "services/shared/requirements/requirements-base.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ]
             
             for req_file in requirements_files:

@@ -192,10 +192,10 @@ metadata:
 type: Opaque
 data:
   # Base64 encoded values (replace with actual secrets)
-  database_password: YWNnc19wcm9kdWN0aW9uX3Bhc3N3b3Jk # acgs_production_password
-  jwt_secret: c3VwZXJfc2VjcmV0X2p3dF9rZXlfZm9yX3Byb2R1Y3Rpb24= # super_secret_jwt_key_for_production
-  redis_password: cmVkaXNfcHJvZHVjdGlvbl9wYXNzd29yZA== # redis_production_password
-  encryption_key: ZW5jcnlwdGlvbl9rZXlfZm9yX3Byb2R1Y3Rpb25fZGF0YQ== # encryption_key_for_production_data
+  database_password: os.environ.get("PASSWORD")
+  jwt_secret: c3VwZXJfc2VjcmV0X2p3dF9rZXlfZm9yX3Byb2R1Y3Rpb24= # super_secret_jwt_key_for_production  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  redis_password: os.environ.get("PASSWORD")
+  encryption_key: ZW5jcnlwdGlvbl9rZXlfZm9yX3Byb2R1Y3Rpb25fZGF0YQ== # encryption_key_for_production_data  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 ---
 # Horizontal Pod Autoscaler for Auth Service
@@ -390,7 +390,7 @@ spec:
           emptyDir: {}
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             - weight: 100
               podAffinityTerm:
                 labelSelector:

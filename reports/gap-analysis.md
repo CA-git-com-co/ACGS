@@ -37,7 +37,7 @@ This analysis catalogues the current validation coverage provided by the five ma
 | **JSON (*.json)** | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None |
 | **Dockerfile** | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None |
 | **Shell Scripts (*.sh)** | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None |
-| **Configuration Files (.env, .ini, .cfg)** | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None |
+| **Configuration Files (config/environments/development.env, .ini, .cfg)** | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None |
 | **TOML (*.toml)** | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None | ❌ None |
 
 ---
@@ -93,7 +93,7 @@ This analysis catalogues the current validation coverage provided by the five ma
 ### 3. Configuration and Environment Management
 
 **Missing Rules:**
-- **Environment Files (.env)**: No validation for:
+- **Environment Files (config/environments/development.env)**: No validation for:
   - Required variables presence
   - Format consistency across environments
   - Sensitive data exposure checks
@@ -253,7 +253,7 @@ This analysis catalogues the current validation coverage provided by the five ma
 ### Port and Endpoint Validation Extensions
 
 1. **Configuration Files**: Validate port consistency in:
-   - `.env` files across environments
+   - `config/environments/development.env` files across environments
    - Docker Compose service definitions
    - Kubernetes service manifests
    - Nginx/HAProxy configuration
@@ -307,7 +307,7 @@ This analysis catalogues the current validation coverage provided by the five ma
    - Network policy compliance
 
 2. **Environment Configuration Validator**
-   - `.env` file consistency
+   - `config/environments/development.env` file consistency
    - Sensitive data exposure detection
    - Port conflict resolution
    - Required variable validation

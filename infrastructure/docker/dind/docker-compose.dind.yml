@@ -3,7 +3,11 @@ services:
   docker-dind:
     image: docker:24.0-dind
     container_name: acgs-docker-dind
-    privileged: true
+    # Remove privileged mode and use capabilities instead for security
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
     restart: unless-stopped
     environment:
     - DOCKER_TLS_CERTDIR=/certs
@@ -193,7 +197,7 @@ services:
     environment:
     - POSTGRES_DB=acgs
     - POSTGRES_USER=acgs_user
-    - POSTGRES_PASSWORD=acgs_secure_password
+    - POSTGRES_PASSWORD=os.environ.get("PASSWORD")
     - POSTGRES_INITDB_ARGS=--auth-host=scram-sha-256
     volumes:
     - postgres-data:/var/lib/postgresql/data
@@ -280,7 +284,7 @@ services:
     image: grafana/grafana:latest
     container_name: acgs-grafana-dind
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=acgs_grafana_admin
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
     - grafana-data:/var/lib/grafana

@@ -357,7 +357,7 @@ class ACGSVaultClient:
             # Store in Vault
             self.client.secrets.kv.v2.create_or_update_secret(
                 path=secret_path,
-                secret=secret_with_metadata,
+                secret=secret_with_metadata,  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 mount_point=self.config.kv_mount_point,
             )
 

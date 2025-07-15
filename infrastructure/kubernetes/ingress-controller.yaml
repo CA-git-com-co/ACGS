@@ -259,7 +259,7 @@ spec:
             - --ingress-class=nginx
             - --configmap=$(POD_NAMESPACE)/ingress-nginx-controller
             - --validating-webhook=:8443
-            - --validating-webhook-certificate=/usr/local/certificates/cert
+            - --validating-webhook-certificate=/usr/local/certificates/cert  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             - --validating-webhook-key=/usr/local/certificates/key
           env:
             - name: POD_NAME

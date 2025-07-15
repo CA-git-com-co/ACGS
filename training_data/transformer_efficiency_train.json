@@ -1,0 +1,467 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "model_config": {
+          "seq_len": 2048,
+          "dim": 256,
+          "heads": 8,
+          "layers": 6
+        },
+        "optimization_technique": "performer_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "complexity_reduction": 16.0,
+          "approximation_error": 0.03,
+          "latency_improvement": 8.0
+        },
+        "optimization_strategy": "performer_with_sparse_attention",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    }
+  ]
+}

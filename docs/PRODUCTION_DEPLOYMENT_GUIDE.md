@@ -110,7 +110,7 @@ cd ACGS-2
 
 2. **Configure Environment**:
 ```bash
-cp .env.acgs.example .env.acgs
+cp config/environments/developmentconfig/environments/acgsconfig/environments/example.env config/environments/developmentconfig/environments/acgs.env
 # Update with production values
 ```
 

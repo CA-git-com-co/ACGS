@@ -106,7 +106,7 @@ spec:
         fsGroup: 1000
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             - weight: 100
               podAffinityTerm:
                 labelSelector:
@@ -157,5 +157,5 @@ metadata:
 type: Opaque
 data:
   # Base64 encoded values - replace with actual secrets
-  database-url: cG9zdGdyZXNxbCthc3luY3BnOi8vYWNnczphY2dzQHBvc3RncmVzLmFjZ3Muc3ZjLmNsdXN0ZXIubG9jYWw6NTQzMi9hY2dzX3Byb2Q=
-  redis-url: cmVkaXM6Ly9yZWRpcy5hY2dzLnN2Yy5jbHVzdGVyLmxvY2FsOjYzNzkvMA==
+  database-url: cG9zdGdyZXNxbCthc3luY3BnOi8vYWNnczphY2dzQHBvc3RncmVzLmFjZ3Muc3ZjLmNsdXN0ZXIubG9jYWw6NTQzMi9hY2dzX3Byb2Q=  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  redis-url: cmVkaXM6Ly9yZWRpcy5hY2dzLnN2Yy5jbHVzdGVyLmxvY2FsOjYzNzkvMA==  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2

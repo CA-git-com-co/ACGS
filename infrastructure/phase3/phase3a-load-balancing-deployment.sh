@@ -87,7 +87,7 @@ create_ssl_certificates() {
     log "Creating SSL certificates..."
     
     # Apply cert-manager cluster issuers
-    kubectl apply -f infrastructure/kubernetes/production/ingress/cert-manager.yaml
+    kubectl apply -f infrastructure/kubernetes/production/ingress/cert-manager.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Create self-signed certificate for development
     cat <<EOF | kubectl apply -f -
@@ -131,12 +131,12 @@ deploy_nginx_gateway() {
     
     # Update namespace in nginx deployment
     sed "s/namespace: acgs-pgp/namespace: $NAMESPACE/g" \
-        infrastructure/kubernetes/production/ingress/nginx-deployment.yaml | \
+        infrastructure/kubernetes/production/ingress/nginx-deployment.yaml | \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         kubectl apply -f -
     
     # Apply nginx ingress configuration
     sed "s/namespace: acgs-pgp/namespace: $NAMESPACE/g" \
-        infrastructure/kubernetes/production/ingress/nginx-ingress.yaml | \
+        infrastructure/kubernetes/production/ingress/nginx-ingress.yaml | \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         kubectl apply -f -
     
     success "Custom Nginx gateway deployed"
@@ -476,7 +476,7 @@ generate_report() {
         echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
         echo "Namespace: $NAMESPACE"
         echo "Phase: $PHASE"
-        echo "=============================================="
+        echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Nginx Ingress Controller Status:"

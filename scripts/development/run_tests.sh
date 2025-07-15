@@ -1,10 +1,12 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS Development Tasks - Test Execution Script
 # This script runs all tests for the completed development tasks
 
 echo "🧪 Running ACGS Development Tasks Test Suite"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Set up environment
 export PYTHONPATH="${PYTHONPATH}:$(pwd)"
@@ -148,7 +150,7 @@ fi
 
 # Summary
 echo -e "\n${BLUE}📊 Test Results Summary${NC}"
-echo "=============================================="
+echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo -e "Total Tests: $total_tests"
 echo -e "Passed: ${GREEN}$passed_tests${NC}"
 echo -e "Failed: ${RED}$((total_tests - passed_tests))${NC}"

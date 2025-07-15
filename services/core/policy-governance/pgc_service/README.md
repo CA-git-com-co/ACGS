@@ -215,8 +215,8 @@ createdb acgs_policy_governance
 alembic upgrade head
 
 # 4. Configure environment
-cp .env.example .env
-# Edit .env with your configuration
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# Edit config/environments/development.env with your configuration
 
 # 5. Start service
 uv run uvicorn app.main:app --reload --port 8005
@@ -227,7 +227,7 @@ uv run uvicorn app.main:app --reload --port 8005
 ```bash
 # Using Docker
 docker build -t acgs-pgc-service .
-docker run -p 8005:8005 --env-file .env acgs-pgc-service
+docker run -p 8005:8005 --env-file config/environments/development.env acgs-pgc-service
 
 # Using systemd
 sudo cp pgc-service.service /etc/systemd/system/
@@ -704,10 +704,10 @@ redis-cli config set maxmemory-policy allkeys-lru
 - **Health Check**: http://localhost:8005/health
 - **Interactive API Docs**: http://localhost:8005/docs
 - **Logs**: `/logs/pgc_service.log`
-- **Configuration**: `services/core/policy-governance/pgc_service/.env`
+- **Configuration**: `services/core/policy-governance/pgc_service/config/environments/development.env`
 - **OPA Documentation**: [Open Policy Agent](https://www.openpolicyagent.org/docs/latest/)
 
-2. Copy `.env.example` to `.env` and set:
+2. Copy `config/environments/developmentconfig/environments/example.env` to `config/environments/development.env` and set:
    - `INTEGRITY_SERVICE_URL` - URL of the Integrity service
    - `POLICY_REFRESH_INTERVAL_SECONDS` - policy reload interval
 

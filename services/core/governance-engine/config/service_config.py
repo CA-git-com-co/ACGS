@@ -116,7 +116,7 @@ class GovernanceEngineConfig(BaseModel):
     performance: PerformanceConfig = Field(default_factory=PerformanceConfig)
 
     class Config:
-        env_file = ".env"
+        env_file = "config/environments/development.env"
         env_nested_delimiter = "__"
 
 

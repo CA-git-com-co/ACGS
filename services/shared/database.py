@@ -144,3 +144,59 @@ async def create_db_and_tables():
 # create_db_and_tables() might be called by individual service main.py on startup
 # for non-Alembic managed tables or for ensuring DB exists, though migrations handle schema.
 # It's generally recommended to rely on Alembic for all schema management in production.
+
+
+# Test compatibility functions
+def create_engine(*args, **kwargs):
+    """
+    Create database engine for test compatibility.
+
+    This function provides compatibility with tests that expect
+    a synchronous create_engine function.
+    """
+    from sqlalchemy import create_engine as sync_create_engine
+    return sync_create_engine(*args, **kwargs)
+
+
+def get_database_connection():
+    """
+    Get database connection for test compatibility.
+
+    Returns:
+        Database connection for testing
+    """
+    try:
+        # For test compatibility, create a new engine
+        database_url = "sqlite:///test.db"  # Default test database
+        engine = create_engine(database_url)
+        return engine
+    except Exception:
+        # Fallback for tests
+        return None
+
+
+def validate_database_url(url: str) -> bool:
+    """
+    Validate database URL format.
+
+    Args:
+        url: Database URL to validate
+
+    Returns:
+        True if URL is valid, False otherwise
+    """
+    try:
+        # Basic validation - check if it looks like a database URL
+        if not url or not isinstance(url, str):
+            return False
+
+        # Check for common database URL patterns
+        valid_schemes = ['postgresql', 'postgres', 'sqlite', 'mysql', 'mariadb']
+
+        for scheme in valid_schemes:
+            if url.startswith(f"{scheme}://") or url.startswith(f"{scheme}+"):
+                return True
+
+        return False
+    except Exception:
+        return False

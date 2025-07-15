@@ -91,7 +91,7 @@ class GSServiceDependencyFixer:
         """Update GS Service configuration with correct URLs."""
         print("🔧 Updating GS Service configuration...")
 
-        # The .env file has already been created, now we need to check if the service
+        # The config/environments/development.env file has already been created, now we need to check if the service
         # can reload its configuration or if we need to restart it
 
         # First, let's try to send a configuration reload signal if the service supports it
@@ -146,7 +146,7 @@ echo "🔄 Restarting GS Service with updated configuration..."
 cd /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service
 
 # Load environment variables
-export $(cat .env | xargs)
+export $(cat config/environments/development.env | xargs)
 
 # Kill existing GS Service process (if running as current user)
 pkill -f "uvicorn.*8004" 2>/dev/null || true

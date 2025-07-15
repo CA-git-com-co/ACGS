@@ -30,7 +30,7 @@ error() {
 }
 
 # Configuration
-STAGING_ENV_FILE="config/environments/staging.env"
+STAGING_ENV_FILE="config/environments/stagingconfig/environments/development.env"
 STAGING_COMPOSE_FILE="infrastructure/docker/docker-compose.staging.yml"
 CONSTITUTIONAL_HASH="cdd01ef066bc6cf2"
 
@@ -52,12 +52,12 @@ check_prerequisites() {
     # Check if required environment variables are set
     if [[ -z "${POSTGRES_PASSWORD:-}" ]]; then
         warning "POSTGRES_PASSWORD not set, using default"
-        export POSTGRES_PASSWORD="acgs_staging_password_2024"
+        export POSTGRES_PASSWORD=os.environ.get("PASSWORD")
     fi
     
     if [[ -z "${JWT_SECRET_KEY:-}" ]]; then
         warning "JWT_SECRET_KEY not set, generating one"
-        export JWT_SECRET_KEY="acgs_staging_jwt_secret_$(date +%s)"
+        export JWT_SECRET_KEY="acgs_staging_jwt_secret_$(date +%s)"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     fi
     
     success "Prerequisites check completed"
@@ -217,7 +217,7 @@ EOF
 # Main function
 main() {
     log "Starting ACGS-PGP Staging Environment Setup"
-    log "============================================"
+    log "============================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     check_prerequisites
     validate_environment_parity

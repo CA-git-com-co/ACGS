@@ -1,0 +1,284 @@
+version: '3.8'
+
+# GroqCloud Policy Integration with WASM Support - Development Environment
+# Constitutional Hash: cdd01ef066bc6cf2
+
+services:
+  # GroqCloud Policy Integration Service
+  groq-policy-integration:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.groq-policy-integration
+      args:
+        - PYTHON_VERSION=3.11
+        - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    container_name: acgs-groq-policy-integration
+    ports:
+      - "8015:8015"
+      - "9015:9090"  # Metrics port
+    environment:
+      - GROQ_API_KEY=${GROQ_API_KEY:-your_groq_api_key_here}
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - POLICIES_PATH=/app/policies
+      - WASM_POOL_SIZE=10
+      - ENABLE_CACHING=true
+      - LOG_LEVEL=DEBUG
+      - PYTHONPATH=/app
+      - REDIS_URL=redis://redis:6379
+      - POSTGRES_URL=postgresql://acgs:acgs@postgres:5432/acgs
+      - OPA_URL=http://opa:8181
+    volumes:
+      - ../../services/core/governance-synthesis/policies:/app/policies:ro
+      - groq-wasm-cache:/app/wasm-cache
+      - /tmp:/tmp
+    depends_on:
+      - redis
+      - postgres
+      - opa
+      - prometheus
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8015/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.groq-policy.rule=Host(`groq-policy.localhost`)"
+      - "traefik.http.routers.groq-policy.entrypoints=web"
+      - "traefik.http.services.groq-policy.loadbalancer.server.port=8015"
+      - "prometheus.io/scrape=true"
+      - "prometheus.io/port=9090"
+      - "prometheus.io/path=/metrics"
+
+  # Enhanced OPA with WASM Support
+  opa:
+    image: openpolicyagent/opa:latest-envoy
+    container_name: acgs-opa-wasm
+    ports:
+      - "8181:8181"
+    command:
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "--diagnostic-addr=0.0.0.0:8282"
+      - "--set=pluginsconfig/environments/development.envoy_ext_authz_grpc.addr=:9191"
+      - "--set=pluginsconfig/environments/development.envoy_ext_authz_grpc.query=dataconfig/environments/development.envoy.authz.allow"
+      - "--set=decision_logs.console=true"
+      - "--set=status.console=true"
+      - "--set=bundles.acgs.resource=/policies"
+      - "/policies"
+    volumes:
+      - ../../services/core/governance-synthesis/policies:/policies:ro
+      - opa-data:/data
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8181/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+  # Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: acgs-redis
+    ports:
+      - "6389:6379"
+    command: redis-server --appendonly yes --maxmemory 1gb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+      - ../../config/redis/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL for persistent storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: acgs-postgres
+    ports:
+      - "5439:5432"
+    environment:
+      - POSTGRES_DB=acgs
+      - POSTGRES_USER=acgs
+      - POSTGRES_PASSWORD=acgs
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../../database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U acgs -d acgs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: acgs-prometheus
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus-groq.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/rules:/etc/prometheus/rules:ro
+      - prometheus-data:/prometheus
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: acgs-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    depends_on:
+      - prometheus
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Load Balancer (HAProxy)
+  haproxy:
+    image: haproxy:2.8-alpine
+    container_name: acgs-haproxy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8404:8404"  # Stats page
+    volumes:
+      - ./load-balancer/haproxy-groq.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+      - ./load-balancer/ssl:/etc/ssl/certs:ro
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    depends_on:
+      - groq-policy-integration
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8404/stats"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # WASM Policy Compiler Service
+  wasm-compiler:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.wasm-compiler
+    container_name: acgs-wasm-compiler
+    ports:
+      - "8181:8181"
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - OPA_BINARY_PATH=/usr/local/bin/opa
+    volumes:
+      - ../../services/core/governance-synthesis/policies:/policies:ro
+      - wasm-compiled:/compiled
+      - /tmp:/tmp
+    networks:
+      - acgs-network
+    restart: unless-stopped
+    command: >
+      sh -c "
+        echo 'Starting WASM Policy Compiler...' &&
+        python3 /app/compile_policies.py &&
+        echo 'Policy compilation complete. Starting file server...' &&
+        python3 -m http.server 8181 --directory /compiled
+      "
+
+  # Development Tools Container
+  dev-tools:
+    build:
+      context: ../../
+      dockerfile: infrastructure/docker/Dockerfile.dev-tools
+    container_name: acgs-dev-tools
+    volumes:
+      - ../../:/workspace:cached
+      - groq-wasm-cache:/workspace/wasm-cache
+    environment:
+      - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+      - GROQ_API_KEY=${GROQ_API_KEY:-your_groq_api_key_here}
+    networks:
+      - acgs-network
+    tty: true
+    stdin_open: true
+    command: sleep infinity
+
+networks:
+  acgs-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  groq-wasm-cache:
+    driver: local
+  opa-data:
+    driver: local
+  redis-data:
+    driver: local
+  postgres-data:
+    driver: local
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  wasm-compiled:
+    driver: local
+
+# Health check configuration
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s

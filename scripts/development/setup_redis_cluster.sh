@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Redis Cluster Setup Script
 # Phase 2 - Enterprise Scalability & Performance
@@ -146,7 +148,7 @@ fi
 print_status "Setting up Redis monitoring..."
 
 # Update Prometheus configuration to include Redis exporter
-PROMETHEUS_CONFIG="$PROJECT_ROOT/infrastructure/monitoring/prometheus/prometheus.yml"
+PROMETHEUS_CONFIG="$PROJECT_ROOT/infrastructure/monitoring/prometheus/prometheus.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 if [ -f "$PROMETHEUS_CONFIG" ]; then
     # Check if Redis job already exists
     if ! grep -q "job_name: 'redis-cluster'" "$PROMETHEUS_CONFIG"; then

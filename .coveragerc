@@ -1,0 +1,95 @@
+# ACGS-2 Coverage Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+[run]
+source = .
+branch = True
+parallel = True
+context = '${CONTEXT}'
+
+# Include patterns for ACGS-2 core services
+include = 
+    services/core/constitutional-ai/*
+    services/core/governance-synthesis/*
+    services/core/formal-verification/*
+    services/core/evolutionary-computation/*
+    services/core/policy-governance/*
+    services/core/multi_agent_coordinator/*
+    services/blockchain/*
+    services/platform_services/*
+    services/shared/*
+    quality_assurance/*
+    cli/*
+    web/*
+
+# Exclude patterns
+omit = 
+    */tests/*
+    */test_*
+    */__pycache__/*
+    */venv/*
+    */env/*
+    */node_modules/*
+    */migrations/*
+    */alembic/*
+    setup.py
+    conftest.py
+    */conftest.py
+    */.tox/*
+    */build/*
+    */dist/*
+    */docs/*
+    */examples/*
+    */scripts/training/*
+    */demo_*
+    */archive/*
+    */backup/*
+    */temp/*
+    */tmp/*
+
+[report]
+# Reporting configuration
+precision = 2
+show_missing = True
+skip_covered = False
+skip_empty = True
+sort = Cover
+
+# Fail under 80% coverage
+fail_under = 80
+
+# Exclude lines from coverage
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    if settings.DEBUG
+    raise AssertionError
+    raise NotImplementedError
+    if 0:
+    if __name__ == .__main__.:
+    class .*\bProtocol\):
+    @(abc\.)?abstractmethod
+    # Constitutional hash comments
+    # Constitutional Hash: cdd01ef066bc6cf2
+
+[html]
+directory = test_reports/htmlcov
+title = ACGS-2 Test Coverage Report
+show_contexts = True
+
+[xml]
+output = test_reports/coverage.xml
+
+[json]
+output = test_reports/coverage.json
+show_contexts = True
+
+[paths]
+# Path mapping for different environments
+source = 
+    .
+    /home/*/ACGS-2
+    /app
+    /workspace
+    services/

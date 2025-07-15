@@ -1,0 +1,5 @@
+llm_model: "llama3-8b-8192"
+forest:
+  - [ hipaa-privacy, integrity ]
+  - [ fairness, integrity ]
+  - [ hipaa-privacy, fairness ]

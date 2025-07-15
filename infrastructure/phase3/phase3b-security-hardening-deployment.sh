@@ -540,7 +540,7 @@ generate_security_report() {
         echo "Namespace: $NAMESPACE"
         echo "Phase: $PHASE"
         echo "Security Target Score: $SECURITY_TARGET_SCORE"
-        echo "=============================================="
+        echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Vault Status:"

@@ -124,7 +124,7 @@ class ACGSPerformanceBenchmarkSuite:
                 port=5439,
                 database="acgs_test",
                 user="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 min_size=20,
                 max_size=100
             )

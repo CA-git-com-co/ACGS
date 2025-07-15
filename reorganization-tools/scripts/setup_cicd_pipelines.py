@@ -419,7 +419,7 @@ jobs:
     - name: Validate Kubernetes manifests
       run: |
         # Install kubeval
-        curl -L https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar xz
+        curl -L https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz | tar xz  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         sudo mv kubeval /usr/local/bin
         
         # Validate all YAML files

@@ -230,7 +230,7 @@ class Settings:
     """Main application settings."""
 
     def __init__(self, environment: str | None = None):
-        self.environment = environment or os.getenv("ENVIRONMENT", "development")
+        selfconfig/environments/development.environment = environment or os.getenv("ENVIRONMENT", "development")
         self._config_manager = get_config_manager()
 
         # Initialize settings from configuration
@@ -245,7 +245,7 @@ class Settings:
             port=db_config.get("port", 5432),
             database=db_config.get("database", "acgs"),
             username=db_config.get("username", "acgs_user"),
-            password=db_config.get("password", ""),
+            password=os.environ.get("PASSWORD")password", ""),
             pool_size=db_config.get("pool_size", 20),
             max_overflow=db_config.get("max_overflow", 10),
             pool_timeout=db_config.get("pool_timeout", 30.0),
@@ -364,17 +364,17 @@ class Settings:
 
     def _apply_environment_overrides(self) -> None:
         """Apply environment-specific setting overrides."""
-        if self.environment == "development":
+        if selfconfig/environments/development.environment == "development":
             self.database.echo = True
             self.logging.level = "DEBUG"
             self.security.enable_csrf_protection = False
             self.constitutional.strict_mode = False
-        elif self.environment == "testing":
+        elif selfconfig/environments/development.environment == "testing":
             self.database.database = "acgs_test"
             self.cache.redis_url = "redis://localhost:6379/1"
             self.logging.level = "WARNING"
             self.monitoring.enable_alerts = False
-        elif self.environment == "production":
+        elif selfconfig/environments/development.environment == "production":
             self.logging.level = "INFO"
             self.security.enable_2fa = True
             self.constitutional.strict_mode = True
@@ -383,7 +383,7 @@ class Settings:
     def reload(self) -> None:
         """Reload settings from configuration."""
         self._load_settings()
-        logger.info(f"Settings reloaded for environment: {self.environment}")
+        logger.info(f"Settings reloaded for environment: {selfconfig/environments/development.environment}")
 
     def get_database_url(self) -> str:
         """Get database connection URL."""
@@ -395,20 +395,20 @@ class Settings:
 
     def is_development(self) -> bool:
         """Check if running in development mode."""
-        return self.environment == "development"
+        return selfconfig/environments/development.environment == "development"
 
     def is_production(self) -> bool:
         """Check if running in production mode."""
-        return self.environment == "production"
+        return selfconfig/environments/development.environment == "production"
 
     def is_testing(self) -> bool:
         """Check if running in testing mode."""
-        return self.environment == "testing"
+        return selfconfig/environments/development.environment == "testing"
 
     def to_dict(self) -> dict[str, Any]:
         """Convert all settings to dictionary."""
         return {
-            "environment": self.environment,
+            "environment": selfconfig/environments/development.environment,
             "database": self.database.to_dict(),
             "cache": self.cache.to_dict(),
             "logging": self.logging.to_dict(),

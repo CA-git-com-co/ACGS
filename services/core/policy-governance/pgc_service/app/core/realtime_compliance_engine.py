@@ -6,7 +6,7 @@ rule evaluation, and comprehensive audit logging targeting <200ms validation lat
 
 requires: Real-time compliance validation <200ms, action interception, audit trails
 ensures: Constitutional compliance enforcement, performance optimization, security
-sha256: e7f6c5b4a3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3b2a1d8e7f6c5b4a3d2e1f8
+sha256: e7f6c5b4a3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3b2a1d8e7f6c5b4a3d2e1f8  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import asyncio

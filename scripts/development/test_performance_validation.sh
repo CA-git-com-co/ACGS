@@ -262,7 +262,7 @@ test_service_performance() {
 # Main performance validation
 main() {
     log "🚀 Starting ACGS-PGP Performance Validation"
-    echo "============================================"
+    echo "============================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Response time target: ≤${RESPONSE_TIME_TARGET}ms"
     echo "Throughput target: ≥${THROUGHPUT_TARGET} RPS"
     echo "Constitutional compliance: ≥${CONSTITUTIONAL_COMPLIANCE_TARGET}"
@@ -304,9 +304,9 @@ main() {
     
     # Generate performance report
     echo ""
-    echo "============================================"
+    echo "============================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🚀 ACGS-PGP Performance Validation Results"
-    echo "============================================"
+    echo "============================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Services tested: $TOTAL_SERVICES"
     echo "Services passing: $PASSING_SERVICES"
     echo "Overall success rate: $(( PASSING_SERVICES * 100 / TOTAL_SERVICES ))%"

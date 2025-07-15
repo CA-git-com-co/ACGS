@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: acgs_test
       POSTGRES_USER: acgs_test
-      POSTGRES_PASSWORD: acgs_test_password
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
     ports:
     - 5432:5432
@@ -46,9 +46,9 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.auth
     container_name: acgs-auth-service-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/0
-    - JWT_SECRET_KEY=test-jwt-secret-key-for-ci
+    - JWT_SECRET_KEY=test-jwt-secret-key-for-ci  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
     - ENVIRONMENT=test
@@ -76,7 +76,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.constitutional-ai
     container_name: acgs-constitutional-ai-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/1
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
@@ -105,7 +105,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.integrity
     container_name: acgs-integrity-service-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/2
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
@@ -134,7 +134,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.formal-verification
     container_name: acgs-formal-verification-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/3
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
@@ -163,7 +163,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.governance-synthesis
     container_name: acgs-governance-synthesis-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/4
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
@@ -192,7 +192,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.policy-governance
     container_name: acgs-policy-governance-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/5
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
@@ -221,7 +221,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.evolutionary-computation
     container_name: acgs-evolutionary-computation-test
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/6
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - LOG_LEVEL=INFO
@@ -250,7 +250,7 @@ services:
       dockerfile: infrastructure/docker/Dockerfile.test-runner
     container_name: acgs-test-runner
     environment:
-    - DATABASE_URL=postgresql+asyncpg://acgs_test:acgs_test_password@postgres-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/7
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - AUTH_SERVICE_URL=http://auth-service-test:8016

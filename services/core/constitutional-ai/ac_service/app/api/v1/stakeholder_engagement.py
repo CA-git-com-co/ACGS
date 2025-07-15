@@ -13,6 +13,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import User
 from services.shared.database import get_async_db
+from services.shared.security_validation import (
+    validate_governance_input,
+    validate_policy_input,
+    validate_user_input,
+)
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -329,13 +334,6 @@ async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
 
         # Create engagement service (simplified for WebSocket)
         from services.shared.database import get_async_db
-
-# Security validation imports
-from services.shared.security_validation import (
-    validate_governance_input,
-    validate_policy_input,
-    validate_user_input,
-)
 
         async for db in get_async_db():
             config = ConstitutionalCouncilConfig()

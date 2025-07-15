@@ -218,7 +218,7 @@ class ConstitutionalMonitoringValidator:
         config_files = [
             "/home/dislove/ACGS-2/infrastructure/monitoring/prometheus.yml",
             "/home/dislove/ACGS-2/infrastructure/docker/alert_rules.yml",
-            "/home/dislove/ACGS-2/infrastructure/monitoring/grafana/dashboards/acgs-constitutional-compliance.json",
+            "/home/dislove/ACGS-2/infrastructure/monitoring/grafana/dashboards/acgs-constitutional-compliance.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ]
 
         hash_consistency = True

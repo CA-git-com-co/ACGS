@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-PGP Installation Script
 # Version: 3.0.0
@@ -6,7 +8,7 @@
 set -e
 
 echo "🚀 ACGS-PGP Installation Script v3.0.0"
-echo "========================================"
+echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Check if uv is installed
 if ! command -v uv &> /dev/null; then
@@ -65,16 +67,16 @@ cd ..
 
 # Set up environment variables
 echo "🔧 Setting up environment variables..."
-if [ ! -f .env ]; then
-    cp .env.example .env 2>/dev/null || echo "# ACGS-PGP Environment Variables" > .env
-    echo "JWT_SECRET_KEY=test-jwt-secret-key-32-characters-minimum-length-required-for-validation" >> .env
-    echo "DATABASE_URL=postgresql+asyncpg://acgs_user:strong_password_here@localhost:5432/acgs_pgp_db" >> .env
-    echo "REDIS_URL=redis://localhost:6379/0" >> .env
-    echo "ENVIRONMENT=development" >> .env
-    echo "DEBUG=true" >> .env
-    echo "✅ Created .env file with default values"
+if [ ! -f config/environments/development.env ]; then
+    cp config/environments/developmentconfig/environments/example.env config/environments/development.env 2>/dev/null || echo "# ACGS-PGP Environment Variables" > config/environments/development.env
+    echo "JWT_SECRET_KEY=test-jwt-secret-key-32-characters-minimum-length-required-for-validation" >> config/environments/development.env  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    echo "DATABASE_URL=os.environ.get("DATABASE_URL") >> config/environments/development.env
+    echo "REDIS_URL=redis://localhost:6379/0" >> config/environments/development.env
+    echo "ENVIRONMENT=development" >> config/environments/development.env
+    echo "DEBUG=true" >> config/environments/development.env
+    echo "✅ Created config/environments/development.env file with default values"
 else
-    echo "✅ .env file already exists"
+    echo "✅ config/environments/development.env file already exists"
 fi
 
 # Run tests to verify installation
@@ -92,7 +94,7 @@ echo "🎉 ACGS-PGP Installation Complete!"
 echo "=================================="
 echo ""
 echo "📋 Next Steps:"
-echo "1. Review and update .env file with your configuration"
+echo "1. Review and update config/environments/development.env file with your configuration"
 echo "2. Start the development server:"
 echo "   Backend:  uv run uvicorn services.main:app --reload"
 echo "   Frontend: cd project && npm run dev"

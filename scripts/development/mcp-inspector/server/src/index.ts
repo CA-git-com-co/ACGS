@@ -1,3 +1,7 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 #!/usr/bin/env node
 
 import cors from "cors";
@@ -12,10 +16,10 @@ import {
   StdioClientTransport,
   getDefaultEnvironment,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";
-import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/streamableHttp.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
-import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
+import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 import express from "express";
 import { findActualExecutable } from "spawn-rx";
 import mcpProxy from "./mcpProxy.js";

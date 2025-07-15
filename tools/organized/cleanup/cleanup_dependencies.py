@@ -54,7 +54,7 @@ class DependencyCleanup:
             "venv",
             "env",
             ".venv",
-            ".env",
+            "config/environments/development.env",
             "dist",
             "build",
             "out",

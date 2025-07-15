@@ -7,14 +7,14 @@ from typing import Any
 
 import structlog
 
-from services.shared.advanced_redis_client import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
+from services.shared.advanced_redis_client import (
     AdvancedRedisClient,
     CacheConfig,
-    "cdd01ef066bc6cf2",
-    =,
     get_redis_client,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 logger = structlog.get_logger(__name__)
 

@@ -80,18 +80,18 @@ setup_environment() {
     
     cd "$PROJECT_ROOT"
     
-    # Check if .env exists
-    if [[ ! -f .env ]]; then
-        log_error ".env file not found. Please ensure you're in the ACGS project directory."
+    # Check if config/environments/development.env exists
+    if [[ ! -f config/environments/development.env ]]; then
+        log_error "config/environments/development.env file not found. Please ensure you're in the ACGS project directory."
         exit 1
     fi
     
     # Check HuggingFace token
-    if ! grep -q "HUGGINGFACE_API_KEY=" .env || grep -q "HUGGINGFACE_API_KEY=$" .env; then
-        log_warning "HuggingFace API key not set in .env file"
+    if ! grep -q "HUGGINGFACE_API_KEY=" config/environments/development.env || grep -q "HUGGINGFACE_API_KEY=$" config/environments/development.env; then
+        log_warning "HuggingFace API key not set in config/environments/development.env file"
         read -p "Enter your HuggingFace API token: " -r HF_TOKEN
         if [[ -n "$HF_TOKEN" ]]; then
-            sed -i "s/HUGGINGFACE_API_KEY=.*/HUGGINGFACE_API_KEY=$HF_TOKEN/" .env
+            sed -i "s/HUGGINGFACE_API_KEY=.*/HUGGINGFACE_API_KEY=$HF_TOKEN/" config/environments/development.env
             log_success "HuggingFace token updated"
         else
             log_error "HuggingFace token is required"
@@ -125,7 +125,7 @@ deploy_service() {
     
     # Deploy service
     log_info "Starting Kimi service..."
-    docker-compose -f infrastructure/docker/docker-compose.kimi.yml --env-file .env up -d
+    docker-compose -f infrastructure/docker/docker-compose.kimi.yml --env-file config/environments/development.env up -d
     
     log_success "Service deployment initiated"
 }

@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 set -euo pipefail
 
@@ -101,8 +103,8 @@ install_operators() {
     
     # Install RedPanda operator
     log_info "Installing RedPanda operator..."
-    kubectl apply -f https://github.com/redpanda-data/redpanda/releases/latest/download/redpanda-operator-crd.yaml || error_exit "Failed to install RedPanda CRDs"
-    kubectl apply -f https://github.com/redpanda-data/redpanda/releases/latest/download/redpanda-operator.yaml || error_exit "Failed to install RedPanda operator"
+    kubectl apply -f https://github.com/redpanda-data/redpanda/releases/latest/download/redpanda-operator-crd.yaml || error_exit "Failed to install RedPanda CRDs"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    kubectl apply -f https://github.com/redpanda-data/redpanda/releases/latest/download/redpanda-operator.yaml || error_exit "Failed to install RedPanda operator"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Install Prometheus operator
     log_info "Installing Prometheus operator..."
@@ -232,7 +234,7 @@ generate_report() {
     
     {
         echo "ACGS-1 Lite Production Deployment Report"
-        echo "========================================"
+        echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo "Deployment Date: $(date)"
         echo "Environment: $ENVIRONMENT"
         echo "AWS Region: $AWS_REGION"

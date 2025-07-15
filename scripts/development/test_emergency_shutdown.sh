@@ -238,7 +238,7 @@ test_system_wide_emergency() {
 # Main emergency shutdown test
 main() {
     log "🚨 Starting ACGS-PGP Emergency Shutdown Test"
-    echo "============================================="
+    echo "============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Emergency RTO target: ≤${EMERGENCY_RTO_TARGET}s (30 minutes)"
     echo "Check interval: ${SHUTDOWN_CHECK_INTERVAL}s"
     echo "Constitutional hash: cdd01ef066bc6cf2"
@@ -304,9 +304,9 @@ main() {
     
     # Generate emergency shutdown report
     echo ""
-    echo "============================================="
+    echo "============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🚨 ACGS-PGP Emergency Shutdown Test Results"
-    echo "============================================="
+    echo "============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Services tested: $TOTAL_SERVICES"
     echo "Successful shutdowns: $SUCCESSFUL_SHUTDOWNS"
     echo "Success rate: $(( SUCCESSFUL_SHUTDOWNS * 100 / TOTAL_SERVICES ))%"

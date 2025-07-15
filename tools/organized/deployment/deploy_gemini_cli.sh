@@ -5,9 +5,9 @@
 
 set -e
 
-echo "==========================================="
+echo "==========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Deploying Gemini CLI for ACGS"
-echo "==========================================="
+echo "==========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Check if running from project root
 if [ ! -f "docker-compose.yml" ]; then
@@ -241,9 +241,9 @@ alias gcli-mcp-stop='~/.gemini_cli/stop-mcp-servers.sh'
 EOF
 
 echo ""
-echo "==========================================="
+echo "==========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Gemini CLI Deployment Complete!"
-echo "==========================================="
+echo "==========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo ""
 echo "Next steps:"
 echo "1. Set your Gemini API key:"
@@ -263,4 +263,4 @@ echo "   gcli-mcp-start"
 echo ""
 echo "For more information, see:"
 echo "   $GEMINI_CLI_DIR/README.md"
-echo "==========================================="
+echo "==========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2

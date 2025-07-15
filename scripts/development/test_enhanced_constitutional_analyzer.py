@@ -121,7 +121,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 )
             else:
                 # Real implementation test (requires model files)
-                from services.core.governance_synthesis.gs_service.app.core.qwen3_embedding_client import (
+                from services.core.governance-synthesis.gs_service.app.core.qwen3_embedding_client import (
                     EmbeddingRequest,
                     get_qwen3_embedding_client,
                 )
@@ -201,7 +201,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 )
             else:
                 # Real integration test
-                from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+                from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
                     get_enhanced_constitutional_analyzer,
                 )
 
@@ -356,7 +356,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
     async def _real_governance_workflow_test(self, workflow: str) -> bool:
         """Real implementation of governance workflow test."""
         try:
-            from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+            from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
                 get_enhanced_constitutional_analyzer,
             )
 
@@ -364,7 +364,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
 
             if workflow == "policy_creation":
                 # Test policy creation workflow
-                from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+                from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
                     PolicyRule,
                 )
 
@@ -443,7 +443,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 )
             else:
                 # Real PGC integration test
-                from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+                from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
                     integrate_with_pgc_service,
                 )
 
@@ -493,7 +493,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                     await asyncio.sleep(0.05)  # 50ms mock operation
                 else:
                     # Real operation test
-                    from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+                    from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
                         get_enhanced_constitutional_analyzer,
                     )
 
@@ -568,7 +568,7 @@ class EnhancedConstitutionalAnalyzerTestSuite:
                 )
             else:
                 # Real hash validation
-                from services.core.governance_synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
+                from services.core.governance-synthesis.gs_service.app.core.enhanced_constitutional_analyzer import (
                     get_enhanced_constitutional_analyzer,
                 )
 

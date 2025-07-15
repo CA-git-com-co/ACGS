@@ -103,7 +103,7 @@ class ServiceConfig(BaseSettings):
     log_requests: bool = True
 
     class Config:
-        env_file = ".env"
+        env_file = "config/environments/development.env"
         case_sensitive = False
 
 
@@ -167,7 +167,7 @@ async def lifespan(app: FastAPI):
     """
     logger.info(f"🚀 {SERVICE_NAME} v{SERVICE_VERSION} starting up...")
     logger.info(f"🏛️ Constitutional compliance hash: {CONSTITUTIONAL_HASH}")
-    logger.info(f"🌍 Environment: {config.environment}")
+    logger.info(f"🌍 Environment: {configconfig/environments/development.environment}")
 
     # Validate constitutional compliance on startup
     if config.constitutional_compliance_required:
@@ -340,7 +340,7 @@ def setup_core_routes(app: FastAPI):
             "constitutional_compliance": "verified",
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "uptime_seconds": health_checker.get_uptime(),
-            "environment": config.environment,
+            "environment": configconfig/environments/development.environment,
             "components": component_status,
         }
 
@@ -354,7 +354,7 @@ def setup_core_routes(app: FastAPI):
             "constitutional_hash": CONSTITUTIONAL_HASH,
             "api_docs": f"{config.api_prefix}/docs" if config.enable_docs else None,
             "health_check": "/health",
-            "environment": config.environment,
+            "environment": configconfig/environments/development.environment,
         }
 
     @app.get("/metrics")
@@ -364,7 +364,7 @@ def setup_core_routes(app: FastAPI):
             "service": SERVICE_NAME,
             "uptime_seconds": health_checker.get_uptime(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
-            "environment": config.environment,
+            "environment": configconfig/environments/development.environment,
             "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 

@@ -189,7 +189,7 @@ async def get_live_metrics():
 async def list_baselines():
     """List all available baselines."""
     try:
-        baselines_dir = Path("infrastructure/monitoring/performance/baselines")
+        baselines_dir = Path("infrastructure/monitoring/performance/baselines")  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         baselines = []
 
         if baselines_dir.exists():

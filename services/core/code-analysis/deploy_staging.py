@@ -87,7 +87,7 @@ class StagingDeployment:
         required_files = [
             "docker-compose.yml",
             "Dockerfile",
-            ".env.staging",
+            "config/environments/development.env.staging",
             "config/redis.conf",
             "config/prometheus.yml",
             "config/auth-mock.conf",
@@ -162,7 +162,7 @@ class StagingDeployment:
 
         try:
             # Stop any existing deployment
-            stop_cmd = ["docker", "compose", "--env-file", ".env.staging", "down", "-v"]
+            stop_cmd = ["docker", "compose", "--env-file", "config/environments/development.env.staging", "down", "-v"]
             subprocess.run(stop_cmd, check=False, capture_output=True, timeout=60)
 
             # Start the deployment
@@ -170,7 +170,7 @@ class StagingDeployment:
                 "docker",
                 "compose",
                 "--env-file",
-                ".env.staging",
+                "config/environments/development.env.staging",
                 "up",
                 "-d",
                 "--build",
@@ -186,7 +186,7 @@ class StagingDeployment:
                 time.sleep(30)
 
                 # Check service status
-                status_cmd = ["docker", "compose", "--env-file", ".env.staging", "ps"]
+                status_cmd = ["docker", "compose", "--env-file", "config/environments/development.env.staging", "ps"]
                 status_result = subprocess.run(
                     status_cmd, check=False, capture_output=True, text=True
                 )

@@ -557,8 +557,8 @@ class ACGSSecurityAssessment:
             score += 0.3
             findings.append("Vault integration found")
 
-        # Check for .env files (should not be in repo)
-        env_files = list(self.project_root.glob("**/.env*"))
+        # Check for config/environments/development.env files (should not be in repo)
+        env_files = list(self.project_root.glob("**/config/environments/development.env*"))
         if env_files:
             for env_file in env_files:
                 self.vulnerabilities.append(
@@ -567,12 +567,12 @@ class ACGSSecurityAssessment:
                         "secrets",
                         f"Environment file in repository: {env_file.name}",
                         str(env_file),
-                        "Remove .env files from repository, add to .gitignore",
+                        "Remove config/environments/development.env files from repository, add to .gitignore",
                     )
                 )
         else:
             score += 0.3
-            findings.append("No .env files found in repository")
+            findings.append("No config/environments/development.env files found in repository")
 
         return {
             "score": min(score, 1.0),

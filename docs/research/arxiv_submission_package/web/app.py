@@ -43,7 +43,7 @@ except ImportError as e:
 # Configure Flask with correct template directory
 template_dir = Path(__file__).parent / "templates"
 app = Flask(__name__, template_folder=str(template_dir))
-app.secret_key = "academic_submission_tool_secret_key"
+app.secret_key = "academic_submission_tool_secret_key"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 app.config["MAX_CONTENT_LENGTH"] = 50 * 1024 * 1024  # 50MB max file size
 
 # Configuration

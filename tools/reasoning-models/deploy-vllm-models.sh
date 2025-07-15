@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 vLLM Reasoning Models Deployment Script
@@ -588,7 +590,7 @@ EOF
 # Main deployment function
 main() {
     log "🚀 Starting ACGS-1 vLLM Reasoning Models Deployment"
-    log "=================================================="
+    log "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Setup
     setup_directories
@@ -607,7 +609,7 @@ main() {
     create_shutdown_script
     
     log "🎉 ACGS-1 vLLM Reasoning Models Deployment Complete!"
-    log "=================================================="
+    log "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     log "NVIDIA AceReason: http://localhost:$NVIDIA_PORT"
     log "Microsoft Phi-4: http://localhost:$MICROSOFT_PORT"
     log "NVIDIA Multimodal VL: http://localhost:$MULTIMODAL_PORT"

@@ -247,7 +247,8 @@ class MockGPT4Simulator:
         base_confidence = 0.7
 
         # Boost confidence for longer, more detailed principles
-        if len(principle_content) > 200:
+        # Use a more reasonable threshold of 100 characters instead of 200
+        if len(principle_content) > 100:
             base_confidence += 0.1
 
         # Boost confidence if rule contains constitutional hash

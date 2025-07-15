@@ -20,10 +20,16 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 from fastapi.testclient import TestClient
-from services.core.constitutional_ai.ac_service.app.config.app_config import (
+from services.core.constitutional-ai.ac_service.app.config.app_config import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     create_constitutional_ai_app,
 )
-from services.core.constitutional_ai.ac_service.app.services.enhanced_governance_framework import (
+from services.core.constitutional-ai.ac_service.app.services.enhanced_governance_framework import (
     DomainType,
     GovernanceFrameworkIntegration,
     create_enhanced_governance_integration,

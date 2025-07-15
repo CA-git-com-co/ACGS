@@ -241,7 +241,7 @@ scrape_configs:
 
 8. **[Production-Ready Docker Compose Stack](</home/dislove/ACGS-2/docker-compose.yml>)**: The complete Docker Compose file for deploying the MCP server stack.
 
-9. **[Environment Configuration](</home/dislove/ACGS-2/.env.template>)**: The template for configuring the environment variables for the MCP server stack.
+9. **[Environment Configuration](</home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env>)**: The template for configuring the environment variables for the MCP server stack.
 
 10. **[Operational Runbook](</home/dislove/ACGS-2/DEPLOYMENT.md>)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
 

@@ -18,7 +18,7 @@ services:
     container_name: acgs_postgres_dev
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
     volumes:
     - postgres_data:/var/lib/postgresql/data
@@ -89,7 +89,7 @@ services:
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - JWT_SECRET_KEY=acgs-dev-secret-2024
+    - JWT_SECRET_KEY=acgs-dev-secret-2024  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENABLE_DOCS=true
     - CONSTITUTIONAL_CORE_URL=http://constitutional_core:8001
     - GOVERNANCE_ENGINE_URL=http://governance_engine:8004
@@ -222,7 +222,7 @@ services:
     container_name: acgs_pgadmin_dev
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@acgs.dev
-      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_DEFAULT_PASSWORD: os.environ.get("PASSWORD")
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
     - 5050:80

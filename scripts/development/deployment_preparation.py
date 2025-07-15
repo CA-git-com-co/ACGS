@@ -288,7 +288,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
                 "grafana": {
                     "image": "grafana/grafana:latest",
                     "ports": ["3000:3000"],
-                    "environment": ["GF_SECURITY_ADMIN_PASSWORD=admin123"],
+                    "environment": ["GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")],
                     "volumes": ["grafana_data:/var/lib/grafana"],
                     "restart": "unless-stopped",
                 },
@@ -743,7 +743,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
         env_dir.mkdir(exist_ok=True)
 
         for env_name, env_vars in environments.items():
-            env_file = env_dir / f".env.{env_name}"
+            env_file = env_dir / f"config/environments/development.env.{env_name}"
             with open(env_file, "w") as f:
                 for key, value in env_vars.items():
                     f.write(f"{key}={value}\n")

@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Missing Services Startup Script
@@ -254,7 +256,7 @@ start_service() {
     stop_service "$service_name" "$port"
     
     # Set environment variables
-    export DATABASE_URL="postgresql://acgs_user:acgs_password@localhost:5432/acgs_db"
+    export DATABASE_URL=os.environ.get("DATABASE_URL")
     export REDIS_URL="redis://localhost:6379/0"
     export LOG_LEVEL="INFO"
     export SERVICE_PORT="$port"
@@ -465,7 +467,7 @@ main() {
 
     echo ""
     print_success "🎉 Enhanced Service Restoration Completed!"
-    echo "================================================"
+    echo "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ Total services processed: $started_services/$total_services"
     echo "🏥 FV Service (port 8003): $([ "$fv_final_check" = true ] && echo "OPERATIONAL" || echo "FAILED")"
     echo "🏥 GS Service (port 8004): $([ "$gs_final_check" = true ] && echo "OPERATIONAL" || echo "FAILED")"

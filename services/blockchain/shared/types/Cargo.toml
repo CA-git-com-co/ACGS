@@ -1,0 +1,27 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+[package]
+name = "acgs-types"
+version = "1.0.0"
+edition = "2021"
+description = "ACGS-2 Shared Data Types and Interfaces"
+authors = ["ACGS Team"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+acgs-constitutional = { path = "../constitutional" }
+
+[features]
+default = []
+blockchain = ["solana-sdk"]
+utoipa = ["dep:utoipa"]
+
+[dependencies.solana-sdk]
+version = "1.18"
+optional = true
+
+[dependencies.utoipa]
+version = "4.2"
+optional = true

@@ -9,7 +9,7 @@ impl AcgsClient {
         &self,
         event_type: EventType,
         event_data: String,
-        metadata: EventMetadata,
+        _metadata: EventMetadata,
     ) -> Result<Signature> {
         let (log_entry_pda, _bump) = Pubkey::find_program_address(
             &[

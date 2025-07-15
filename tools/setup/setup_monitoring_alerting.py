@@ -281,7 +281,7 @@ fi
                     "image": "grafana/grafana:latest",
                     "container_name": "acgs_grafana",
                     "ports": ["3001:3000"],
-                    "environment": ["GF_SECURITY_ADMIN_PASSWORD=admin123"],
+                    "environment": ["GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")],
                     "volumes": ["grafana_data:/var/lib/grafana"],
                 },
                 "alertmanager": {

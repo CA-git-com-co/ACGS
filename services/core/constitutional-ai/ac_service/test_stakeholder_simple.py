@@ -15,7 +15,7 @@ from datetime import datetime, timedelta, timezone
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent, ".."))
 
-from services.core.constitutional_ai.ac_service.services.stakeholder_engagement import (
+from services.core.constitutional-ai.ac_service.services.stakeholder_engagement import (
     FeedbackRecord,
     FeedbackStatus,
     NotificationChannel,

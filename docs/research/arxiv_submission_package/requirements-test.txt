@@ -3,7 +3,7 @@
 # Testing dependencies for Academic Submission System
 
 # Core testing framework
-pytest>=7.4.0
+pytest>=8.3.4
 pytest-cov>=4.1.0
 pytest-xdist>=3.3.1
 pytest-mock>=3.11.1
@@ -22,13 +22,13 @@ psutil>=5.9.0
 
 # Web testing (for Flask app)
 pytest-flask>=1.2.0
-requests>=2.31.0
+requests>=2.32.4
 
 # Code quality
 flake8>=6.0.0
-black>=23.7.0
+black>=24.3.0
 isort>=5.12.0
-mypy>=1.5.0
+mypy>=1.13.0
 
 # Documentation testing
 pytest-doctestplus>=1.0.0
@@ -65,7 +65,7 @@ pylatex>=1.4.1
 filecmp2>=0.2.1
 
 # Configuration testing
-pydantic>=2.1.0
+pydantic>=2.10.5
 
 # Logging testing
 pytest-logging>=2016.11.4

@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Running Services PgBouncer Configuration Update
 # Phase 2 - Enterprise Scalability & Performance
@@ -35,7 +37,7 @@ print_error() {
 PGBOUNCER_HOST="localhost"
 PGBOUNCER_PORT="6432"
 DB_USER="acgs_user"
-DB_PASSWORD="acgs_password"
+DB_PASSWORD=os.environ.get("PASSWORD")
 DB_NAME="acgs_db"
 
 # New database URL through PgBouncer
@@ -66,20 +68,20 @@ update_service_env() {
     if [ -d "$service_path" ]; then
         print_status "Updating $service_name environment configuration..."
         
-        # Update .env file if it exists
-        if [ -f "$service_path/.env" ]; then
+        # Update config/environments/development.env file if it exists
+        if [ -f "$service_path/config/environments/development.env" ]; then
             # Backup original
-            cp "$service_path/.env" "$service_path/.env.backup.$(date +%Y%m%d_%H%M%S)"
+            cp "$service_path/config/environments/development.env" "$service_path/config/environments/development.env.backup.$(date +%Y%m%d_%H%M%S)"
             
             # Update DATABASE_URL
-            sed -i "s|DATABASE_URL=.*|DATABASE_URL=$NEW_DATABASE_URL|g" "$service_path/.env"
-            print_success "Updated $service_name .env file"
+            sed -i "s|DATABASE_URL=.*|DATABASE_URL=$NEW_DATABASE_URL|g" "$service_path/config/environments/development.env"
+            print_success "Updated $service_name config/environments/development.env file"
         fi
         
-        # Update .env.example if it exists
-        if [ -f "$service_path/.env.example" ]; then
-            sed -i "s|DATABASE_URL=.*|DATABASE_URL=$NEW_DATABASE_URL|g" "$service_path/.env.example"
-            print_success "Updated $service_name .env.example file"
+        # Update config/environments/developmentconfig/environments/example.env if it exists
+        if [ -f "$service_path/config/environments/developmentconfig/environments/example.env" ]; then
+            sed -i "s|DATABASE_URL=.*|DATABASE_URL=$NEW_DATABASE_URL|g" "$service_path/config/environments/developmentconfig/environments/example.env"
+            print_success "Updated $service_name config/environments/developmentconfig/environments/example.env file"
         fi
         
         return 0
@@ -95,7 +97,7 @@ create_env_override() {
     local port=$2
     
     # Create environment override file
-    cat > "/tmp/${service_name}_pgbouncer.env" << EOF
+    cat > "/tmp/${service_name}_pgbouncerconfig/environments/development.env" << EOF
 # PgBouncer Configuration Override for $service_name
 # Generated on $(date)
 
@@ -104,7 +106,7 @@ DATABASE_URL=$NEW_DATABASE_URL
 DB_HOST=$PGBOUNCER_HOST
 DB_PORT=$PGBOUNCER_PORT
 DB_USER=$DB_USER
-DB_PASSWORD=$DB_PASSWORD
+DB_PASSWORD=os.environ.get("PASSWORD")
 DB_NAME=$DB_NAME
 
 # Connection pool settings optimized for $service_name
@@ -123,7 +125,7 @@ CONNECTION_POOLING_ENABLED=true
 ASYNC_DATABASE_URL=$NEW_ASYNC_DATABASE_URL
 EOF
 
-    print_success "Created environment override for $service_name: /tmp/${service_name}_pgbouncer.env"
+    print_success "Created environment override for $service_name: /tmp/${service_name}_pgbouncerconfig/environments/development.env"
 }
 
 # Check running services and update configurations
@@ -165,7 +167,7 @@ done
 
 # Test PgBouncer connection
 print_status "Testing PgBouncer connection..."
-if PGPASSWORD="$DB_PASSWORD" psql -h "$PGBOUNCER_HOST" -p "$PGBOUNCER_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" > /dev/null 2>&1; then
+if PGPASSWORD=os.environ.get("PASSWORD") psql -h "$PGBOUNCER_HOST" -p "$PGBOUNCER_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" > /dev/null 2>&1; then
     print_success "PgBouncer connection test successful"
 else
     print_error "PgBouncer connection test failed"
@@ -181,7 +183,7 @@ cat > "scripts/restart_services_with_pgbouncer.sh" << 'EOF'
 echo "🔄 Restarting ACGS services with PgBouncer configuration..."
 
 # Export PgBouncer environment variables
-export DATABASE_URL="postgresql://acgs_user:acgs_password@localhost:6432/acgs_db"
+export DATABASE_URL=os.environ.get("DATABASE_URL")
 export DB_HOST="localhost"
 export DB_PORT="6432"
 export PGBOUNCER_ENABLED="true"

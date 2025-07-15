@@ -336,7 +336,7 @@ Dockerfile* @acgs-devops
 
 # Configuration and secrets
 /config/ @acgs-security @acgs-devops
-*.env.* @acgs-security
+*config/environments/development.env.* @acgs-security
 *requirements*.txt @acgs-security
 
 # Documentation

@@ -52,7 +52,7 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin123
+      - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
       - GF_USERS_ALLOW_SIGN_UP=false
       - GF_INSTALL_PLUGINS=grafana-sentry-datasource
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -114,7 +114,7 @@ services:
     restart: unless-stopped
     environment:
       - POSTGRES_USER=sentry
-      - POSTGRES_PASSWORD=sentry_password_change_in_production
+      - POSTGRES_PASSWORD=os.environ.get("PASSWORD")
       - POSTGRES_DB=sentry
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
@@ -134,12 +134,12 @@ services:
     ports:
       - "9000:9000"
     environment:
-      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       - SENTRY_POSTGRES_HOST=postgres_sentry
       - SENTRY_POSTGRES_PORT=5432
       - SENTRY_DB_NAME=sentry
       - SENTRY_DB_USER=sentry
-      - SENTRY_DB_PASSWORD=sentry_password_change_in_production
+      - SENTRY_DB_PASSWORD=os.environ.get("PASSWORD")
       - SENTRY_REDIS_HOST=redis_sentry
       - SENTRY_REDIS_PORT=6379
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -162,12 +162,12 @@ services:
     restart: unless-stopped
     command: sentry run worker
     environment:
-      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       - SENTRY_POSTGRES_HOST=postgres_sentry
       - SENTRY_POSTGRES_PORT=5432
       - SENTRY_DB_NAME=sentry
       - SENTRY_DB_USER=sentry
-      - SENTRY_DB_PASSWORD=sentry_password_change_in_production
+      - SENTRY_DB_PASSWORD=os.environ.get("PASSWORD")
       - SENTRY_REDIS_HOST=redis_sentry
       - SENTRY_REDIS_PORT=6379
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -190,12 +190,12 @@ services:
     restart: unless-stopped
     command: sentry run cron
     environment:
-      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}
+      - SENTRY_SECRET_KEY=${SENTRY_SECRET_KEY:-your-secret-key-change-in-production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       - SENTRY_POSTGRES_HOST=postgres_sentry
       - SENTRY_POSTGRES_PORT=5432
       - SENTRY_DB_NAME=sentry
       - SENTRY_DB_USER=sentry
-      - SENTRY_DB_PASSWORD=sentry_password_change_in_production
+      - SENTRY_DB_PASSWORD=os.environ.get("PASSWORD")
       - SENTRY_REDIS_HOST=redis_sentry
       - SENTRY_REDIS_PORT=6379
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -249,7 +249,10 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-    privileged: true
+    # Use specific capabilities instead of privileged mode for security
+    cap_add:
+      - SYS_ADMIN
+      - DAC_READ_SEARCH
     devices:
       - /dev/kmsg
     networks:

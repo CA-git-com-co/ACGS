@@ -13,11 +13,17 @@ Tests the comprehensive Policy Synthesis Enhancement system including:
 from unittest.mock import Mock
 
 import pytest
-from services.core.governance_synthesis.gs_service.core.performance_optimizer import (
+from services.core.governance-synthesis.gs_service.core.performance_optimizer import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     SynthesisPerformanceMetrics,
     WINAPerformanceOptimizer,
 )
-from services.core.governance_synthesis.gs_service.services.qec_error_correction_service import (
+from services.core.governance-synthesis.gs_service.services.qec_error_correction_service import (
     QECErrorCorrectionService,
 )
 

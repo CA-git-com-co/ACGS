@@ -252,7 +252,7 @@ volumes:
       device: ${POSTGRES_DATA_PATH:-/var/lib/acgs/postgres}
     labels:
     - acgs.volume=database
-    - acgs.environment=production
+    - acgsconfig/environments/development.environment=production
     - acgs.constitutional_hash=cdd01ef066bc6cf2
   redis_prod_data:
     driver: local
@@ -262,6 +262,6 @@ volumes:
       device: ${REDIS_DATA_PATH:-/var/lib/acgs/redis}
     labels:
     - acgs.volume=cache
-    - acgs.environment=production
+    - acgsconfig/environments/development.environment=production
     - acgs.constitutional_hash=cdd01ef066bc6cf2
 constitutional_hash: cdd01ef066bc6cf2

@@ -8,7 +8,7 @@ echo "🔄 Restarting GS Service with updated configuration..."
 cd /home/dislove/ACGS-1/services/core/governance-synthesis/gs_service
 
 # Load environment variables
-export $(cat .env | xargs)
+export $(cat config/environments/development.env | xargs)
 
 # Kill existing GS Service process (if running as current user)
 pkill -f "uvicorn.*8004" 2>/dev/null || true

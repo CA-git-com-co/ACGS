@@ -14,6 +14,12 @@ import time
 
 import pytest
 
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
+
 try:
     import z3
     from z3 import Bool, Real, Solver, sat, unknown, unsat
@@ -22,7 +28,7 @@ try:
 except ImportError:
     Z3_AVAILABLE = False
 
-from services.core.formal_verification.fv_service.app.services.z3_solver import (
+from services.core.formal-verification.fv_service.app.services.z3_solver import (
     ProofObligation,
     VerificationReport,
     VerificationResult,

@@ -294,8 +294,8 @@ class ProductionDeploymentValidator:
 
         # Check monitoring configuration
         monitoring_files = [
-            "/home/ubuntu/ACGS/config/monitoring/acgs_alert_rules.yml",
-            "/home/ubuntu/ACGS/config/monitoring/acgs_production_dashboard.json",
+            "/home/ubuntu/ACGS/config/monitoring/acgs_alert_rules.yml",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "/home/ubuntu/ACGS/config/monitoring/acgs_production_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ]
 
         for monitor in monitoring_files:

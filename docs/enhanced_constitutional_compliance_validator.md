@@ -29,7 +29,7 @@ The validator now supports a comprehensive allow-list of text file extensions:
 
 #### Configuration Files
 - **YAML/JSON**: `.yaml`, `.yml`, `.json`
-- **Config Files**: `.toml`, `.ini`, `.conf`, `.cfg`, `.env`
+- **Config Files**: `.toml`, `.ini`, `.conf`, `.cfg`, `config/environments/development.env`
 - **Docker**: `.dockerfile`
 - **Documentation**: `.md`, `.rst`, `.txt`
 

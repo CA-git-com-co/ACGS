@@ -1,14 +1,14 @@
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
-uvicorn
+uvicorn>=0.34.0
 python-jose>=3.5.1
 z3-solver>=4.12.6.0
-fastapi>=0.104.1
+fastapi>=0.115.6
 sqlalchemy>=2.0.23
 asyncio-mqtt>=0.13.0
 ecdsa>=0.20.0
-torch>=2.7.3
-cryptography>=45.0.4
+torch>=2.7.1
+cryptography>=43.0.1
 requests>=2.32.4
 urllib3>=2.5.0
 certifi>=2025.6.15

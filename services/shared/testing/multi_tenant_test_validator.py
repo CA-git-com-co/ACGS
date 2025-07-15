@@ -477,8 +477,8 @@ class MultiTenantTestValidator:
             # Query should only return tenant1 data
             result1 = await db_session.execute(
                 text(
-                    f"SELECT COUNT(*) as count, tenant_id FROM {table_name} GROUP BY tenant_id"
-                )
+                    "SELECT COUNT(*) as count, tenant_id FROM :table_name GROUP BY tenant_id"
+                ).bindparam(table_name=table_name)
             )
             rows1 = result1.fetchall()
 
@@ -491,8 +491,8 @@ class MultiTenantTestValidator:
             # Query should only return tenant2 data
             result2 = await db_session.execute(
                 text(
-                    f"SELECT COUNT(*) as count, tenant_id FROM {table_name} GROUP BY tenant_id"
-                )
+                    "SELECT COUNT(*) as count, tenant_id FROM :table_name GROUP BY tenant_id"
+                ).bindparam(table_name=table_name)
             )
             rows2 = result2.fetchall()
 

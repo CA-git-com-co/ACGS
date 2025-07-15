@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Comprehensive Health Check Script
 # Validates all services and blockchain components
@@ -77,8 +79,8 @@ check_solana() {
 # Function to check Quantumagi programs
 check_quantumagi_programs() {
     local programs=(
-        "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4:Quantumagi Core"
-        "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ:Appeals Program"
+        "8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4:Quantumagi Core"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        "CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ:Appeals Program"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
     
     for program_info in "${programs[@]}"; do

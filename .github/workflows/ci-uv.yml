@@ -1,5 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
-name: ACGS: CI/CD with UV
+name: ACGS CI/CD with UV
 
 on:
   push:
@@ -286,7 +286,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: test_password
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
           POSTGRES_USER: test_user
           POSTGRES_DB: test_db
         options: >-
@@ -352,7 +352,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
           REDIS_URL: redis://localhost:6379
         run: |
           # Check if integration tests exist
@@ -487,7 +487,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile.uv
+          file: ./config/docker/Dockerfile.uv
           push: true
           tags: |
             ghcr.io/${{ github.repository }}/acgs:latest

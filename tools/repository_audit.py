@@ -187,7 +187,7 @@ class RepositoryAuditor:
             ".installed.cfg",
             "*.egg",
             # Virtual environments
-            ".env",
+            "config/environments/development.env",
             ".venv",
             "env/",
             "venv/",
@@ -197,7 +197,7 @@ class RepositoryAuditor:
             # Testing and coverage
             ".pytest_cache/",
             ".coverage",
-            "htmlcov/",
+            "reports/coverage/htmlcov/",
             "coverage.xml",
             "coverage.json",
             ".tox/",
@@ -226,8 +226,8 @@ class RepositoryAuditor:
             "tmp/",
             "temp/",
             # Security
-            ".env.local",
-            ".env.*.local",
+            "config/environments/development.env.local",
+            "config/environments/development.env.*.local",
             "*.pem",
             "*.key",
             # Build artifacts

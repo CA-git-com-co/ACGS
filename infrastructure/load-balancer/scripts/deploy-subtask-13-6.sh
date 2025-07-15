@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Master Deployment Script for ACGS-1 Subtask 13.6
 # Integrate with Load Balancing Infrastructure - Complete Implementation
@@ -114,7 +116,7 @@ check_prerequisites() {
     fi
     
     # Check if previous monitoring infrastructure is in place
-    if [ ! -f "$PROJECT_ROOT/infrastructure/monitoring/prometheus.yml" ]; then
+    if [ ! -f "$PROJECT_ROOT/infrastructure/monitoring/prometheus.yml" ]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         error_exit "Prometheus configuration not found. Please complete Subtasks 13.3-13.5 first."
     fi
     
@@ -185,7 +187,7 @@ update_prometheus_config() {
     sudo cp /etc/prometheus/prometheus.yml "/etc/prometheus/prometheus.yml.backup.$(date +%Y%m%d_%H%M%S)"
     
     # Deploy updated configuration
-    sudo cp "$PROJECT_ROOT/infrastructure/monitoring/prometheus.yml" /etc/prometheus/prometheus.yml
+    sudo cp "$PROJECT_ROOT/infrastructure/monitoring/prometheus.yml" /etc/prometheus/prometheus.yml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Validate Prometheus configuration
     if prometheus --config.file=/etc/prometheus/prometheus.yml --dry-run 2>/dev/null; then
@@ -215,7 +217,7 @@ deploy_alert_rules() {
     update_component_status "alert_rules" "in_progress"
     
     # Deploy updated alert rules
-    sudo cp "$PROJECT_ROOT/infrastructure/monitoring/rules/infrastructure_alerts.yml" /etc/prometheus/rules/
+    sudo cp "$PROJECT_ROOT/infrastructure/monitoring/rules/infrastructure_alerts.yml" /etc/prometheus/rules/  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Reload Prometheus to pick up new rules
     sudo systemctl reload prometheus
@@ -243,7 +245,7 @@ deploy_dashboard_enhancements() {
         log "✓ Grafana is accessible"
         
         # Deploy updated dashboard (manual step for now)
-        log "📋 Dashboard configuration updated in: $PROJECT_ROOT/infrastructure/monitoring/grafana/dashboards/infrastructure/load-balancing-dashboard.json"
+        log "📋 Dashboard configuration updated in: $PROJECT_ROOT/infrastructure/monitoring/grafana/dashboards/infrastructure/load-balancing-dashboard.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         log "📋 Please import the updated dashboard manually or restart Grafana to auto-load"
         
         update_component_status "dashboard_enhancement" "completed"

@@ -22,6 +22,12 @@ from unittest.mock import AsyncMock
 import numpy as np
 import pytest
 from app.services.enhanced_governance_framework import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     DomainAdaptiveGovernance,
     DomainType,
     GovernanceConfig,
@@ -592,6 +598,6 @@ if __name__ == "__main__":
         [
             __file__,
             "-v",
-            "--cov=services.core.constitutional_ai.ac_service.app.services",
+            "--cov=services.core.constitutional-ai.ac_service.app.services",
         ]
     )

@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Comprehensive Build Testing Script
 # Tests all components after reorganization
@@ -9,7 +11,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 echo "🧪 Starting Comprehensive Build Tests"
 echo "Root directory: $ROOT_DIR"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Colors for output
 RED='\033[0;31m'
@@ -335,9 +337,9 @@ main() {
     
     # Print summary
     echo ""
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🧪 Test Results Summary"
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo -e "${GREEN}Tests Passed: $TESTS_PASSED${NC}"
     echo -e "${RED}Tests Failed: $TESTS_FAILED${NC}"
     

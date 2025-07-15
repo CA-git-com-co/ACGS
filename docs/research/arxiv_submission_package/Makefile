@@ -96,7 +96,7 @@ test-all:
 coverage:
 	@echo "Generating test coverage report..."
 	$(PYTEST) tests/ --cov=$(SRC_DIRS) --cov-report=html --cov-report=term-missing --cov-report=xml
-	@echo "Coverage report generated in htmlcov/"
+	@echo "Coverage report generated in reports/coverage/htmlcov/"
 
 # Code quality targets
 lint:
@@ -186,7 +186,7 @@ clean:
 	find . -type d -name "__pycache__" -delete
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name ".coverage" -delete
-	rm -rf htmlcov/
+	rm -rf reports/coverage/htmlcov/
 	rm -rf .pytest_cache/
 	rm -rf .mypy_cache/
 	rm -rf build/

@@ -81,7 +81,7 @@ class CriticalDeploymentFixer:
             }
 
             # Write environment configuration
-            env_file = self.workspace_root / ".env.integrity"
+            env_file = self.workspace_root / "config/environments/developmentconfig/environments/integrity.env"
             with open(env_file, "w") as f:
                 f.write("# Integrity Service Configuration - Fixed DNS\n")
                 f.write(f"# Updated: {time.strftime('%Y-%m-%d %H:%M:%S')}\n\n")

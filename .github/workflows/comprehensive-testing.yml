@@ -285,7 +285,7 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_PASSWORD: testpassword
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
           POSTGRES_USER: testuser
           POSTGRES_DB: acgs_test
         ports:
@@ -326,7 +326,7 @@ jobs:
       - name: Run integration tests
         env:
           REDIS_URL: redis://localhost:6379/1
-          DATABASE_URL: postgresql://testuser:testpassword@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         run: |
           if [ -f "tests/integration/test_comprehensive_service_integration.py" ]; then
             python -m pytest tests/integration/test_comprehensive_service_integration.py \

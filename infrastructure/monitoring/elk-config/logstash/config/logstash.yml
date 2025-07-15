@@ -15,7 +15,7 @@ xpack.monitoring.enabled: true
 xpack.monitoring.elasticsearch.hosts:
 - http://elasticsearch-security:9200
 xpack.monitoring.elasticsearch.username: elastic
-xpack.monitoring.elasticsearch.password: acgs_security_2024
+xpack.monitoring.elasticsearch.password: os.environ.get("PASSWORD")
 http.host: 0.0.0.0
 http.port: 9600
 log.level: info

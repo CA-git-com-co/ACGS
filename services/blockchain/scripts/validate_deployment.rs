@@ -4,7 +4,6 @@
 
 use acgs_blockchain_client::AcgsClient;
 use anchor_client::solana_sdk::{
-    pubkey::Pubkey,
     signature::Keypair,
 };
 use anyhow::{Result, Context};
@@ -33,7 +32,7 @@ struct Cli {
 }
 
 #[derive(Debug, Clone, ValueEnum)]
-enum Cluster {
+pub enum Cluster {
     Devnet,
     Testnet,
     Mainnet,
@@ -59,7 +58,7 @@ struct ValidationResult {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ValidationReport {
+pub struct ValidationReport {
     validation_summary: HashMap<String, serde_json::Value>,
     program_validations: HashMap<String, ValidationResult>,
     constitution_validation: ValidationResult,

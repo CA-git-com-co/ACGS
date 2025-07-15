@@ -158,7 +158,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SemanticSearchResponse'
+                $ref: '#/components/schemas/SemanticSearchResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         '400':
           description: Invalid query parameters
           content:
@@ -226,7 +226,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SymbolSearchResponse'
+                $ref: '#/components/schemas/SymbolSearchResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   # Symbol Management Endpoints
   /api/v1/symbols/{symbol_id}:
@@ -270,7 +270,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SymbolDetailResponse'
+                $ref: '#/components/schemas/SymbolDetailResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         '404':
           description: Symbol not found
           content:
@@ -408,7 +408,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/FileDependencyResponse'
+                $ref: '#/components/schemas/FileDependencyResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   # Analysis and Indexing Endpoints
   /api/v1/analysis/trigger:
@@ -473,7 +473,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AnalysisJobStatusResponse'
+                $ref: '#/components/schemas/AnalysisJobStatusResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   # Context Integration Endpoints
   /api/v1/context/enrich:
@@ -490,14 +490,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContextEnrichmentRequest'
+              $ref: '#/components/schemas/ContextEnrichmentRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Context enrichment completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContextEnrichmentResponse'
+                $ref: '#/components/schemas/ContextEnrichmentResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
   /api/v1/context/links/{symbol_id}:
     get:
@@ -533,7 +533,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ContextLinksResponse'
+                $ref: '#/components/schemas/ContextLinksResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 components:
   securitySchemes:

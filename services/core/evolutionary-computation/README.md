@@ -168,3 +168,13 @@ pytest tests/test_evolution_oversight.py::TestEvolutionOversightPerformance -v
 
 Constitutional AI Governance System (ACGS-1 Lite)
 Constitutional Hash: `cdd01ef066bc6cf2`
+## 🏗️ 5-Tier Model Architecture
+
+ACGS-2 uses a 5-tier hybrid inference router for optimal cost-performance:
+
+- **Tier 1 (Nano)**: Qwen3 0.6B-4B via nano-vllm
+- **Tier 2 (Fast)**: DeepSeek R1 8B, Llama 3.1 8B via Groq  
+- **Tier 3 (Balanced)**: Qwen3 32B via Groq
+- **Tier 4 (Premium)**: Llama 3.3 70B Versatile for constitutional AI governance
+
+Constitutional Hash: `cdd01ef066bc6cf2`

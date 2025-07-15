@@ -65,7 +65,7 @@ class E2ETestFramework:
         logger.info("Initializing E2E Test Framework...")
 
         # Setup test environment
-        await self.env_manager.setup()
+        await selfconfig/environments/development.env_manager.setup()
 
         # Initialize mock services if needed
         if self.config.test_mode in [E2ETestMode.OFFLINE, E2ETestMode.HYBRID]:
@@ -86,7 +86,7 @@ class E2ETestFramework:
             await self.mock_manager.stop()
             logger.info("Mock services stopped")
 
-        await self.env_manager.cleanup()
+        await selfconfig/environments/development.env_manager.cleanup()
 
         logger.info("E2E Test Framework cleanup completed")
 

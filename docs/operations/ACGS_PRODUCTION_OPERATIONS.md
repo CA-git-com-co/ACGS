@@ -506,7 +506,7 @@ curl -X POST https://status.acgs.production.com/api/incidents \
 pg_dump -h localhost -p 5440 -U acgs_user acgs | gzip > acgs_db_$(date +%Y%m%d).sql.gz
 
 # Configuration backup
-tar -czf acgs_config_$(date +%Y%m%d).tar.gz config/ docker-compose*.yml .env.production
+tar -czf acgs_config_$(date +%Y%m%d).tar.gz config/ docker-compose*.yml config/environments/developmentconfig/environments/production.env.backup
 ```
 
 #### Recovery Procedures

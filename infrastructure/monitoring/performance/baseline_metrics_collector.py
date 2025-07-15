@@ -523,7 +523,7 @@ class PerformanceBaselineCollector:
         # Save baseline file
         import os
 
-        baseline_dir = "infrastructure/monitoring/performance/baselines"
+        baseline_dir = "infrastructure/monitoring/performance/baselines"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         os.makedirs(baseline_dir, exist_ok=True)
 
         baseline_file = (
@@ -544,11 +544,11 @@ class PerformanceBaselineCollector:
     ) -> PerformanceBaseline | None:
         """Load baseline from file."""
         baseline_file = (
-            "infrastructure/monitoring/performance/baselines/latest_baseline.json"
+            "infrastructure/monitoring/performance/baselines/latest_baseline.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
 
         if baseline_id:
-            baseline_file = f"infrastructure/monitoring/performance/baselines/baseline_{baseline_id}.json"
+            baseline_file = f"infrastructure/monitoring/performance/baselines/baseline_{baseline_id}.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
         try:
             with open(baseline_file) as f:

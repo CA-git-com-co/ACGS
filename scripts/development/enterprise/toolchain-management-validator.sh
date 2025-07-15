@@ -1,10 +1,12 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Enterprise Toolchain Management and Circuit Breaker Validator
 # Validates toolchain installation processes and circuit breaker implementations
 # requires: Rust 1.81.0, Solana CLI v1.18.22, Anchor CLI v0.29.0, circuit breakers, fallbacks
 # ensures: Robust toolchain management, enhanced caching, enterprise reliability
-# sha256: a9f6e3c2b8d5f1e7c4a9b6f3e8c5a2d9f6e3c7a4b1d8f5e2c9b6a3f7e4c1a8b5
+# sha256: a9f6e3c2b8d5f1e7c4a9b6f3e8c5a2d9f6e3c7a4b1d8f5e2c9b6a3f7e4c1a8b5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 set -euo pipefail
 

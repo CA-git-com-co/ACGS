@@ -262,8 +262,8 @@ class SecurityHardener:
 
         # Check sensitive files
         sensitive_files = [
-            ".env",
-            ".env.production",
+            "config/environments/development.env",
+            "config/environments/developmentconfig/environments/production.env.backup",
             "docker-compose.yml",
             "alembic.ini",
         ]

@@ -23,9 +23,9 @@ def validate_workflow_fixes():
     """Validate that all critical workflow fixes are in place."""
     fixes = {
         "missing_dockerfile_uv": {
-            "description": "Missing Dockerfile.uv for ci-uv.yml workflow",
-            "file": "Dockerfile.uv",
-            "status": "fixed" if check_file_exists("Dockerfile.uv") else "missing",
+            "description": "Missing config/docker/Dockerfile.uv for ci-uv.yml workflow",
+            "file": "config/docker/Dockerfile.uv",
+            "status": "fixed" if check_file_exists("config/docker/Dockerfile.uv") else "missing",
         },
         "security_automation_robustness": {
             "description": "Security automation timeout and error handling",
@@ -124,7 +124,7 @@ def main():
 
     if all_fixed:
         print("\n🚀 Workflow improvements successfully implemented:")
-        print("   • Missing Dockerfile.uv created")
+        print("   • Missing config/docker/Dockerfile.uv created")
         print("   • Security automation made robust with fallbacks")
         print("   • Enterprise toolchain setup simplified")
         print("   • Docker service matrix enhanced")

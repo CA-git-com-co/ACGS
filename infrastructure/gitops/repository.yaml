@@ -12,7 +12,7 @@ stringData:
   type: git
   url: https://github.com/CA-git-com-co/ACGS.git
   username: acgs-bot
-  password: github_pat_token_here
+  password: os.environ.get("PASSWORD")
 ---
 apiVersion: v1
 kind: Secret
@@ -27,7 +27,7 @@ stringData:
   name: acgs-charts
   url: https://charts.acgs.local
   username: acgs-helm
-  password: helm_repo_password_here
+  password: os.environ.get("PASSWORD")
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Repository

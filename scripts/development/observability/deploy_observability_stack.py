@@ -189,8 +189,8 @@ class ObservabilityStackDeployer:
     async def create_directories(self):
         """Create necessary directories for the observability stack."""
         directories = [
-            "infrastructure/observability/grafana/dashboards",
-            "infrastructure/observability/grafana/datasources",
+            "infrastructure/observability/grafana/dashboards",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "infrastructure/observability/grafana/datasources",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "infrastructure/observability/prometheus-rules",
             "logs/observability",
             "data/prometheus",
@@ -336,7 +336,7 @@ class ObservabilityStackDeployer:
         }
 
         datasources_path = Path(
-            "infrastructure/observability/grafana/datasources/datasources.yml"
+            "infrastructure/observability/grafana/datasources/datasources.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         datasources_path.parent.mkdir(parents=True, exist_ok=True)
 

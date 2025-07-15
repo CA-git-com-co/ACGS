@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Reorganization Rollback Script
 # Safely rolls back reorganization changes if issues are discovered
@@ -16,7 +18,7 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}🔄 ACGS-1 Reorganization Rollback${NC}"
 echo "Root directory: $ROOT_DIR"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Helper functions
 log_info() {
@@ -367,9 +369,9 @@ main() {
     generate_rollback_report
     
     echo ""
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     log_success "🎉 Rollback completed successfully!"
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     log_info "The ACGS-1 codebase has been restored to its pre-reorganization state."
     log_info "Review the rollback report for details and next steps."

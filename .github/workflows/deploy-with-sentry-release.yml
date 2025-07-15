@@ -36,7 +36,7 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     outputs:
-      environment: ${{ steps.env.outputs.environment }}
+      environment: ${{ stepsconfig/environments/development.env.outputsconfig/environments/development.environment }}
       version: ${{ steps.version.outputs.version }}
       deploy: ${{ steps.deploy.outputs.deploy }}
     steps:
@@ -249,7 +249,7 @@ jobs:
           sentry-cli releases set-tag ${{ needs.setup.outputs.version }} \
             constitutional_hash:${{ env.CONSTITUTIONAL_HASH }}
           sentry-cli releases set-tag ${{ needs.setup.outputs.version }} \
-            environment:${{ needs.setup.outputs.environment }}
+            environment:${{ needs.setup.outputsconfig/environments/development.environment }}
 
       - name: Generate Release Notes
         run: |
@@ -259,7 +259,7 @@ jobs:
           # ACGS-2 Release ${{ needs.setup.outputs.version }}
           
           **Constitutional Hash**: \`${{ env.CONSTITUTIONAL_HASH }}\`
-          **Environment**: ${{ needs.setup.outputs.environment }}
+          **Environment**: ${{ needs.setup.outputsconfig/environments/development.environment }}
           **Release Date**: $(date -u +"%Y-%m-%d %H:%M:%S") UTC
           **Commit**: ${GITHUB_SHA::8}
           
@@ -302,7 +302,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [setup, create-sentry-release, performance-validation]
     if: needs.setup.outputs.deploy == 'true'
-    environment: ${{ needs.setup.outputs.environment }}
+    environment: ${{ needs.setup.outputsconfig/environments/development.environment }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -320,11 +320,11 @@ jobs:
 
       - name: Configure Environment
         run: |
-          echo "⚙️ Configuring ${{ needs.setup.outputs.environment }} environment..."
+          echo "⚙️ Configuring ${{ needs.setup.outputsconfig/environments/development.environment }} environment..."
           
           # Set environment variables
           echo "CONSTITUTIONAL_HASH=${{ env.CONSTITUTIONAL_HASH }}" >> $GITHUB_ENV
-          echo "SENTRY_ENVIRONMENT=${{ needs.setup.outputs.environment }}" >> $GITHUB_ENV
+          echo "SENTRY_ENVIRONMENT=${{ needs.setup.outputsconfig/environments/development.environment }}" >> $GITHUB_ENV
           echo "SENTRY_RELEASE=${{ needs.setup.outputs.version }}" >> $GITHUB_ENV
 
       - name: Deploy with Sentry Tracking
@@ -333,10 +333,10 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
         run: |
-          echo "🚀 Deploying ACGS-2 to ${{ needs.setup.outputs.environment }}..."
+          echo "🚀 Deploying ACGS-2 to ${{ needs.setup.outputsconfig/environments/development.environment }}..."
           
           python scripts/deployment/deploy_with_sentry_release.py \
-            ${{ needs.setup.outputs.environment }} \
+            ${{ needs.setup.outputsconfig/environments/development.environment }} \
             --version ${{ needs.setup.outputs.version }}
 
       - name: Create Sentry Deployment
@@ -346,9 +346,9 @@ jobs:
           echo "📡 Creating Sentry deployment record..."
           
           sentry-cli releases deploys ${{ needs.setup.outputs.version }} new \
-            --env ${{ needs.setup.outputs.environment }} \
-            --name "ACGS-2 ${{ needs.setup.outputs.environment }} deployment" \
-            --url "https://acgs-${{ needs.setup.outputs.environment }}.example.com"
+            --env ${{ needs.setup.outputsconfig/environments/development.environment }} \
+            --name "ACGS-2 ${{ needs.setup.outputsconfig/environments/development.environment }} deployment" \
+            --url "https://acgs-${{ needs.setup.outputsconfig/environments/development.environment }}.example.com"
 
       - name: Post-Deployment Validation
         run: |
@@ -394,7 +394,7 @@ jobs:
             echo "❌ Deployment failed"
             sentry-cli send-event -m "ACGS-2 deployment failed" \
               --tag release:${{ needs.setup.outputs.version }} \
-              --tag environment:${{ needs.setup.outputs.environment }} \
+              --tag environment:${{ needs.setup.outputsconfig/environments/development.environment }} \
               --tag constitutional_hash:${{ env.CONSTITUTIONAL_HASH }}
           fi
 
@@ -424,10 +424,10 @@ jobs:
 
       - name: Send Success Notification
         run: |
-          echo "🎉 ACGS-2 deployment to ${{ needs.setup.outputs.environment }} completed successfully!"
+          echo "🎉 ACGS-2 deployment to ${{ needs.setup.outputsconfig/environments/development.environment }} completed successfully!"
           echo "Version: ${{ needs.setup.outputs.version }}"
           echo "Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
-          echo "Environment: ${{ needs.setup.outputs.environment }}"
+          echo "Environment: ${{ needs.setup.outputsconfig/environments/development.environment }}"
 
   # Cleanup on failure
   cleanup-on-failure:
@@ -444,7 +444,7 @@ jobs:
           # Mark release as failed in Sentry
           sentry-cli send-event -m "ACGS-2 deployment rollback initiated" \
             --tag release:${{ needs.setup.outputs.version }} \
-            --tag environment:${{ needs.setup.outputs.environment }} \
+            --tag environment:${{ needs.setup.outputsconfig/environments/development.environment }} \
             --tag constitutional_hash:${{ env.CONSTITUTIONAL_HASH }}
 
       - name: Cleanup Resources

@@ -33,14 +33,14 @@ print_header() {
     echo -e "${BLUE}[STEP]${NC} $1"
 }
 
-# Check if .env file exists
+# Check if config/environments/development.env file exists
 check_env_file() {
-    if [ -f ".env" ]; then
-        print_warning ".env file already exists. Backing up to .env.backup"
-        cp .env .env.backup
+    if [ -f "config/environments/development.env" ]; then
+        print_warning "config/environments/development.env file already exists. Backing up to config/environments/development.env.backup"
+        cp config/environments/development.env config/environments/development.env.backup
     else
-        print_status "Creating new .env file from template"
-        cp .env.example .env
+        print_status "Creating new config/environments/development.env file from template"
+        cp config/environments/developmentconfig/environments/example.env config/environments/development.env
     fi
 }
 
@@ -48,7 +48,7 @@ check_env_file() {
 prompt_credential() {
     local var_name=$1
     local description=$2
-    local current_value=$(grep "^${var_name}=" .env 2>/dev/null | cut -d'=' -f2- | tr -d '"' || echo "")
+    local current_value=$(grep "^${var_name}=" config/environments/development.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' || echo "")
     
     echo
     print_header "Setting up: $description"
@@ -66,11 +66,11 @@ prompt_credential() {
     echo
     
     if [ -n "$new_value" ]; then
-        # Update .env file
-        if grep -q "^${var_name}=" .env; then
-            sed -i "s|^${var_name}=.*|${var_name}=\"${new_value}\"|" .env
+        # Update config/environments/development.env file
+        if grep -q "^${var_name}=" config/environments/development.env; then
+            sed -i "s|^${var_name}=.*|${var_name}=\"${new_value}\"|" config/environments/development.env
         else
-            echo "${var_name}=\"${new_value}\"" >> .env
+            echo "${var_name}=\"${new_value}\"" >> config/environments/development.env
         fi
         print_status "✓ $var_name updated"
     else
@@ -111,7 +111,7 @@ validate_credentials() {
     local missing_vars=()
     
     for var in "${required_vars[@]}"; do
-        local value=$(grep "^${var}=" .env 2>/dev/null | cut -d'=' -f2- | tr -d '"' || echo "")
+        local value=$(grep "^${var}=" config/environments/development.env 2>/dev/null | cut -d'=' -f2- | tr -d '"' || echo "")
         if [ -z "$value" ] || [ "$value" = "your_${var,,}_here" ]; then
             missing_vars+=("$var")
         fi
@@ -130,7 +130,7 @@ show_security_reminders() {
     print_header "Security Reminders"
     echo
     print_warning "IMPORTANT SECURITY NOTES:"
-    echo "1. Never commit .env files to version control"
+    echo "1. Never commit config/environments/development.env files to version control"
     echo "2. Regularly rotate your API keys and tokens"
     echo "3. Use least-privilege access for all credentials"
     echo "4. Monitor for unauthorized access to your accounts"
@@ -144,7 +144,7 @@ main() {
     print_header "Starting Secure Credential Setup"
     
     # Check if we're in the right directory
-    if [ ! -f ".env.example" ]; then
+    if [ ! -f "config/environments/developmentconfig/environments/example.env" ]; then
         print_error "This script must be run from the ACGS-PGP root directory"
         exit 1
     fi

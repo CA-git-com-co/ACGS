@@ -1,4 +1,6 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "_constitutional_hash": "cdd01ef066bc6cf2",
   "type": "object",
   "properties": {
@@ -384,6 +386,5 @@
     }
   },
   "additionalProperties": false,
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "constitutional_hash": "cdd01ef066bc6cf2"
+  "$schema": "http://json-schema.org/draft-07/schema#"
 }

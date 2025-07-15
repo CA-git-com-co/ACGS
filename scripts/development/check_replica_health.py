@@ -32,7 +32,7 @@ async def check_replica_health():
                 port=replica["port"],
                 database="acgs_db",
                 user="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 timeout=5,
             )
 

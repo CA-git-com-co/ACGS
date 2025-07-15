@@ -162,7 +162,7 @@ class ProductionGovernanceConfig(BaseSettings):
     """
     Production configuration with environment variable support.
 
-    Supports loading from .env files and environment variables.
+    Supports loading from config/environments/development.env files and environment variables.
     All sensitive values should be provided via environment variables.
     """
 
@@ -204,7 +204,7 @@ class ProductionGovernanceConfig(BaseSettings):
         return v
 
     class Config:
-        env_file = ".env"
+        env_file = "config/environments/development.env"
         env_file_encoding = "utf-8"
         case_sensitive = False
 

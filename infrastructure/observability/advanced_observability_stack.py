@@ -193,7 +193,7 @@ class AdvancedObservabilityStack:
                 {
                     "service.name": self.config.service_name,
                     "service.version": self.config.service_version,
-                    "service.environment": self.config.environment,
+                    "serviceconfig/environments/development.environment": self.configconfig/environments/development.environment,
                     "constitutional.hash": self.config.constitutional_hash,
                 }
             )
@@ -575,7 +575,7 @@ class AdvancedObservabilityStack:
         return {
             "service_name": self.config.service_name,
             "service_version": self.config.service_version,
-            "environment": self.config.environment,
+            "environment": self.configconfig/environments/development.environment,
             "tracing_enabled": self.config.tracing_enabled,
             "metrics_enabled": self.config.metrics_enabled,
             "constitutional_monitoring": self.config.constitutional_monitoring,

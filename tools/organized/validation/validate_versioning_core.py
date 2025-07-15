@@ -24,7 +24,7 @@ def test_version_manager():
     print("🔍 Testing Version Manager...")
 
     try:
-        from shared.versioning.version_manager import APIVersion, VersionManager
+        from services.shared.versioning.version_manager import APIVersion, VersionManager
 
         # Test version parsing
         version = APIVersion.from_string("v2.1.0")
@@ -74,10 +74,10 @@ def test_compatibility_manager():
     print("🔍 Testing Compatibility Manager...")
 
     try:
-        from shared.versioning.compatibility_manager import (
+        from services.shared.versioning.compatibility_manager import (
             create_compatibility_manager,
         )
-        from shared.versioning.version_manager import APIVersion
+        from services.shared.versioning.version_manager import APIVersion
 
         # Test compatibility manager creation
         manager = create_compatibility_manager("test-service")
@@ -120,12 +120,12 @@ def test_response_transformers():
     print("🔍 Testing Response Transformers...")
 
     try:
-        from shared.api_models import APIStatus
-        from shared.versioning.response_transformers import (
+        from services.shared.api_models import APIStatus
+        from services.shared.versioning.response_transformers import (
             CompatibilityTransformer,
             VersionedResponseBuilder,
         )
-        from shared.versioning.version_manager import APIVersion
+        from services.shared.versioning.version_manager import APIVersion
 
         # Test compatibility transformer
         transformer = CompatibilityTransformer(
@@ -186,7 +186,7 @@ def test_versioned_router():
     print("🔍 Testing Versioned Router...")
 
     try:
-        from shared.versioning.versioned_router import (
+        from services.shared.versioning.versioned_router import (
             create_versioned_router,
         )
 
@@ -207,7 +207,7 @@ def test_versioned_router():
             return {"version": "v1.5.0", "message": "test"}
 
         # Register endpoints
-        from shared.versioning.version_manager import APIVersion
+        from services.shared.versioning.version_manager import APIVersion
 
         router.endpoints["GET:/test"] = (
             router.endpoints.get("GET:/test")
@@ -262,7 +262,7 @@ def test_api_models():
     print("🔍 Testing API Models...")
 
     try:
-        from shared.api_models import APIMetadata, APIResponse, APIStatus, ErrorCode
+        from services.shared.api_models import APIMetadata, APIResponse, APIStatus, ErrorCode
 
         # Test basic API response
         response = APIResponse(
@@ -308,13 +308,13 @@ def test_end_to_end_workflow():
     print("🔍 Testing End-to-End Workflow...")
 
     try:
-        from shared.api_models import APIStatus
-        from shared.versioning.compatibility_manager import create_compatibility_manager
-        from shared.versioning.response_transformers import (
+        from services.shared.api_models import APIStatus
+        from services.shared.versioning.compatibility_manager import create_compatibility_manager
+        from services.shared.versioning.response_transformers import (
             CompatibilityTransformer,
             VersionedResponseBuilder,
         )
-        from shared.versioning.version_manager import APIVersion, VersionManager
+        from services.shared.versioning.version_manager import APIVersion, VersionManager
 
         # 1. Setup version management
         version_manager = VersionManager("e2e-test-service", "v2.1.0")

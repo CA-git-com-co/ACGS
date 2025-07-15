@@ -5,12 +5,10 @@ from app import crud, schemas  # Import from app directory
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession  # Changed
 
-from services.shared.database import (  # Corrected import for async db session; Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
-    "cdd01ef066bc6cf2",
-    =,
-    get_async_db,
-)
+from services.shared.database import get_async_db
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 from .core.auth import (  # Import from app directory
     User,

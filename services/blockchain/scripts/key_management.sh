@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Quantumagi Key Management and Authority Control
@@ -16,7 +18,7 @@ KEYS_DIR="./keys"
 BACKUP_DIR="./keys/backup"
 
 echo "${BLUE}🔐 ACGS-1 Quantumagi Key Management System${RESET}"
-echo "============================================"
+echo "============================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo ""
 
 # Create secure key directories

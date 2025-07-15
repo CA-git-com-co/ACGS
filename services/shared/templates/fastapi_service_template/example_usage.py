@@ -59,9 +59,9 @@ settings = get_settings()
 # Example: Document Management Service
 # This demonstrates a complete service implementation using the template
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Database Models
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 class Document(BaseACGSModel):
@@ -119,9 +119,9 @@ class DocumentCategory(BaseACGSModel):
     )
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Pydantic Schemas
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 class DocumentCreateRequest(TenantAwareModel):
@@ -201,9 +201,9 @@ class DocumentListResponse(ConstitutionalBaseModel):
     updated_at: datetime
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # API Routes
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Create API router for document management
 documents_router = APIRouter(
@@ -455,9 +455,9 @@ async def get_document(
         )
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Health Check Integration
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 async def check_document_service_health() -> bool:
@@ -478,9 +478,9 @@ async def check_document_service_health() -> bool:
 health_checker.register_component("document_service", check_document_service_health)
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Service Integration
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Add the document router to the main application
 app.include_router(documents_router)
@@ -508,9 +508,9 @@ async def document_service_shutdown():
     # - Clean up temporary files
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Usage Example
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 if __name__ == "__main__":
     """
@@ -534,9 +534,9 @@ if __name__ == "__main__":
     )
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Testing Examples
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Example test cases for the document service
 from fastapi.testclient import TestClient

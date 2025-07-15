@@ -173,7 +173,7 @@ class DatabaseShardingManager:
             port=5432,
             database="acgs_primary",
             username="acgs_user",
-            password="acgs_password",
+            password=os.environ.get("PASSWORD"),
             weight=2.0,
             constitutional_compliance_required=True,
         )
@@ -188,7 +188,7 @@ class DatabaseShardingManager:
                 port=5432 + i,
                 database=f"acgs_shard_{i:02d}",
                 username="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 hash_range_start=int((i - 1) * (2**32 / 3)),
                 hash_range_end=int(i * (2**32 / 3)) - 1,
                 constitutional_compliance_required=False,

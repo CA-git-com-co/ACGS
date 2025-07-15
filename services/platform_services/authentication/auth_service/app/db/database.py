@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-# Load environment variables from .env file (especially for local development)
+# Load environment variables from config/environments/development.env file (especially for local development)
 # In a containerized environment, these might be set directly.
 load_dotenv()
 

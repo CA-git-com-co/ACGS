@@ -909,12 +909,12 @@ describe('🎭 End-to-End Governance Scenarios', () => {
     const summary = scenarioRunner.getSummary();
     
     console.log('\n🎭 END-TO-END GOVERNANCE SCENARIOS REPORT');
-    console.log('==========================================');
+    console.log('==========================================');  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     console.log(`Total Scenarios: ${summary.total}`);
     console.log(`Passed: ${summary.passed}`);
     console.log(`Failed: ${summary.failed}`);
     console.log(`Average Execution Time: ${summary.avgExecutionTime.toFixed(2)}ms`);
-    console.log('==========================================');
+    console.log('==========================================');  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     console.log('\n📋 Scenario Results:');
     results.forEach((result, index) => {
@@ -948,7 +948,7 @@ describe('🎭 End-to-End Governance Scenarios', () => {
     console.log(`   Success Rate: ${successRate.toFixed(1)}%`);
     console.log(`   Performance Score: ${performanceScore.toFixed(1)}/100`);
     console.log(`Constitutional Hash: cdd01ef066bc6cf2`);
-    console.log('==========================================');
+    console.log('==========================================');  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     if (summary.passed === summary.total) {
       console.log('✅ ALL E2E SCENARIOS PASSED - GOVERNANCE SYSTEM READY FOR PRODUCTION');

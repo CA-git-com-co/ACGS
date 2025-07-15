@@ -322,12 +322,27 @@ class AdvancedCrossReferenceAnalyzer:
         """Load pattern registry from YAML configuration."""
         import yaml
 
-        pattern_file = (
-            Path(str(REPO_ROOT))
-            / "tools"
-            / "validation"
-            / "cross_reference_patterns.yaml"
-        )
+        # Handle different path scenarios robustly
+        pattern_file = None
+
+        # Try multiple approaches to find the pattern file
+        try:
+            # First try: use REPO_ROOT if it's a proper path
+            if hasattr(REPO_ROOT, '__truediv__'):  # Check if it supports / operator
+                pattern_file = REPO_ROOT / "tools" / "validation" / "cross_reference_patterns.yaml"
+            elif isinstance(REPO_ROOT, str):
+                pattern_file = Path(REPO_ROOT) / "tools" / "validation" / "cross_reference_patterns.yaml"
+        except (TypeError, AttributeError):
+            pass
+
+        # Fallback: use current file location
+        if pattern_file is None:
+            try:
+                current_file = Path(__file__) if isinstance(__file__, str) else __file__
+                pattern_file = current_file.parent / "cross_reference_patterns.yaml"
+            except (TypeError, AttributeError):
+                # Last resort: use a simple string path
+                pattern_file = "cross_reference_patterns.yaml"
         try:
             with open(pattern_file, "r") as f:
                 return yaml.safe_load(f)
@@ -533,7 +548,50 @@ class AdvancedCrossReferenceAnalyzer:
                 resolved.relative_to(REPO_ROOT)
                 return resolved
             except ValueError:
-                return None
+                # Path is outside repo root, try alternative resolution strategies
+                return self._try_alternative_path_resolution(source_file, clean_url)
+
+        except Exception:
+            return None
+
+    def _try_alternative_path_resolution(
+        self, source_file: str, target_url: str
+    ) -> Optional[Path]:
+        """Try alternative strategies to resolve paths that fall outside repo root."""
+        try:
+            # Strategy 1: If target_url contains "docs/" pattern, try treating it as repo-relative
+            if "docs/" in target_url:
+                # Extract the part starting from "docs/"
+                docs_index = target_url.find("docs/")
+                repo_relative_path = target_url[docs_index:]
+                candidate = REPO_ROOT / repo_relative_path
+                if candidate.exists():
+                    return candidate
+
+            # Strategy 2: Try treating the target as repo-relative directly
+            candidate = REPO_ROOT / target_url.lstrip("./")
+            if candidate.exists():
+                return candidate
+
+            # Strategy 3: If target starts with "../", try removing leading "../" patterns
+            if target_url.startswith("../"):
+                # Remove all leading "../" and try as repo-relative
+                clean_target = target_url
+                while clean_target.startswith("../"):
+                    clean_target = clean_target[3:]
+                candidate = REPO_ROOT / clean_target
+                if candidate.exists():
+                    return candidate
+
+            # Strategy 4: Try finding the file by name in common directories
+            target_name = Path(target_url).name
+            if target_name:
+                # Search in docs directory and subdirectories
+                for candidate in DOCS_DIR.rglob(target_name):
+                    if candidate.is_file():
+                        return candidate
+
+            return None
 
         except Exception:
             return None

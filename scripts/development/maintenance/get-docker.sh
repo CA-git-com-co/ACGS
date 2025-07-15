@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/sh
 set -e
 # Docker Engine for Linux installation script.
@@ -27,7 +29,7 @@ set -e
 # Source code is available at https://github.com/docker/docker-install/
 #
 # Usage
-# ==============================================================================
+# ==============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 #
 # To install the latest stable versions of Docker CLI, Docker Engine, and their
 # dependencies:
@@ -49,7 +51,7 @@ set -e
 #   $ sudo sh install-docker.sh
 #
 # Command-line options
-# ==============================================================================
+# ==============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 #
 # --version <VERSION>
 # Use the --version option to install a specific version, for example:
@@ -75,12 +77,12 @@ set -e
 #
 #   $ sudo sh install-docker.sh --mirror AzureChinaCloud
 #
-# ==============================================================================
+# ==============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 # Git commit from https://github.com/docker/docker-install when
 # the script was uploaded (Should only be modified by upload job):
-SCRIPT_COMMIT_SHA="53a22f61c0628e58e1d6680b49e82993d304b449"
+SCRIPT_COMMIT_SHA="53a22f61c0628e58e1d6680b49e82993d304b449"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # strip "v" prefix if present
 VERSION="${VERSION#v}"
@@ -280,7 +282,7 @@ echo_docker_as_nonroot() {
 
 	# intentionally mixed spaces and tabs here -- tabs are stripped by "<<-EOF", spaces are kept in the output
 	echo
-	echo "================================================================================"
+	echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 	echo
 	if version_gte "20.10"; then
 		echo "To run Docker as a non-privileged user, consider setting up the"
@@ -299,7 +301,7 @@ echo_docker_as_nonroot() {
 	echo "         to root access on the host. Refer to the 'Docker daemon attack surface'"
 	echo "         documentation for details: https://docs.docker.com/go/attack-surface/"
 	echo
-	echo "================================================================================"
+	echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 	echo
 }
 

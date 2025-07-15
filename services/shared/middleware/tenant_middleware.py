@@ -16,8 +16,8 @@ from contextlib import asynccontextmanager
 import jwt
 from fastapi import HTTPException, Request, Response, status
 from fastapi.security import HTTPBearer
-from shared.database import AsyncSessionLocal
-from shared.repositories.tenant_repository import (
+from services.shared.database import AsyncSessionLocal
+from services.shared.repositories.tenant_repository import (
     ConstitutionalComplianceError,
     TenantContext,
     TenantIsolationError,

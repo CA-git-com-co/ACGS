@@ -1,6 +1,6 @@
 # ACGS Performance Validation Report
 Constitutional Hash: cdd01ef066bc6cf2
-Generated: 2025-07-07 15:09:53 UTC
+Generated: 2025-07-15 21:39:10 UTC
 
 ## Executive Summary
 - **Overall Performance Score**: 1.00/1.00
@@ -11,9 +11,9 @@ Generated: 2025-07-07 15:09:53 UTC
 ## Performance Targets vs Results
 ### Latency Performance ✅ PASS
 - **Score**: 1.00
-- **P99 Latency Ms**: 3.75
-- **P95 Latency Ms**: 1.75
-- **Avg Latency Ms**: 1.79
+- **P99 Latency Ms**: 3.61
+- **P95 Latency Ms**: 1.61
+- **Avg Latency Ms**: 1.65
 - **Target P99 Ms**: 5.0
 - **Samples**: 1000
 
@@ -27,8 +27,8 @@ Generated: 2025-07-07 15:09:53 UTC
 
 ### Cache Performance ✅ PASS
 - **Score**: 1.00
-- **Cache Hit Rate**: 1.0
-- **Cache Hit Rate Percent**: 100.0
+- **Cache Hit Rate**: 0.92
+- **Cache Hit Rate Percent**: 92.0
 - **Target Hit Rate**: 0.85
 - **Target Hit Rate Percent**: 85.0
 

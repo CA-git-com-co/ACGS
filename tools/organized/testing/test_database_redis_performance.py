@@ -47,7 +47,7 @@ class DatabaseRedisPerformanceTester:
                 host=DATABASE_CONFIG["host"],
                 port=DATABASE_CONFIG["port"],
                 user=DATABASE_CONFIG["user"],
-                password=DATABASE_CONFIG["password"],
+                password=os.environ.get("PASSWORD")password"],
                 database=DATABASE_CONFIG["database"],
             )
 

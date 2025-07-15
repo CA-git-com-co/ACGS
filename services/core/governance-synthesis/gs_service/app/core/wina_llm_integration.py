@@ -75,7 +75,7 @@ except ImportError as e:
             self.principle_id = principle_id
             self.principle_text = principle_text
             self.context = context
-            self.environmental_factors = environmental_factors or {}
+            selfconfig/environments/development.environmental_factors = environmental_factors or {}
 
     class LLMStructuredOutput:
         def __init__(self, interpretations=None, raw_llm_response=""):

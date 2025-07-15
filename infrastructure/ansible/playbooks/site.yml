@@ -110,14 +110,14 @@
       debug:
         msg: |
           ACGS-1 Constitutional Governance System Deployment Complete
-          =========================================================
+          =========================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           Environment: {{ environment }}
           Constitutional Hash: {{ constitutional_hash }}
           Services Deployed: {{ services | length }}
           Performance Targets: {{ performance_targets }}
 
           Next Steps:
-          1. Verify constitutional compliance: curl http://localhost:8005/api/v1/governance/compliance/status
+          1. Verify constitutional compliance: curl http://localhost:8005/api/v1/governance/compliance/status  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           2. Check service health: curl http://localhost:8000/health
           3. Review deployment report: /tmp/acgs_deployment_report_{{ ansible_date_time.epoch }}.json
       tags: [summary]
@@ -162,7 +162,7 @@
 
     - name: Ensure constitutional compliance
       uri:
-        url: 'http://{{ ansible_default_ipv4.address }}:8005/api/v1/governance/compliance/status'
+        url: 'http://{{ ansible_default_ipv4.address }}:8005/api/v1/governance/compliance/status'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         method: GET
         return_content: yes
       register: compliance_check

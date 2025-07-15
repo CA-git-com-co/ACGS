@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-import aioredis
+import redis.asyncio as aioredis
 import httpx
 
 logger = logging.getLogger(__name__)

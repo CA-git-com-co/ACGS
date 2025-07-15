@@ -274,7 +274,7 @@ class PerformanceBenchmark:
 
                     await enhanced_auth_service.authenticate_user(
                         username=username,
-                        password=password,
+                        password=os.environ.get("PASSWORD")
                         ip_address=f"192.168.1.{iteration % 255}",
                         user_agent="benchmark_client",
                     )

@@ -1,0 +1,19 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+[package]
+name = "acgs-monitoring"
+version = "1.0.0"
+edition = "2021"
+description = "ACGS-2 Shared Monitoring and Observability Components"
+authors = ["ACGS Team"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+prometheus = { version = "0.13", features = ["process"] }
+acgs-constitutional = { path = "../constitutional" }
+acgs-types = { path = "../types" }
+
+[features]
+default = []

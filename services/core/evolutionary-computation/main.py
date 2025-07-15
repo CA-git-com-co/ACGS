@@ -29,7 +29,7 @@ from pydantic import BaseModel, Field
 
 # Configuration
 SERVICE_PORT = 8004
-DATABASE_URL = "postgresql://acgs_user:acgs_password@localhost:5432/acgs_evolution"
+DATABASE_URL = os.environ.get("DATABASE_URL")
 REDIS_URL = "redis://localhost:6379/3"
 AUDIT_ENGINE_URL = "http://localhost:8003"
 POLICY_ENGINE_URL = "http://localhost:8001"

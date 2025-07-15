@@ -24,7 +24,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
 # Skip Redis for now due to Python 3.12 compatibility issue
-# import aioredis
+# import redis.asyncio as aioredis
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"

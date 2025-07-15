@@ -238,7 +238,7 @@ class ConstitutionalComplianceEnforcer:
             ".ini",
             ".conf",
             ".cfg",
-            ".env",
+            "config/environments/development.env",
             ".dockerfile",
             ".gitignore",
             ".c",

@@ -30,14 +30,14 @@ typing-extensions==4.14.0
 # via
 #   alembic
 #   sqlalchemy
-cryptography>=45.0.4
+cryptography>=43.0.1
 # via -r requirements.txt
 
 python-jose>=3.5.1
 python-multipart>=0.0.20
 ecdsa>=0.20.0
 
-torch>=2.7.3
+torch>=2.7.1
 
 requests>=2.32.4
 

@@ -85,7 +85,7 @@ paths:
               $ref: '#/components/schemas/LoginRequest'
             example:
               username: 'admin'
-              password: 'secure_password'
+              password: os.environ.get("PASSWORD")
       responses:
         '200':
           description: Authentication successful

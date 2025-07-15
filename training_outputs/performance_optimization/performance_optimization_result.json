@@ -1,0 +1,12 @@
+{
+  "success": true,
+  "training_time_seconds": 0.0010597705841064453,
+  "result": {
+    "model_type": "performance_optimization",
+    "training_examples": 25,
+    "optimization_success_rate": 0.94,
+    "acgs_targets_met": true,
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "constitutional_hash": "cdd01ef066bc6cf2"
+}

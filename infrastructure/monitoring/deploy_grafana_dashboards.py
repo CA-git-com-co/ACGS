@@ -55,7 +55,7 @@ class GrafanaDashboardDeployer:
     def __init__(self, grafana_url: str = "http://localhost:3000"):
         self.grafana_url = grafana_url
         self.grafana_user = "admin"
-        self.grafana_password = "acgs_admin_2024"
+        self.grafana_password = os.environ.get("PASSWORD")
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.deployment_status = DashboardDeploymentStatus()
 
@@ -64,7 +64,7 @@ class GrafanaDashboardDeployer:
             DashboardConfig(
                 "acgs-performance",
                 "ACGS Performance Dashboard",
-                "infrastructure/monitoring/grafana/dashboards/acgs_performance_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_performance_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 ["acgs", "performance", "constitutional-compliance"],
                 "5s",
                 "1h",
@@ -72,7 +72,7 @@ class GrafanaDashboardDeployer:
             DashboardConfig(
                 "acgs-coordination",
                 "ACGS Multi-Agent Coordination",
-                "infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 ["acgs", "coordination", "agents"],
                 "5s",
                 "30m",
@@ -80,7 +80,7 @@ class GrafanaDashboardDeployer:
             DashboardConfig(
                 "acgs-constitutional",
                 "ACGS Constitutional Compliance",
-                "infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 ["acgs", "constitutional", "compliance"],
                 "5s",
                 "1h",
@@ -88,7 +88,7 @@ class GrafanaDashboardDeployer:
             DashboardConfig(
                 "acgs-infrastructure",
                 "ACGS Infrastructure Monitoring",
-                "infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 ["acgs", "infrastructure", "database", "cache"],
                 "10s",
                 "1h",
@@ -433,26 +433,26 @@ class GrafanaDashboardDeployer:
                 return False
 
             # Create dashboard directories
-            os.makedirs("infrastructure/monitoring/grafana/dashboards", exist_ok=True)
+            os.makedirs("infrastructure/monitoring/grafana/dashboards", exist_ok=True)  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
             # Generate additional dashboards
             coordination_dashboard = self.generate_coordination_dashboard()
             with open(
-                "infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_coordination_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "w",
             ) as f:
                 json.dump(coordination_dashboard, f, indent=2)
 
             constitutional_dashboard = self.generate_constitutional_dashboard()
             with open(
-                "infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_constitutional_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "w",
             ) as f:
                 json.dump(constitutional_dashboard, f, indent=2)
 
             infrastructure_dashboard = self.generate_infrastructure_dashboard()
             with open(
-                "infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json",
+                "infrastructure/monitoring/grafana/dashboards/acgs_infrastructure_dashboard.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "w",
             ) as f:
                 json.dump(infrastructure_dashboard, f, indent=2)

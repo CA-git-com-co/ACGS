@@ -32,13 +32,29 @@ app = FastAPI(
     openapi_url="/openapi.json",
 )
 
-# CORS middleware
+# CORS middleware - SECURITY HARDENED
+# Constitutional Hash: cdd01ef066bc6cf2
+ALLOWED_ORIGINS = [
+    "https://acgs.production.com",
+    "https://acgs.staging.com",
+    "http://localhost:3000",  # Development frontend
+    "http://localhost:8000",  # API Gateway
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=[
+        "Authorization",
+        "Content-Type", 
+        "X-Constitutional-Hash",
+        "X-Request-ID",
+        "X-Tenant-ID"
+    ],
+    expose_headers=["X-Constitutional-Hash", "X-Request-ID"],
+    max_age=86400,  # 24 hours
 )
 
 

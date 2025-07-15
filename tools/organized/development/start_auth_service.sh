@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS Auth Service Startup Script
@@ -6,7 +8,7 @@
 set -e
 
 PROJECT_ROOT="/home/ubuntu/ACGS"
-SERVICE_DIR="$PROJECT_ROOT/services/platform/authentication/auth_service"
+SERVICE_DIR="$PROJECT_ROOT/services/platform/authentication/auth_service"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 LOG_FILE="$PROJECT_ROOT/logs/auth_service.log"
 
 echo "Starting ACGS Auth Service..."
@@ -26,8 +28,8 @@ cd "$SERVICE_DIR"
 
 # Set environment variables
 export PYTHONPATH="$PROJECT_ROOT"
-export SECRET_KEY="acgs-development-secret-key-2024-constitutional-ai-governance"
-export CSRF_SECRET_KEY="acgs-development-csrf-secret-key-2024-phase1-infrastructure-stabilization"
+export SECRET_KEY="acgs-development-secret-key-2024-constitutional-ai-governance"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+export CSRF_SECRET_KEY="acgs-development-csrf-secret-key-2024-phase1-infrastructure-stabilization"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 export ACCESS_TOKEN_EXPIRE_MINUTES=30
 export REFRESH_TOKEN_EXPIRE_DAYS=7
 export BACKEND_CORS_ORIGINS="http://localhost:3000,http://localhost:8080"

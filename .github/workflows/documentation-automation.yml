@@ -305,7 +305,7 @@ jobs:
           export ENVIRONMENT=${env}
 
           # Load environment-specific variables
-          source config/environments/${env}.env
+          source config/environments/${env}config/environments/development.env
           \`\`\`
 
           ## Infrastructure Deployment

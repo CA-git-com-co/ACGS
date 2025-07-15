@@ -1,0 +1,169 @@
+# GroqCloud Policy Integration Service Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+service:
+  name: "groq-policy-integration"
+  version: "1.0.0"
+  port: 8015
+  constitutional_hash: "cdd01ef066bc6cf2"
+
+groq_cloud:
+  api_base_url: "https://api.groq.com/openai/v1"
+  default_model: "qwen/qwen3-32b"
+  timeout_seconds: 30
+  retry_attempts: 3
+  circuit_breaker:
+    failure_threshold: 5
+    recovery_timeout: 30
+    enabled: true
+
+  # Tier-based model configuration
+  models:
+    tier_1_nano:
+      model: "allam-2-7b"
+      context_size: 4096
+      performance_target_ms: 1.0
+      cost_tier: "ultra_low"
+    tier_2_fast:
+      model: "llama-3.1-8b-instant"
+      context_size: 131072
+      performance_target_ms: 2.0
+      cost_tier: "low"
+    tier_3_balanced:
+      model: "qwen/qwen3-32b"
+      context_size: 131072
+      performance_target_ms: 3.0
+      cost_tier: "medium"
+    tier_4_premium:
+      model: "llama-3.3-70b-versatile"
+      context_size: 131072
+      performance_target_ms: 5.0
+      cost_tier: "high"
+
+  # Inference mode routing
+  inference_modes:
+    ultra_fast:
+      tier: "tier_1_nano"
+      target_latency_ms: 1.0
+    fast:
+      tier: "tier_2_fast"
+      target_latency_ms: 2.0
+    balanced:
+      tier: "tier_3_balanced"
+      target_latency_ms: 3.0
+    thorough:
+      tier: "tier_4_premium"
+      target_latency_ms: 5.0
+
+wasm_policy_engine:
+  enabled: true
+  runtime: "wasmtime"
+  compilation:
+    timeout_seconds: 30
+    cache_size: 1000
+    enable_cache: true
+  evaluation:
+    timeout_seconds: 5
+    max_memory_mb: 100
+    enable_metrics: true
+
+opa_integration:
+  enabled: true
+  policies_directory: "/app/policies"
+  default_policies:
+    - "groq_model_governance.rego"
+    - "constitutional_compliance.rego"
+    - "security_policies.rego"
+  cache:
+    enabled: true
+    size: 500
+    ttl_seconds: 3600
+
+constitutional_compliance:
+  enabled: true
+  hash: "cdd01ef066bc6cf2"
+  validation:
+    pre_execution: true
+    runtime: true
+    post_execution: true
+  performance_targets:
+    p99_latency_ms: 5.0
+    throughput_rps: 100
+    compliance_rate: 0.99
+  audit:
+    enabled: true
+    log_all_requests: true
+    include_policy_decisions: true
+
+performance:
+  caching:
+    enabled: true
+    provider: "redis"
+    ttl_seconds: 3600
+    max_size: 10000
+  monitoring:
+    metrics_enabled: true
+    detailed_logging: true
+    prometheus_port: 9090
+  connection_pool:
+    size: 50
+    max_overflow: 75
+    timeout_seconds: 20
+
+security:
+  authentication:
+    jwt_required: true
+    validate_constitutional_hash: true
+  rate_limiting:
+    enabled: true
+    requests_per_minute: 1000
+    burst_size: 100
+  headers:
+    constitutional_hash: true
+    security_headers: true
+    cors_enabled: true
+
+logging:
+  level: "INFO"
+  format: "json"
+  constitutional_compliance: true
+  audit_trail: true
+  structured_logging: true
+
+health_check:
+  enabled: true
+  endpoint: "/health"
+  interval_seconds: 30
+  timeout_seconds: 5
+  include_groq_api_check: true
+  include_policy_engine_check: true
+
+metrics:
+  enabled: true
+  endpoint: "/metrics"
+  include_constitutional_metrics: true
+  custom_metrics:
+    - name: "groq_policy_requests_total"
+      type: "counter"
+      description: "Total GroqCloud policy integration requests"
+    - name: "groq_policy_latency_seconds"
+      type: "histogram"
+      description: "Request latency for GroqCloud policy integration"
+    - name: "constitutional_compliance_rate"
+      type: "gauge"
+      description: "Constitutional compliance rate"
+    - name: "wasm_policy_evaluations_total"
+      type: "counter"
+      description: "Total WASM policy evaluations"
+
+development:
+  debug: false
+  mock_groq_api: false
+  detailed_error_responses: false
+  enable_development_endpoints: false
+
+production:
+  optimize_performance: true
+  strict_validation: true
+  comprehensive_logging: true
+  enable_monitoring: true

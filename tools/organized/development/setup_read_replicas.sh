@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Read Replica Setup Script
 # Phase 2 - Enterprise Scalability & Performance
@@ -38,19 +40,19 @@ REPLICA1_PORT="5433"
 REPLICA2_PORT="5434"
 DB_NAME="acgs_db"
 DB_USER="acgs_user"
-DB_PASSWORD="acgs_password"
+DB_PASSWORD=os.environ.get("PASSWORD")
 REPLICATION_USER="replicator"
-REPLICATION_PASSWORD="replication_password"
+REPLICATION_PASSWORD=os.environ.get("PASSWORD")
 
 # Create replication user on primary
 print_status "Setting up replication user on primary database..."
 
 # Check if primary database is accessible
-if PGPASSWORD="$DB_PASSWORD" psql -h "$PRIMARY_HOST" -p "$PRIMARY_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" > /dev/null 2>&1; then
+if PGPASSWORD=os.environ.get("PASSWORD") psql -h "$PRIMARY_HOST" -p "$PRIMARY_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" > /dev/null 2>&1; then
     print_success "Primary database is accessible"
     
     # Create replication user if it doesn't exist
-    PGPASSWORD="$DB_PASSWORD" psql -h "$PRIMARY_HOST" -p "$PRIMARY_PORT" -U "$DB_USER" -d "$DB_NAME" << EOF
+    PGPASSWORD=os.environ.get("PASSWORD") psql -h "$PRIMARY_HOST" -p "$PRIMARY_PORT" -U "$DB_USER" -d "$DB_NAME" << EOF
 DO \$\$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$REPLICATION_USER') THEN
@@ -75,16 +77,16 @@ cat > "infrastructure/database/pgbouncer_replicas.ini" << EOF
 
 [databases]
 # Primary database (read/write)
-acgs_db_primary = host=$PRIMARY_HOST port=$PRIMARY_PORT dbname=$DB_NAME user=$DB_USER password=$DB_PASSWORD
+acgs_db_primary = host=$PRIMARY_HOST port=$PRIMARY_PORT dbname=$DB_NAME user=$DB_USER password=os.environ.get("PASSWORD")
 
 # Read replica 1
-acgs_db_replica1 = host=$PRIMARY_HOST port=$REPLICA1_PORT dbname=$DB_NAME user=$DB_USER password=$DB_PASSWORD
+acgs_db_replica1 = host=$PRIMARY_HOST port=$REPLICA1_PORT dbname=$DB_NAME user=$DB_USER password=os.environ.get("PASSWORD")
 
 # Read replica 2  
-acgs_db_replica2 = host=$PRIMARY_HOST port=$REPLICA2_PORT dbname=$DB_NAME user=$DB_USER password=$DB_PASSWORD
+acgs_db_replica2 = host=$PRIMARY_HOST port=$REPLICA2_PORT dbname=$DB_NAME user=$DB_USER password=os.environ.get("PASSWORD")
 
 # Load balanced read pool
-acgs_db_read = host=$PRIMARY_HOST port=$REPLICA1_PORT dbname=$DB_NAME user=$DB_USER password=$DB_PASSWORD
+acgs_db_read = host=$PRIMARY_HOST port=$REPLICA1_PORT dbname=$DB_NAME user=$DB_USER password=os.environ.get("PASSWORD")
 
 [pgbouncer]
 # Connection settings for read replicas
@@ -146,7 +148,7 @@ services:
     container_name: acgs_postgres_replica1
     environment:
       POSTGRES_USER: $DB_USER
-      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: $DB_NAME
       PGUSER: $DB_USER
     ports:
@@ -173,7 +175,7 @@ services:
     container_name: acgs_postgres_replica2
     environment:
       POSTGRES_USER: $DB_USER
-      POSTGRES_PASSWORD: $DB_PASSWORD
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: $DB_NAME
       PGUSER: $DB_USER
     ports:
@@ -202,7 +204,7 @@ services:
       DATABASES_HOST: postgres_replica1
       DATABASES_PORT: 5432
       DATABASES_USER: $DB_USER
-      DATABASES_PASSWORD: $DB_PASSWORD
+      DATABASES_PASSWORD: os.environ.get("PASSWORD")
       DATABASES_DBNAME: $DB_NAME
       POOL_MODE: transaction
       MAX_CLIENT_CONN: 500
@@ -250,7 +252,7 @@ until pg_isready -h postgres_primary -p 5432 -U acgs_user; do
 done
 
 # Create replication slot on primary (if not exists)
-PGPASSWORD="acgs_password" psql -h postgres_primary -p 5432 -U acgs_user -d acgs_db -c "
+PGPASSWORD=os.environ.get("PASSWORD") psql -h postgres_primary -p 5432 -U acgs_user -d acgs_db -c "
 SELECT pg_create_physical_replication_slot('replica_slot_$(hostname)', true);
 " || echo "Replication slot may already exist"
 
@@ -259,7 +261,7 @@ cat > /var/lib/postgresql/data/postgresql.auto.conf << EOL
 # Replica configuration
 hot_standby = on
 hot_standby_feedback = on
-primary_conninfo = 'host=postgres_primary port=5432 user=replicator password=replication_password'
+primary_conninfo = 'host=postgres_primary port=5432 user=replicator password=os.environ.get("PASSWORD")
 primary_slot_name = 'replica_slot_$(hostname)'
 EOL
 
@@ -306,7 +308,7 @@ async def check_replica_health():
                 port=replica["port"],
                 database="acgs_db",
                 user="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 timeout=5
             )
             

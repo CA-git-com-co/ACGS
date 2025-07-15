@@ -13,12 +13,12 @@ from typing import Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from ..core.constitutional_council_scalability import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
+from ..core.constitutional_council_scalability import (
     ConstitutionalCouncilScalabilityFramework,
-    "cdd01ef066bc6cf2",
-    =,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from ..models import ACAmendmentVote, User
 from ..monitoring.scalability_metrics import GovernancePhase, get_metrics_collector
 from ..schemas import ACAmendmentCreate
@@ -101,7 +101,7 @@ class DemocraticGovernanceEngine:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.metrics_collector = get_metrics_collector()
-        self.scalability_framework = ConstitutionalCouncilScalabilityFramework(db)
+        self.scalability_framework = ConstitutionalCouncilScalabilityFramework(db)  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     async def initiate_democratic_process(
         self,

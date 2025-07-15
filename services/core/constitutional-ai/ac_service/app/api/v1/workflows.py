@@ -16,14 +16,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from services.shared.auth import get_current_active_user as get_current_user
 from services.shared.database import get_async_db
 from services.shared.models import User
+from services.shared.security_validation import validate_policy_input
 
-from .workflows.constitutional_council_graph import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
+from .workflows.constitutional_council_graph import (
     AmendmentProposalInput,
-    "cdd01ef066bc6cf2",
-    =,
     execute_constitutional_council_workflow,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from .workflows.workflow_manager import get_workflow_manager
 
 logger = logging.getLogger(__name__)
@@ -339,7 +340,7 @@ class ConstitutionalCouncilWorkflowResponse(BaseModel):
 @validate_policy_input
 @router.post(
     "/constitutional-council/execute",
-    response_model=ConstitutionalCouncilWorkflowResponse,
+    response_model=ConstitutionalCouncilWorkflowResponse,  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 )
 async def execute_constitutional_council_workflow_endpoint(
     request: ConstitutionalCouncilWorkflowRequest,
@@ -440,16 +441,12 @@ async def get_constitutional_council_workflow_state(
     """
     try:
         from .workflows.constitutional_council_graph import (
-            date_governance_input,
-            date_policy_input,
-            date_user_input,
-            import,
-            imports,
-            ty,
-            validation,
-            vices.shared.security_validation,
-        )
             create_constitutional_council_graph,
+        )
+        from services.shared.security_validation import (
+            validate_governance_input,
+            validate_policy_input,
+            validate_user_input,
         )
 
         # Create graph instance

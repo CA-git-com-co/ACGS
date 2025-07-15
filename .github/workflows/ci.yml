@@ -1434,7 +1434,7 @@ jobs:
           # Select appropriate docker-compose file
           case "$ENVIRONMENT" in
             "production")
-              COMPOSE_FILE="docker-compose.production.yml"
+              COMPOSE_FILE="config/docker/docker-compose.production.yml"
               ;;
             "staging")
               COMPOSE_FILE="infrastructure/docker/docker-compose.staging.yml"

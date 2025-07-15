@@ -4,10 +4,10 @@
 
 set -e
 
-echo "=========================================="
+echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "ACGS Research Paper OCR Tools Setup"
 echo "Constitutional Hash: cdd01ef066bc6cf2"
-echo "=========================================="
+echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Colors for output
 RED='\033[0;31m'
@@ -301,9 +301,9 @@ main() {
     
     print_success "OCR tools setup completed successfully!"
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "NEXT STEPS:"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "1. Run the conversion script:"
     echo "   python pdf_to_markdown_converter.py"
     echo ""
@@ -314,7 +314,7 @@ main() {
     echo "   - Markdown files: ../papers_markdown/"
     echo "   - Metadata: ../papers_metadata/"
     echo "   - Conversion report: ../papers_metadata/conversion_report.json"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Run main function

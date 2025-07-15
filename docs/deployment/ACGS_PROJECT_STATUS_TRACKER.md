@@ -106,7 +106,7 @@
 - **Unified Architecture Guide**: [`docs/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md`](docs/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md)
 - **Service Integration Patterns**: [`docs/integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md`](docs/integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md)
 - **Testing Strategy Foundation**: [`docs/testing/ACGS_TESTING_STRATEGY_FOUNDATION.md`](docs/testing/ACGS_TESTING_STRATEGY_FOUNDATION.md)
-- **Documentation Index**: [`docs/ACGS_DOCUMENTATION_INDEX.md`](docs/ACGS_DOCUMENTATION_INDEX.md)
+- **Documentation Index**: [`docs/ACGS_docs/DOCUMENTATION_INDEX.md`](docs/ACGS_docs/DOCUMENTATION_INDEX.md)
 
 **Key Features Delivered**:
 - Template-based documentation patterns using FastAPI service template

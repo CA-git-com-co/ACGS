@@ -168,8 +168,8 @@ mkdir -p /var/lib/acgs/pgp/keys
 chmod 700 /var/lib/acgs/pgp/keys
 
 # 4. Configure environment
-cp .env.example .env
-# Edit .env with your configuration
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# Edit config/environments/development.env with your configuration
 
 # 5. Start service
 uv run uvicorn main:app --reload --port 8002
@@ -180,7 +180,7 @@ uv run uvicorn main:app --reload --port 8002
 ```bash
 # Using Docker
 docker build -t acgs-integrity-service .
-docker run -p 8002:8002 --env-file .env acgs-integrity-service
+docker run -p 8002:8002 --env-file config/environments/development.env acgs-integrity-service
 
 # Using systemd
 sudo cp integrity-service.service /etc/systemd/system/

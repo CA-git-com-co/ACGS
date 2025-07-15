@@ -12,7 +12,7 @@ from typing import Any
 
 import jwt
 from fastapi import HTTPException, Request, status
-from shared.database import AsyncSessionLocal
+from services.shared.database import AsyncSessionLocal
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.middleware.base import BaseHTTPMiddleware
@@ -331,7 +331,8 @@ async def create_tenant_aware_query(
     table_name: str, conditions: dict[str, Any] | None = None
 ) -> str:
     """Create a tenant-aware SQL query string."""
-    base_query = f"SELECT * FROM {table_name}"
+    # Use parameterized query to prevent SQL injection
+    base_query = "SELECT * FROM :table_name"
 
     where_conditions = []
     if conditions:

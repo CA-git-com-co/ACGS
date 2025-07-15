@@ -116,7 +116,7 @@ class ErrorHandlingDeployment:
         monitoring_dirs = [
             "infrastructure/monitoring/error_analysis/reports",
             "infrastructure/monitoring/sla_validation/reports",
-            "infrastructure/monitoring/grafana/dashboards",
+            "infrastructure/monitoring/grafana/dashboards",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "logs/error_handling",
         ]
 
@@ -128,7 +128,7 @@ class ErrorHandlingDeployment:
         # Deploy Grafana dashboard
         dashboard_source = (
             self.project_root
-            / "infrastructure/monitoring/grafana/dashboards/acgs_error_analysis_dashboard.json"
+            / "infrastructure/monitoring/grafana/dashboards/acgs_error_analysis_dashboard.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         if dashboard_source.exists():
             logger.info("✓ Error analysis dashboard configuration ready")
@@ -389,7 +389,7 @@ if __name__ == "__main__":
         print("\nNext Steps:")
         print("1. Start monitoring services using scripts in scripts/monitoring/")
         print(
-            "2. Import Grafana dashboard from infrastructure/monitoring/grafana/dashboards/"
+            "2. Import Grafana dashboard from infrastructure/monitoring/grafana/dashboards/"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         print(
             "3. Run 'python3 scripts/start_72h_monitoring.py' for continuous monitoring"

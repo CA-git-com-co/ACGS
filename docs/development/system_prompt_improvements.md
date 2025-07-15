@@ -140,7 +140,7 @@ failure_modes:
 **Rationale**: Provides immediately deployable configuration rather than requiring additional research and development.
 
 ### 10. **Comprehensive Environment Configuration**
-**Before**: Basic .env mention
+**Before**: Basic config/environments/development.env mention
 **After**: Complete template with security guidelines
 
 ```bash

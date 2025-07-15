@@ -36,7 +36,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-class ConstitutionalComplianceSecurityValidator:
+class ConstitutionalComplianceSecurityValidator:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     """Validates constitutional compliance security across ACGS-1 system."""
 
     def __init__(self, comprehensive: bool = False, fix_issues: bool = False):
@@ -622,7 +622,7 @@ async def main():
     args = parser.parse_args()
 
     try:
-        validator = ConstitutionalComplianceSecurityValidator(
+        validator = ConstitutionalComplianceSecurityValidator(  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             comprehensive=args.comprehensive, fix_issues=args.fix_issues
         )
         report = await validator.validate_constitutional_security()

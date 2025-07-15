@@ -36,7 +36,7 @@ data:
 
     [security]
     admin_user = admin
-    admin_password = acgs-lite-admin
+    admin_password = os.environ.get("PASSWORD")
 
     [users]
     allow_sign_up = false
@@ -396,7 +396,7 @@ metadata:
     acgs-lite.io/service-type: grafana-secret
 type: Opaque
 data:
-  password: YWNncy1saXRlLWFkbWlu # acgs-lite-admin (base64 encoded)
+  password: os.environ.get("PASSWORD")
 
 ---
 # Grafana PersistentVolumeClaim

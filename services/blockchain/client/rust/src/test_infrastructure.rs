@@ -7,21 +7,18 @@ use anchor_client::solana_sdk::{
     pubkey::Pubkey,
 };
 use anyhow::Result;
-use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 /// Test infrastructure for ACGS blockchain tests
 pub struct TestInfrastructure {
     governance_counter: AtomicU32,
-    funding_pool: HashMap<String, u64>,
 }
 
 impl TestInfrastructure {
     pub fn new() -> Self {
         Self {
             governance_counter: AtomicU32::new(0),
-            funding_pool: HashMap::new(),
         }
     }
 

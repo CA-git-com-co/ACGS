@@ -156,7 +156,7 @@ async def synthesize_rego_policy(request: WINARegoSynthesisRequest):
             success=result.success,
             rego_content=result.rego_content,
             constitutional_compliance=result.constitutional_compliance,
-            synthesis_metrics=WINARegoSynthesisMetricsResponse(
+            synthesis_metrics=WINARegoSynthesisMetricsResponse(  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 synthesis_time=result.synthesis_metrics.synthesis_time,
                 gflops_reduction=result.synthesis_metrics.gflops_reduction,
                 accuracy_preservation=result.synthesis_metrics.accuracy_preservation,
@@ -240,7 +240,7 @@ async def batch_synthesize_rego_policies(request: BatchWINARegoSynthesisRequest)
                     success=result.success,
                     rego_content=result.rego_content,
                     constitutional_compliance=result.constitutional_compliance,
-                    synthesis_metrics=WINARegoSynthesisMetricsResponse(
+                    synthesis_metrics=WINARegoSynthesisMetricsResponse(  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                         synthesis_time=result.synthesis_metrics.synthesis_time,
                         gflops_reduction=result.synthesis_metrics.gflops_reduction,
                         accuracy_preservation=result.synthesis_metrics.accuracy_preservation,

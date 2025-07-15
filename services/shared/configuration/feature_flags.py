@@ -16,7 +16,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
-from shared.resilience.exceptions import ConfigurationError
+from services.shared.resilience.exceptions import ConfigurationError
 
 logger = logging.getLogger(__name__)
 

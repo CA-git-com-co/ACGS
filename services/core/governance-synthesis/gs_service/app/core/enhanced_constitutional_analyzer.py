@@ -811,9 +811,9 @@ class EnhancedConstitutionalAnalyzer:
         ) / total_analyses
         self._performance_metrics["average_response_time"] = new_avg
 
-    # ========================================================================
+    # ========================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # GOVERNANCE WORKFLOW INTEGRATION METHODS
-    # ========================================================================
+    # ========================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     async def policy_creation_workflow_analysis(
         self,
@@ -1042,9 +1042,9 @@ class EnhancedConstitutionalAnalyzer:
                 "processing_time_ms": (time.time() - start_time) * 1000,
             }
 
-    # ========================================================================
+    # ========================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     # HELPER METHODS FOR WORKFLOW INTEGRATION
-    # ========================================================================
+    # ========================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     async def _generate_policy_improvement_recommendations(
         self,
@@ -1257,9 +1257,9 @@ class EnhancedConstitutionalAnalyzer:
             }
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # GLOBAL INSTANCE AND INTEGRATION FUNCTIONS
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Global analyzer instance for ACGS-1 integration
 _enhanced_analyzer: EnhancedConstitutionalAnalyzer | None = None
@@ -1297,9 +1297,9 @@ async def close_enhanced_constitutional_analyzer():
         _enhanced_analyzer = None
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # USAGE EXAMPLES AND INTEGRATION PATTERNS
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 async def example_policy_creation_workflow():
@@ -1514,9 +1514,9 @@ async def example_performance_monitoring():
     return metrics, health
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # INTEGRATION WITH EXISTING ACGS-1 SERVICES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 async def integrate_with_pgc_service(

@@ -232,7 +232,7 @@ class ResourceLimitsValidator:
 
         report = f"""
 ACGS-PGP Resource Limits Validation Report
-==========================================
+==========================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 Summary:
 - Total configurations checked: {total_count}

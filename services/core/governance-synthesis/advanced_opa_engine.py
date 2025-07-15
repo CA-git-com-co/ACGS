@@ -252,7 +252,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             "principal": context.principal,
             "resource": context.resource,
             "action": context.action,
-            "environment": context.environment,
+            "environment": contextconfig/environments/development.environment,
             "context": {
                 "request_id": context.request_id,
                 "timestamp": context.timestamp.isoformat(),
@@ -983,7 +983,7 @@ class OPAEvaluationEngine(PolicyEvaluationEngine):
             "principal": context.principal,
             "resource": context.resource,
             "action": context.action,
-            "environment": context.environment,
+            "environment": contextconfig/environments/development.environment,
         }
 
         cache_str = json.dumps(cache_data, sort_keys=True)

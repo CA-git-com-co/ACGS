@@ -242,7 +242,7 @@ jobs:
           path: |
             coverage.xml
             coverage.json
-            htmlcov/
+            reports/coverage/htmlcov/
             bandit-report.json
             safety-report.json
             audit-report.json

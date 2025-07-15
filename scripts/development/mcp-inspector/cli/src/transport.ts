@@ -1,9 +1,13 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import {
   getDefaultEnvironment,
   StdioClientTransport,
 } from "@modelcontextprotocol/sdk/client/stdio.js";
-import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
+import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 import { findActualExecutable } from "spawn-rx";
 
 export type TransportOptions = {

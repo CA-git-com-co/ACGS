@@ -298,7 +298,7 @@ services:
 
 ### Environment Configuration Template
 ```bash
-# .env.template
+# config/environments/developmentconfig/environments/template.env
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
 GITHUB_TOKEN=ghp_your_github_token_here
 LOG_LEVEL=INFO

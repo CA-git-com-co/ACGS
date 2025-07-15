@@ -366,7 +366,7 @@ jobs:
             
             const body = `# 📦 Dependency Update Notification
             
-            **Constitutional Hash**: \`${process.env.CONSTITUTIONAL_HASH}\`
+            **Constitutional Hash**: \`${processconfig/environments/development.env.CONSTITUTIONAL_HASH}\`
             **Found**: ${outdatedPackages.length} outdated packages
             
             ## 🔄 Top Packages to Update

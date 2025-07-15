@@ -140,7 +140,7 @@ class Settings:
     )
 
     class Config:
-        env_file = ".env"
+        env_file = "config/environments/development.env"
         case_sensitive = True
 
 

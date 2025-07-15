@@ -4,7 +4,7 @@ server.port: 5601
 elasticsearch.hosts:
 - http://elasticsearch-security:9200
 elasticsearch.username: elastic
-elasticsearch.password: acgs_security_2024
+elasticsearch.password: os.environ.get("PASSWORD")
 xpack.security.enabled: true
 xpack.encryptedSavedObjects.encryptionKey: acgs_security_encryption_key_32_chars
 xpack.reporting.encryptionKey: acgs_reporting_encryption_key_32_chars

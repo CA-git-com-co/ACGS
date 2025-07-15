@@ -311,7 +311,7 @@ docker exec acgs_postgres pg_dump -U acgs_user acgs_pgp_db > "$BACKUP_DIR/databa
 
 # Backup configuration files
 echo "Backing up configuration files..."
-cp .env* "$BACKUP_DIR/" 2>/dev/null || true
+cp config/environments/development.env* "$BACKUP_DIR/" 2>/dev/null || true
 cp docker-compose.yml "$BACKUP_DIR/"
 cp -r alembic/ "$BACKUP_DIR/"
 

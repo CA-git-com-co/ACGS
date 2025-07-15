@@ -93,7 +93,7 @@ async def verify_policies(
 
     fetched_rules_from_integrity = (
         await integrity_service_client.get_policy_rules_by_ids(
-            rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+            rule_ids=rule_ids_to_fetch, auth_token=os.environ.get("AUTH_TOKEN")
         )
     )
     if len(fetched_rules_from_integrity) != len(rule_ids_to_fetch):
@@ -176,7 +176,7 @@ async def verify_policies(
             updated_rule = await integrity_service_client.update_policy_rule_status(
                 rule_id=result.policy_rule_id,
                 status=result.status,  # "verified" or "failed"
-                auth_token=INTEGRITY_SERVICE_MOCK_TOKEN,
+                auth_token=os.environ.get("AUTH_TOKEN")
             )
             if not updated_rule:
                 result.message = (
@@ -229,7 +229,7 @@ async def tiered_verification(
     rule_ids_to_fetch = [ref.id for ref in request_data.policy_rule_refs]
 
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=rule_ids_to_fetch, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        rule_ids=rule_ids_to_fetch, auth_token=os.environ.get("AUTH_TOKEN")
     )
 
     if len(fetched_rules) != len(rule_ids_to_fetch):
@@ -279,7 +279,7 @@ async def safety_property_check(
     # For this endpoint, we'll check safety properties against all active policy rules
     # In a real implementation, you might want to specify which rules to check
     all_rules = await integrity_service_client.get_all_policy_rules(
-        auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        auth_token=os.environ.get("AUTH_TOKEN")
     )
 
     # Perform safety property checking
@@ -314,7 +314,7 @@ async def conflict_detection(
         # For demonstration, we'll fetch all rules and filter by a hypothetical category
         # In practice, you'd have proper rule set management
         all_rules = await integrity_service_client.get_all_policy_rules(
-            auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+            auth_token=os.environ.get("AUTH_TOKEN")
         )
 
         # Simple filtering - in practice, you'd have proper rule set categorization
@@ -343,7 +343,7 @@ async def get_validation_status(
     # Fetch the rule
     try:
         rules = await integrity_service_client.get_policy_rules_by_ids(
-            rule_ids=[rule_id], auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+            rule_ids=[rule_id], auth_token=os.environ.get("AUTH_TOKEN")
         )
 
         if not rules:
@@ -890,7 +890,7 @@ async def bias_detection_analysis(
 
     # Fetch Policy Rules from Integrity Service
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=request_data.policy_rule_ids, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        rule_ids=request_data.policy_rule_ids, auth_token=os.environ.get("AUTH_TOKEN")
     )
 
     if len(fetched_rules) != len(request_data.policy_rule_ids):
@@ -932,7 +932,7 @@ async def fairness_validation_analysis(
 
     # Fetch Policy Rules from Integrity Service
     fetched_rules = await integrity_service_client.get_policy_rules_by_ids(
-        rule_ids=request_data.policy_rule_ids, auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+        rule_ids=request_data.policy_rule_ids, auth_token=os.environ.get("AUTH_TOKEN")
     )
 
     if len(fetched_rules) != len(request_data.policy_rule_ids):

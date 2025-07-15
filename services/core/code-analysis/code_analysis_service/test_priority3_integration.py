@@ -75,7 +75,7 @@ class ACGSIntegrationTester:
                     port=self.postgresql_port,
                     database="acgs",
                     user="acgs_user",
-                    password="test_password",
+                    password=os.environ.get("PASSWORD"),
                 )
 
                 # Test basic query

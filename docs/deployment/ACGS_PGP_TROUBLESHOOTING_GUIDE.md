@@ -195,7 +195,7 @@ docker ps | grep -E "(postgres|redis|opa)"
 
    ```bash
    # Verify environment variables
-   source config/env/.env
+   source config/env/config/environments/development.env
    echo $CONSTITUTIONAL_HASH
 
    # Check service configuration
@@ -303,7 +303,7 @@ cat config/ai-models/model-config.yaml
 
    ```bash
    # Update environment variables
-   nano config/env/.env
+   nano config/env/config/environments/development.env
 
    # Restart services to pick up new configuration
    ./scripts/start_all_services.sh

@@ -1,11 +1,11 @@
 from fastapi import FastAPI
-from shared.middleware.constitutional_validation import (
+from services.shared.middleware.constitutional_validation import (
     ConstitutionalValidationMiddleware,
 )
-from shared.middleware.enhanced_auth_middleware import EnhancedAuthMiddleware
-from shared.middleware.prometheus_metrics_middleware import setup_prometheus_middleware
-from shared.performance.performance_monitoring import track_performance_metrics
-from shared.validation.constitutional_validator import CONSTITUTIONAL_HASH
+from services.shared.middleware.enhanced_auth_middleware import EnhancedAuthMiddleware
+from services.shared.middleware.prometheus_metrics_middleware import setup_prometheus_middleware
+from services.shared.performance.performance_monitoring import track_performance_metrics
+from services.shared.validation.constitutional_validator import CONSTITUTIONAL_HASH
 
 app = FastAPI(
     title="Policy Governance Service",

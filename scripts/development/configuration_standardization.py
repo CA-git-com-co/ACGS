@@ -55,7 +55,7 @@ class ConfigurationStandardizer:
         self.project_root = Path(project_root)
         self.config_files: list[ConfigFile] = []
         self.standard_resource_limits = ResourceLimits()
-        self.environments = ["dev", "staging", "prod", "shared"]
+        selfconfig/environments/development.environments = ["dev", "staging", "prod", "shared"]
 
     def discover_config_files(self) -> list[ConfigFile]:
         """Discover all configuration files in the project."""
@@ -66,7 +66,7 @@ class ConfigurationStandardizer:
             "**/*config*.yaml",
             "**/*config*.yml",
             "**/config.py",
-            "**/.env*",
+            "**/config/environments/development.env*",
             "**/docker-compose*.yml",
         ]
 
@@ -161,7 +161,7 @@ class ConfigurationStandardizer:
                     return json.load(f)
                 if file_path.suffix.lower() in [".yaml", ".yml"]:
                     return yaml.safe_load(f)
-                # For .py, .env, etc., just return first 1000 chars
+                # For .py, config/environments/development.env, etc., just return first 1000 chars
                 content = f.read()
                 return content[:1000] if len(content) > 1000 else content
         except Exception:
@@ -184,9 +184,9 @@ class ConfigurationStandardizer:
         # Group by environment, service, type
         for config in self.config_files:
             # By environment
-            if config.environment not in analysis["by_environment"]:
-                analysis["by_environment"][config.environment] = []
-            analysis["by_environment"][config.environment].append(config.path)
+            if configconfig/environments/development.environment not in analysis["by_environment"]:
+                analysis["by_environment"][configconfig/environments/development.environment] = []
+            analysis["by_environment"][configconfig/environments/development.environment].append(config.path)
 
             # By service
             if config.service not in analysis["by_service"]:

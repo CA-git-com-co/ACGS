@@ -78,14 +78,14 @@ cd /opt/acgs-pgp
 git clone https://github.com/CA-git-com-co/ACGS.git .
 
 # Set up environment
-cp config/env/.env.production.example config/env/.env
+cp config/env/config/environments/developmentconfig/environments/production.env.backup.example config/env/config/environments/development.env
 ```
 
 #### 1.2 Database Setup
 
 ```bash
 # Deploy PostgreSQL with high availability
-docker-compose -f infrastructure/docker/docker-compose.production.yml up -d postgres
+docker-compose -f infrastructure/docker/config/docker/docker-compose.production.yml up -d postgres
 
 # Wait for database to be ready
 sleep 30
@@ -99,10 +99,10 @@ alembic upgrade head
 
 ```bash
 # Deploy Redis cluster
-docker-compose -f infrastructure/docker/docker-compose.production.yml up -d redis
+docker-compose -f infrastructure/docker/config/docker/docker-compose.production.yml up -d redis
 
 # Deploy OPA with policies
-docker-compose -f infrastructure/docker/docker-compose.production.yml up -d opa
+docker-compose -f infrastructure/docker/config/docker/docker-compose.production.yml up -d opa
 
 # Verify infrastructure health
 curl http://localhost:5432  # PostgreSQL
@@ -116,7 +116,7 @@ curl http://localhost:8181/health  # OPA
 
 ```bash
 # Deploy core constitutional services first
-docker-compose -f infrastructure/docker/docker-compose.production.yml up -d \
+docker-compose -f infrastructure/docker/config/docker/docker-compose.production.yml up -d \
   auth_service ac_service integrity_service fv_service gs_service pgc_service ec_service \
   consensus_engine multi_agent_coordinator worker_agents blackboard_service code_analysis_service context_service
 
@@ -266,7 +266,7 @@ top -bn1 | grep "Cpu(s)"
 sudo apt update && sudo apt upgrade -y
 
 # Update Docker images
-docker-compose -f infrastructure/docker/docker-compose.production.yml pull
+docker-compose -f infrastructure/docker/config/docker/docker-compose.production.yml pull
 
 # Update Node.js dependencies
 cd applications/governance-dashboard
@@ -438,7 +438,7 @@ groups:
 curl -X POST http://localhost:8000/admin/maintenance/enable
 
 # 3. Perform rolling updates
-docker-compose -f infrastructure/docker/docker-compose.production.yml \
+docker-compose -f infrastructure/docker/config/docker/docker-compose.production.yml \
   up -d --no-deps auth_service
 
 # 4. Validate service health

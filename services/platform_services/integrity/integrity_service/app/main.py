@@ -255,10 +255,10 @@ async def lifespan(app: FastAPI):
         await initialize_infrastructure()
         logger.info("✅ ACGS shared infrastructure initialized")
 
-        # Get database pool from shared manager
+        # Get database pool from services.shared manager
         db_manager = get_database_manager()
         db_pool = db_manager.pool
-        logger.info("✅ Database connection pool from shared manager")
+        logger.info("✅ Database connection pool from services.shared manager")
 
         # Initialize audit trail database schema
         from .core.persistent_audit_trail import (

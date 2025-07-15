@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ACGS Service Deployment Validation Script
-========================================
+========================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 Constitutional hash: cdd01ef066bc6cf2
 
@@ -29,7 +29,7 @@ import docker
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Default excludes for repo crawling
-DEFAULT_EXCLUDE = {".venv", "venv", ".env", ".tox", "__pycache__", "*.egg-info"}
+DEFAULT_EXCLUDE = {".venv", "venv", "config/environments/development.env", ".tox", "__pycache__", "*.egg-info"}
 
 # Service configuration
 ACGS_SERVICES = {

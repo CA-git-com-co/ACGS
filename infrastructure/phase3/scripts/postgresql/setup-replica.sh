@@ -24,7 +24,7 @@ rm -rf "$PGDATA"/*
 
 # Create base backup from primary
 echo "📥 Creating base backup from primary..."
-PGPASSWORD="$POSTGRES_REPLICATION_PASSWORD" pg_basebackup \
+PGPASSWORD=os.environ.get("PASSWORD") pg_basebackup \
     -h "$POSTGRES_PRIMARY_HOST" \
     -D "$PGDATA" \
     -U replicator \
@@ -52,7 +52,7 @@ cat > "$PGDATA/postgresql.auto.conf" <<EOF
 # Constitutional Hash: cdd01ef066bc6cf2
 
 # Primary connection
-primary_conninfo = 'host=$POSTGRES_PRIMARY_HOST port=5432 user=replicator password=$POSTGRES_REPLICATION_PASSWORD application_name=replica_$(hostname)'
+primary_conninfo = 'host=$POSTGRES_PRIMARY_HOST port=5432 user=replicator password=os.environ.get("PASSWORD")
 
 # Recovery settings
 recovery_target_timeline = 'latest'

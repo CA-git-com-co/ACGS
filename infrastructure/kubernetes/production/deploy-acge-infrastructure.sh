@@ -52,7 +52,7 @@ DEPLOYMENT_STEPS=(
 deploy_cluster() {
     log "Step 1: Deploying Kubernetes cluster..."
     
-    if ./infrastructure/kubernetes/production/deploy-cluster.sh; then
+    if ./infrastructure/kubernetes/production/deploy-cluster.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         success "Kubernetes cluster deployment completed"
     else
         error "Kubernetes cluster deployment failed"
@@ -65,7 +65,7 @@ deploy_namespaces() {
     
     # Apply namespace configurations
     kubectl apply -f infrastructure/kubernetes/blue-green/namespace.yaml
-    kubectl apply -f infrastructure/kubernetes/production/namespace.yaml
+    kubectl apply -f infrastructure/kubernetes/production/namespace.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Create Istio namespace
     kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -
@@ -124,10 +124,10 @@ deploy_monitoring_stack() {
     kubectl apply -f infrastructure/kubernetes/production/monitoring/acge-prometheus-config.yaml
     
     # Deploy alert rules
-    kubectl apply -f infrastructure/kubernetes/production/monitoring/acge-alert-rules.yaml
+    kubectl apply -f infrastructure/kubernetes/production/monitoring/acge-alert-rules.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Deploy Grafana dashboards
-    kubectl apply -f infrastructure/kubernetes/production/monitoring/acge-grafana-dashboards.yaml
+    kubectl apply -f infrastructure/kubernetes/production/monitoring/acge-grafana-dashboards.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Install Prometheus using Helm if available
     if command -v helm >/dev/null 2>&1; then
@@ -137,7 +137,7 @@ deploy_monitoring_stack() {
         helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
             --namespace acgs-shared \
             --create-namespace \
-            --values infrastructure/kubernetes/production/monitoring/prometheus-values.yaml \
+            --values infrastructure/kubernetes/production/monitoring/prometheus-values.yaml \  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             --wait
     fi
     
@@ -148,7 +148,7 @@ deploy_monitoring_stack() {
 deploy_elk_stack() {
     log "Step 7: Deploying ELK stack..."
     
-    kubectl apply -f infrastructure/kubernetes/production/monitoring/elk-stack.yaml
+    kubectl apply -f infrastructure/kubernetes/production/monitoring/elk-stack.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Wait for Elasticsearch to be ready
     kubectl wait --for=condition=ready pod -l app=elasticsearch -n acgs-shared --timeout=300s
@@ -160,7 +160,7 @@ deploy_elk_stack() {
 deploy_jaeger() {
     log "Step 8: Deploying Jaeger tracing..."
     
-    kubectl apply -f infrastructure/kubernetes/production/monitoring/jaeger-tracing.yaml
+    kubectl apply -f infrastructure/kubernetes/production/monitoring/jaeger-tracing.yaml  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Wait for Jaeger to be ready
     kubectl wait --for=condition=ready pod -l app=jaeger -n acgs-shared --timeout=300s
@@ -184,7 +184,7 @@ deploy_rollback_system() {
 validate_infrastructure() {
     log "Step 10: Validating infrastructure..."
     
-    if ./infrastructure/kubernetes/production/infrastructure-validation.sh; then
+    if ./infrastructure/kubernetes/production/infrastructure-validation.sh; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         success "Infrastructure validation passed"
     else
         error "Infrastructure validation failed"
@@ -215,9 +215,9 @@ display_summary() {
     log "Deployment summary:"
     
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "ACGE Phase 2 Infrastructure Deployment Summary"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Phase: $PHASE"
     echo "Deployment Time: $(date)"

@@ -70,13 +70,13 @@ class ACGSReorganizer:
         # Import path mappings for updates
         self.import_mappings = {
             "src.backend.shared": "services.shared",
-            "src.backend.ac_service": "services.core.constitutional_ai.ac_service",
-            "src.backend.gs_service": "services.core.governance_synthesis.gs_service",
-            "src.backend.pgc_service": "services.core.policy_governance.pgc_service",
-            "src.backend.fv_service": "services.core.formal_verification.fv_service",
+            "src.backend.ac_service": "services.core.constitutional-ai.ac_service",
+            "src.backend.gs_service": "services.core.governance-synthesis.gs_service",
+            "src.backend.pgc_service": "services.core.policy-governance.pgc_service",
+            "src.backend.fv_service": "services.core.formal-verification.fv_service",
             "src.backend.auth_service": "services.platform.authentication.auth_service",
             "src.backend.integrity_service": "services.platform.integrity.integrity_service",
-            "src.backend.ec_service": "services.core.evolutionary_computation.ec_service",
+            "src.backend.ec_service": "services.core.evolutionary-computation.ec_service",
             "shared.": "services.shared.",
             "backend.shared": "services.shared",
         }

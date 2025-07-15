@@ -19,7 +19,7 @@ groups:
           runbook_url: "https://docs.acgs.ai/runbooks/constitutional-compliance"
           constitutional_hash: "cdd01ef066bc6cf2"
 
-      - alert: ConstitutionalComplianceCriticalPrediction
+      - alert: ConstitutionalComplianceCriticalPrediction  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         expr: acgs_constitutional_compliance_prediction{horizon_hours="6"} < 0.85
         for: 2m
         labels:

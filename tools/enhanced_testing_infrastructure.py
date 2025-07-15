@@ -118,7 +118,7 @@ class EnhancedTestingInfrastructure:
                     "tests/unit/",
                     "--cov=src",
                     "--cov-report=json:unit_coverage.json",
-                    "--cov-report=html:htmlcov/unit",
+                    "--cov-report=html:reports/coverage/htmlcov/unit",
                     "-v",
                     "--tb=short",
                 ],

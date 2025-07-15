@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from functools import lru_cache
 from typing import Any
 
-import aioredis
+import redis.asyncio as aioredis
 
 logger = logging.getLogger(__name__)
 

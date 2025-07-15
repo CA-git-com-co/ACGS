@@ -148,7 +148,7 @@ class CriticalActionItemsCoordinator:
         results = {"success": True, "fixes_applied": [], "errors": []}
 
         try:
-            # 1. Database connectivity fix (already applied via .env)
+            # 1. Database connectivity fix (already applied via config/environments/development.env)
             logger.info("🔧 Validating database connectivity fix")
             db_status = await self.validate_database_connectivity()
             results["fixes_applied"].append(f"Database connectivity: {db_status}")

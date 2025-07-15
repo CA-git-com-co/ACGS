@@ -123,9 +123,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Data Models
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 class ConstitutionalPrinciple(BaseModel):
@@ -204,9 +204,9 @@ class UnifiedComplianceResult(BaseModel):
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Core Components
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 class FormalVerificationEngine:
@@ -641,9 +641,9 @@ Timestamp: {datetime.now(timezone.utc).isoformat()}
             )
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Application Setup
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Application lifecycle management
 start_time = time.time()
@@ -770,9 +770,9 @@ formal_engine = FormalVerificationEngine()
 unified_engine = UnifiedComplianceEngine()
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # API Endpoints
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @app.get("/health")
@@ -818,9 +818,9 @@ async def root():
     }
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Constitutional AI Endpoints
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @app.post(
@@ -873,9 +873,9 @@ async def get_constitutional_principle(principle_id: str):
     return principle
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Formal Verification Endpoints
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @app.post("/api/v1/verification/verify", response_model=VerificationResult)
@@ -914,9 +914,9 @@ async def get_verification_capabilities():
     }
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Unified Compliance Endpoints
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @app.post("/api/v1/unified/compliance", response_model=UnifiedComplianceResult)

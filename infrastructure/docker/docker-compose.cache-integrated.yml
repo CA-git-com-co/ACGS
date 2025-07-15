@@ -10,7 +10,7 @@ services:
     container_name: acgs_postgres_cache_integrated
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs_pgp_db}
     volumes:
     - postgres_cache_data:/var/lib/postgresql/data
@@ -80,14 +80,14 @@ services:
       postgres_db:
         condition: service_healthy
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - POSTGRES_USER=${POSTGRES_USER:-acgs_user}
-    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-acgs_password}
+    - POSTGRES_PASSWORD=os.environ.get("PASSWORD")
     networks:
     - acgs-network
     command: "sh -c \"echo 'Waiting for database...' &&\n       chmod +x /app/shared/wait-for-postgres.sh\
       \ &&\n       /app/shared/wait-for-postgres.sh postgres_db ${POSTGRES_USER:-acgs_user}\
-      \ ${POSTGRES_PASSWORD:-acgs_password} &&\n       echo 'DB Ready' &&\n      \
+      \ ${POSTGRES_PASSWORD:os.environ.get("PASSWORD")DB Ready' &&\n      \
       \ echo 'Running Alembic migrations...' &&\n       alembic -c /app/alembic.ini\
       \ upgrade head &&\n       echo 'Migrations complete. Container will exit.'\"\
       \n"
@@ -97,9 +97,9 @@ services:
     ports:
     - 8000:8000
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
-    - SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ALGORITHM=${AUTH_SERVICE_ALGORITHM:-HS256}
     - ACCESS_TOKEN_EXPIRE_MINUTES=${AUTH_SERVICE_ACCESS_TOKEN_EXPIRE_MINUTES:-30}
     - REFRESH_TOKEN_EXPIRE_DAYS=${AUTH_SERVICE_REFRESH_TOKEN_EXPIRE_DAYS:-7}
@@ -138,8 +138,8 @@ services:
     ports:
     - 8001:8001
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - PYTHONPATH=/app:/app/shared
@@ -181,8 +181,8 @@ services:
     ports:
     - 8002:8002
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - PYTHONPATH=/app:/app/shared
@@ -219,7 +219,7 @@ services:
     - VERIFICATION_TOOL_ENDPOINT=${VERIFICATION_TOOL_ENDPOINT:-http://mock_verification_tool:80/verify}
     - AC_SERVICE_URL=http://ac_service:8001/api/v1
     - INTEGRITY_SERVICE_URL=http://integrity_service:8002/api/v1
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - PYTHONPATH=/app:/app/shared
@@ -259,7 +259,7 @@ services:
     - AC_SERVICE_URL=http://ac_service:8001/api/v1
     - INTEGRITY_SERVICE_URL=http://integrity_service:8002/api/v1
     - FV_SERVICE_URL=http://fv_service:8003/api/v1
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - PYTHONPATH=/app:/app/shared
@@ -306,7 +306,7 @@ services:
     - 8005:8005
     environment:
     - INTEGRITY_SERVICE_URL=http://integrity_service:8002/api/v1
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - PYTHONPATH=/app:/app/shared
@@ -344,10 +344,10 @@ services:
     ports:
     - 8006:8006
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres_db:5432/${POSTGRES_DB:-acgs_pgp_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - AC_SERVICE_URL=http://ac_service:8001/api/v1
     - GS_SERVICE_URL=http://gs_service:8004/api/v1
-    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - JWT_SECRET_KEY=${AUTH_SERVICE_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS:-http://localhost:3000,http://localhost:3001}
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - PYTHONPATH=/app:/app/shared

@@ -1,3 +1,7 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 import { z } from "zod"
 import { randomBytes } from "crypto"
 
@@ -43,7 +47,7 @@ export namespace Identifier {
 
   function randomBase62(length: number): string {
     const chars =
-      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     let result = ""
     const bytes = randomBytes(length)
     for (let i = 0; i < length; i++) {

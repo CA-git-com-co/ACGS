@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 Service Startup Script - Fixed Version
 # This script starts all 7 core services with proper path handling
@@ -131,9 +133,9 @@ echo -e "${BLUE}=== Starting core services ===${NC}"
 
 # Service definitions: name, path, port, main_file
 declare -a services=(
-    "auth_service|$PROJECT_ROOT/services/platform/authentication/auth_service|8000|simple_main.py"
+    "auth_service|$PROJECT_ROOT/services/platform/authentication/auth_service|8000|simple_main.py"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     "ac_service|$PROJECT_ROOT/services/core/constitutional-ai/ac_service/app|8001|main.py"
-    "integrity_service|$PROJECT_ROOT/services/platform/integrity/integrity_service/app|8002|main.py"
+    "integrity_service|$PROJECT_ROOT/services/platform/integrity/integrity_service/app|8002|main.py"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     "fv_service|$PROJECT_ROOT/services/core/formal-verification/fv_service|8003|main.py"
     "gs_service|$PROJECT_ROOT/services/core/governance-synthesis/gs_service/app|8004|main.py"
     "pgc_service|$PROJECT_ROOT/services/core/policy-governance/pgc_service/app|8005|main.py"

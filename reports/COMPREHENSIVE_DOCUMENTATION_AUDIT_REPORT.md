@@ -44,7 +44,7 @@ This comprehensive documentation audit evaluates the current state of ACGS docum
 - **Main README.md**: Comprehensive system overview, fully updated
 - **ACGS_UNIFIED_ARCHITECTURE_GUIDE.md**: Complete architectural documentation
 - **API_STANDARDIZATION_SUMMARY.md**: FastAPI template integration complete
-- **ACGS_DOCUMENTATION_INDEX.md**: Central documentation hub
+- **ACGS_docs/DOCUMENTATION_INDEX.md**: Central documentation hub
 
 #### 1.2.2 Service Documentation ⚠️
 **Production-Ready Services** (Requires validation):

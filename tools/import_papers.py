@@ -72,7 +72,7 @@ class PaperImporter:
                 port=self.db_config["DB_PORT"],
                 database=self.db_config["DB_NAME"],
                 user=self.db_config["DB_USER"],
-                password=self.db_config["DB_PASSWORD"],
+                password=os.environ.get("PASSWORD")DB_PASSWORD"],
             )
             logger.info("Database connection established")
         except Exception as e:
@@ -514,7 +514,7 @@ def main():
     args = parser.parse_args()
 
     # Load database configuration
-    config_path = args.config or (project_root / "database" / ".env")
+    config_path = args.config or (project_root / "database" / "config/environments/development.env")
     if config_path.exists():
         load_dotenv(config_path)
 

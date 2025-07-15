@@ -1,10 +1,12 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 Enterprise Artifact Management and Retention Policy Validator
 # Validates artifact upload/download patterns, retention policies, naming, and organization
 # requires: Proper artifact naming, 14-30 day retention, enterprise reporting artifacts
 # ensures: Comprehensive artifact management, proper retention policies, organized storage
-# sha256: c9f6e3a2b8d5f1e7c4a9b6f3e8c5a2d9f6e3c7a4b1d8f5e2c9b6a3f7e4c1a8b5
+# sha256: c9f6e3a2b8d5f1e7c4a9b6f3e8c5a2d9f6e3c7a4b1d8f5e2c9b6a3f7e4c1a8b5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 set -euo pipefail
 

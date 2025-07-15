@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 categories:
   legacy/unused: 40
   missing host directory: 106
@@ -106,7 +108,7 @@ category_breakdown_by_file:
     wrong relative root: 9
   infrastructure/docker/docker-compose.prod.yml:
     missing host directory: 6
-  infrastructure/docker/docker-compose.production.yml:
+  infrastructure/docker/config/docker/docker-compose.production.yml:
     missing host directory: 6
   infrastructure/docker/docker-compose.security.yml:
     wrong relative root: 1
@@ -145,15 +147,15 @@ category_breakdown_by_file:
     wrong relative root: 1
   infrastructure/kubernetes/deployment-scripts.yaml:
     wrong relative root: 1
-  infrastructure/kubernetes/operations/emergency-response.sh:
+  infrastructure/kubernetes/operations/emergency-response.sh:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
-  infrastructure/kubernetes/production/PRODUCTION_DEPLOYMENT_REPORT.md:
+  infrastructure/kubernetes/production/PRODUCTION_DEPLOYMENT_REPORT.md:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  infrastructure/kubernetes/production/deploy-acge-infrastructure.sh:
+  infrastructure/kubernetes/production/deploy-acge-infrastructure.sh:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
-  infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md:
+  infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
-  infrastructure/kubernetes/staging/staging-deployment.sh:
+  infrastructure/kubernetes/staging/staging-deployment.sh:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
   infrastructure/load-balancer/MONITORING_INTEGRATION.md:
     wrong relative root: 2
@@ -177,15 +179,15 @@ category_breakdown_by_file:
     wrong relative root: 8
   infrastructure/monitoring/docker-compose.monitoring.yml:
     wrong relative root: 5
-  infrastructure/monitoring/grafana/dashboards/README.md:
+  infrastructure/monitoring/grafana/dashboards/README.md:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
   infrastructure/monitoring/jaeger/docker-compose-jaeger.yml:
     wrong relative root: 2
-  infrastructure/monitoring/monitoring/docker-compose.yml:
+  infrastructure/monitoring/monitoring/docker-compose.yml:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 4
-  infrastructure/monitoring/runbooks/change_management_runbook.md:
+  infrastructure/monitoring/runbooks/change_management_runbook.md:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 39
-  infrastructure/monitoring/runbooks/incident_response_playbook.md:
+  infrastructure/monitoring/runbooks/incident_response_playbook.md:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 13
   infrastructure/monitoring/start-ai-governance-monitoring.sh:
     wrong relative root: 4
@@ -209,11 +211,11 @@ category_breakdown_by_file:
     wrong relative root: 1
   infrastructure/security/penetration_testing_framework.py:
     wrong relative root: 1
-  infrastructure/terraform/environments/development/main.tf:
+  infrastructure/terraform/environments/development/main.tf:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
-  infrastructure/terraform/environments/production/main.tf:
+  infrastructure/terraform/environments/production/main.tf:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 4
-  infrastructure/terraform/environments/staging/main.tf:
+  infrastructure/terraform/environments/staging/main.tf:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
   infrastructure/terraform/main.tf:
     wrong relative root: 8
@@ -229,11 +231,11 @@ category_breakdown_by_file:
     wrong relative root: 1
   opencode_source/packages/opencode/src/app/app.ts:
     wrong relative root: 4
-  opencode_source/packages/opencode/src/auth/anthropic.ts:
+  opencode_source/packages/opencode/src/auth/anthropic.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
-  opencode_source/packages/opencode/src/auth/copilot.ts:
+  opencode_source/packages/opencode/src/auth/copilot.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
-  opencode_source/packages/opencode/src/auth/github-copilot.ts:
+  opencode_source/packages/opencode/src/auth/github-copilot.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
   opencode_source/packages/opencode/src/auth/index.ts:
     wrong relative root: 1
@@ -241,31 +243,31 @@ category_breakdown_by_file:
     wrong relative root: 3
   opencode_source/packages/opencode/src/bus/index.ts:
     wrong relative root: 2
-  opencode_source/packages/opencode/src/cli/bootstrap.ts:
+  opencode_source/packages/opencode/src/cli/bootstrap.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 6
-  opencode_source/packages/opencode/src/cli/cmd/auth.ts:
+  opencode_source/packages/opencode/src/cli/cmd/auth.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 7
-  opencode_source/packages/opencode/src/cli/cmd/debug/file.ts:
+  opencode_source/packages/opencode/src/cli/cmd/debug/file.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/cli/cmd/debug/index.ts:
+  opencode_source/packages/opencode/src/cli/cmd/debug/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 6
-  opencode_source/packages/opencode/src/cli/cmd/debug/lsp.ts:
+  opencode_source/packages/opencode/src/cli/cmd/debug/lsp.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 5
-  opencode_source/packages/opencode/src/cli/cmd/debug/ripgrep.ts:
+  opencode_source/packages/opencode/src/cli/cmd/debug/ripgrep.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 4
-  opencode_source/packages/opencode/src/cli/cmd/debug/snapshot.ts:
+  opencode_source/packages/opencode/src/cli/cmd/debug/snapshot.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/cli/cmd/generate.ts:
+  opencode_source/packages/opencode/src/cli/cmd/generate.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
-  opencode_source/packages/opencode/src/cli/cmd/models.ts:
+  opencode_source/packages/opencode/src/cli/cmd/models.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/cli/cmd/run.ts:
+  opencode_source/packages/opencode/src/cli/cmd/run.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 9
-  opencode_source/packages/opencode/src/cli/cmd/serve.ts:
+  opencode_source/packages/opencode/src/cli/cmd/serve.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 5
-  opencode_source/packages/opencode/src/cli/cmd/tui.ts:
+  opencode_source/packages/opencode/src/cli/cmd/tui.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 12
-  opencode_source/packages/opencode/src/cli/cmd/upgrade.ts:
+  opencode_source/packages/opencode/src/cli/cmd/upgrade.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
   opencode_source/packages/opencode/src/cli/error.ts:
     wrong relative root: 3
@@ -273,25 +275,25 @@ category_breakdown_by_file:
     wrong relative root: 1
   opencode_source/packages/opencode/src/config/config.ts:
     wrong relative root: 7
-  opencode_source/packages/opencode/src/config/hooks.ts:
+  opencode_source/packages/opencode/src/config/hooks.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 6
   opencode_source/packages/opencode/src/file/fzf.ts:
     wrong relative root: 4
   opencode_source/packages/opencode/src/file/index.ts:
     wrong relative root: 3
-  opencode_source/packages/opencode/src/file/ripgrep.ts:
+  opencode_source/packages/opencode/src/file/ripgrep.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 4
   opencode_source/packages/opencode/src/file/time.ts:
     wrong relative root: 2
   opencode_source/packages/opencode/src/file/watch.ts:
     wrong relative root: 4
-  opencode_source/packages/opencode/src/format/formatter.ts:
+  opencode_source/packages/opencode/src/format/formatter.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
-  opencode_source/packages/opencode/src/format/index.ts:
+  opencode_source/packages/opencode/src/format/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 5
   opencode_source/packages/opencode/src/index.ts:
     wrong relative root: 13
-  opencode_source/packages/opencode/src/installation/index.ts:
+  opencode_source/packages/opencode/src/installation/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   opencode_source/packages/opencode/src/lsp/client.ts:
     wrong relative root: 7
@@ -301,25 +303,25 @@ category_breakdown_by_file:
     wrong relative root: 4
   opencode_source/packages/opencode/src/mcp/index.ts:
     wrong relative root: 6
-  opencode_source/packages/opencode/src/permission/index.ts:
+  opencode_source/packages/opencode/src/permission/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/provider/models.ts:
+  opencode_source/packages/opencode/src/provider/models.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/provider/provider.ts:
+  opencode_source/packages/opencode/src/provider/provider.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 21
-  opencode_source/packages/opencode/src/server/server.ts:
+  opencode_source/packages/opencode/src/server/server.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 12
-  opencode_source/packages/opencode/src/session/index.ts:
+  opencode_source/packages/opencode/src/session/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 20
-  opencode_source/packages/opencode/src/session/message.ts:
+  opencode_source/packages/opencode/src/session/message.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/session/system.ts:
+  opencode_source/packages/opencode/src/session/system.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 9
-  opencode_source/packages/opencode/src/share/share.ts:
+  opencode_source/packages/opencode/src/share/share.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 5
-  opencode_source/packages/opencode/src/snapshot/index.ts:
+  opencode_source/packages/opencode/src/snapshot/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  opencode_source/packages/opencode/src/storage/storage.ts:
+  opencode_source/packages/opencode/src/storage/storage.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   opencode_source/packages/opencode/src/tool/bash.ts:
     wrong relative root: 2
@@ -335,7 +337,7 @@ category_breakdown_by_file:
     wrong relative root: 3
   opencode_source/packages/opencode/src/tool/lsp-hover.ts:
     wrong relative root: 3
-  opencode_source/packages/opencode/src/tool/multiedit.ts:
+  opencode_source/packages/opencode/src/tool/multiedit.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   opencode_source/packages/opencode/src/tool/patch.ts:
     wrong relative root: 2
@@ -345,7 +347,7 @@ category_breakdown_by_file:
     wrong relative root: 4
   opencode_source/packages/opencode/src/tool/todo.ts:
     wrong relative root: 3
-  opencode_source/packages/opencode/src/tool/webfetch.ts:
+  opencode_source/packages/opencode/src/tool/webfetch.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
   opencode_source/packages/opencode/src/tool/write.ts:
     wrong relative root: 7
@@ -433,11 +435,11 @@ category_breakdown_by_file:
     wrong relative root: 1
   services/cli/opencode/src/acgs/index.ts:
     wrong relative root: 3
-  services/cli/opencode/src/acgs/middleware.ts:
+  services/cli/opencode/src/acgs/middleware.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
   services/cli/opencode/src/app/app.ts:
     wrong relative root: 4
-  services/cli/opencode/src/auth/anthropic.ts:
+  services/cli/opencode/src/auth/anthropic.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 1
   services/cli/opencode/src/auth/copilot.ts:
     wrong relative root: 2
@@ -453,19 +455,19 @@ category_breakdown_by_file:
     wrong relative root: 6
   services/cli/opencode/src/cli/cmd/auth.ts:
     wrong relative root: 7
-  services/cli/opencode/src/cli/cmd/debug/file.ts:
+  services/cli/opencode/src/cli/cmd/debug/file.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  services/cli/opencode/src/cli/cmd/debug/index.ts:
+  services/cli/opencode/src/cli/cmd/debug/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 6
-  services/cli/opencode/src/cli/cmd/debug/lsp.ts:
+  services/cli/opencode/src/cli/cmd/debug/lsp.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 5
-  services/cli/opencode/src/cli/cmd/debug/ripgrep.ts:
+  services/cli/opencode/src/cli/cmd/debug/ripgrep.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 4
-  services/cli/opencode/src/cli/cmd/debug/snapshot.ts:
+  services/cli/opencode/src/cli/cmd/debug/snapshot.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  services/cli/opencode/src/cli/cmd/generate.ts:
+  services/cli/opencode/src/cli/cmd/generate.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
-  services/cli/opencode/src/cli/cmd/models.ts:
+  services/cli/opencode/src/cli/cmd/models.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   services/cli/opencode/src/cli/cmd/run.ts:
     wrong relative root: 10
@@ -473,7 +475,7 @@ category_breakdown_by_file:
     wrong relative root: 5
   services/cli/opencode/src/cli/cmd/tui.ts:
     wrong relative root: 12
-  services/cli/opencode/src/cli/cmd/upgrade.ts:
+  services/cli/opencode/src/cli/cmd/upgrade.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
   services/cli/opencode/src/cli/error.ts:
     wrong relative root: 3
@@ -493,13 +495,13 @@ category_breakdown_by_file:
     wrong relative root: 2
   services/cli/opencode/src/file/watch.ts:
     wrong relative root: 4
-  services/cli/opencode/src/format/formatter.ts:
+  services/cli/opencode/src/format/formatter.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 2
   services/cli/opencode/src/format/index.ts:
     wrong relative root: 5
   services/cli/opencode/src/index.ts:
     wrong relative root: 15
-  services/cli/opencode/src/installation/index.ts:
+  services/cli/opencode/src/installation/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   services/cli/opencode/src/lsp/client.ts:
     wrong relative root: 7
@@ -509,25 +511,25 @@ category_breakdown_by_file:
     wrong relative root: 4
   services/cli/opencode/src/mcp/index.ts:
     wrong relative root: 6
-  services/cli/opencode/src/permission/index.ts:
+  services/cli/opencode/src/permission/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  services/cli/opencode/src/provider/models.ts:
+  services/cli/opencode/src/provider/models.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  services/cli/opencode/src/provider/provider.ts:
+  services/cli/opencode/src/provider/provider.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 21
   services/cli/opencode/src/server/server.ts:
     wrong relative root: 12
   services/cli/opencode/src/session/index.ts:
     wrong relative root: 20
-  services/cli/opencode/src/session/message.ts:
+  services/cli/opencode/src/session/message.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  services/cli/opencode/src/session/system.ts:
+  services/cli/opencode/src/session/system.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 9
   services/cli/opencode/src/share/share.ts:
     wrong relative root: 5
-  services/cli/opencode/src/snapshot/index.ts:
+  services/cli/opencode/src/snapshot/index.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
-  services/cli/opencode/src/storage/storage.ts:
+  services/cli/opencode/src/storage/storage.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   services/cli/opencode/src/tool/bash.ts:
     wrong relative root: 2
@@ -543,7 +545,7 @@ category_breakdown_by_file:
     wrong relative root: 3
   services/cli/opencode/src/tool/lsp-hover.ts:
     wrong relative root: 3
-  services/cli/opencode/src/tool/multiedit.ts:
+  services/cli/opencode/src/tool/multiedit.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 3
   services/cli/opencode/src/tool/patch.ts:
     wrong relative root: 2
@@ -755,7 +757,7 @@ category_breakdown_by_file:
     wrong relative root: 1
   tools/mcp-inspector/client/src/lib/constants.ts:
     wrong relative root: 1
-  tools/mcp-inspector/client/src/lib/hooks/useConnection.ts:
+  tools/mcp-inspector/client/src/lib/hooks/useConnection.ts:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     wrong relative root: 5
   tools/mcp-inspector/client/src/lib/oauth-state-machine.ts:
     wrong relative root: 2
@@ -961,7 +963,7 @@ top_problematic_compose_files:
   infrastructure/docker/docker-compose.ocr.yml: 2
   infrastructure/docker/docker-compose.operational-excellence.yml: 9
   infrastructure/docker/docker-compose.prod.yml: 6
-  infrastructure/docker/docker-compose.production.yml: 6
+  infrastructure/docker/config/docker/docker-compose.production.yml: 6
   infrastructure/docker/docker-compose.security.yml: 1
   infrastructure/docker/docker-compose.staging.yml: 4
   infrastructure/docker/docker-compose.testing.yml: 6
@@ -980,11 +982,11 @@ top_problematic_compose_files:
   infrastructure/kubernetes/blue-green/migrate-integrity-service.sh: 1
   infrastructure/kubernetes/blue-green/migrate-pgc-service.sh: 1
   infrastructure/kubernetes/deployment-scripts.yaml: 1
-  infrastructure/kubernetes/operations/emergency-response.sh: 1
-  infrastructure/kubernetes/production/PRODUCTION_DEPLOYMENT_REPORT.md: 3
-  infrastructure/kubernetes/production/deploy-acge-infrastructure.sh: 2
-  infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md: 1
-  infrastructure/kubernetes/staging/staging-deployment.sh: 1
+  infrastructure/kubernetes/operations/emergency-response.sh: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/kubernetes/production/PRODUCTION_DEPLOYMENT_REPORT.md: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/kubernetes/production/deploy-acge-infrastructure.sh: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/kubernetes/staging/STAGING_DEPLOYMENT_SIMULATION.md: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/kubernetes/staging/staging-deployment.sh: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   infrastructure/load-balancer/MONITORING_INTEGRATION.md: 2
   infrastructure/load-balancer/docker-compose.haproxy.yml: 4
   infrastructure/monitoring/METRICS_DOCUMENTATION.md: 1
@@ -996,11 +998,11 @@ top_problematic_compose_files:
   infrastructure/monitoring/docker-compose.ai-governance.yml: 12
   infrastructure/monitoring/docker-compose.elk-security.yml: 8
   infrastructure/monitoring/docker-compose.monitoring.yml: 5
-  infrastructure/monitoring/grafana/dashboards/README.md: 1
+  infrastructure/monitoring/grafana/dashboards/README.md: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   infrastructure/monitoring/jaeger/docker-compose-jaeger.yml: 2
-  infrastructure/monitoring/monitoring/docker-compose.yml: 4
-  infrastructure/monitoring/runbooks/change_management_runbook.md: 39
-  infrastructure/monitoring/runbooks/incident_response_playbook.md: 13
+  infrastructure/monitoring/monitoring/docker-compose.yml: 4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/monitoring/runbooks/change_management_runbook.md: 39  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/monitoring/runbooks/incident_response_playbook.md: 13  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   infrastructure/monitoring/start-ai-governance-monitoring.sh: 4
   infrastructure/observability/docker-compose.observability.yml: 11
   infrastructure/opa/docker-compose.opa.yml: 3
@@ -1011,9 +1013,9 @@ top_problematic_compose_files:
   infrastructure/redis/redis-cluster-setup.sh: 1
   infrastructure/security/ddos_protection.py: 1
   infrastructure/security/penetration_testing_framework.py: 1
-  infrastructure/terraform/environments/development/main.tf: 1
-  infrastructure/terraform/environments/production/main.tf: 4
-  infrastructure/terraform/environments/staging/main.tf: 2
+  infrastructure/terraform/environments/development/main.tf: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/terraform/environments/production/main.tf: 4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  infrastructure/terraform/environments/staging/main.tf: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   infrastructure/terraform/main.tf: 8
   opencode_source/opencode.json: 1
   opencode_source/package.json: 1
@@ -1021,52 +1023,52 @@ top_problematic_compose_files:
   opencode_source/packages/opencode/script/publish.ts: 28
   opencode_source/packages/opencode/script/schema.ts: 1
   opencode_source/packages/opencode/src/app/app.ts: 4
-  opencode_source/packages/opencode/src/auth/anthropic.ts: 1
-  opencode_source/packages/opencode/src/auth/copilot.ts: 2
-  opencode_source/packages/opencode/src/auth/github-copilot.ts: 2
+  opencode_source/packages/opencode/src/auth/anthropic.ts: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/auth/copilot.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/auth/github-copilot.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/auth/index.ts: 1
   opencode_source/packages/opencode/src/bun/index.ts: 3
   opencode_source/packages/opencode/src/bus/index.ts: 2
-  opencode_source/packages/opencode/src/cli/bootstrap.ts: 6
-  opencode_source/packages/opencode/src/cli/cmd/auth.ts: 7
-  opencode_source/packages/opencode/src/cli/cmd/debug/file.ts: 3
-  opencode_source/packages/opencode/src/cli/cmd/debug/index.ts: 6
-  opencode_source/packages/opencode/src/cli/cmd/debug/lsp.ts: 5
-  opencode_source/packages/opencode/src/cli/cmd/debug/ripgrep.ts: 4
-  opencode_source/packages/opencode/src/cli/cmd/debug/snapshot.ts: 3
-  opencode_source/packages/opencode/src/cli/cmd/generate.ts: 1
-  opencode_source/packages/opencode/src/cli/cmd/models.ts: 3
-  opencode_source/packages/opencode/src/cli/cmd/run.ts: 9
-  opencode_source/packages/opencode/src/cli/cmd/serve.ts: 5
-  opencode_source/packages/opencode/src/cli/cmd/tui.ts: 12
-  opencode_source/packages/opencode/src/cli/cmd/upgrade.ts: 2
+  opencode_source/packages/opencode/src/cli/bootstrap.ts: 6  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/auth.ts: 7  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/debug/file.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/debug/index.ts: 6  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/debug/lsp.ts: 5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/debug/ripgrep.ts: 4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/debug/snapshot.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/generate.ts: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/models.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/run.ts: 9  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/serve.ts: 5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/tui.ts: 12  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/cli/cmd/upgrade.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/cli/error.ts: 3
   opencode_source/packages/opencode/src/cli/ui.ts: 1
   opencode_source/packages/opencode/src/config/config.ts: 7
-  opencode_source/packages/opencode/src/config/hooks.ts: 6
+  opencode_source/packages/opencode/src/config/hooks.ts: 6  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/file/fzf.ts: 4
   opencode_source/packages/opencode/src/file/index.ts: 3
-  opencode_source/packages/opencode/src/file/ripgrep.ts: 4
+  opencode_source/packages/opencode/src/file/ripgrep.ts: 4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/file/time.ts: 2
   opencode_source/packages/opencode/src/file/watch.ts: 4
-  opencode_source/packages/opencode/src/format/formatter.ts: 2
-  opencode_source/packages/opencode/src/format/index.ts: 5
+  opencode_source/packages/opencode/src/format/formatter.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/format/index.ts: 5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/index.ts: 13
-  opencode_source/packages/opencode/src/installation/index.ts: 3
+  opencode_source/packages/opencode/src/installation/index.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/lsp/client.ts: 7
   opencode_source/packages/opencode/src/lsp/index.ts: 5
   opencode_source/packages/opencode/src/lsp/server.ts: 4
   opencode_source/packages/opencode/src/mcp/index.ts: 6
-  opencode_source/packages/opencode/src/permission/index.ts: 3
-  opencode_source/packages/opencode/src/provider/models.ts: 3
-  opencode_source/packages/opencode/src/provider/provider.ts: 21
-  opencode_source/packages/opencode/src/server/server.ts: 12
-  opencode_source/packages/opencode/src/session/index.ts: 20
-  opencode_source/packages/opencode/src/session/message.ts: 3
-  opencode_source/packages/opencode/src/session/system.ts: 9
-  opencode_source/packages/opencode/src/share/share.ts: 5
-  opencode_source/packages/opencode/src/snapshot/index.ts: 3
-  opencode_source/packages/opencode/src/storage/storage.ts: 3
+  opencode_source/packages/opencode/src/permission/index.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/provider/models.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/provider/provider.ts: 21  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/server/server.ts: 12  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/session/index.ts: 20  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/session/message.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/session/system.ts: 9  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/share/share.ts: 5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/snapshot/index.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  opencode_source/packages/opencode/src/storage/storage.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/tool/bash.ts: 2
   opencode_source/packages/opencode/src/tool/edit.ts: 7
   opencode_source/packages/opencode/src/tool/glob.ts: 3
@@ -1074,12 +1076,12 @@ top_problematic_compose_files:
   opencode_source/packages/opencode/src/tool/ls.ts: 2
   opencode_source/packages/opencode/src/tool/lsp-diagnostics.ts: 3
   opencode_source/packages/opencode/src/tool/lsp-hover.ts: 3
-  opencode_source/packages/opencode/src/tool/multiedit.ts: 3
+  opencode_source/packages/opencode/src/tool/multiedit.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/tool/patch.ts: 2
   opencode_source/packages/opencode/src/tool/read.ts: 4
   opencode_source/packages/opencode/src/tool/task.ts: 4
   opencode_source/packages/opencode/src/tool/todo.ts: 3
-  opencode_source/packages/opencode/src/tool/webfetch.ts: 1
+  opencode_source/packages/opencode/src/tool/webfetch.ts: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   opencode_source/packages/opencode/src/tool/write.ts: 7
   opencode_source/packages/opencode/src/util/error.ts: 1
   opencode_source/packages/opencode/src/util/log.ts: 1
@@ -1123,9 +1125,9 @@ top_problematic_compose_files:
   services/cli/opencode/script/publish.ts: 28
   services/cli/opencode/script/schema.ts: 1
   services/cli/opencode/src/acgs/index.ts: 3
-  services/cli/opencode/src/acgs/middleware.ts: 2
+  services/cli/opencode/src/acgs/middleware.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/app/app.ts: 4
-  services/cli/opencode/src/auth/anthropic.ts: 1
+  services/cli/opencode/src/auth/anthropic.ts: 1  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/auth/copilot.ts: 2
   services/cli/opencode/src/auth/github-copilot.ts: 2
   services/cli/opencode/src/auth/index.ts: 1
@@ -1133,17 +1135,17 @@ top_problematic_compose_files:
   services/cli/opencode/src/bus/index.ts: 2
   services/cli/opencode/src/cli/bootstrap.ts: 6
   services/cli/opencode/src/cli/cmd/auth.ts: 7
-  services/cli/opencode/src/cli/cmd/debug/file.ts: 3
-  services/cli/opencode/src/cli/cmd/debug/index.ts: 6
-  services/cli/opencode/src/cli/cmd/debug/lsp.ts: 5
-  services/cli/opencode/src/cli/cmd/debug/ripgrep.ts: 4
-  services/cli/opencode/src/cli/cmd/debug/snapshot.ts: 3
-  services/cli/opencode/src/cli/cmd/generate.ts: 2
-  services/cli/opencode/src/cli/cmd/models.ts: 3
+  services/cli/opencode/src/cli/cmd/debug/file.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/cli/cmd/debug/index.ts: 6  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/cli/cmd/debug/lsp.ts: 5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/cli/cmd/debug/ripgrep.ts: 4  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/cli/cmd/debug/snapshot.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/cli/cmd/generate.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/cli/cmd/models.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/cli/cmd/run.ts: 10
   services/cli/opencode/src/cli/cmd/serve.ts: 5
   services/cli/opencode/src/cli/cmd/tui.ts: 12
-  services/cli/opencode/src/cli/cmd/upgrade.ts: 2
+  services/cli/opencode/src/cli/cmd/upgrade.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/cli/error.ts: 3
   services/cli/opencode/src/cli/ui.ts: 1
   services/cli/opencode/src/config/config.ts: 7
@@ -1153,24 +1155,24 @@ top_problematic_compose_files:
   services/cli/opencode/src/file/ripgrep.ts: 4
   services/cli/opencode/src/file/time.ts: 2
   services/cli/opencode/src/file/watch.ts: 4
-  services/cli/opencode/src/format/formatter.ts: 2
+  services/cli/opencode/src/format/formatter.ts: 2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/format/index.ts: 5
   services/cli/opencode/src/index.ts: 15
-  services/cli/opencode/src/installation/index.ts: 3
+  services/cli/opencode/src/installation/index.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/lsp/client.ts: 7
   services/cli/opencode/src/lsp/index.ts: 5
   services/cli/opencode/src/lsp/server.ts: 4
   services/cli/opencode/src/mcp/index.ts: 6
-  services/cli/opencode/src/permission/index.ts: 3
-  services/cli/opencode/src/provider/models.ts: 3
-  services/cli/opencode/src/provider/provider.ts: 21
+  services/cli/opencode/src/permission/index.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/provider/models.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/provider/provider.ts: 21  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/server/server.ts: 12
   services/cli/opencode/src/session/index.ts: 20
-  services/cli/opencode/src/session/message.ts: 3
-  services/cli/opencode/src/session/system.ts: 9
+  services/cli/opencode/src/session/message.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/session/system.ts: 9  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/share/share.ts: 5
-  services/cli/opencode/src/snapshot/index.ts: 3
-  services/cli/opencode/src/storage/storage.ts: 3
+  services/cli/opencode/src/snapshot/index.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+  services/cli/opencode/src/storage/storage.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/tool/bash.ts: 2
   services/cli/opencode/src/tool/edit.ts: 7
   services/cli/opencode/src/tool/glob.ts: 3
@@ -1178,7 +1180,7 @@ top_problematic_compose_files:
   services/cli/opencode/src/tool/ls.ts: 2
   services/cli/opencode/src/tool/lsp-diagnostics.ts: 3
   services/cli/opencode/src/tool/lsp-hover.ts: 3
-  services/cli/opencode/src/tool/multiedit.ts: 3
+  services/cli/opencode/src/tool/multiedit.ts: 3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   services/cli/opencode/src/tool/patch.ts: 2
   services/cli/opencode/src/tool/read.ts: 4
   services/cli/opencode/src/tool/task.ts: 4
@@ -1283,7 +1285,7 @@ top_problematic_compose_files:
   tools/mcp-inspector/client/bin/client.js: 1
   tools/mcp-inspector/client/src/lib/auth.ts: 1
   tools/mcp-inspector/client/src/lib/constants.ts: 1
-  tools/mcp-inspector/client/src/lib/hooks/useConnection.ts: 5
+  tools/mcp-inspector/client/src/lib/hooks/useConnection.ts: 5  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   tools/mcp-inspector/client/src/lib/oauth-state-machine.ts: 2
   tools/mcp-inspector/client/src/utils/__tests__/escapeUnicode.test.ts: 1
   tools/mcp-inspector/client/src/utils/__tests__/jsonUtils.test.ts: 1

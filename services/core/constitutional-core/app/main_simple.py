@@ -1,5 +1,24 @@
 #!/usr/bin/env python3
 """
+
+# Multi-tenant security enhancement
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+class TenantContext:
+    """Tenant context for multi-tenant operations."""
+
+    def __init__(self, tenant_id: str):
+        self.tenant_id = tenant_id
+        self.constitutional_hash = CONSTITUTIONAL_HASH
+
+    def validate_tenant_access(self, resource_tenant_id: str) -> bool:
+        """Validate tenant access to a resource."""
+        return self.tenant_id == resource_tenant_id
+
+    def get_tenant_id(self) -> str:
+        """Get the current tenant ID."""
+        return self.tenant_id
+
 Constitutional Core Service - Simplified Version for Testing
 Constitutional Hash: cdd01ef066bc6cf2
 
@@ -67,9 +86,9 @@ app.add_middleware(
 )
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Pydantic Models
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 class HealthResponse(BaseModel):
@@ -105,9 +124,9 @@ class ConstitutionalValidationResult(BaseModel):
     metadata: dict[str, Any] = {}
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # API Endpoints
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @app.get("/health", response_model=HealthResponse)

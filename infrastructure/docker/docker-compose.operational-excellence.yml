@@ -131,7 +131,7 @@ services:
     image: grafana/grafana:9.3.0
     container_name: acgs_grafana_enhanced
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=admin123
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
     - GF_PROVISIONING_PATH=/etc/grafana/provisioning

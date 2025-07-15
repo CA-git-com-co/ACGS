@@ -8,7 +8,7 @@ services:
     environment:
     - ENVIRONMENT=testing
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-test:6379/0
     - LOG_LEVEL=DEBUG
     ports:
@@ -35,7 +35,7 @@ services:
     environment:
     - ENVIRONMENT=testing
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - OPA_URL=http://opa-test:8181
     ports:
     - 18001:8001
@@ -150,7 +150,7 @@ services:
     - ENVIRONMENT=testing
     - AUTH_SERVICE_URL=http://auth-service-test:8000
     - AC_SERVICE_URL=http://ac-service-test:8001
-    - DATABASE_URL=postgresql://test:test@postgresql-test:5432/acgs_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     volumes:
     - ../../tests:/tests
     - test_results:/test-results

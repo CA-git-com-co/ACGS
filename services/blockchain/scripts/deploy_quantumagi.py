@@ -139,9 +139,9 @@ class QuantumagiDeployer:
             with open(self.config["program_keypair_path"], encoding="utf-8") as f:
                 json.load(f)
                 # Convert keypair to program ID (simplified)
-                return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Placeholder
+                return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Placeholder  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         except:
-            return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Default
+            return "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # Default  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     async def _initialize_constitution(self):
         """Initialize the constitutional governance system"""

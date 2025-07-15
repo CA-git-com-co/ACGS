@@ -54,7 +54,7 @@ Configure your GitHub webhook with the following settings:
 
 ### Environment Configuration
 
-Add to your `.env.acgs` file:
+Add to your `config/environments/developmentconfig/environments/acgs.env` file:
 
 ```bash
 # GitHub Webhook Configuration

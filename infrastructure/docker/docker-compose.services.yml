@@ -8,8 +8,8 @@ services:
     ports:
     - ${CONSTITUTIONAL_AI_PORT:-8001}:8000
     environment:
-    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/0
+    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - OPA_URL=http://opa:8181
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=constitutional-ai
@@ -45,8 +45,8 @@ services:
     ports:
     - ${INTEGRITY_PORT:-8200}:8000
     environment:
-    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/1
+    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=integrity
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -83,7 +83,7 @@ services:
     - INTEGRITY_URL=http://integrity:8000
     - GOVERNANCE_SYNTHESIS_URL=http://governance-synthesis:8000
     - AUTH_URL=http://auth:8000
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/2
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=api-gateway
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -119,8 +119,8 @@ services:
     ports:
     - ${GOVERNANCE_SYNTHESIS_PORT:-8400}:8000
     environment:
-    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/3
+    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - OPA_URL=http://opa:8181
     - NATS_URL=nats://nats:4222
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -159,8 +159,8 @@ services:
     ports:
     - ${AUTH_PORT:-8100}:8000
     environment:
-    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/4
+    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - SECRET_KEY=${SECRET_KEY}
     - JWT_SECRET_KEY=${JWT_SECRET_KEY}
     - CSRF_SECRET_KEY=${CSRF_SECRET_KEY}
@@ -196,8 +196,8 @@ services:
     ports:
     - ${CODE_ANALYSIS_PORT:-8007}:8000
     environment:
-    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/5
+    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=code-analysis
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -230,8 +230,8 @@ services:
     ports:
     - ${CONTEXT_PORT:-8012}:8000
     environment:
-    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:-acgs_dev_password}@postgres:5432/acgs
-    - REDIS_URL=redis://:${REDIS_PASSWORD:-acgs_dev_redis}@redis:6379/6
+    - DATABASE_URL=postgresql://acgs_user:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - REDIS_URL=redis://:${REDIS_PASSWORD:os.environ.get("PASSWORD")
     - NATS_URL=nats://nats:4222
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=context

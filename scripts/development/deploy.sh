@@ -191,7 +191,7 @@ check_prerequisites() {
 load_environment_config() {
     log_info "Loading environment configuration for $ENVIRONMENT..."
     
-    local config_file="config/environments/${ENVIRONMENT}.env"
+    local config_file="config/environments/${ENVIRONMENT}config/environments/development.env"
     if [[ -f "$config_file" ]]; then
         source "$config_file"
         log_success "Environment configuration loaded"

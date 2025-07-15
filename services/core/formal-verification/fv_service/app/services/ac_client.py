@@ -9,7 +9,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 # from services.shared.auth import get_service_token, get_auth_headers
-# from shared import get_config
+# from services.shared import get_config
 
 
 # Local auth and config stubs

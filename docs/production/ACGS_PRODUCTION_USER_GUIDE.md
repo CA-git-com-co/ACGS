@@ -38,10 +38,10 @@ Welcome to the Autonomous Coding Governance System (ACGS) production environment
 1. **Environment Configuration**
    ```bash
    # Copy production environment file
-   cp .env.production.example .env.production
+   cp config/environments/developmentconfig/environments/production.env.backup.example config/environments/developmentconfig/environments/production.env.backup
    
    # Edit with your production values
-   nano .env.production
+   nano config/environments/developmentconfig/environments/production.env.backup
    ```
 
 2. **Start Infrastructure Services**
@@ -65,7 +65,7 @@ Welcome to the Autonomous Coding Governance System (ACGS) production environment
 4. **Deploy ACGS Services**
    ```bash
    # Start all ACGS core services
-   docker compose -f docker-compose.production.yml up -d
+   docker compose -f config/docker/docker-compose.production.yml up -d
    
    # Check service health
    ./scripts/health_check.py

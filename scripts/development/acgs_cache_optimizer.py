@@ -22,7 +22,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Union
 
-import aioredis
+import redis.asyncio as aioredis
 from pydantic import BaseModel
 
 # Constitutional compliance

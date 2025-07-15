@@ -33,9 +33,9 @@ from config.database import DatabaseManager
 from config.settings import Settings, get_settings
 from main import app
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # PYTEST CONFIGURATION
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 def pytest_configure(config):
@@ -57,9 +57,9 @@ def event_loop():
     loop.close()
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # SETTINGS AND CONFIGURATION FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture(scope="session")
@@ -102,16 +102,16 @@ def test_settings() -> Settings:
         shutil.rmtree(test_db_dir)
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # DATABASE FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest_asyncio.fixture(scope="session")
 async def test_db_engine(test_settings):
     """Create test database engine"""
     # Use in-memory SQLite for fast testing
-    database_url = "sqlite+aiosqlite:///:memory:"
+    database_url = os.environ.get("DATABASE_URL")
 
     engine = create_async_engine(database_url, echo=False, pool_pre_ping=True)
 
@@ -154,9 +154,9 @@ async def test_db_manager(test_db_engine, test_settings) -> DatabaseManager:
     await db_manager.close()
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # CACHE FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest_asyncio.fixture
@@ -190,9 +190,9 @@ async def test_cache_service(test_settings) -> CacheService:
         yield cache_service
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # APPLICATION FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture
@@ -221,15 +221,15 @@ async def test_async_client(test_settings) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides.clear()
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # AUTHENTICATION FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture
 def mock_auth_token() -> str:
     """Mock JWT token for testing"""
-    return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidGVzdF91c2VyIiwidXNlcm5hbWUiOiJ0ZXN0X3VzZXIiLCJyb2xlcyI6WyJhZG1pbiJdLCJleHAiOjk5OTk5OTk5OTl9.test_signature"
+    return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoidGVzdF91c2VyIiwidXNlcm5hbWUiOiJ0ZXN0X3VzZXIiLCJyb2xlcyI6WyJhZG1pbiJdLCJleHAiOjk5OTk5OTk5OTl9.test_signature"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture
@@ -251,9 +251,9 @@ def mock_user_info() -> dict[str, Any]:
     }
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # TEST DATA FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture
@@ -304,7 +304,7 @@ def sample_javascript_code() -> str:
  */
 async function validateAuthToken(token) {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(token, processconfig/environments/development.env.JWT_SECRET);
         const user = await User.findById(decoded.userId);
         return user && user.isActive;
     } catch (error) {
@@ -379,9 +379,9 @@ def sample_dependencies() -> list[dict[str, Any]]:
     ]
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # PERFORMANCE TESTING FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture
@@ -414,9 +414,9 @@ def load_test_queries() -> list[str]:
     ]
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # MOCK SERVICE FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest_asyncio.fixture
@@ -459,9 +459,9 @@ async def mock_context_service(httpx_mock):
     )
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # CLEANUP FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture(autouse=True)
@@ -486,9 +486,9 @@ def cleanup_environment():
     get_settings.cache_clear()
 
 
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # CONSTITUTIONAL COMPLIANCE FIXTURES
-# ============================================================================
+# ============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @pytest.fixture

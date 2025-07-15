@@ -124,7 +124,7 @@ jobs:
         env:
           POSTGRES_DB: acgs_test
           POSTGRES_USER: acgs_test
-          POSTGRES_PASSWORD: acgs_test
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -159,10 +159,10 @@ jobs:
 
       - name: Set up test environment
         run: |
-          export DATABASE_URL="postgresql+asyncpg://acgs_test:acgs_test@localhost:5432/acgs_test"
+          export DATABASE_URL=osconfig/environments/development.environ.get("DATABASE_URL")
           export REDIS_URL="redis://localhost:6379/0"
           export CONSTITUTIONAL_HASH="${{ env.CONSTITUTIONAL_HASH }}"
-          export JWT_SECRET_KEY="test-secret-key-for-ci"
+          export JWT_SECRET_KEY="test-secret-key-for-ci"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
       - name: Run unit tests with coverage
         run: |
@@ -211,7 +211,7 @@ jobs:
         env:
           POSTGRES_DB: acgs_integration
           POSTGRES_USER: acgs_test
-          POSTGRES_PASSWORD: acgs_test
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -247,7 +247,7 @@ jobs:
       - name: Start ACGS services
         run: |
           echo "🚀 Starting ACGS services for integration testing..."
-          export DATABASE_URL="postgresql+asyncpg://acgs_test:acgs_test@localhost:5432/acgs_integration"
+          export DATABASE_URL=osconfig/environments/development.environ.get("DATABASE_URL")
           export REDIS_URL="redis://localhost:6379/1"
           export CONSTITUTIONAL_HASH="${{ env.CONSTITUTIONAL_HASH }}"
           

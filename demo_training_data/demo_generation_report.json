@@ -1,0 +1,51 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "generation_timestamp": "2025-07-14T00:51:20.379003+00:00",
+  "datasets_generated": {
+    "constitutional_ai": {
+      "path": "demo_training_data/constitutional_ai_demo.json",
+      "examples": 25,
+      "size_mb": 0.024521827697753906
+    },
+    "policy_governance": {
+      "path": "demo_training_data/policy_governance_demo.json",
+      "examples": 25,
+      "size_mb": 0.03913688659667969
+    },
+    "multi_agent_coordination": {
+      "path": "demo_training_data/multi_agent_coordination_demo.json",
+      "examples": 25,
+      "size_mb": 0.059055328369140625
+    },
+    "performance_optimization": {
+      "path": "demo_training_data/performance_optimization_demo.json",
+      "examples": 25,
+      "size_mb": 0.039073944091796875
+    },
+    "transformer_efficiency": {
+      "path": "demo_training_data/transformer_efficiency_demo.json",
+      "examples": 25,
+      "size_mb": 0.026594161987304688
+    },
+    "wina_optimization": {
+      "path": "demo_training_data/wina_optimization_demo.json",
+      "examples": 25,
+      "size_mb": 0.03044891357421875
+    }
+  },
+  "total_examples": 150,
+  "generation_time_seconds": 0.005843162536621094,
+  "demo_info": {
+    "purpose": "ACGS-2 Training Data Generation Demonstration",
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "datasets_included": [
+      "constitutional_ai",
+      "policy_governance",
+      "multi_agent_coordination",
+      "performance_optimization",
+      "transformer_efficiency",
+      "wina_optimization"
+    ],
+    "total_size_mb": 0.21883106231689453
+  }
+}

@@ -58,7 +58,7 @@ async def create_user(db: AsyncSession, *, obj_in: UserCreate) -> User:
     """Create a new user in the database."""
     db_obj = User(
         email=obj_in.email,
-        hashed_password=get_password_hash(obj_in.password),
+        hashed_password=os.environ.get("PASSWORD")
         full_name=getattr(obj_in, "full_name", None),  # Handle optional fields
         username=obj_in.username,
         is_active=True,  # New users active by default
@@ -76,8 +76,8 @@ async def update_user(db: AsyncSession, *, db_obj: User, obj_in: UserUpdate) -> 
     )  # Use model_dump for Pydantic V2
 
     if update_data.get("password"):
-        hashed_password = get_password_hash(update_data["password"])
-        db_obj.hashed_password = hashed_password
+        hashed_password = os.environ.get("PASSWORD")password"])
+        db_obj.hashed_password = os.environ.get("PASSWORD")
         del update_data["password"]
 
     for field_name, value in update_data.items():

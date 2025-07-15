@@ -38,7 +38,7 @@ pre-commit install
 
 # Set up environment variables
 echo "🔧 Setting up environment variables..."
-cp -n config/env/.env.example config/env/.env
+cp -n config/env/config/environments/developmentconfig/environments/example.env config/env/config/environments/development.env
 source scripts/set_service_env.sh
 
 # Start development services

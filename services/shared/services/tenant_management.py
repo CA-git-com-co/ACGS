@@ -282,7 +282,7 @@ class TenantManagementService:
                 name=request.name,
                 slug=request.slug,
                 description=request.description,
-                environment_type=request.environment_type,
+                environment_type=requestconfig/environments/development.environment_type,
                 tier=request.tier.value,
                 security_level=request.security_level.value,
                 max_users=max_users,

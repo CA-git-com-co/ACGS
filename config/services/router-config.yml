@@ -1,0 +1,143 @@
+# ACGS-2 Hybrid Inference Router Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+router:
+  enabled: true
+  primary_provider: true  # Use router as primary AI provider for all services
+  
+  # Service configuration
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  
+  # Model tier configuration
+  tiers:
+    tier_1_nano:
+      target_latency_ms: 50
+      cost_per_token: 0.00000005
+      models:
+        - "allam-2-7b"
+    
+    tier_2_fast:
+      target_latency_ms: 100
+      cost_per_token: 0.0000001
+      models:
+        - "llama-3.1-8b-instant"
+    
+    tier_3_balanced:
+      target_latency_ms: 200
+      cost_per_token: 0.0000005
+      models:
+        - "qwen/qwen3-32b"
+    
+    tier_4_premium:
+      target_latency_ms: 350
+      cost_per_token: 0.0000012
+      models:
+        - "moonshotai/kimi-k2-instruct"  # Primary reasoning model
+        - "llama-3.3-70b-versatile"
+    
+    tier_5_expert:
+      target_latency_ms: 500
+      cost_per_token: 0.000002
+      models:
+        - "deepseek-r1-distill-llama-70b"
+
+  # Kimi K2 specific configuration
+  kimi_k2:
+    model_id: "moonshotai/kimi-k2-instruct"
+    tier: "tier_4_premium"
+    specializations:
+      - "constitutional_reasoning"
+      - "governance_analysis"
+      - "agent_behavior_evaluation"
+      - "policy_validation"
+    constitutional_compliance_score: 0.94
+    context_window: 200000
+    
+  # Routing strategies
+  strategies:
+    constitutional_reasoning:
+      preferred_model: "moonshotai/kimi-k2-instruct"
+      fallback_models:
+        - "llama-3.3-70b-versatile"
+        - "qwen/qwen3-32b"
+    
+    fast:
+      preferred_tier: "tier_2_fast"
+      max_latency_ms: 100
+    
+    balanced:
+      cost_weight: 0.4
+      latency_weight: 0.3
+      quality_weight: 0.3
+    
+    premium:
+      preferred_tier: "tier_4_premium"
+      quality_threshold: 0.9
+
+  # Performance targets
+  performance:
+    target_p99_latency_ms: 5
+    target_throughput_rps: 100
+    target_cache_hit_rate: 0.85
+    constitutional_compliance_threshold: 0.95
+
+  # Caching configuration
+  cache:
+    enabled: true
+    redis_url: "${REDIS_URL:-redis://localhost:6379/0}"
+    ttl_seconds: 300
+    max_cache_size_mb: 1024
+
+  # Monitoring
+  monitoring:
+    enabled: true
+    metrics_port: 9090
+    health_check_interval_seconds: 30
+    
+  # Constitutional compliance
+  constitutional:
+    hash: "cdd01ef066bc6cf2"
+    validation_enabled: true
+    compliance_threshold: 0.95
+    audit_logging: true
+
+# Service integration configuration
+services:
+  ai_model_service:
+    use_router: true
+    router_endpoint: "http://localhost:8000"
+    fallback_to_direct: true
+    
+  constitutional_ai:
+    use_router: true
+    preferred_model: "moonshotai/kimi-k2-instruct"
+    
+  governance_synthesis:
+    use_router: true
+    preferred_model: "moonshotai/kimi-k2-instruct"
+    
+  policy_governance:
+    use_router: true
+    preferred_model: "moonshotai/kimi-k2-instruct"
+    
+  multi_agent_coordinator:
+    use_router: true
+    load_balancing: true
+
+# Environment variables
+environment:
+  GROQ_API_KEY: "${GROQ_API_KEY}"
+  REDIS_URL: "${REDIS_URL:-redis://localhost:6379/0}"
+  ROUTER_ENABLED: "true"
+  ROUTER_PRIMARY_PROVIDER: "true"
+  KIMI_K2_ENABLED: "true"
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "json"
+  constitutional_audit: true
+  performance_metrics: true

@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: acgs
       POSTGRES_USER: acgs_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_dev_password}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
     - postgres_data:/var/lib/postgresql/data
@@ -30,7 +30,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: acgs_redis_base
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-acgs_dev_redis}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:os.environ.get("PASSWORD")
     volumes:
     - redis_data:/data
     ports:

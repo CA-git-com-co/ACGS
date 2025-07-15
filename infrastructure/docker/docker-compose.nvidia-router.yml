@@ -26,9 +26,9 @@ services:
     - AC_SERVICE_INTERNAL_URL=${AC_SERVICE_INTERNAL_URL:-http://ac_service:8001}
     - GS_SERVICE_INTERNAL_URL=${GS_SERVICE_INTERNAL_URL:-http://gs_service:8004}
     - PGC_SERVICE_INTERNAL_URL=${PGC_SERVICE_INTERNAL_URL:-http://pgc_service:8005}
-    - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=${REDIS_URL:-redis://redis:6379/3}
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - API_KEY_ENCRYPTION_KEY=${API_KEY_ENCRYPTION_KEY:-your-encryption-key-change-in-production}
     - PYTHONPATH=/app:/app/shared
     volumes:
@@ -87,9 +87,9 @@ services:
     - AC_SERVICE_INTERNAL_URL=${AC_SERVICE_INTERNAL_URL:-http://ac_service:8001}
     - GS_SERVICE_INTERNAL_URL=${GS_SERVICE_INTERNAL_URL:-http://gs_service:8004}
     - PGC_SERVICE_INTERNAL_URL=${PGC_SERVICE_INTERNAL_URL:-http://pgc_service:8005}
-    - DATABASE_URL=${DATABASE_URL:-postgresql+asyncpg://acgs_user:acgs_password@postgres_db:5432/acgs_pgp_db}
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=${REDIS_URL:-redis://redis:6379/3}
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs-development-secret-key-2024-phase1-infrastructure-stabilization-jwt-token-signing}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - API_KEY_ENCRYPTION_KEY=${API_KEY_ENCRYPTION_KEY:-your-encryption-key-change-in-production}
     - PYTHONPATH=/app:/app/shared
     volumes:

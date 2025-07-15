@@ -47,8 +47,8 @@ def test_service_startup():
             "-c",
             (
                 "source /home/dislove/ACGS-2/.venv/bin/activate && "
-                "POSTGRESQL_PASSWORD=test_password "
-                "JWT_SECRET_KEY=test_jwt_secret_key_for_development_only "
+                "POSTGRESQL_PASSWORD=os.environ.get("PASSWORD")
+                "JWT_SECRET_KEY=test_jwt_secret_key_for_development_only "  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 'REDIS_PASSWORD="" '
                 "uvicorn main:app --host 0.0.0.0 --port 8007 --log-level error"
             ),
@@ -112,8 +112,8 @@ def test_api_endpoints():
             "-c",
             (
                 "source /home/dislove/ACGS-2/.venv/bin/activate && "
-                "POSTGRESQL_PASSWORD=test_password "
-                "JWT_SECRET_KEY=test_jwt_secret_key_for_development_only "
+                "POSTGRESQL_PASSWORD=os.environ.get("PASSWORD")
+                "JWT_SECRET_KEY=test_jwt_secret_key_for_development_only "  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 'REDIS_PASSWORD="" '
                 "uvicorn main:app --host 0.0.0.0 --port 8007 --log-level error"
             ),

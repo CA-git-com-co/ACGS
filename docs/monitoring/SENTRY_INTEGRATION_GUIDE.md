@@ -36,10 +36,10 @@ python scripts/monitoring/setup_sentry_integration.py --environment production
 
 ```bash
 # Copy environment template
-cp .env.sentry.example .env.sentry
+cp config/environments/developmentconfig/environments/sentry.example.env config/environments/development.env.sentry
 
 # Edit with your Sentry DSN
-nano .env.sentry
+nano config/environments/development.env.sentry
 
 # Install dependencies
 pip install sentry-sdk[fastapi,sqlalchemy,redis]

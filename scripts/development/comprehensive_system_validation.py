@@ -220,7 +220,7 @@ class ComprehensiveSystemValidator:
 
         try:
             # Try to connect to Redis and get stats
-            import aioredis
+            import redis.asyncio as aioredis
 
             redis = await aioredis.from_url("redis://localhost:6379")
 

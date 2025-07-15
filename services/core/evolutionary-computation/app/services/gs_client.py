@@ -15,7 +15,7 @@ import httpx
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-# Try to import shared config, fallback to default if not available
+# Try to import services.shared config, fallback to default if not available
 try:
     import os
     import sys

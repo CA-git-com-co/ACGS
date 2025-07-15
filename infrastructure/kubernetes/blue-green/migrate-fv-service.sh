@@ -550,9 +550,9 @@ main() {
     
     # Display summary
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Formal Verification Service Migration Summary"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Service: $SERVICE_NAME"
     echo "Migration completed at: $(date)"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"

@@ -50,7 +50,7 @@ services:
     - 8007:8007
     environment:
     - ENVIRONMENT=development
-    - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis:6379/0
     - NATS_SERVERS=nats://nats:4222
     - NATS_STREAM_NAME=DGM_EVENTS
@@ -125,7 +125,7 @@ services:
     - 8000:8000
     environment:
     - ENVIRONMENT=development
-    - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis:6379/1
     - NATS_SERVERS=nats://nats:4222
     depends_on:
@@ -142,7 +142,7 @@ services:
     - 8001:8001
     environment:
     - ENVIRONMENT=development
-    - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs_dev
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis:6379/2
     - NATS_SERVERS=nats://nats:4222
     depends_on:

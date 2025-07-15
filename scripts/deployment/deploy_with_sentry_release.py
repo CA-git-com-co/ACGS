@@ -40,7 +40,7 @@ class ACGSDeploymentManager:
     """Manages ACGS-2 deployments with Sentry release tracking"""
     
     def __init__(self, environment: str, version: str = None):
-        self.environment = environment
+        selfconfig/environments/development.environment = environment
         self.version = version
         self.constitutional_hash = CONSTITUTIONAL_HASH
         self.deployment_start_time = None
@@ -49,7 +49,7 @@ class ACGSDeploymentManager:
         
     def validate_environment(self) -> bool:
         """Validate deployment environment"""
-        print(f"🔍 Validating {self.environment} environment...")
+        print(f"🔍 Validating {selfconfig/environments/development.environment} environment...")
         
         # Check required environment variables
         required_vars = {
@@ -64,7 +64,7 @@ class ACGSDeploymentManager:
         }
         
         missing_vars = []
-        for var in required_vars.get(self.environment, []):
+        for var in required_vars.get(selfconfig/environments/development.environment, []):
             if not os.getenv(var):
                 missing_vars.append(var)
                 
@@ -105,7 +105,7 @@ class ACGSDeploymentManager:
         
         try:
             # Check for uncommitted changes in production
-            if self.environment == "production":
+            if selfconfig/environments/development.environment == "production":
                 result = subprocess.run(
                     ["git", "status", "--porcelain"], 
                     capture_output=True, text=True
@@ -128,8 +128,8 @@ class ACGSDeploymentManager:
                 "production": ["main", "production"]
             }
             
-            if branch not in expected_branches.get(self.environment, ["main"]):
-                print(f"    ⚠️  On branch '{branch}', expected one of {expected_branches[self.environment]}")
+            if branch not in expected_branches.get(selfconfig/environments/development.environment, ["main"]):
+                print(f"    ⚠️  On branch '{branch}', expected one of {expected_branches[selfconfig/environments/development.environment]}")
                 
             print(f"    ✅ Git status OK (branch: {branch})")
             return True
@@ -167,7 +167,7 @@ class ACGSDeploymentManager:
             # For now, just verify connection parameters are set
             
             db_vars = ["POSTGRES_HOST", "POSTGRES_PORT", "POSTGRES_DB"]
-            if self.environment != "development":
+            if selfconfig/environments/development.environment != "development":
                 for var in db_vars:
                     if not os.getenv(var):
                         print(f"    ⚠️  Database variable {var} not set")
@@ -229,7 +229,7 @@ class ACGSDeploymentManager:
         except Exception as e:
             print(f"    ⚠️  Could not run tests: {e}")
             # Don't fail deployment for test issues in development
-            return self.environment == "development"
+            return selfconfig/environments/development.environment == "development"
             
     def create_release(self) -> bool:
         """Create Sentry release for deployment"""
@@ -246,7 +246,7 @@ class ACGSDeploymentManager:
             # Create release
             release_info = create_acgs_release(
                 version=self.version,
-                environment=self.environment,
+                environment=selfconfig/environments/development.environment,
                 constitutional_changes=constitutional_changes
             )
             
@@ -289,7 +289,7 @@ class ACGSDeploymentManager:
         
     def deploy_services(self) -> bool:
         """Deploy ACGS-2 services"""
-        print(f"🚀 Deploying ACGS-2 services to {self.environment}...")
+        print(f"🚀 Deploying ACGS-2 services to {selfconfig/environments/development.environment}...")
         
         self.deployment_start_time = time.time()
         
@@ -297,19 +297,19 @@ class ACGSDeploymentManager:
         if SENTRY_AVAILABLE and self.version:
             deploy_acgs_release(
                 version=self.version,
-                environment=self.environment,
+                environment=selfconfig/environments/development.environment,
                 validate_constitutional=True
             )
             
         try:
-            if self.environment == "development":
+            if selfconfig/environments/development.environment == "development":
                 return self._deploy_development()
-            elif self.environment == "staging":
+            elif selfconfig/environments/development.environment == "staging":
                 return self._deploy_staging()
-            elif self.environment == "production":
+            elif selfconfig/environments/development.environment == "production":
                 return self._deploy_production()
             else:
-                print(f"❌ Unknown environment: {self.environment}")
+                print(f"❌ Unknown environment: {selfconfig/environments/development.environment}")
                 return False
                 
         except Exception as e:
@@ -392,9 +392,9 @@ class ACGSDeploymentManager:
         print(f"  🔍 Checking service health...")
         
         # Health check endpoints for different environments
-        if self.environment == "production":
+        if selfconfig/environments/development.environment == "production":
             base_url = "https://acgs-production.example.com"
-        elif self.environment == "staging":
+        elif selfconfig/environments/development.environment == "staging":
             base_url = "https://acgs-staging.example.com"
         else:
             base_url = "http://localhost"
@@ -445,7 +445,7 @@ class ACGSDeploymentManager:
                 "python", "-m", "pytest",
                 "tests/integration/",
                 "-v", "--tb=short",
-                f"--environment={self.environment}"
+                f"--environment={selfconfig/environments/development.environment}"
             ], capture_output=True, text=True, cwd=Path(__file__).parent.parent.parent)
             
             if result.returncode != 0:
@@ -485,7 +485,7 @@ class ACGSDeploymentManager:
         if SENTRY_AVAILABLE and self.version:
             finalize_acgs_deployment(
                 version=self.version,
-                environment=self.environment,
+                environment=selfconfig/environments/development.environment,
                 success=success,
                 performance_metrics=performance_metrics
             )
@@ -494,7 +494,7 @@ class ACGSDeploymentManager:
         
     def run_deployment(self) -> bool:
         """Run complete deployment process"""
-        print(f"🚀 Starting ACGS-2 deployment to {self.environment}")
+        print(f"🚀 Starting ACGS-2 deployment to {selfconfig/environments/development.environment}")
         print(f"📍 Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print(f"🏷️  Version: {self.version or 'auto-detect'}")
         print()
@@ -527,21 +527,21 @@ class ACGSDeploymentManager:
         # Finalize deployment
         self.finalize_deployment(True, performance_metrics)
         
-        print(f"🎉 ACGS-2 deployment to {self.environment} completed successfully!")
+        print(f"🎉 ACGS-2 deployment to {selfconfig/environments/development.environment} completed successfully!")
         print()
         print(f"📋 Deployment Summary:")
         print(f"   Version: {self.version}")
-        print(f"   Environment: {self.environment}")
+        print(f"   Environment: {selfconfig/environments/development.environment}")
         print(f"   Constitutional Hash: {CONSTITUTIONAL_HASH}")
         print(f"   Deployment Time: {performance_metrics.get('deployment_time_seconds', 0):.1f}s")
         print(f"   Performance: P99={performance_metrics.get('p99_latency_ms', 0):.1f}ms, "
               f"RPS={performance_metrics.get('throughput_rps', 0):.0f}")
         print()
         print(f"🔗 Access URLs:")
-        if self.environment == "production":
+        if selfconfig/environments/development.environment == "production":
             print(f"   API Gateway: https://acgs-production.example.com:8010")
             print(f"   Constitutional AI: https://acgs-production.example.com:8001")
-        elif self.environment == "staging":
+        elif selfconfig/environments/development.environment == "staging":
             print(f"   API Gateway: https://acgs-staging.example.com:8010")
             print(f"   Constitutional AI: https://acgs-staging.example.com:8001")
         else:
@@ -572,12 +572,12 @@ def main():
     args = parser.parse_args()
     
     # Set up environment
-    if args.environment == "development":
+    if argsconfig/environments/development.environment == "development":
         os.environ.setdefault("CONSTITUTIONAL_HASH", CONSTITUTIONAL_HASH)
     
     # Create deployment manager
     deployment_manager = ACGSDeploymentManager(
-        environment=args.environment,
+        environment=argsconfig/environments/development.environment,
         version=args.version
     )
     

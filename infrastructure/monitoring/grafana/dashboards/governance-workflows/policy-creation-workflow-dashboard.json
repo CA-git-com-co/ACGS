@@ -84,7 +84,7 @@
       },
       {
         "id": 2,
-        "title": "Draft → Review Transition Rate",
+        "title": "Draft \u2192 Review Transition Rate",
         "type": "graph",
         "targets": [
           {
@@ -107,7 +107,7 @@
       },
       {
         "id": 3,
-        "title": "Review → Voting Transition Rate",
+        "title": "Review \u2192 Voting Transition Rate",
         "type": "graph",
         "targets": [
           {
@@ -130,7 +130,7 @@
       },
       {
         "id": 4,
-        "title": "Voting → Implementation Transition Rate",
+        "title": "Voting \u2192 Implementation Transition Rate",
         "type": "graph",
         "targets": [
           {

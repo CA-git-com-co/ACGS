@@ -56,10 +56,10 @@ services:
     - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
     - ./grafana/datasources:/etc/grafana/provisioning/datasources
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=acgs_chaos_admin
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     - GF_INSTALL_PLUGINS=grafana-piechart-panel
-    - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/chaos-overview.json
+    - GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH=/etc/grafana/provisioning/dashboards/chaos-overview.json  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     networks:
     - acgs-chaos-network
     restart: unless-stopped

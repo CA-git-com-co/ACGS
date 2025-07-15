@@ -12,7 +12,7 @@ import pytest
 from dotenv import load_dotenv
 
 # Load test environment variables
-test_env_path = Path(__file__).parent / "config" / "test.env"
+test_env_path = Path(__file__).parent / "config" / "testconfig/environments/development.env"
 if test_env_path.exists():
     load_dotenv(test_env_path)
 
@@ -43,10 +43,10 @@ for path in paths_to_add:
 import importlib
 
 ALIASES = {
-    "services.core.constitutional_ai": "services.core.constitutional-ai",
-    "services.core.governance_synthesis": "services.core.governance-synthesis",
+    "services.core.constitutional-ai": "services.core.constitutional-ai",
+    "services.core.governance-synthesis": "services.core.governance-synthesis",
     "services.core.governance_workflows": "services.core.governance-workflows",
-    "services.core.policy_governance": "services.core.policy-governance",
+    "services.core.policy-governance": "services.core.policy-governance",
 }
 for alias, target in ALIASES.items():
     try:

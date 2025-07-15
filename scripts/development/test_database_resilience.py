@@ -171,7 +171,7 @@ class DatabaseResilienceTestSuite:
             # Test with a mock database URL
             client = EnhancedDatabaseClient(
                 service_name="test_pooling",
-                database_url="postgresql+asyncpg://test:test@localhost:5432/test_db",
+                database_url=os.environ.get("DATABASE_URL"),
             )
 
             # Test initialization (may fail due to no actual database)

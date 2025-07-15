@@ -1,0 +1,136 @@
+version: '3.8'
+
+# GroqCloud Policy Integration Docker Compose
+# Constitutional Hash: cdd01ef066bc6cf2
+
+networks:
+  acgs_network:
+    external: true
+
+services:
+  groq-policy-integration:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.groq-policy-integration
+    container_name: acgs-groq-policy-integration
+    restart: unless-stopped
+    environment:
+      # Constitutional Compliance
+      CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+      CONSTITUTIONAL_VALIDATION_ENABLED: "true"
+      
+      # GroqCloud Configuration
+      GROQ_API_KEY: ${GROQ_API_KEY}
+      GROQ_BASE_URL: "https://api.groq.com/openai/v1"
+      GROQ_DEFAULT_MODEL: "qwen/qwen3-32b"
+      GROQ_TIER_MAPPING: "nano:allam-2-7b,fast:llama-3.1-8b-instant,balanced:qwen/qwen3-32b,premium:llama-3.3-70b-versatile"
+      
+      # WASM Policy Engine
+      WASM_POLICY_ENGINE_ENABLED: "true"
+      WASM_RUNTIME: "wasmtime"
+      WASM_POLICY_COMPILATION_TIMEOUT: "30"
+      WASM_POLICY_CACHE_SIZE: "1000"
+      
+      # OPA-WASM Integration
+      OPA_WASM_ENABLED: "true"
+      OPA_WASM_POLICIES_PATH: "/app/policies"
+      OPA_WASM_CACHE_SIZE: "500"
+      OPA_WASM_EVALUATION_TIMEOUT: "5"
+      
+      # Database Configuration
+      DATABASE_URL: "postgresql://acgs_user:acgs_secure_password_123@acgs_postgres:5432/acgs_db"
+      REDIS_URL: "redis://acgs_redis:6379"
+      
+      # Service Configuration
+      SERVICE_PORT: "8015"
+      PROMETHEUS_METRICS_PORT: "9090"
+      LOG_LEVEL: "INFO"
+      DEBUG: "false"
+      
+      # Performance Configuration
+      WORKERS: "4"
+      MAX_WORKERS: "8"
+      TIMEOUT: "30"
+      
+    ports:
+      - "8015:8015"  # GroqCloud Policy Integration API
+      - "9095:9090"  # Prometheus metrics
+    
+    volumes:
+      - ./services/core/governance-synthesis/policies:/app/policies:ro
+      - /tmp/wasm-cache:/app/wasm-cache
+      - ./config/services/groq-policy-integration.yml:/app/config/service.yml:ro
+    
+    networks:
+      - acgs_network
+    
+    external_links:
+      - acgs_postgres:postgres
+      - acgs_redis:redis
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8015/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.25'
+    
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.groq-policy.rule=PathPrefix(/api/groq-policy)"
+      - "traefik.http.services.groq-policy.loadbalancer.server.port=8015"
+      - "prometheus.scrape=true"
+      - "prometheus.port=9090"
+      - "constitutional.hash=cdd01ef066bc6cf2"
+
+  # Enhanced OPA service with WASM support
+  opa-wasm:
+    image: openpolicyagent/opa:latest
+    container_name: acgs-opa-wasm
+    restart: unless-stopped
+    command: 
+      - "run"
+      - "--server"
+      - "--addr=0.0.0.0:8181"
+      - "--log-level=info"
+      - "--log-format=json"
+      - "--set=plugins.envoy_ext_authz_grpc.addr=:9191"
+      - "--set=plugins.envoy_ext_authz_grpc.query=data.envoy.authz.allow"
+      - "--set=decision_logs.console=true"
+      - "/policies"
+    
+    environment:
+      CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+    
+    ports:
+      - "8182:8181"  # OPA API (different from main OPA)
+      - "9192:9191"  # OPA Envoy gRPC
+    
+    volumes:
+      - ./services/core/governance-synthesis/policies:/policies:ro
+    
+    networks:
+      - acgs_network
+    
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8181/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    
+    labels:
+      - "constitutional.hash=cdd01ef066bc6cf2"
+      - "prometheus.scrape=true"
+      - "prometheus.port=8181"
+
+  # Reference to existing services (external containers)
+  # postgres and redis are referenced via external network

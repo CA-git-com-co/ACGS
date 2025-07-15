@@ -132,13 +132,13 @@ validate_targets() {
 # Main test function
 main() {
     echo "🚀 Quick Production Validation Test"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Test Duration: $MONITORING_DURATION_MINUTES minutes"
     echo "Check Interval: $MONITORING_INTERVAL_SECONDS seconds"
     echo "Total Checks: $TOTAL_CHECKS"
     echo "Start Time: $(date)"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Verify constitutional hash
     if [ "$CONSTITUTIONAL_HASH" != "cdd01ef066bc6cf2" ]; then
@@ -197,9 +197,9 @@ main() {
     
     # Generate summary
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎯 Quick Validation Test Summary"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH ✅"
     echo "Total Checks: $((check_number - 1))"
     echo "Targets Met: $total_targets_met/$total_possible_targets"

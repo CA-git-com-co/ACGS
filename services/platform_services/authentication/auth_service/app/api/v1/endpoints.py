@@ -223,7 +223,7 @@ async def refresh_token(
     await crud_refresh_token.create_refresh_token(
         db,
         user_id=user_obj.id,
-        token=new_refresh_token_str,
+        token=os.environ.get("AUTH_TOKEN")
         jti=new_refresh_jti,
         expires_at=new_refresh_expires_at,
     )
@@ -257,7 +257,7 @@ async def refresh_token(
         samesite="lax",
     )
     return Token(
-        access_token=new_access_token_str, token_type="bearer", refresh_token=None
+        access_token=os.environ.get("AUTH_TOKEN")bearer", refresh_token=os.environ.get("AUTH_TOKEN")
     )
 
 

@@ -417,11 +417,11 @@ cd ACGS
 
 # Set production environment
 export ENVIRONMENT=production
-export DATABASE_URL=postgresql://acgs_user:secure_password@localhost/acgs_production
+export DATABASE_URL=os.environ.get("DATABASE_URL")
 export REDIS_URL=redis://localhost:6379
 
 # Deploy all 7 core services
-docker-compose -f docker-compose.production.yml up -d
+docker-compose -f config/docker/docker-compose.production.yml up -d
 ```
 
 ### 2. Blockchain Components
@@ -517,14 +517,14 @@ sudo ufw allow 8000:8006/tcp
 ### Emergency Procedures
 ```bash
 # Quick service restart
-docker-compose -f docker-compose.production.yml restart
+docker-compose -f config/docker/docker-compose.production.yml restart
 
 # Database backup
 pg_dump acgs_production > backup_$(date +%Y%m%d_%H%M%S).sql
 
 # Service rollback
 git checkout <previous_commit>
-docker-compose -f docker-compose.production.yml up -d
+docker-compose -f config/docker/docker-compose.production.yml up -d
 ```
 
 ---

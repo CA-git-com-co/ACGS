@@ -15,10 +15,16 @@ import operator
 from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from services.core.governance_synthesis.gs_service.app.core.constitutional_prompting import (
+from services.core.governance-synthesis.gs_service.app.core.constitutional_prompting import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     ConstitutionalPromptingEngine,
 )
-from services.core.governance_synthesis.gs_service.app.core.multi_model_coordinator import (
+from services.core.governance-synthesis.gs_service.app.core.multi_model_coordinator import (
     EnsembleResult,
     EnsembleStrategy,
     MultiModelCoordinator,
@@ -117,7 +123,7 @@ class TestEnhancedSynthesis:
     ):
         """Test basic enhanced synthesis functionality."""
         with patch(
-            "services.core.governance_synthesis.gs_service.app.api.v1.enhanced_synthesis.get_enhanced_synthesis_service"
+            "services.core.governance-synthesis.gs_service.app.api.v1.enhanced_synthesis.get_enhanced_synthesis_service"
         ) as mock_get_service:
             mock_get_service.return_value = mock_synthesis_service
 

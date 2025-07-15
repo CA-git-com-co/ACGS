@@ -204,7 +204,7 @@ async def create_resource(
 
 ### Step 6: Configure Environment
 
-**Create `.env` file:**
+**Create `config/environments/development.env` file:**
 ```bash
 # Service identification
 SERVICE_NAME=your-service-name

@@ -7,7 +7,7 @@ immutable constitutional integrity and non-repudiation.
 
 requires: Constitutional principles signed with Ed25519, amendment integrity verified
 ensures: Cryptographic non-repudiation, tamper-proof constitutional records
-sha256: c8f2e1a9b7d6f4e3c2a1b8e7f6c5a4b3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3
+sha256: c8f2e1a9b7d6f4e3c2a1b8e7f6c5a4b3d2e1f8c7b6a5d4e3f2c1b8a7d6e5f4c3  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 """
 
 import hashlib
@@ -18,15 +18,15 @@ from typing import Any
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import ed25519
-from cryptography.hazmat.primitives.serialization import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
+from cryptography.hazmat.primitives.serialization import (
     Encoding,
     NoEncryption,
     PrivateFormat,
     PublicFormat,
-    "cdd01ef066bc6cf2",
-    =,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)

@@ -318,17 +318,7 @@ class MultiModelManager:
                         )
                         logger.info(f"Initialized Groq Qwen3-32B model: {model_name}")
 
-                elif model_name.startswith("grok"):
-                    if self.config.xai_api_key and OPENAI_AVAILABLE:
-                        client = OpenAI(
-                            api_key=self.config.xai_api_key,
-                            base_url="https://api.x.ai/v1",
-                        )
-                        self.model_clients[model_name] = client
-                        self.performance_trackers[model_name] = ModelPerformanceTracker(
-                            model_name
-                        )
-                        logger.info(f"Initialized xAI Grok model: {model_name}")
+
 
                 elif model_name.startswith("gpt"):
                     if self.config.openai_api_key and OPENAI_AVAILABLE:
@@ -522,7 +512,7 @@ class MultiModelManager:
             return content
 
         if isinstance(client, OpenAI):
-            # OpenAI client (for xAI Grok, OpenAI models, NVIDIA API models, or OpenRouter models)
+            # OpenAI client (for OpenAI models, NVIDIA API models, or OpenRouter models)
             loop = asyncio.get_event_loop()
 
             # Handle different model types

@@ -72,36 +72,36 @@ EOF
     fi
 }
 
-# Create basic .env file if needed
+# Create basic config/environments/development.env file if needed
 create_env_file() {
-    if [ ! -f "config/env/.env.example" ]; then
-        log "Creating .env.example file..."
+    if [ ! -f "config/env/config/environments/developmentconfig/environments/example.env" ]; then
+        log "Creating config/environments/developmentconfig/environments/example.env file..."
         mkdir -p config/env
-        cat > config/env/.env.example << EOF
+        cat > config/env/config/environments/developmentconfig/environments/example.env << EOF
 # ACGS-1 System Configuration Example
-# Copy this file to .env and update with your values
+# Copy this file to config/environments/development.env and update with your values
 
 # Security Configuration
-SECRET_KEY=replace_with_generated_secret_key
-CSRF_SECRET_KEY=replace_with_generated_csrf_key
+SECRET_KEY=replace_with_generated_secret_key  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+CSRF_SECRET_KEY=replace_with_generated_csrf_key  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
 
 # Database Configuration
-DATABASE_URL=postgresql+asyncpg://acgs_user:strong_password_here@localhost:5432/acgs_db
-TEST_ASYNC_DATABASE_URL=postgresql+asyncpg://acgs_user:strong_password_here@localhost:5432/acgs_test_db
+DATABASE_URL=os.environ.get("DATABASE_URL")
+TEST_ASYNC_DATABASE_URL=os.environ.get("DATABASE_URL")
 
 # Redis Configuration
 REDIS_URL=redis://localhost:6379/0
-REDIS_PASSWORD=replace_with_strong_redis_password
+REDIS_PASSWORD=os.environ.get("PASSWORD")
 
 # Service Configuration
 ENVIRONMENT=development
 DEBUG=true
 LOG_LEVEL=INFO
 EOF
-        success "Created .env.example file"
+        success "Created config/environments/developmentconfig/environments/example.env file"
     fi
 }
 
@@ -114,12 +114,12 @@ create_service_env_script() {
 #!/bin/bash
 # Script to set environment variables for ACGS services
 
-# Load variables from .env file
-if [ -f "config/env/.env" ]; then
-    export \$(cat config/env/.env | grep -v '^#' | xargs)
-    echo "Environment variables loaded from config/env/.env"
+# Load variables from config/environments/development.env file
+if [ -f "config/env/config/environments/development.env" ]; then
+    export \$(cat config/env/config/environments/development.env | grep -v '^#' | xargs)
+    echo "Environment variables loaded from config/env/config/environments/development.env"
 else
-    echo "Warning: config/env/.env file not found"
+    echo "Warning: config/env/config/environments/development.env file not found"
 fi
 EOF
         chmod +x scripts/set_service_env.sh
@@ -427,7 +427,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-quantumagi = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+quantumagi = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 [registry]
 url = "https://api.apr.dev"
@@ -467,7 +467,7 @@ EOF
             cat > blockchain/programs/quantumagi/src/lib.rs << EOF
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
+declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 #[program]
 pub mod quantumagi {
@@ -523,20 +523,20 @@ setup_env_vars() {
     # Create service env script if needed
     create_service_env_script
     
-    if [ ! -f "config/env/.env" ]; then
-        log "Creating .env file from example..."
-        cp -n config/env/.env.example config/env/.env
+    if [ ! -f "config/env/config/environments/development.env" ]; then
+        log "Creating config/environments/development.env file from example..."
+        cp -n config/env/config/environments/developmentconfig/environments/example.env config/env/config/environments/development.env
         
         # Generate secure keys
         log "Generating secure keys..."
         SECRET_KEY=$(openssl rand -hex 32)
         CSRF_SECRET_KEY=$(openssl rand -hex 32)
-        REDIS_PASSWORD=$(openssl rand -hex 16)
+        REDIS_PASSWORD=os.environ.get("PASSWORD")
         
-        # Update .env file with secure keys
-        sed -i "s/SECRET_KEY=.*/SECRET_KEY=$SECRET_KEY/" config/env/.env
-        sed -i "s/CSRF_SECRET_KEY=.*/CSRF_SECRET_KEY=$CSRF_SECRET_KEY/" config/env/.env
-        sed -i "s/REDIS_PASSWORD=.*/REDIS_PASSWORD=$REDIS_PASSWORD/" config/env/.env
+        # Update config/environments/development.env file with secure keys
+        sed -i "s/SECRET_KEY=.*/SECRET_KEY=$SECRET_KEY/" config/env/config/environments/development.env
+        sed -i "s/CSRF_SECRET_KEY=.*/CSRF_SECRET_KEY=$CSRF_SECRET_KEY/" config/env/config/environments/development.env
+        sed -i "s/REDIS_PASSWORD=os.environ.get("PASSWORD") config/env/config/environments/development.env
         
         success "Environment file created with secure keys"
     else
@@ -572,7 +572,7 @@ services:
     container_name: acgs_postgres
     environment:
       POSTGRES_USER: acgs_user
-      POSTGRES_PASSWORD: strong_password_here
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: acgs_db
     ports:
       - "5432:5432"
@@ -583,7 +583,7 @@ services:
   redis:
     image: redis:7
     container_name: acgs_redis
-    command: redis-server --requirepass \${REDIS_PASSWORD:-strong_redis_password}
+    command: redis-server --requirepass \${REDIS_PASSWORD:os.environ.get("PASSWORD")
     ports:
       - "6379:6379"
     volumes:
@@ -1070,9 +1070,9 @@ main() {
     run_health_checks
     
     echo ""
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎉 ACGS-PGP PROJECT SETUP COMPLETE"
-    echo "=================================================="
+    echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     echo "📋 Summary:"
     echo "  ✅ Project structure created"
@@ -1103,7 +1103,7 @@ main() {
     echo "📁 Backup created: $BACKUP_DIR"
     echo ""
     echo "🚀 Next Steps:"
-    echo "  1. Configure AI model API keys in .env file:"
+    echo "  1. Configure AI model API keys in config/environments/development.env file:"
     echo "     - GOOGLE_GEMINI_API_KEY"
     echo "     - DEEPSEEK_R1_API_KEY"
     echo "     - NVIDIA_QWEN_API_KEY"

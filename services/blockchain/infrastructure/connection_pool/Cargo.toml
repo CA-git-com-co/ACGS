@@ -1,0 +1,18 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+[package]
+name = "acgs-connection-pool"
+version = "0.1.0"
+edition = "2021"
+description = "Unified connection pool management for ACGS blockchain services"
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[lib]
+name = "acgs_connection_pool"
+path = "mod.rs"

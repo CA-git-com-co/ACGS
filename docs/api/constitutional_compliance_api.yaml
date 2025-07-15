@@ -50,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HashVerificationResponse'
+                $ref: '#/components/schemas/HashVerificationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 components:
   schemas:
     ComplianceRequest:

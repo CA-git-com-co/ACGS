@@ -609,7 +609,7 @@ async def main():
     tester = BlueGreenTester()
 
     try:
-        result = await tester.run_comprehensive_tests(args.environment)
+        result = await tester.run_comprehensive_tests(argsconfig/environments/development.environment)
 
         print("\n" + "=" * 80)
         print("BLUE-GREEN DEPLOYMENT TEST RESULTS")

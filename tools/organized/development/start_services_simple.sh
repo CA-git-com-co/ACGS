@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Simple service startup script for ACGS-1
 
@@ -8,7 +10,7 @@ echo "=========================="
 
 # Set up environment
 export PYTHONPATH="/home/ubuntu/ACGS/services/shared:/home/ubuntu/ACGS/services/core/policy-governance/pgc_service:$PYTHONPATH"
-export DATABASE_URL="postgresql+asyncpg://acgs_user:acgs_password@localhost:5432/acgs_db"
+export DATABASE_URL=os.environ.get("DATABASE_URL")
 export REDIS_URL="redis://localhost:6379/0"
 
 # Activate virtual environment

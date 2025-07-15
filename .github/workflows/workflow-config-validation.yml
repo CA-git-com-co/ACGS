@@ -376,7 +376,7 @@ jobs:
       - name: Validation summary
         run: |
           echo "🎯 ACGS-1 Workflow Configuration Validation Summary"
-          echo "=================================================="
+          echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           echo "✅ YAML syntax validation completed"
           echo "✅ Workflow structure validation completed"
           echo "✅ ACGS-1 requirements validation completed"

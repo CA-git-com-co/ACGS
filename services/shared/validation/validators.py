@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
-from shared.resilience.exceptions import (
+from services.shared.resilience.exceptions import (
     ValidationError,
 )
 
@@ -95,6 +95,23 @@ class ValidationResult:
             issue.severity in {ValidationSeverity.ERROR, ValidationSeverity.CRITICAL}
             for issue in self.issues
         )
+
+    def has_warnings(self) -> bool:
+        """Check if there are any warning-level issues."""
+        return any(
+            issue.severity == ValidationSeverity.WARNING
+            for issue in self.issues
+        )
+
+    @property
+    def errors(self) -> list[str]:
+        """Get error messages for test compatibility."""
+        return [issue.message for issue in self.get_errors()]
+
+    @property
+    def warnings(self) -> list[str]:
+        """Get warning messages for test compatibility."""
+        return [issue.message for issue in self.get_warnings()]
 
     def get_errors(self) -> list[ValidationIssue]:
         """Get only error-level issues."""
@@ -512,6 +529,75 @@ class BusinessRuleValidator(Validator):
             []
         )
 
+    # Test compatibility methods
+    def validate_age_requirement(self, age: int, min_age: int = 18) -> ValidationResult:
+        """Validate age requirement."""
+        result = ValidationResult(is_valid=True)
+        if age < min_age:
+            result.add_issue(
+                field="age",
+                message=f"Age {age} is below minimum requirement of {min_age}",
+                severity=ValidationSeverity.ERROR,
+                error_code="AGE_REQUIREMENT_ERROR"
+            )
+        return result
+
+    def validate_business_hours(self, timestamp) -> ValidationResult:
+        """Validate business hours."""
+        result = ValidationResult(is_valid=True)
+        # Simple business hours check (9 AM - 5 PM, Monday-Friday)
+        if timestamp.weekday() >= 5:  # Weekend
+            result.add_issue(
+                field="timestamp",
+                message="Outside business hours (weekends)",
+                severity=ValidationSeverity.ERROR,
+                error_code="BUSINESS_HOURS_ERROR"
+            )
+        elif timestamp.hour < 9 or timestamp.hour >= 17:  # Outside 9-5
+            result.add_issue(
+                field="timestamp",
+                message="Outside business hours (9 AM - 5 PM)",
+                severity=ValidationSeverity.ERROR,
+                error_code="BUSINESS_HOURS_ERROR"
+            )
+        return result
+
+    def validate_credit_limit(self, transaction_amount: float, credit_limit: float) -> ValidationResult:
+        """Validate credit limit."""
+        result = ValidationResult(is_valid=True)
+        if transaction_amount > credit_limit:
+            result.add_issue(
+                field="transaction_amount",
+                message=f"Transaction amount {transaction_amount} exceeds credit limit {credit_limit}",
+                severity=ValidationSeverity.ERROR,
+                error_code="CREDIT_LIMIT_ERROR"
+            )
+        return result
+
+    def validate_inventory_availability(self, requested_quantity: int, available_quantity: int) -> ValidationResult:
+        """Validate inventory availability."""
+        result = ValidationResult(is_valid=True)
+        if requested_quantity > available_quantity:
+            result.add_issue(
+                field="requested_quantity",
+                message=f"Requested quantity {requested_quantity} exceeds available {available_quantity}",
+                severity=ValidationSeverity.ERROR,
+                error_code="INVENTORY_ERROR"
+            )
+        return result
+
+    def validate_duplicate_prevention(self, value: str, existing_values: list[str]) -> ValidationResult:
+        """Validate duplicate prevention."""
+        result = ValidationResult(is_valid=True)
+        if value in existing_values:
+            result.add_issue(
+                field="value",
+                message=f"Value '{value}' already exists",
+                severity=ValidationSeverity.ERROR,
+                error_code="DUPLICATE_ERROR"
+            )
+        return result
+
     def add_rule(
         self, rule: Callable[[Any, dict[str, Any]], ValidationResult]
     ) -> "BusinessRuleValidator":
@@ -558,6 +644,90 @@ class ConstitutionalValidator(Validator):
         super().__init__(name)
         self.required_hash = "cdd01ef066bc6cf2"
 
+    # Test compatibility methods
+    def validate_hash(self, hash_value: str) -> ValidationResult:
+        """Validate constitutional hash."""
+        result = ValidationResult(is_valid=True)
+        if hash_value != self.required_hash:
+            result.add_issue(
+                field="constitutional_hash",
+                message=f"Invalid constitutional hash. Expected: {self.required_hash}",
+                severity=ValidationSeverity.ERROR,
+                error_code="INVALID_HASH"
+            )
+        return result
+
+    def validate_governance_compliance(self, data: dict) -> ValidationResult:
+        """Validate governance compliance."""
+        result = ValidationResult(is_valid=True)
+
+        # Check for required governance fields
+        required_fields = ["policy_id", "governance_level", "constitutional_hash"]
+        for field in required_fields:
+            if field not in data:
+                result.add_issue(
+                    field=field,
+                    message=f"Required governance field '{field}' is missing",
+                    severity=ValidationSeverity.ERROR,
+                    error_code="MISSING_GOVERNANCE_FIELD"
+                )
+
+        # Validate constitutional hash if present
+        if "constitutional_hash" in data:
+            hash_result = self.validate_hash(data["constitutional_hash"])
+            result.issues.extend(hash_result.issues)
+            if not hash_result.is_valid:
+                result.is_valid = False
+
+        return result
+
+    def validate_ethical_guidelines(self, data: dict) -> ValidationResult:
+        """Validate ethical guidelines compliance."""
+        result = ValidationResult(is_valid=True)
+
+        # Check for ethical compliance indicators
+        if "ethical_review" not in data:
+            result.add_issue(
+                field="ethical_review",
+                message="Ethical review status is required",
+                severity=ValidationSeverity.WARNING,
+                error_code="MISSING_ETHICAL_REVIEW"
+            )
+
+        return result
+
+    def validate_privacy_compliance(self, data: dict) -> ValidationResult:
+        """Validate privacy compliance."""
+        result = ValidationResult(is_valid=True)
+
+        # Check for privacy compliance indicators
+        privacy_fields = ["data_classification", "privacy_level"]
+        for field in privacy_fields:
+            if field not in data:
+                result.add_issue(
+                    field=field,
+                    message=f"Privacy field '{field}' is required",
+                    severity=ValidationSeverity.WARNING,
+                    error_code="MISSING_PRIVACY_FIELD"
+                )
+
+        return result
+
+    def validate_security_requirements(self, data: dict) -> ValidationResult:
+        """Validate security requirements."""
+        result = ValidationResult(is_valid=True)
+
+        # Check for security compliance indicators
+        if "security_level" not in data:
+            result.add_issue(
+                field="security_level",
+                message="Security level is required",
+                severity=ValidationSeverity.ERROR,
+                error_code="MISSING_SECURITY_LEVEL"
+            )
+
+        return result
+
     async def validate(
         self, data: Any, context: dict[str, Any] | None = None
     ) -> ValidationResult:
@@ -595,6 +765,84 @@ class ConstitutionalValidator(Validator):
         if result.is_valid:
             result.validated_data = data if isinstance(data, dict) else {}
             result.metadata["constitutional_compliance"] = True
+
+        return result
+
+
+class ConstitutionalHashValidator:
+    """Validator specifically for constitutional hash validation."""
+
+    def __init__(self):
+        self.required_hash = "cdd01ef066bc6cf2"
+
+    def validate_hash_format(self, hash_value: str) -> ValidationResult:
+        """Validate hash format."""
+        result = ValidationResult(is_valid=True)
+
+        if not hash_value:
+            result.add_issue(
+                field="constitutional_hash",
+                message="Constitutional hash cannot be empty",
+                severity=ValidationSeverity.ERROR,
+                error_code="EMPTY_HASH"
+            )
+        elif len(hash_value) != 16:
+            result.add_issue(
+                field="constitutional_hash",
+                message=f"Constitutional hash must be 16 characters, got {len(hash_value)}",
+                severity=ValidationSeverity.ERROR,
+                error_code="INVALID_HASH_LENGTH"
+            )
+        elif not hash_value.isalnum():
+            result.add_issue(
+                field="constitutional_hash",
+                message="Constitutional hash must be alphanumeric",
+                severity=ValidationSeverity.ERROR,
+                error_code="INVALID_HASH_FORMAT"
+            )
+
+        return result
+
+    def validate_hash_integrity(self, hash_value: str) -> ValidationResult:
+        """Validate hash integrity."""
+        result = ValidationResult(is_valid=True)
+
+        # First validate format
+        format_result = self.validate_hash_format(hash_value)
+        result.issues.extend(format_result.issues)
+        if not format_result.is_valid:
+            result.is_valid = False
+            return result
+
+        # Then validate against expected hash
+        if hash_value != self.required_hash:
+            result.add_issue(
+                field="constitutional_hash",
+                message=f"Hash integrity check failed. Expected: {self.required_hash}",
+                severity=ValidationSeverity.ERROR,
+                error_code="HASH_INTEGRITY_ERROR"
+            )
+
+        return result
+
+    def validate_constitutional_compliance_function(self, data: dict) -> ValidationResult:
+        """Validate constitutional compliance function."""
+        result = ValidationResult(is_valid=True)
+
+        # Check if constitutional hash is present
+        if "constitutional_hash" not in data:
+            result.add_issue(
+                field="constitutional_hash",
+                message="Constitutional hash is required for compliance",
+                severity=ValidationSeverity.ERROR,
+                error_code="MISSING_CONSTITUTIONAL_HASH"
+            )
+        else:
+            # Validate the hash
+            hash_result = self.validate_hash_integrity(data["constitutional_hash"])
+            result.issues.extend(hash_result.issues)
+            if not hash_result.is_valid:
+                result.is_valid = False
 
         return result
 

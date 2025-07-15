@@ -22,7 +22,7 @@ services:
     container_name: acgs_postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
       POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
     volumes:
@@ -163,10 +163,10 @@ services:
     environment:
     - SERVICE_NAME=auth_service
     - SERVICE_PORT=8000
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/0
-    - SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
-    - JWT_SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
+    - SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    - JWT_SECRET_KEY=${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=${ENVIRONMENT:-development}
     - LOG_LEVEL=${LOG_LEVEL:-INFO}
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -175,7 +175,7 @@ services:
     - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
     - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
     - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
-    working_dir: /app/services/platform/authentication/auth_service
+    working_dir: /app/services/platform/authentication/auth_service  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     command:
     - uvicorn
     - app.main:app
@@ -223,7 +223,7 @@ services:
     environment:
     - SERVICE_NAME=ac_service
     - SERVICE_PORT=8001
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/1
     - AUTH_SERVICE_URL=http://auth_service:8000
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -279,7 +279,7 @@ services:
     environment:
     - SERVICE_NAME=integrity_service
     - SERVICE_PORT=8002
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/2
     - AUTH_SERVICE_URL=http://auth_service:8000
     - AC_SERVICE_URL=http://ac_service:8001
@@ -291,7 +291,7 @@ services:
     - DEEPSEEK_R1_ENABLED=${DEEPSEEK_R1_ENABLED:-true}
     - NVIDIA_QWEN_ENABLED=${NVIDIA_QWEN_ENABLED:-true}
     - NANO_VLLM_ENABLED=${NANO_VLLM_ENABLED:-true}
-    working_dir: /app/services/platform/integrity/integrity_service
+    working_dir: /app/services/platform/integrity/integrity_service  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     command:
     - uvicorn
     - app.main:app
@@ -335,7 +335,7 @@ services:
     environment:
     - SERVICE_NAME=fv_service
     - SERVICE_PORT=8003
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/3
     - AUTH_SERVICE_URL=http://auth_service:8000
     - AC_SERVICE_URL=http://ac_service:8001
@@ -392,7 +392,7 @@ services:
     environment:
     - SERVICE_NAME=gs_service
     - SERVICE_PORT=8004
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/4
     - AUTH_SERVICE_URL=http://auth_service:8000
     - AC_SERVICE_URL=http://ac_service:8001
@@ -452,7 +452,7 @@ services:
     environment:
     - SERVICE_NAME=pgc_service
     - SERVICE_PORT=8005
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/5
     - AUTH_SERVICE_URL=http://auth_service:8000
     - AC_SERVICE_URL=http://ac_service:8001
@@ -512,7 +512,7 @@ services:
     environment:
     - SERVICE_NAME=ec_service
     - SERVICE_PORT=8006
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/6
     - AUTH_SERVICE_URL=http://auth_service:8000
     - AC_SERVICE_URL=http://ac_service:8001
@@ -619,7 +619,7 @@ services:
     container_name: acgs_agent_hitl
     environment:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:-acgs_secure_2024}@postgres:5432/agent_hitl
+    - DATABASE_URL=postgresql+asyncpg://postgres:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379
     - AGENT_IDENTITY_SERVICE_URL=http://auth_service:8000
     - CONSTITUTIONAL_AI_SERVICE_URL=http://ac_service:8001
@@ -691,7 +691,7 @@ services:
     container_name: acgs_grafana
     environment:
     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:-admin}
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin123}
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
     - ./scripts/docker/grafana/provisioning:/etc/grafana/provisioning:ro

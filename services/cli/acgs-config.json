@@ -1,9 +1,11 @@
 {
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "_acgs_compliance": "ACGS-2 Constitutional Compliance Validation",
   "acgs": {
     "constitutional_hash": "cdd01ef066bc6cf2",
     "services": {
       "auth_service_url": "http://localhost:8016",
-      "constitutional_ai_url": "http://localhost:8001", 
+      "constitutional_ai_url": "http://localhost:8001",
       "integrity_service_url": "http://localhost:8002",
       "formal_verification_url": "http://localhost:8003",
       "governance_synthesis_url": "http://localhost:8004",

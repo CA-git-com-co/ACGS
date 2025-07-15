@@ -51,7 +51,7 @@ groups:
       description: '{{ $value }} transaction failures per second for {{ $labels.transaction_type
         }}'
       runbook_url: https://docs.acgs.ai/runbooks/solana-transaction-failures
-  - alert: BlockchainConstitutionalHashValidationFailures
+  - alert: BlockchainConstitutionalHashValidationFailures  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     expr: rate(acgs_blockchain_constitutional_hash_validations_total{result="failed"}[5m])
       > 0.01
     for: 1m
@@ -113,7 +113,7 @@ groups:
       summary: Blockchain integration health below threshold
       description: Blockchain integration health is {{ $value }}
       runbook_url: https://docs.acgs.ai/runbooks/blockchain-integration-health-low
-  - alert: BlockchainConstitutionalComplianceScoreLow
+  - alert: BlockchainConstitutionalComplianceScoreLow  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     expr: acgs_blockchain_constitutional_compliance_score < 1.0
     for: 2m
     labels:

@@ -406,7 +406,7 @@ _calculate_dignity_score(input_data) := score if {
 
 _check_autonomy(input_data) := 1.0 if {
     input_data.action != "override_user_choice"
-    not input_data.environment.forced_decision
+    not input_dataconfig/environments/development.environment.forced_decision
 } else := 0.0
 
 _check_respect(input_data) := 1.0 if {
@@ -414,7 +414,7 @@ _check_respect(input_data) := 1.0 if {
 } else := 0.0
 
 _check_human_oversight(input_data) := 1.0 if {
-    input_data.environment.human_oversight == true
+    input_dataconfig/environments/development.environment.human_oversight == true
 } else := 0.5
 
 _check_non_discrimination(input_data) := 1.0 if {
@@ -458,11 +458,11 @@ _calculate_fairness_score(input_data) := score if {
 }
 
 _check_equal_treatment(input_data) := 1.0 if {
-    input_data.environment.equal_treatment_ensured == true
+    input_dataconfig/environments/development.environment.equal_treatment_ensured == true
 } else := 0.0
 
 _check_bias_mitigation(input_data) := 1.0 if {
-    input_data.environment.bias_checked == true
+    input_dataconfig/environments/development.environment.bias_checked == true
 } else := 0.0
 
 _check_equitable_access(input_data) := 1.0 if {
@@ -494,15 +494,15 @@ _calculate_transparency_score(input_data) := score if {
 }
 
 _check_explainability(input_data) := 1.0 if {
-    input_data.environment.explanation_available == true
+    input_dataconfig/environments/development.environment.explanation_available == true
 } else := 0.0
 
 _check_audit_trail(input_data) := 1.0 if {
-    input_data.environment.audit_logged == true
+    input_dataconfig/environments/development.environment.audit_logged == true
 } else := 0.0
 
 _check_disclosure(input_data) := 1.0 if {
-    input_data.environment.ai_disclosure == true
+    input_dataconfig/environments/development.environment.ai_disclosure == true
 } else := 0.0
 """
 
@@ -530,15 +530,15 @@ _calculate_accountability_score(input_data) := score if {
 }
 
 _check_responsibility_chain(input_data) := 1.0 if {
-    input_data.environment.responsible_party_identified == true
+    input_dataconfig/environments/development.environment.responsible_party_identified == true
 } else := 0.0
 
 _check_monitoring(input_data) := 1.0 if {
-    input_data.environment.monitoring_active == true
+    input_dataconfig/environments/development.environment.monitoring_active == true
 } else := 0.0
 
 _check_remediation(input_data) := 1.0 if {
-    input_data.environment.remediation_available == true
+    input_dataconfig/environments/development.environment.remediation_available == true
 } else := 0.0
 """
 
@@ -570,11 +570,11 @@ _check_data_minimization(input_data) := 1.0 if {
 } else := 0.0
 
 _check_consent(input_data) := 1.0 if {
-    input_data.environment.user_consent == true
+    input_dataconfig/environments/development.environment.user_consent == true
 } else := 0.0
 
 _check_encryption(input_data) := 1.0 if {
-    input_data.environment.data_encrypted == true
+    input_dataconfig/environments/development.environment.data_encrypted == true
 } else := 0.0
 """
 
@@ -593,12 +593,12 @@ decision := "allow" if {
 }
 
 security_level := "low" if {
-    input.environment.threat_level == "low"
+    inputconfig/environments/development.environment.threat_level == "low"
     _basic_security_met(input)
 }
 
 security_level := "medium" if {
-    input.environment.threat_level == "medium"
+    inputconfig/environments/development.environment.threat_level == "medium"
     _enhanced_security_met(input)
 }
 
@@ -620,17 +620,17 @@ _authorization_granted(input_data) if {
 }
 
 _threats_detected(input_data) if {
-    input_data.environment.malicious_activity == true
+    input_dataconfig/environments/development.environment.malicious_activity == true
 }
 
 _basic_security_met(input_data) if {
-    input_data.environment.ssl_enabled == true
-    input_data.environment.rate_limited == true
+    input_dataconfig/environments/development.environment.ssl_enabled == true
+    input_dataconfig/environments/development.environment.rate_limited == true
 }
 
 _enhanced_security_met(input_data) if {
     _basic_security_met(input_data)
-    input_data.environment.anomaly_detection == true
+    input_dataconfig/environments/development.environment.anomaly_detection == true
 }
 """
 
@@ -665,11 +665,11 @@ _correct_tenant_scope(input_data) if {
 }
 
 _data_isolation_enforced(input_data) if {
-    input_data.environment.data_isolation == true
+    input_dataconfig/environments/development.environment.data_isolation == true
 }
 
 _resource_boundaries_respected(input_data) if {
-    input_data.environment.resource_quotas_enforced == true
+    input_dataconfig/environments/development.environment.resource_quotas_enforced == true
 }
 
 _tenant_access_granted(input_data) if {
@@ -692,21 +692,21 @@ decision := "deny" if {
 }
 
 optimization_allowed := false if {
-    input.environment.computational_budget_exceeded == true
+    inputconfig/environments/development.environment.computational_budget_exceeded == true
 }
 
 optimization_allowed := false if {
     input.resource.safety_critical == true
-    not input.environment.safety_validation_passed
+    not inputconfig/environments/development.environment.safety_validation_passed
 }
 
 _optimization_risks_detected(input_data) if {
-    input_data.environment.convergence_failure == true
+    input_dataconfig/environments/development.environment.convergence_failure == true
 }
 
 _optimization_risks_detected(input_data) if {
-    input_data.environment.parameter_drift_detected == true
-    input_data.environment.drift_severity == "high"
+    input_dataconfig/environments/development.environment.parameter_drift_detected == true
+    input_dataconfig/environments/development.environment.drift_severity == "high"
 }
 """
 

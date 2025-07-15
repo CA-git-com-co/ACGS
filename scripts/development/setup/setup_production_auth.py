@@ -108,7 +108,7 @@ class ProductionAuthSetup:
                     "council_member": "council123!",
                 }
 
-                password = passwords.get(username)
+                password = os.environ.get("PASSWORD")
                 if not password:
                     continue
 
@@ -177,9 +177,9 @@ class ProductionAuthSetup:
         print("  ✅ Tokens saved to auth_tokens.json")
 
         # Create environment file for easy sourcing
-        with open("auth_tokens.env", "w") as f:
+        with open("auth_tokensconfig/environments/development.env", "w") as f:
             f.write("# ACGS-PGP Authentication Tokens\n")
-            f.write("# Source this file: source auth_tokens.env\n\n")
+            f.write("# Source this file: source auth_tokensconfig/environments/development.env\n\n")
             for username, token in self.tokens.items():
                 f.write(f"export {username.upper()}_TOKEN='{token}'\n")
             f.write(f"\nexport ADMIN_TOKEN='{self.tokens.get('admin', '')}'\n")
@@ -189,7 +189,7 @@ class ProductionAuthSetup:
             f.write(f"export AUDITOR_TOKEN='{self.tokens.get('auditor', '')}'\n")
             f.write(f"export COUNCIL_TOKEN='{self.tokens.get('council_member', '')}'\n")
 
-        print("  ✅ Environment variables saved to auth_tokens.env")
+        print("  ✅ Environment variables saved to auth_tokensconfig/environments/development.env")
 
     def test_token_authentication(self):
         """Test token authentication with services"""
@@ -225,7 +225,7 @@ class ProductionAuthSetup:
 # ACGS-PGP RBAC Testing Script
 # Tests Role-Based Access Control with generated tokens
 
-source auth_tokens.env
+source auth_tokensconfig/environments/development.env
 
 echo "🔐 Testing RBAC with Generated Tokens"
 echo "======================================"
@@ -265,7 +265,7 @@ echo -e "\n✅ RBAC Testing Complete"
         print("\n" + "=" * 60)
         print("✅ Production Authentication Setup Complete!")
         print("\nNext steps:")
-        print("1. Source tokens: source auth_tokens.env")
+        print("1. Source tokens: source auth_tokensconfig/environments/development.env")
         print("2. Test RBAC: ./test_rbac.sh")
         print(
             "3. Use tokens in API calls: curl -H 'Authorization: Bearer $ADMIN_TOKEN' ..."

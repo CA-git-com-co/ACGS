@@ -384,12 +384,12 @@ This document describes the monitoring setup for the ACGS-1 system after reorgan
 ## Monitoring Components
 
 ### Prometheus
-- Configuration: `infrastructure/monitoring/prometheus/prometheus.yml`
+- Configuration: `infrastructure/monitoring/prometheus/prometheus.yml`  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - Scrapes metrics from all ACGS services every 10 seconds
 - Stores metrics for alerting and visualization
 
 ### Grafana
-- Dashboard: `infrastructure/monitoring/dashboards/acgs_services_dashboard.json`
+- Dashboard: `infrastructure/monitoring/dashboards/acgs_services_dashboard.json`  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - Visualizes service metrics, response times, and health status
 - Access: http://localhost:3000 (default Grafana port)
 

@@ -1,0 +1,1042 @@
+{
+  "dataset_type": "wina_optimization",
+  "description": "WINA optimization training examples for neural efficiency",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "id": "wina_demo_0000",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.3,
+          "gflops_reduction_target": 0.48,
+          "accuracy_preservation_threshold": 0.939,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 12,
+          "neurons_per_layer": 1024,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.658,
+          "accuracy_preservation": 0.985,
+          "sparsity_achieved": 0.6,
+          "constitutional_compliance": 0.989
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 57% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 18432,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0001",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.49,
+          "gflops_reduction_target": 0.51,
+          "accuracy_preservation_threshold": 0.965,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 14,
+          "neurons_per_layer": 512,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "neuron_activation_optimization",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.693,
+          "accuracy_preservation": 0.945,
+          "sparsity_achieved": 0.436,
+          "constitutional_compliance": 0.963
+        },
+        "optimization_strategy": {
+          "method": "neuron_activation_optimization",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 54% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "neuron_activation_optimization",
+        "model_size": 8192,
+        "optimization_level": "aggressive"
+      }
+    },
+    {
+      "id": "wina_demo_0002",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.4,
+          "gflops_reduction_target": 0.46,
+          "accuracy_preservation_threshold": 0.943,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 23,
+          "neurons_per_layer": 512,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "gflops_reduction",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.493,
+          "accuracy_preservation": 0.978,
+          "sparsity_achieved": 0.422,
+          "constitutional_compliance": 0.967
+        },
+        "optimization_strategy": {
+          "method": "gflops_reduction",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 55% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "gflops_reduction",
+        "model_size": 10752,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0003",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.76,
+          "gflops_reduction_target": 0.52,
+          "accuracy_preservation_threshold": 0.967,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 21,
+          "neurons_per_layer": 512,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "weight_informed_gating",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.551,
+          "accuracy_preservation": 0.965,
+          "sparsity_achieved": 0.387,
+          "constitutional_compliance": 0.983
+        },
+        "optimization_strategy": {
+          "method": "weight_informed_gating",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 56% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "weight_informed_gating",
+        "model_size": 9216,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0004",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.75,
+          "gflops_reduction_target": 0.68,
+          "accuracy_preservation_threshold": 0.969,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 16,
+          "neurons_per_layer": 2048,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.52,
+          "accuracy_preservation": 0.984,
+          "sparsity_achieved": 0.579,
+          "constitutional_compliance": 0.975
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 59% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 10240,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0005",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.73,
+          "gflops_reduction_target": 0.6,
+          "accuracy_preservation_threshold": 0.966,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 8,
+          "neurons_per_layer": 512,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.675,
+          "accuracy_preservation": 0.947,
+          "sparsity_achieved": 0.632,
+          "constitutional_compliance": 0.951
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 57% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 4096,
+        "optimization_level": "aggressive"
+      }
+    },
+    {
+      "id": "wina_demo_0006",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.34,
+          "gflops_reduction_target": 0.42,
+          "accuracy_preservation_threshold": 0.973,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 6,
+          "neurons_per_layer": 1024,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "weight_informed_gating",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.519,
+          "accuracy_preservation": 0.932,
+          "sparsity_achieved": 0.605,
+          "constitutional_compliance": 0.976
+        },
+        "optimization_strategy": {
+          "method": "weight_informed_gating",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 64% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "weight_informed_gating",
+        "model_size": 11264,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0007",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.77,
+          "gflops_reduction_target": 0.64,
+          "accuracy_preservation_threshold": 0.974,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 16,
+          "neurons_per_layer": 1024,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "neuron_activation_optimization",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.427,
+          "accuracy_preservation": 0.924,
+          "sparsity_achieved": 0.481,
+          "constitutional_compliance": 0.972
+        },
+        "optimization_strategy": {
+          "method": "neuron_activation_optimization",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 62% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "neuron_activation_optimization",
+        "model_size": 10752,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0008",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.67,
+          "gflops_reduction_target": 0.49,
+          "accuracy_preservation_threshold": 0.961,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 6,
+          "neurons_per_layer": 512,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.61,
+          "accuracy_preservation": 0.962,
+          "sparsity_achieved": 0.487,
+          "constitutional_compliance": 0.994
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 57% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 8704,
+        "optimization_level": "aggressive"
+      }
+    },
+    {
+      "id": "wina_demo_0009",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.36,
+          "gflops_reduction_target": 0.55,
+          "accuracy_preservation_threshold": 0.904,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 13,
+          "neurons_per_layer": 2048,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.497,
+          "accuracy_preservation": 0.927,
+          "sparsity_achieved": 0.503,
+          "constitutional_compliance": 0.951
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 69% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 40960,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0010",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.52,
+          "gflops_reduction_target": 0.64,
+          "accuracy_preservation_threshold": 0.939,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 9,
+          "neurons_per_layer": 512,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "weight_informed_gating",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.451,
+          "accuracy_preservation": 0.941,
+          "sparsity_achieved": 0.626,
+          "constitutional_compliance": 0.956
+        },
+        "optimization_strategy": {
+          "method": "weight_informed_gating",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 47% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "weight_informed_gating",
+        "model_size": 21504,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0011",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.47,
+          "gflops_reduction_target": 0.51,
+          "accuracy_preservation_threshold": 0.943,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 19,
+          "neurons_per_layer": 2048,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.56,
+          "accuracy_preservation": 0.934,
+          "sparsity_achieved": 0.755,
+          "constitutional_compliance": 0.976
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 55% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 16384,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0012",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.53,
+          "gflops_reduction_target": 0.64,
+          "accuracy_preservation_threshold": 0.961,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 9,
+          "neurons_per_layer": 2048,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "gflops_reduction",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.663,
+          "accuracy_preservation": 0.981,
+          "sparsity_achieved": 0.422,
+          "constitutional_compliance": 0.957
+        },
+        "optimization_strategy": {
+          "method": "gflops_reduction",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 40% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "gflops_reduction",
+        "model_size": 14336,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0013",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.4,
+          "gflops_reduction_target": 0.63,
+          "accuracy_preservation_threshold": 0.962,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 16,
+          "neurons_per_layer": 1024,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "gflops_reduction",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.679,
+          "accuracy_preservation": 0.966,
+          "sparsity_achieved": 0.582,
+          "constitutional_compliance": 0.952
+        },
+        "optimization_strategy": {
+          "method": "gflops_reduction",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 68% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "gflops_reduction",
+        "model_size": 7168,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0014",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.32,
+          "gflops_reduction_target": 0.43,
+          "accuracy_preservation_threshold": 0.905,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 6,
+          "neurons_per_layer": 1024,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.472,
+          "accuracy_preservation": 0.926,
+          "sparsity_achieved": 0.54,
+          "constitutional_compliance": 0.963
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 47% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 10752,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0015",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.62,
+          "gflops_reduction_target": 0.42,
+          "accuracy_preservation_threshold": 0.947,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 22,
+          "neurons_per_layer": 2048,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.413,
+          "accuracy_preservation": 0.969,
+          "sparsity_achieved": 0.798,
+          "constitutional_compliance": 0.95
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 68% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 10240,
+        "optimization_level": "aggressive"
+      }
+    },
+    {
+      "id": "wina_demo_0016",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.58,
+          "gflops_reduction_target": 0.68,
+          "accuracy_preservation_threshold": 0.971,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 18,
+          "neurons_per_layer": 2048,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.499,
+          "accuracy_preservation": 0.945,
+          "sparsity_achieved": 0.46,
+          "constitutional_compliance": 0.989
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 60% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 19456,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0017",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.53,
+          "gflops_reduction_target": 0.68,
+          "accuracy_preservation_threshold": 0.949,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 9,
+          "neurons_per_layer": 512,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.48,
+          "accuracy_preservation": 0.939,
+          "sparsity_achieved": 0.761,
+          "constitutional_compliance": 0.968
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 67% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 7680,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0018",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.66,
+          "gflops_reduction_target": 0.5,
+          "accuracy_preservation_threshold": 0.965,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 14,
+          "neurons_per_layer": 512,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "gflops_reduction",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.574,
+          "accuracy_preservation": 0.942,
+          "sparsity_achieved": 0.615,
+          "constitutional_compliance": 0.997
+        },
+        "optimization_strategy": {
+          "method": "gflops_reduction",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 66% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "gflops_reduction",
+        "model_size": 6144,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0019",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.62,
+          "gflops_reduction_target": 0.43,
+          "accuracy_preservation_threshold": 0.911,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 20,
+          "neurons_per_layer": 512,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "neuron_activation_optimization",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.482,
+          "accuracy_preservation": 0.968,
+          "sparsity_achieved": 0.534,
+          "constitutional_compliance": 0.986
+        },
+        "optimization_strategy": {
+          "method": "neuron_activation_optimization",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 64% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "neuron_activation_optimization",
+        "model_size": 43008,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0020",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.67,
+          "gflops_reduction_target": 0.52,
+          "accuracy_preservation_threshold": 0.974,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 10,
+          "neurons_per_layer": 1024,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "weight_informed_gating",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.578,
+          "accuracy_preservation": 0.956,
+          "sparsity_achieved": 0.629,
+          "constitutional_compliance": 0.997
+        },
+        "optimization_strategy": {
+          "method": "weight_informed_gating",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 58% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "weight_informed_gating",
+        "model_size": 14336,
+        "optimization_level": "aggressive"
+      }
+    },
+    {
+      "id": "wina_demo_0021",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.69,
+          "gflops_reduction_target": 0.56,
+          "accuracy_preservation_threshold": 0.951,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 8,
+          "neurons_per_layer": 2048,
+          "activation_function": "gelu"
+        },
+        "optimization_scenario": "neuron_activation_optimization",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.545,
+          "accuracy_preservation": 0.925,
+          "sparsity_achieved": 0.412,
+          "constitutional_compliance": 0.955
+        },
+        "optimization_strategy": {
+          "method": "neuron_activation_optimization",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 44% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "neuron_activation_optimization",
+        "model_size": 12288,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0022",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.56,
+          "gflops_reduction_target": 0.46,
+          "accuracy_preservation_threshold": 0.937,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 8,
+          "neurons_per_layer": 512,
+          "activation_function": "swish"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.504,
+          "accuracy_preservation": 0.984,
+          "sparsity_achieved": 0.382,
+          "constitutional_compliance": 0.986
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 68% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 16384,
+        "optimization_level": "moderate"
+      }
+    },
+    {
+      "id": "wina_demo_0023",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.4,
+          "gflops_reduction_target": 0.43,
+          "accuracy_preservation_threshold": 0.917,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 12,
+          "neurons_per_layer": 512,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "svd_transformation",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.662,
+          "accuracy_preservation": 0.975,
+          "sparsity_achieved": 0.355,
+          "constitutional_compliance": 0.966
+        },
+        "optimization_strategy": {
+          "method": "svd_transformation",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 40% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "svd_transformation",
+        "model_size": 5120,
+        "optimization_level": "conservative"
+      }
+    },
+    {
+      "id": "wina_demo_0024",
+      "input": {
+        "wina_config": {
+          "target_sparsity": 0.35,
+          "gflops_reduction_target": 0.6,
+          "accuracy_preservation_threshold": 0.914,
+          "constitutional_compliance_threshold": 0.95
+        },
+        "model_architecture": {
+          "layers": 20,
+          "neurons_per_layer": 2048,
+          "activation_function": "relu"
+        },
+        "optimization_scenario": "gflops_reduction",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "wina_optimization_result": {
+          "gflops_reduction": 0.522,
+          "accuracy_preservation": 0.948,
+          "sparsity_achieved": 0.668,
+          "constitutional_compliance": 0.952
+        },
+        "optimization_strategy": {
+          "method": "gflops_reduction",
+          "phases": [
+            "analysis",
+            "optimization",
+            "validation"
+          ],
+          "expected_benefits": "Reduce GFLOPs by 63% while preserving accuracy"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "scenario": "gflops_reduction",
+        "model_size": 20480,
+        "optimization_level": "aggressive"
+      }
+    }
+  ],
+  "metadata": {
+    "total_examples": 25,
+    "scenarios_covered": [
+      "gflops_reduction",
+      "weight_informed_gating",
+      "neuron_activation_optimization",
+      "svd_transformation"
+    ],
+    "target_gflops_reduction": "40-70%"
+  }
+}

@@ -122,7 +122,7 @@ class CPUMultimodalTester:
             # Try to use a default font, fall back to default if not available
             try:
                 font = ImageFont.truetype(
-                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16
+                    "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 16  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 )
             except:
                 font = ImageFont.load_default()

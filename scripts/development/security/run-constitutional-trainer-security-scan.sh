@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Constitutional Trainer Security Scanning Script
 #
@@ -180,7 +182,7 @@ install_trivy() {
     log_info "Installing Trivy..."
     
     if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+        curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     elif [[ "$OSTYPE" == "darwin"* ]]; then
         brew install trivy
     else
@@ -629,7 +631,7 @@ EOF
 # Main execution
 main() {
     log_info "🔒 Constitutional Trainer Security Scanning"
-    echo "============================================================"
+    echo "============================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     parse_args "$@"
     check_prerequisites

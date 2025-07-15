@@ -45,7 +45,7 @@ class DeepSeekR1Deployer:
 
     def __init__(self, phase: int, environment: str):
         self.phase = phase
-        self.environment = environment
+        selfconfig/environments/development.environment = environment
         self.deployment_config = self._load_deployment_config()
         self.monitor = DeepSeekR1Monitor()
 
@@ -177,7 +177,7 @@ class DeepSeekR1Deployer:
 
         # Create phase-specific configuration file
         phase_config_file = (
-            f"config/environments/phase_{self.phase}_{self.environment}.env"
+            f"config/environments/phase_{self.phase}_{selfconfig/environments/development.environment}config/environments/development.env"
         )
         os.makedirs(os.path.dirname(phase_config_file), exist_ok=True)
 
@@ -338,7 +338,7 @@ class DeepSeekR1Deployer:
 
         # Save rollback configuration
         rollback_file = (
-            f"config/environments/rollback_{self.environment}_{int(time.time())}.env"
+            f"config/environments/rollback_{selfconfig/environments/development.environment}_{int(time.time())}config/environments/development.env"
         )
         with open(rollback_file, "w") as f:
             f.write("# AUTOMATIC ROLLBACK CONFIGURATION\n")
@@ -354,7 +354,7 @@ class DeepSeekR1Deployer:
             "deployment_info": {
                 "phase": self.phase,
                 "phase_name": self.phase_configs[self.phase]["name"],
-                "environment": self.environment,
+                "environment": selfconfig/environments/development.environment,
                 "traffic_percentage": self.phase_configs[self.phase][
                     "traffic_percentage"
                 ],
@@ -390,7 +390,7 @@ class DeepSeekR1Deployer:
         print(f"DEEPSEEK R1 PILOT DEPLOYMENT - PHASE {self.phase}")
         print("=" * 80)
         print(f"Phase: {self.phase} ({self.phase_configs[self.phase]['name']})")
-        print(f"Environment: {self.environment}")
+        print(f"Environment: {selfconfig/environments/development.environment}")
         print(
             f"Traffic Percentage: {self.phase_configs[self.phase]['traffic_percentage']}%"
         )
@@ -461,7 +461,7 @@ async def main():
 
     args = parser.parse_args()
 
-    deployer = DeepSeekR1Deployer(args.phase, args.environment)
+    deployer = DeepSeekR1Deployer(args.phase, argsconfig/environments/development.environment)
 
     # Validate prerequisites
     if not args.skip_validation:

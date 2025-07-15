@@ -80,7 +80,7 @@ class RouterOptimizationTester:
                     pathlib.Path(__file__).parent, "..", "..", "..", "..", ".."
                 )
             )
-            from services.core.governance_synthesis.gs_service.app.core.multi_model_coordinator import (
+            from services.core.governance-synthesis.gs_service.app.core.multi_model_coordinator import (
                 MultiModelCoordinator,
             )
 

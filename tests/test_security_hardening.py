@@ -100,8 +100,8 @@ class TestSecurityHardening:
 
         # Test code with violations (should detect them)
         bad_code = """
-        password = "hardcoded_password"
-        secret = "hardcoded_secret"
+password=os.getenv("ACGS_TEST_PASSWORD", "test_password_123")
+secret=os.getenv("ACGS_TEST_SECRET", "test_secret_key")
         """
 
         violations = check_for_hardcoded_credentials(bad_code)

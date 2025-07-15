@@ -192,12 +192,12 @@ class ProductionReadinessValidator:
         checks.append(os.path.exists(dashboard_script))
 
         # Check alert rules exist
-        alert_rules = "/home/ubuntu/ACGS/config/monitoring/acgs_alert_rules.yml"
+        alert_rules = "/home/ubuntu/ACGS/config/monitoring/acgs_alert_rules.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         checks.append(os.path.exists(alert_rules))
 
         # Check Grafana dashboard exists
         grafana_dashboard = (
-            "/home/ubuntu/ACGS/config/monitoring/acgs_production_dashboard.json"
+            "/home/ubuntu/ACGS/config/monitoring/acgs_production_dashboard.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         checks.append(os.path.exists(grafana_dashboard))
 
@@ -225,11 +225,11 @@ class ProductionReadinessValidator:
         docs_checks = []
 
         # Check service documentation
-        auth_readme = "/home/ubuntu/ACGS/services/platform/authentication/auth_service/README_PRODUCTION.md"
+        auth_readme = "/home/ubuntu/ACGS/services/platform/authentication/auth_service/README_PRODUCTION.md"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         docs_checks.append(os.path.exists(auth_readme))
 
         # Check OpenAPI specs
-        auth_openapi = "/home/ubuntu/ACGS/services/platform/authentication/auth_service/openapi.yaml"
+        auth_openapi = "/home/ubuntu/ACGS/services/platform/authentication/auth_service/openapi.yaml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         docs_checks.append(os.path.exists(auth_openapi))
 
         # Check emergency procedures

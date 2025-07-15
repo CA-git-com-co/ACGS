@@ -4,7 +4,7 @@ ACGS-1 Constitutional Governance Enhancement
 
 Phase 4: Groq LLM Integration
 - Secure API key management using environment variables
-- Default model: "llama-3.1-70b-versatile" for tensor decomposition generation
+- Default model: "qwen3-32b-groq-versatile" for tensor decomposition generation
 - Async tensor decomposition generation with governance constraints
 - Comprehensive error handling with circuit breaker pattern
 - Integration with existing ACGS-1 governance workflows
@@ -85,7 +85,7 @@ class GroqTensorService:
     def __init__(self):
         self.api_key = os.getenv("GROQ_API_KEY")
         self.base_url = "https://api.groq.com/openai/v1/chat/completions"
-        self.default_model = "llama-3.1-70b-versatile"
+        self.default_model = "qwen3-32b-groq-versatile"
         self.temperature = 0.3  # Deterministic for governance
         self.max_tokens = 4096
         self.timeout_seconds = 30

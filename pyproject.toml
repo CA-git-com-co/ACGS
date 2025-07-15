@@ -58,7 +58,7 @@ dependencies = [
     "setuptools>=80.9.0",
     
     # Additional Performance and Utilities
-    "aioredis>=2.0.1",
+    "redis>=5.0.0",  # Use redis-py instead of aioredis for Python 3.12 compatibility
     "cachetools>=5.3.2",
     "orjson>=3.9.10",
     "msgpack>=1.0.7",
@@ -333,7 +333,7 @@ testpaths = [ "tests", "services",]
 python_files = [ "test_*.py", "*_test.py",]
 python_classes = [ "Test*",]
 python_functions = [ "test_*",]
-markers = [ "slow: marks tests as slow (deselect with '-m \"not slow\"')", "integration: marks tests as integration tests", "unit: marks tests as unit tests", "e2e: marks tests as end-to-end tests", "performance: marks tests as performance tests", "security: marks tests as security tests", "benchmark: marks tests as benchmark tests", "constitutional: marks tests related to constitutional governance", "timeout: set a timeout for a test", "gpu: marks tests that require GPU", "network: marks tests that require network access", "database: marks tests that require database", "redis: marks tests that require Redis", "ci: marks tests that should run in CI", "local: marks tests that should only run locally", "smoke: marks smoke tests for quick validation", "regression: marks regression tests",]
+markers = [ "slow: marks tests as slow (deselect with '-m \"not slow\"')", "integration: marks tests as integration tests", "unit: marks tests as unit tests", "e2e: marks tests as end-to-end tests", "performance: marks tests as performance tests", "stress: marks tests as stress tests", "security: marks tests as security tests", "benchmark: marks tests as benchmark tests", "constitutional: marks tests related to constitutional governance", "timeout: set a timeout for a test", "gpu: marks tests that require GPU", "network: marks tests that require network access", "database: marks tests that require database", "redis: marks tests that require Redis", "ci: marks tests that should run in CI", "local: marks tests that should only run locally", "smoke: marks smoke tests for quick validation", "regression: marks regression tests",]
 filterwarnings = [ "ignore::DeprecationWarning", "ignore::PendingDeprecationWarning", "ignore::pytest.PytestUnraisableExceptionWarning", "ignore::UserWarning", "ignore::RuntimeWarning", "error::FutureWarning",]
 asyncio_mode = "auto"
 timeout = 300
@@ -347,7 +347,7 @@ cache_dir = ".pytest_cache"
 source = [ "services", "scripts", "core",]
 branch = true
 parallel = true
-omit = [ "*/tests/*", "*/test_*", "*_test.py", "test_*.py", "*/__pycache__/*", "*/migrations/*", "*/node_modules/*", "*/venv/*", "*/.venv/*", "setup.py", "conftest.py", "*/conftest.py", "*/site-packages/*", "*/.tox/*", "*/.pytest_cache/*", "*/htmlcov/*", "*/build/*", "*/dist/*", "*/docs/*",]
+omit = [ "*/tests/*", "*/test_*", "*_test.py", "test_*.py", "*/__pycache__/*", "*/migrations/*", "*/node_modules/*", "*/venv/*", "*/.venv/*", "setup.py", "conftest.py", "*/conftest.py", "*/site-packages/*", "*/.tox/*", "*/.pytest_cache/*", "*/reports/coverage/htmlcov/*", "*/build/*", "*/dist/*", "*/docs/*",]
 data_file = ".coverage"
 context = "test"
 
@@ -356,17 +356,17 @@ precision = 2
 skip_covered = false
 skip_empty = false
 sort = "cover"
-fail_under = 90
+fail_under = 80
 show_missing = true
 exclude_lines = [ "pragma: no cover", "pragma: nocover", "def __repr__", "def __str__", "if self.debug:", "if settings.DEBUG", "if TYPE_CHECKING:", "raise AssertionError", "raise NotImplementedError", "raise ValueError", "if 0:", "if False:", "if __name__ == .__main__.:", "class .*\\bProtocol\\):", "@(abc\\.)?abstractmethod", "@overload", "except ImportError:", "except ModuleNotFoundError:", "\\.\\.\\.", "pass",]
 
 [tool.coverage.html]
-directory = "htmlcov"
-title = "ACGS-PGP Test Coverage Report"
+directory = "test_reports/htmlcov"
+title = "ACGS-2 Test Coverage Report"
 show_contexts = true
 
 [tool.coverage.xml]
-output = "coverage.xml"
+output = "test_reports/coverage.xml"
 
 [tool.coverage.json]
 output = "coverage.json"

@@ -797,4 +797,19 @@ scripts/*/output/
 scripts/*/logs/
 
 # GitHub Actions runner
-actions-runner/
+actions-runner/# Virtual Environment Protection
+.venv/
+.venv_backup_*/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python Cache Protection
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

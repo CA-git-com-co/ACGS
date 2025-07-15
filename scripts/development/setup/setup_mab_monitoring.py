@@ -299,7 +299,7 @@ def create_docker_monitoring_stack():
                 "image": "grafana/grafana:latest",
                 "container_name": "acgs-grafana",
                 "ports": ["3001:3000"],  # Use 3001 to avoid conflicts
-                "environment": ["GF_SECURITY_ADMIN_PASSWORD=acgs_admin"],
+                "environment": ["GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")],
                 "volumes": [
                     "grafana-storage:/var/lib/grafana",
                     "./monitoring/mab_dashboard.json:/var/lib/grafana/dashboards/mab_dashboard.json",

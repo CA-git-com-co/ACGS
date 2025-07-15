@@ -84,15 +84,15 @@ docker-compose -f compose-stacks/docker-compose.mcp.yml up -d
 
 ### Environment Variables
 
-Create `.env` files for different environments:
+Create `config/environments/development.env` files for different environments:
 
 ```bash
-# .env.development
+# config/environments/development.env.development
 POSTGRES_PASSWORD=acgs_dev_password
 REDIS_PASSWORD=acgs_dev_redis
 ENVIRONMENT=development
 
-# .env.production  
+# config/environments/developmentconfig/environments/production.env.backup  
 POSTGRES_PASSWORD=${SECURE_POSTGRES_PASSWORD}
 REDIS_PASSWORD=${SECURE_REDIS_PASSWORD}
 ENVIRONMENT=production

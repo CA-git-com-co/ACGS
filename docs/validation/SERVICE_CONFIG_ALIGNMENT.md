@@ -187,9 +187,9 @@ python tools/validation/service_config_alignment_validator.py [--repo-root PATH]
        image: acgs/constitutional-ai:${CONSTITUTIONAL_AI_VERSION:-v1.0.0}
    ```
 
-3. **Update .env file**:
+3. **Update config/environments/development.env file**:
    ```bash
-   echo "CONSTITUTIONAL_AI_VERSION=v1.0.0" >> .env
+   echo "CONSTITUTIONAL_AI_VERSION=v1.0.0" >> config/environments/development.env
    ```
 
 ### 3. Environment Variable Discrepancies (MEDIUM Severity)
@@ -239,8 +239,8 @@ python tools/validation/service_config_alignment_validator.py [--repo-root PATH]
 
 2. **Use shared environment file**:
    ```bash
-   # Create shared.env
-   cat > shared.env << EOF
+   # Create sharedconfig/environments/development.env
+   cat > sharedconfig/environments/development.env << EOF
    DEBUG=false
    LOG_LEVEL=info
    CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -250,7 +250,7 @@ python tools/validation/service_config_alignment_validator.py [--repo-root PATH]
    services:
      service1:
        env_file:
-         - shared.env
+         - sharedconfig/environments/development.env
    ```
 
 ### 4. Missing Constitutional Hash (CRITICAL Severity)
@@ -662,4 +662,4 @@ fi
 
 For additional information, see:
 - [ACGS Validation Tools Cheat Sheet](../training/validation_tools_cheatsheet.md)
-- [ACGS Documentation Index](../ACGS_DOCUMENTATION_INDEX.md)
+- [ACGS Documentation Index](../ACGS_docs/DOCUMENTATION_INDEX.md)

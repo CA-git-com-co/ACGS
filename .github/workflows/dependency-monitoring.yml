@@ -371,7 +371,7 @@ jobs:
       - name: Vulnerability monitoring summary
         run: |
           echo "🔍 Dependency Vulnerability Monitoring Summary"
-          echo "=============================================="
+          echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           echo "Scan Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo "Alert Level: ${{ env.ALERT_LEVEL }}"
           echo ""

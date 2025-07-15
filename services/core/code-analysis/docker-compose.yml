@@ -19,13 +19,13 @@ services:
     - POSTGRESQL_PORT=5432
     - POSTGRESQL_DATABASE=acgs
     - POSTGRESQL_USER=acgs_user
-    - POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD:-acgs_password}
+    - POSTGRESQL_PASSWORD=os.environ.get("PASSWORD")
     - POSTGRESQL_POOL_SIZE=20
     - POSTGRESQL_MAX_OVERFLOW=10
     - REDIS_HOST=redis
     - REDIS_PORT=6379
     - REDIS_DB=3
-    - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    - REDIS_PASSWORD=os.environ.get("PASSWORD")
     - REDIS_POOL_SIZE=20
     - AUTH_SERVICE_URL=http://auth-service:8016
     - CONTEXT_SERVICE_URL=http://context-service:8012
@@ -54,7 +54,7 @@ services:
     - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
     - RATE_LIMIT_ENABLED=true
     - RATE_LIMIT_REQUESTS_PER_MINUTE=1000
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-development_jwt_secret_key}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-development_jwt_secret_key}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     volumes:
     - /home/dislove/ACGS-2:/workspace:ro
     - code_analysis_logs:/app/logs
@@ -96,7 +96,7 @@ services:
     environment:
     - POSTGRES_DB=acgs
     - POSTGRES_USER=acgs_user
-    - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD:-acgs_password}
+    - POSTGRES_PASSWORD=os.environ.get("PASSWORD")
     - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
     volumes:
     - postgres_data:/var/lib/postgresql/data
@@ -118,7 +118,7 @@ services:
     ports:
     - 6489:6379
     environment:
-    - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    - REDIS_PASSWORD=os.environ.get("PASSWORD")
     volumes:
     - redis_data:/data
     - ./config/redis.conf:/usr/local/etc/redis/redis.conf:ro
@@ -199,7 +199,7 @@ services:
     ports:
     - 3100:3000
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
     - grafana_data:/var/lib/grafana

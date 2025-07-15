@@ -3,7 +3,6 @@
 //! Replaces blockchain/scripts/key_management.sh with native Rust implementation
 
 use anchor_client::solana_sdk::{
-    pubkey::Pubkey,
     signature::{Keypair, Signer},
 };
 use anyhow::{Result, Context};
@@ -66,7 +65,7 @@ enum Commands {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct KeyInfo {
+pub struct KeyInfo {
     name: String,
     purpose: String,
     public_key: String,

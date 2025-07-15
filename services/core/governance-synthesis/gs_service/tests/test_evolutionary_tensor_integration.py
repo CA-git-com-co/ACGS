@@ -27,11 +27,17 @@ from unittest.mock import AsyncMock, patch
 import numpy as np
 
 # Import components for integration testing
-from services.core.governance_synthesis.gs_service.app.core.heterogeneous_validator import (
+from services.core.governance-synthesis.gs_service.app.core.heterogeneous_validator import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     GovernanceContext,
     HeterogeneousValidator,
 )
-from services.core.governance_synthesis.gs_service.app.services.groq_tensor_service import (
+from services.core.governance-synthesis.gs_service.app.services.groq_tensor_service import (
     GovernanceConstraints,
     GroqTensorService,
 )

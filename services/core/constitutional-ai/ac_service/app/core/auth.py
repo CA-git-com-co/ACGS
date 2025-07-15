@@ -1,14 +1,14 @@
 # Import shared authentication utilities
-from services.shared.auth import (  # Constitutional compliance hash for ACGS
-    CONSTITUTIONAL_HASH,
+from services.shared.auth import (
     RoleChecker,
-    "cdd01ef066bc6cf2",
-    =,
     get_current_active_user,
     get_current_user_from_token,
     require_ac_admin,
     require_policy_manager,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # AC service specific role checkers
 require_admin_role = require_ac_admin

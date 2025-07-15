@@ -1,5 +1,5 @@
 # Constitutional Hash: cdd01ef066bc6cf2
-# modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/test_spec.py
+# modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/test_spec.py  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 from __future__ import annotations
 
@@ -62,7 +62,7 @@ class TestSpec:
     @property
     def setup_env_script(self):
         return (
-            "\n".join(["#!/bin/bash", "set -euxo pipefail"] + self.env_script_list)
+            "\n".join(["#!/bin/bash", "set -euxo pipefail"] + selfconfig/environments/development.env_script_list)
             + "\n"
         )
 
@@ -94,10 +94,10 @@ class TestSpec:
         Note that old images are not automatically deleted, so consider cleaning up old images periodically.
         """
         hash_object = hashlib.sha256()
-        hash_object.update(str(self.env_script_list).encode("utf-8"))
+        hash_object.update(str(selfconfig/environments/development.env_script_list).encode("utf-8"))
         hash_value = hash_object.hexdigest()
         val = hash_value[:22]  # 22 characters is still very likely to be unique
-        return f"pb.env.{self.arch}.{val}:latest"
+        return f"pbconfig/environments/development.env.{self.arch}.{val}:latest"
 
     @property
     def instance_image_key(self):
@@ -118,7 +118,7 @@ class TestSpec:
 
     @property
     def instance_dockerfile(self):
-        return get_dockerfile_instance(self.platform, self.env_image_key)
+        return get_dockerfile_instance(self.platform, selfconfig/environments/development.env_image_key)
 
     @property
     def platform(self):

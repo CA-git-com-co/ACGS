@@ -1,10 +1,10 @@
 # API Gateway Service Requirements
 # Constitutional hash: cdd01ef066bc6cf2
 
-fastapi>=0.104.1
+fastapi>=0.115.6
 uvicorn[standard]>=0.24.0
-pydantic>=2.5.0
-aioredis>=2.0.1
+pydantic>=2.10.5
+redis>=4.5.0
 asyncpg>=0.29.0
 sqlalchemy[asyncio]>=2.0.23
 prometheus-client>=0.19.0

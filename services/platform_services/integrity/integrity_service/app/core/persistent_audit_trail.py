@@ -384,7 +384,7 @@ class CryptographicAuditChain:
 
         except Exception as e:
             logger.exception(f"Failed to get last block hash: {e}")
-            return "0000000000000000000000000000000000000000000000000000000000000000"
+            return "0000000000000000000000000000000000000000000000000000000000000000"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     async def _get_next_block_number(self) -> int:
         """Get the next block number in sequence."""

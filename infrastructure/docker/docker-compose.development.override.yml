@@ -2,7 +2,7 @@ version: '3.8'
 services:
   postgres:
     environment:
-      POSTGRES_PASSWORD: acgs_dev_password
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
     - postgres_dev_data:/var/lib/postgresql/data
@@ -13,7 +13,7 @@ services:
     command: postgres -c log_statement=all -c log_min_duration_statement=0
   redis:
     environment:
-      REDIS_PASSWORD: acgs_dev_redis
+      REDIS_PASSWORD: os.environ.get("PASSWORD")
       CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     volumes:
     - redis_dev_data:/data
@@ -23,7 +23,7 @@ services:
       debug
   constitutional-ai:
     environment:
-    - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_dev_redis@redis:6379/0
     - OPA_URL=http://opa:8181
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -39,7 +39,7 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
   integrity:
     environment:
-    - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_dev_redis@redis:6379/1
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=integrity
@@ -74,7 +74,7 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
   governance-synthesis:
     environment:
-    - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_dev_redis@redis:6379/3
     - OPA_URL=http://opa:8181
     - NATS_URL=nats://nats:4222
@@ -91,11 +91,11 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
   auth:
     environment:
-    - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_dev_redis@redis:6379/4
-    - SECRET_KEY=dev-secret-key-32-chars-long-minimum
-    - JWT_SECRET_KEY=dev-jwt-secret-key-64-chars-long-for-development-only
-    - CSRF_SECRET_KEY=dev-csrf-secret-key-32-chars-long
+    - SECRET_KEY=dev-secret-key-32-chars-long-minimum  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    - JWT_SECRET_KEY=dev-jwt-secret-key-64-chars-long-for-development-only  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    - CSRF_SECRET_KEY=dev-csrf-secret-key-32-chars-long  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=auth
     - ENVIRONMENT=development
@@ -111,7 +111,7 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
   code-analysis:
     environment:
-    - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_dev_redis@redis:6379/5
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     - SERVICE_NAME=code-analysis
@@ -126,7 +126,7 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
   context:
     environment:
-    - DATABASE_URL=postgresql://acgs_user:acgs_dev_password@postgres:5432/acgs
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_dev_redis@redis:6379/6
     - NATS_URL=nats://nats:4222
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -164,7 +164,7 @@ services:
     - 5050:80
     environment:
     - PGADMIN_DEFAULT_EMAIL=admin@acgs.dev
-    - PGADMIN_DEFAULT_PASSWORD=admin123
+    - PGADMIN_DEFAULT_PASSWORD=os.environ.get("PASSWORD")
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     volumes:
     - pgadmin_dev_data:/var/lib/pgadmin
@@ -199,24 +199,24 @@ volumes:
     driver: local
     labels:
     - acgs.volume=database
-    - acgs.environment=development
+    - acgsconfig/environments/development.environment=development
     - acgs.constitutional_hash=cdd01ef066bc6cf2
   redis_dev_data:
     driver: local
     labels:
     - acgs.volume=cache
-    - acgs.environment=development
+    - acgsconfig/environments/development.environment=development
     - acgs.constitutional_hash=cdd01ef066bc6cf2
   pgadmin_dev_data:
     driver: local
     labels:
     - acgs.volume=admin
-    - acgs.environment=development
+    - acgsconfig/environments/development.environment=development
     - acgs.constitutional_hash=cdd01ef066bc6cf2
   dev_tools_cache:
     driver: local
     labels:
     - acgs.volume=cache
-    - acgs.environment=development
+    - acgsconfig/environments/development.environment=development
     - acgs.constitutional_hash=cdd01ef066bc6cf2
 constitutional_hash: cdd01ef066bc6cf2

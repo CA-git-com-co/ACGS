@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-1 FV and GS Service Restoration Validation Script
@@ -6,7 +8,7 @@
 set -e
 
 echo "🔍 ACGS-1 FV and GS Service Restoration Validation"
-echo "=================================================="
+echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 echo "Date: $(date)"
 echo ""
 

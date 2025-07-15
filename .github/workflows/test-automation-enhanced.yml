@@ -269,7 +269,7 @@ jobs:
 
       - name: Run integration tests
         env:
-          DATABASE_URL: postgresql://acgs:acgs@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
           REDIS_URL: redis://localhost:6379/0
           ENVIRONMENT: testing
         run: |

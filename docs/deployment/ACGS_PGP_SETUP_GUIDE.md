@@ -92,10 +92,10 @@ cd ACGS
 
 ```bash
 # Copy environment template
-cp config/env/.env.example config/env/.env
+cp config/env/config/environments/developmentconfig/environments/example.env config/env/config/environments/development.env
 
 # Edit configuration (add API keys)
-nano config/env/.env
+nano config/env/config/environments/development.env
 ```
 
 ### 4. Start Services

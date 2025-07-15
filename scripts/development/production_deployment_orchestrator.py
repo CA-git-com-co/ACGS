@@ -150,7 +150,7 @@ services:
     container_name: acgs_postgres_prod
     environment:
       POSTGRES_USER: acgs_user
-      POSTGRES_PASSWORD: acgs_production_password_2025
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: acgs
     ports:
       - "5439:5432"
@@ -233,7 +233,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_PASSWORD=acgs_admin_2025
+      - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
       - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     volumes:
       - grafana_data:/var/lib/grafana

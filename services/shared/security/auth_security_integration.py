@@ -53,7 +53,7 @@ class AuthSecurityIntegration:
                 user_data.get("username", ""),
                 min_length=3,
                 max_length=50,
-                allowed_chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-",
+                allowed_chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 security_level=SecurityLevel.HIGH,
             )
 
@@ -132,7 +132,7 @@ class AuthSecurityIntegration:
 
         Args:
             username: Username to validate
-            password: Password to validate
+            password: os.environ.get("PASSWORD")
 
         Returns:
             Tuple of (sanitized_username, password)

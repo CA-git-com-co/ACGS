@@ -254,7 +254,7 @@ class PhaseA3MultiModelConsensus:
                 "specialization": "governance_synthesis",
                 "constitutional_weight": 0.40,
             },
-            "claude-3-sonnet": {
+            "claude-3.5-sonnet": {
                 "provider": "anthropic",
                 "weight": 1.0,
                 "role": "validation",
@@ -263,7 +263,7 @@ class PhaseA3MultiModelConsensus:
                 "specialization": "constitutional_validation",
                 "constitutional_weight": 0.48,
             },
-            "gemini-2.5-pro": {
+            "google/gemini-2.0-flash": {
                 "provider": "google",
                 "weight": 0.9,
                 "role": "constitutional",

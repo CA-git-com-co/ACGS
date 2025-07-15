@@ -286,9 +286,9 @@ async def get_gateway_metrics() -> None:
     return await metrics_collector.get_metrics()
 
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Integrated Authentication Endpoints
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 
 @app.post("/auth/login", response_model=AuthenticationResult)

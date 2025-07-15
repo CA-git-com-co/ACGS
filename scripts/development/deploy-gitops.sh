@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS GitOps Deployment Script
@@ -109,8 +111,8 @@ install_argocd() {
     
     # Get admin password
     local admin_password
-    admin_password=$(kubectl -n $NAMESPACE_ARGOCD get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-    log_info "ArgoCD admin password: $admin_password"
+    admin_password=os.environ.get("PASSWORD"){.data.password}" | base64 -d)
+    log_info "ArgoCD admin password: os.environ.get("PASSWORD")
 }
 
 # Configure GitHub credentials

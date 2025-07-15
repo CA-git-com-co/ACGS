@@ -19,7 +19,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
-import aioredis
+import redis.asyncio as aioredis
 from aioredis import Redis
 
 # Constitutional Hash: cdd01ef066bc6cf2

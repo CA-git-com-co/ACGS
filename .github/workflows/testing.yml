@@ -69,7 +69,7 @@ jobs:
     - name: Install dependencies
       run: |
         pip install -r requirements.txt
-        pip install -r services/shared/requirements/requirements-test.txt
+        pip install -r services/shared/requirements/requirements-test.txt  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         pip install pytest pytest-cov pytest-asyncio
     - name: Run security validation tests
       run: python -m pytest tests/security/ -v --tb=short || echo "Security tests skipped - no critical failures"

@@ -74,14 +74,14 @@ log_metric() {
 # Initialize monitoring
 initialize_monitoring() {
     log "🚀 Initializing Production Performance Validation"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Monitoring Duration: $MONITORING_DURATION_HOURS hours"
     echo "Check Interval: $MONITORING_INTERVAL_SECONDS seconds"
     echo "Total Checks: $TOTAL_CHECKS"
     echo "Start Time: $(date)"
     echo "Log File: $LOG_FILE"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Create log directory
     mkdir -p "$(dirname "$LOG_FILE")"
@@ -443,9 +443,9 @@ EOF
     
     # Print summary
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "🎯 72-Hour Production Validation Summary"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Overall Status: $overall_status"
     echo "Total Checks: $total_checks"
     echo "Alerts Generated: $alert_count"
@@ -454,7 +454,7 @@ EOF
     echo "Average Cost Efficiency: ${avg_cost_efficiency} (target: ≥${COST_SAVINGS_TARGET})"
     echo "Average Model Accuracy: ${avg_model_accuracy} (target: ≥${MODEL_ACCURACY_TARGET})"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH ✅"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Main monitoring loop

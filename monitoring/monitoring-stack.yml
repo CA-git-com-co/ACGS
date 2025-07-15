@@ -33,7 +33,7 @@ services:
     volumes:
     - grafana_data:/var/lib/grafana
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=acgs_admin_2024
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     networks:
     - monitoring_net

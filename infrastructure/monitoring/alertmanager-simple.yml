@@ -2,7 +2,7 @@ global:
   smtp_smarthost: localhost:587
   smtp_from: acgs-alerts@acgs.ai
   smtp_auth_username: acgs-alerts@acgs.ai
-  smtp_auth_password: secure_password_here
+  smtp_auth_password: os.environ.get("PASSWORD")
   smtp_require_tls: false
   resolve_timeout: 5m
 route:

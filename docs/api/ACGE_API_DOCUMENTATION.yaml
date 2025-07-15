@@ -71,14 +71,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConstitutionalValidationRequest'
+              $ref: '#/components/schemas/ConstitutionalValidationRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Constitutional validation completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalValidationResponse'
+                $ref: '#/components/schemas/ConstitutionalValidationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         '400':
           description: Invalid request format
           content:
@@ -101,20 +101,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PolicySynthesisRequest'
+              $ref: '#/components/schemas/PolicySynthesisRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Policy synthesis completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PolicySynthesisResponse'
+                $ref: '#/components/schemas/PolicySynthesisResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         '202':
           description: Policy synthesis in progress (async)
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AsyncOperationResponse'
+                $ref: '#/components/schemas/AsyncOperationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   /edge/nodes:
     get:
       summary: List Edge Nodes
@@ -169,7 +169,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SyncOperationResponse'
+                $ref: '#/components/schemas/SyncOperationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   /cross-domain/modules:
     get:
       summary: List Cross-Domain Constitutional Modules
@@ -183,7 +183,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CrossDomainModulesList'
+                $ref: '#/components/schemas/CrossDomainModulesList'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   /cross-domain/modules/{moduleId}/validate:
     post:
       summary: Domain-Specific Constitutional Validation
@@ -210,14 +210,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/DomainValidationRequest'
+              $ref: '#/components/schemas/DomainValidationRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Domain-specific validation completed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DomainValidationResponse'
+                $ref: '#/components/schemas/DomainValidationResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
   /monitoring/metrics:
     get:
       summary: ACGE Performance Metrics

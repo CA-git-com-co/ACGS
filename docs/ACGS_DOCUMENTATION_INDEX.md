@@ -65,7 +65,7 @@ This index provides comprehensive access to all ACGS documentation, organized by
 | [**Service Integration Guide**](integration/ACGS_SERVICE_INTEGRATION_GUIDE.md) | Inter-service communication patterns | ✅ Complete |
 | [**Service Integration Patterns**](integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md) | Standardized integration patterns | ✅ Complete |
 | [**Authentication API**](api/authentication.md) | JWT and multi-tenant authentication API | ✅ Complete |
-| [**XAI Integration Guide**](integration/ACGS_XAI_INTEGRATION_GUIDE.md) | X.AI Grok model integration with constitutional compliance | ✅ Complete |
+
 
 ### 6. 📚 Reference & Glossaries
 

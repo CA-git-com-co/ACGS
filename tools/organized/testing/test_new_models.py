@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # Load environment variables
     from dotenv import load_dotenv
 
-    load_dotenv("/home/dislove/ACGS-1/.env")
+    load_dotenv("/home/dislove/ACGS-1/config/environments/development.env")
 
     # Run tests
     success = asyncio.run(main())

@@ -150,7 +150,7 @@ class ConfigurationConsolidator:
 
     def _write_env_file(self, env_name: str, env_vars: dict[str, str]):
         """Write environment file"""
-        env_file = self.config_dir / "environments" / env_name / ".env"
+        env_file = self.config_dir / "environments" / env_name / "config/environments/development.env"
 
         with open(env_file, "w") as f:
             for key, value in env_vars.items():

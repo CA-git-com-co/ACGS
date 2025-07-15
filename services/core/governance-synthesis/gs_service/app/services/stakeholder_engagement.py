@@ -217,7 +217,7 @@ class StakeholderNotificationService:
             # smtp_server = self.email_config.get("smtp_server", "localhost")
             # smtp_port = self.email_config.get("smtp_port", 587)
             # username = self.email_config.get("username")
-            # password = self.email_config.get("password")
+            # password = os.environ.get("PASSWORD")password")
 
             return True
 

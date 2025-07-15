@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiohttp
-import aioredis
+import redis.asyncio as aioredis
 import asyncpg
 import psutil
 from pydantic import BaseModel

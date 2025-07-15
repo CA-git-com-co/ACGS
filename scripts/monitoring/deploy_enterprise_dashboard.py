@@ -29,7 +29,7 @@ class EnterpriseMonitoringDeployer:
     ):
         self.grafana_url = grafana_url.rstrip("/")
         self.grafana_user = grafana_user
-        self.grafana_password = grafana_password
+        self.grafana_password = os.environ.get("PASSWORD")
         self.session = requests.Session()
         self.session.auth = (grafana_user, grafana_password)
         self.session.headers.update(
@@ -234,7 +234,7 @@ class EnterpriseMonitoringDeployer:
             }
 
             # Save rules to file
-            rules_path = Path("infrastructure/monitoring/rules/enterprise_alerts.yml")
+            rules_path = Path("infrastructure/monitoring/rules/enterprise_alerts.yml")  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             rules_path.parent.mkdir(parents=True, exist_ok=True)
 
             with open(rules_path, "w") as f:
@@ -375,7 +375,7 @@ def main():
 
     # Dashboard path
     dashboard_path = Path(
-        "infrastructure/monitoring/dashboards/enterprise-monitoring-dashboard.json"
+        "infrastructure/monitoring/dashboards/enterprise-monitoring-dashboard.json"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     )
 
     if not dashboard_path.exists():

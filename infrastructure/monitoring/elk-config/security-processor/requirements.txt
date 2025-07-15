@@ -5,9 +5,9 @@
 # Core dependencies
 elasticsearch==8.12.0
 requests>=2.32.4
-fastapi==0.104.1
-uvicorn==0.24.0
-pydantic==2.5.0
+fastapi>=0.115.6
+uvicorn>=0.34.0
+pydantic>=2.10.5
 
 # Security and monitoring
 python-jose[cryptography]==3.5.0
@@ -16,11 +16,11 @@ prometheus-client==0.19.0
 
 # Data processing
 pandas==2.1.4
-numpy==1.24.4
-scikit-learn==1.6.1
+numpy>=1.24.4
+scikit-learn>=1.5.0
 
 # Async support
-aiohttp==3.12.13
+aiohttp>=3.10.11
 asyncio-mqtt==0.16.1
 
 # Configuration and logging
@@ -41,7 +41,7 @@ jsonschema==4.20.0
 marshmallow==3.20.1
 
 # Testing (for development)
-pytest==7.4.3
+pytest>=8.3.4
 pytest-asyncio==0.21.1
 
 python-jose>=3.5.1
@@ -50,7 +50,7 @@ python-multipart>=0.0.20
 
 ecdsa>=0.20.0
 
-torch>=2.7.3
+torch>=2.7.1
 
 urllib3>=2.5.0
 

@@ -38,11 +38,11 @@ drwxrwxr-x   6 dislove dislove      6 Jul  2 16:14 config
 drwxrwxr-x   5 dislove dislove      5 Jul  3 00:58 data
 -rw-rw-r--   1 dislove dislove    743 Jul  2 16:14 docker-compose.postgresql.yml
 -rw-rw-r--   1 dislove dislove    501 Jul  2 16:14 docker-compose.redis.yml
--rw-rw-r--   1 dislove dislove   1169 Jun 29 09:00 Dockerfile.uv
+-rw-rw-r--   1 dislove dislove   1169 Jun 29 09:00 config/docker/Dockerfile.uv
 drwxrwxr-x  12 dislove dislove     70 Jul  6 07:26 docs
--rw-rw-r--   1 dislove dislove   1677 Jul  3 17:16 .env
--rw-rw-r--   1 dislove dislove   3013 Jun 29 09:00 .env.example
--rw-rw-r--   1 dislove dislove    380 Jun 29 09:00 .env.integrity
+-rw-rw-r--   1 dislove dislove   1677 Jul  3 17:16 config/environments/development.env
+-rw-rw-r--   1 dislove dislove   3013 Jun 29 09:00 config/environments/developmentconfig/environments/example.env
+-rw-rw-r--   1 dislove dislove    380 Jun 29 09:00 config/environments/developmentconfig/environments/integrity.env
 drwxrwxr-x   2 dislove dislove      3 Jul  2 15:23 examples
 drwxrwxr-x   2 dislove dislove      6 Jul  6 10:56 feedback
 drwxrwxr-x   8 dislove dislove     16 Jul  6 14:58 .git

@@ -43,7 +43,10 @@
     "total_degraded": 0,
     "total_failed": 6
   },
-  "updated_files": ["/home/ubuntu/ACGS/README.md", "/home/ubuntu/ACGS/docs/operational-runbook.md"],
+  "updated_files": [
+    "/home/ubuntu/ACGS/README.md",
+    "/home/ubuntu/ACGS/docs/operational-runbook.md"
+  ],
   "created_directories": [
     "docs/api",
     "docs/deployment",

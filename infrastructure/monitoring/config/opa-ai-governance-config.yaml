@@ -3,7 +3,7 @@ services:
     url: http://localhost:8181
     credentials:
       bearer:
-        token: acgs-ai-governance-token
+        token: os.environ.get("AUTH_TOKEN")
   prometheus:
     url: http://prometheus:9090
 bundles:

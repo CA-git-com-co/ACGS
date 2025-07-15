@@ -324,7 +324,7 @@ class CoordinationContext(ValueObject):
         """Convert to dictionary representation."""
         return {
             "context_type": self.context_type,
-            "environment_constraints": self.environment_constraints,
+            "environment_constraints": selfconfig/environments/development.environment_constraints,
             "available_resources": self.available_resources,
             "time_constraints": {
                 k: v.isoformat() for k, v in self.time_constraints.items()

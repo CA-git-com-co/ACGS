@@ -18,7 +18,7 @@ def wait_for_postgres(
     host="localhost",
     port="5433",
     user="acgs_user",
-    password="acgs_password",
+    password=os.environ.get("PASSWORD"),
     max_attempts=30,
 ):
     """Wait for PostgreSQL to be ready"""
@@ -78,7 +78,7 @@ def wait_for_postgres(
                         host=host,
                         port=port,
                         user=user,
-                        password=password,
+                        password=os.environ.get("PASSWORD")
                         database="acgs_pgp_db",
                     )
                     conn.close()

@@ -7,7 +7,7 @@ Unit tests for ConsensusEngine and consensus mechanisms.
 import asyncio
 import os
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
@@ -713,7 +713,7 @@ class TestConsensusEngine:
 
         # Mock the session as old
         session = consensus_engine.active_sessions[session_id]
-        session.created_at = datetime.utcnow() - timedelta(days=8)  # 8 days old
+        session.created_at = datetime.now(timezone.utc) - timedelta(days=8)  # 8 days old
         session.status = "completed"
 
         # Run cleanup

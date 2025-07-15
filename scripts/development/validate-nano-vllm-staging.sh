@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS Nano-vLLM Staging Validation Script
@@ -310,7 +312,7 @@ generate_validation_report() {
     
     {
         echo "ACGS Nano-vLLM Staging Validation Report"
-        echo "========================================"
+        echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo "Validation Date: $(date)"
         echo "Environment: Staging"
         echo ""
@@ -376,9 +378,9 @@ main() {
     local total_count=${#VALIDATION_RESULTS[@]}
     
     echo ""
-    echo "========================================"
+    echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "VALIDATION SUMMARY"
-    echo "========================================"
+    echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Total Tests: $total_count"
     echo "Passed: $pass_count"
     echo "Warnings: $warn_count"

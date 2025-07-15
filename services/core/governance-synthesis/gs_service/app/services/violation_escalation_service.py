@@ -33,7 +33,7 @@ from services.shared.models import (  # Constitutional compliance hash for ACGS
 
 # Import Constitutional Council integration
 from .core.constitutional_council_scalability import (
-    ConstitutionalCouncilScalabilityFramework,
+    ConstitutionalCouncilScalabilityFramework,  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 )
 
 # Import notification services
@@ -117,7 +117,7 @@ class ViolationEscalationService:
 
         # Initialize services
         self.notification_service = StakeholderNotificationService()
-        self.council_framework = ConstitutionalCouncilScalabilityFramework()
+        self.council_framework = ConstitutionalCouncilScalabilityFramework()  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
         # Escalation rules
         self.escalation_rules = self._initialize_escalation_rules()

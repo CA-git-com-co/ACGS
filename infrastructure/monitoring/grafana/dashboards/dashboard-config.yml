@@ -8,7 +8,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/system-overview
+    path: /etc/grafana/provisioning/dashboards/system-overview  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-services
   orgId: 1
   folder: ACGS Services
@@ -17,7 +17,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/services
+    path: /etc/grafana/provisioning/dashboards/services  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-governance-workflows
   orgId: 1
   folder: Governance Workflows
@@ -26,7 +26,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/governance-workflows
+    path: /etc/grafana/provisioning/dashboards/governance-workflows  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-infrastructure
   orgId: 1
   folder: Infrastructure
@@ -35,7 +35,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/infrastructure
+    path: /etc/grafana/provisioning/dashboards/infrastructure  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-performance
   orgId: 1
   folder: Performance & SLA
@@ -44,7 +44,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/performance
+    path: /etc/grafana/provisioning/dashboards/performance  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-security
   orgId: 1
   folder: Security & Compliance
@@ -53,7 +53,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/security
+    path: /etc/grafana/provisioning/dashboards/security  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-blockchain
   orgId: 1
   folder: Blockchain & Quantumagi
@@ -62,7 +62,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/blockchain
+    path: /etc/grafana/provisioning/dashboards/blockchain  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-alerting
   orgId: 1
   folder: Alerting & Incidents
@@ -71,7 +71,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/alerting
+    path: /etc/grafana/provisioning/dashboards/alerting  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-development
   orgId: 1
   folder: Development & Testing
@@ -80,7 +80,7 @@ providers:
   updateIntervalSeconds: 30
   allowUiUpdates: true
   options:
-    path: /etc/grafana/provisioning/dashboards/development
+    path: /etc/grafana/provisioning/dashboards/development  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - name: acgs-executive
   orgId: 1
   folder: Executive Dashboard
@@ -89,5 +89,5 @@ providers:
   updateIntervalSeconds: 60
   allowUiUpdates: false
   options:
-    path: /etc/grafana/provisioning/dashboards/executive
+    path: /etc/grafana/provisioning/dashboards/executive  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 constitutional_hash: cdd01ef066bc6cf2

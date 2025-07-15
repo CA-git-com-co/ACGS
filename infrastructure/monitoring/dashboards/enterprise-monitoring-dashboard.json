@@ -48,7 +48,7 @@
     "panels": [
       {
         "id": 1,
-        "title": "🎯 Enterprise Performance Targets",
+        "title": "\ud83c\udfaf Enterprise Performance Targets",
         "type": "stat",
         "gridPos": {
           "h": 8,
@@ -180,7 +180,7 @@
       },
       {
         "id": 2,
-        "title": "📊 P99 Latency Trend (Target: <5ms)",
+        "title": "\ud83d\udcca P99 Latency Trend (Target: <5ms)",
         "type": "timeseries",
         "gridPos": {
           "h": 8,
@@ -231,7 +231,7 @@
       },
       {
         "id": 3,
-        "title": "💾 Cache Hit Rate (Target: >85%)",
+        "title": "\ud83d\udcbe Cache Hit Rate (Target: >85%)",
         "type": "timeseries",
         "gridPos": {
           "h": 8,
@@ -282,7 +282,7 @@
       },
       {
         "id": 4,
-        "title": "🏛️ Constitutional Compliance Status",
+        "title": "\ud83c\udfdb\ufe0f Constitutional Compliance Status",
         "type": "stat",
         "gridPos": {
           "h": 6,
@@ -333,7 +333,7 @@
       },
       {
         "id": 5,
-        "title": "🚀 Service Throughput (Target: >100 RPS)",
+        "title": "\ud83d\ude80 Service Throughput (Target: >100 RPS)",
         "type": "timeseries",
         "gridPos": {
           "h": 6,
@@ -373,7 +373,7 @@
       },
       {
         "id": 6,
-        "title": "⚡ System Health Overview",
+        "title": "\u26a1 System Health Overview",
         "type": "stat",
         "gridPos": {
           "h": 6,
@@ -431,7 +431,7 @@
       },
       {
         "id": 7,
-        "title": "📈 Error Rate Monitoring",
+        "title": "\ud83d\udcc8 Error Rate Monitoring",
         "type": "timeseries",
         "gridPos": {
           "h": 6,
@@ -471,7 +471,7 @@
       },
       {
         "id": 8,
-        "title": "🔄 WINA Optimization Metrics",
+        "title": "\ud83d\udd04 WINA Optimization Metrics",
         "type": "timeseries",
         "gridPos": {
           "h": 6,

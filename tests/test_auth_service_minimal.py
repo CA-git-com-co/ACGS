@@ -27,7 +27,7 @@ import uvicorn
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Simple JWT configuration
-JWT_SECRET = "test-secret-key-for-acgs-auth"
+JWT_secret=os.getenv("ACGS_TEST_SECRET", "test_secret_key")
 JWT_ALGORITHM = "HS256"
 
 # Data Models

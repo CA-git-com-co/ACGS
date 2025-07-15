@@ -15,7 +15,7 @@ import yaml
 
 
 def load_env_file(env_path: str) -> Dict[str, str]:
-    """Load environment variables from .env file"""
+    """Load environment variables from config/environments/development.env file"""
     env_vars = {}
     if os.path.exists(env_path):
         with open(env_path, "r") as f:
@@ -28,7 +28,7 @@ def load_env_file(env_path: str) -> Dict[str, str]:
 
 
 def save_env_file(env_path: str, env_vars: Dict[str, str]) -> None:
-    """Save environment variables to .env file"""
+    """Save environment variables to config/environments/development.env file"""
     lines = ["# Constitutional Hash: cdd01ef066bc6cf2\n"]
 
     # Group related variables
@@ -127,7 +127,7 @@ def update_docker_compose_ports(file_path: str, port_mapping: Dict[str, int]) ->
 def main():
     """Main function to resolve all port conflicts"""
     repo_root = Path("/home/dislove/ACGS-2")
-    env_path = repo_root / ".env"
+    env_path = repo_root / "config/environments/development.env"
 
     print("🔧 Comprehensive Port Conflict Resolution")
     print("📋 Constitutional Hash: cdd01ef066bc6cf2")
@@ -286,9 +286,9 @@ def main():
     # Update environment variables
     env_vars.update(port_assignments)
 
-    # Save updated .env file
+    # Save updated config/environments/development.env file
     save_env_file(str(env_path), env_vars)
-    print(f"✅ Updated .env file with {len(port_assignments)} port assignments")
+    print(f"✅ Updated config/environments/development.env file with {len(port_assignments)} port assignments")
 
     # Update Docker Compose files
     compose_files = [

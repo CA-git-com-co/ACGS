@@ -2,7 +2,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 """
 ACGS-1 Performance Testing - System Performance Validation
-==========================================================
+==========================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 This script validates system performance post-reorganization with:
 1. Load testing with concurrent requests

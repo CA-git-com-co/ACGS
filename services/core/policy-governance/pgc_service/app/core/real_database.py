@@ -35,7 +35,7 @@ DATABASE_URL_SYNC = os.getenv(
 
 # Fallback to SQLite for development
 if not DATABASE_URL.startswith(("postgresql", "mysql")):
-    DATABASE_URL = "sqlite+aiosqlite:///./pgc_service.db"
+    DATABASE_URL = os.environ.get("DATABASE_URL")
     DATABASE_URL_SYNC = "sqlite:///./pgc_service.db"
 
 Base = declarative_base()

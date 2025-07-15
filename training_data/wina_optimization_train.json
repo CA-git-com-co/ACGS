@@ -1,0 +1,545 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    },
+    {
+      "input": {
+        "wina_scenario": {
+          "type": "sparsity_optimization",
+          "model_architecture": {
+            "layers": 6,
+            "neurons_per_layer": 512,
+            "dim": 256
+          },
+          "current_metrics": {
+            "sparsity": 0.2,
+            "gflops": 1000000,
+            "accuracy": 0.92
+          },
+          "constitutional_hash": "cdd01ef066bc6cf2"
+        }
+      },
+      "target_output": {
+        "optimized_metrics": {
+          "sparsity": 0.65,
+          "gflops_reduction": 0.55,
+          "accuracy_preservation": 0.96
+        },
+        "wina_strategy": "weight_informed_pruning",
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      }
+    }
+  ]
+}

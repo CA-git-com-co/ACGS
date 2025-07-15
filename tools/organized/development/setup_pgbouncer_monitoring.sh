@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # ACGS-1 PgBouncer Monitoring Setup Script
 # Phase 2 - Enterprise Scalability & Performance
@@ -33,7 +35,7 @@ print_error() {
 
 # Configuration
 PROJECT_ROOT="/home/dislove/ACGS-1"
-PROMETHEUS_CONFIG_DIR="$PROJECT_ROOT/infrastructure/monitoring/prometheus"
+PROMETHEUS_CONFIG_DIR="$PROJECT_ROOT/infrastructure/monitoring/prometheus"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 GRAFANA_CONFIG_DIR="$PROJECT_ROOT/infrastructure/monitoring/grafana"
 EXPORTER_PORT="9187"
 PGBOUNCER_HOST="localhost"
@@ -154,7 +156,7 @@ print_success "Prometheus configuration updated"
 
 # Copy alerting rules
 print_status "Installing PgBouncer alerting rules..."
-cp "$PROJECT_ROOT/infrastructure/monitoring/prometheus_rules/pgbouncer_alerts.yml" "$PROMETHEUS_CONFIG_DIR/rules/"
+cp "$PROJECT_ROOT/infrastructure/monitoring/prometheus_rules/pgbouncer_alerts.yml" "$PROMETHEUS_CONFIG_DIR/rules/"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 print_success "Alerting rules installed"
 
 # Create Grafana datasource configuration
@@ -217,7 +219,7 @@ Type=simple
 User=acgs
 Group=acgs
 WorkingDirectory=$PROJECT_ROOT
-ExecStart=/usr/bin/python3 $PROJECT_ROOT/infrastructure/monitoring/pgbouncer_exporter.py \\
+ExecStart=/usr/bin/python3 $PROJECT_ROOT/infrastructure/monitoring/pgbouncer_exporter.py \\  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     --pgbouncer-host $PGBOUNCER_HOST \\
     --pgbouncer-port $PGBOUNCER_PORT \\
     --exporter-port $EXPORTER_PORT \\
@@ -327,7 +329,7 @@ async def analyze_pgbouncer_performance():
             port=6432,
             database="pgbouncer",
             user="acgs_user",
-            password="acgs_password",
+            password=os.environ.get("PASSWORD"),
             timeout=10
         )
         

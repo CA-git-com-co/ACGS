@@ -360,8 +360,8 @@ graph TB
 
 ### Quantumagi Programs on Solana Devnet
 
-- **Quantumagi Core**: `8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4`
-- **Appeals Program**: `CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ`
+- **Quantumagi Core**: `8eRUCnQsDxqK7vjp5XsYs7C3NGpdhzzaMW8QQGzfTUV4`  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+- **Appeals Program**: `CXKCLqyzxqyqTbEgpNbYR5qkC691BdiKMAB1nk6BMoFJ`  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 - **Logging Program**: Ready for deployment
 
 ### Constitutional Governance Workflow

@@ -22,7 +22,7 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Union
 
 try:
-    import aioredis
+    import redis.asyncio as aioredis
 
     REDIS_AVAILABLE = True
 except ImportError:

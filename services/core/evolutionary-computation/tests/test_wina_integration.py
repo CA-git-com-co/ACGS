@@ -62,25 +62,25 @@ class TestWINAIntegration:
 
             sys.path.append(os.path.join(pathlib.Path(__file__).parent, "..", "app"))
 
-            from services.core.evolutionary_computation.app.wina.config import (
+            from services.core.evolutionary-computation.app.wina.config import (
                 load_wina_config_from_env,
             )
-            from services.core.evolutionary_computation.app.wina.constitutional_integration import (
+            from services.core.evolutionary-computation.app.wina.constitutional_integration import (
                 ConstitutionalWINASupport,
             )
-            from services.core.evolutionary_computation.app.wina.continuous_learning import (
+            from services.core.evolutionary-computation.app.wina.continuous_learning import (
                 get_wina_learning_system,
             )
-            from services.core.evolutionary_computation.app.wina.core import (
+            from services.core.evolutionary-computation.app.wina.core import (
                 WINACore,
             )
-            from services.core.evolutionary_computation.app.wina.gating import (
+            from services.core.evolutionary-computation.app.wina.gating import (
                 RuntimeGating,
             )
-            from services.core.evolutionary_computation.app.wina.metrics import (
+            from services.core.evolutionary-computation.app.wina.metrics import (
                 WINAMetrics,
             )
-            from services.core.evolutionary_computation.app.wina.performance_monitoring import (
+            from services.core.evolutionary-computation.app.wina.performance_monitoring import (
                 WINAPerformanceCollector,
             )
 
@@ -91,7 +91,7 @@ class TestWINAIntegration:
 
     async def test_wina_core_initialization(self, wina_config):
         """Test WINA core component initialization."""
-        from services.core.evolutionary_computation.app.wina.core import WINACore
+        from services.core.evolutionary-computation.app.wina.core import WINACore
 
         try:
             wina_core = WINACore(wina_config)
@@ -114,10 +114,10 @@ class TestWINAIntegration:
 
     async def test_constitutional_integration(self, wina_config, integration_config):
         """Test constitutional compliance integration."""
-        from services.core.evolutionary_computation.app.wina.constitutional_integration import (
+        from services.core.evolutionary-computation.app.wina.constitutional_integration import (
             ConstitutionalWINASupport,
         )
-        from services.core.evolutionary_computation.app.wina.core import (
+        from services.core.evolutionary-computation.app.wina.core import (
             WINAOptimizationResult,
         )
 
@@ -151,7 +151,7 @@ class TestWINAIntegration:
 
     async def test_performance_monitoring(self, wina_config):
         """Test WINA performance monitoring capabilities."""
-        from services.core.evolutionary_computation.app.wina.performance_monitoring import (
+        from services.core.evolutionary-computation.app.wina.performance_monitoring import (
             WINAComponentType,
             WINAMonitoringLevel,
             WINAPerformanceCollector,
@@ -180,7 +180,7 @@ class TestWINAIntegration:
 
     async def test_ec_service_integration(self):
         """Test integration with EC service main coordinator."""
-        from services.core.evolutionary_computation.app.core.wina_oversight_coordinator import (
+        from services.core.evolutionary-computation.app.core.wina_oversight_coordinator import (
             WINAECOversightCoordinator,
         )
 
@@ -195,7 +195,7 @@ class TestWINAIntegration:
             assert hasattr(coordinator, "performance_collector")
 
             # Test basic oversight operation
-            from services.core.evolutionary_computation.app.core.wina_oversight_coordinator import (
+            from services.core.evolutionary-computation.app.core.wina_oversight_coordinator import (
                 ECOversightContext,
                 ECOversightRequest,
             )
@@ -217,7 +217,7 @@ class TestWINAIntegration:
 
     async def test_service_communication(self):
         """Test communication with other ACGS services."""
-        from services.core.evolutionary_computation.app.wina.config import (
+        from services.core.evolutionary-computation.app.wina.config import (
             load_wina_config_from_env,
         )
 
@@ -243,10 +243,10 @@ class TestWINAIntegration:
 
     async def test_performance_targets(self):
         """Test that WINA integration meets performance targets."""
-        from services.core.evolutionary_computation.app.wina.config import (
+        from services.core.evolutionary-computation.app.wina.config import (
             load_wina_config_from_env,
         )
-        from services.core.evolutionary_computation.app.wina.core import WINACore
+        from services.core.evolutionary-computation.app.wina.core import WINACore
 
         try:
             wina_config, _ = load_wina_config_from_env()

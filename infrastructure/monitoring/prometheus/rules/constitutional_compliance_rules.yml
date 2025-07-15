@@ -204,7 +204,7 @@ groups:
           description: 'PGC service P95 latency is {{ $value }}ms, exceeding 25ms target'
           runbook_url: 'https://docs.acgs.local/runbooks/pgc-performance'
 
-      - alert: PGCConstitutionalValidationThroughputLow
+      - alert: PGCConstitutionalValidationThroughputLow  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         expr: acgs:pgc_constitutional_validation_throughput < 10
         for: 2m
         labels:

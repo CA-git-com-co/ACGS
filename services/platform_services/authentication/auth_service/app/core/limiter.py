@@ -1,5 +1,5 @@
 # Import the new function from security.py
-from app.core.security import get_user_id_from_request_optional
+from .security import get_user_id_from_request_optional
 from fastapi import Request
 
 # Constitutional compliance hash for ACGS

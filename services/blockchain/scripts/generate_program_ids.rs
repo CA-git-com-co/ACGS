@@ -54,7 +54,7 @@ enum Commands {
 }
 
 #[derive(Debug, Clone, clap::ValueEnum)]
-enum ExportFormat {
+pub enum ExportFormat {
     Json,
     Toml,
     Env,
@@ -63,7 +63,7 @@ enum ExportFormat {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-struct ProgramIdInfo {
+pub struct ProgramIdInfo {
     name: String,
     program_id: String,
     seed: String,

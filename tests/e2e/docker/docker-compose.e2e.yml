@@ -4,7 +4,7 @@ services:
     container_name: acgs_postgres_e2e
     environment:
       POSTGRES_USER: test_user
-      POSTGRES_PASSWORD: test_password
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: acgs_e2e_test
       POSTGRES_INITDB_ARGS: --encoding=UTF8 --locale=C
     ports:
@@ -63,7 +63,7 @@ services:
     - SERVICE_NAME=auth_service
     - SERVICE_PORT=8016
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-e2e:6379/0
     - LOG_LEVEL=INFO
     ports:
@@ -95,7 +95,7 @@ services:
     - SERVICE_NAME=constitutional_ai_service
     - SERVICE_PORT=8001
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-e2e:6379/1
     - AUTH_SERVICE_URL=http://mock-auth-service:8016
     - LOG_LEVEL=INFO
@@ -130,7 +130,7 @@ services:
     - SERVICE_NAME=policy_governance_service
     - SERVICE_PORT=8005
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-e2e:6379/5
     - AUTH_SERVICE_URL=http://mock-auth-service:8016
     - CONSTITUTIONAL_AI_URL=http://mock-constitutional-ai:8001
@@ -168,7 +168,7 @@ services:
     - SERVICE_NAME=governance_synthesis_service
     - SERVICE_PORT=8004
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://test_user:test_password@postgres-e2e:5432/acgs_e2e_test
+    - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://redis-e2e:6379/4
     - AUTH_SERVICE_URL=http://mock-auth-service:8016
     - CONSTITUTIONAL_AI_URL=http://mock-constitutional-ai:8001
@@ -210,7 +210,7 @@ services:
     - POSTGRES_HOST=postgres-e2e
     - POSTGRES_PORT=5432
     - POSTGRES_USER=test_user
-    - POSTGRES_PASSWORD=test_password
+    - POSTGRES_PASSWORD=os.environ.get("PASSWORD")
     - POSTGRES_DB=acgs_e2e_test
     - REDIS_HOST=redis-e2e
     - REDIS_PORT=6379

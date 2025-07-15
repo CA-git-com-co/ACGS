@@ -471,89 +471,89 @@ Generated: 2025-07-07 14:56:47 UTC
 - **Recommendation**: Update to version >= 1.26.5
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.production
-- **Location**: /home/dislove/ACGS-2/.env.production
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/production.env.backup
+- **Location**: /home/dislove/ACGS-2/config/environments/developmentconfig/environments/production.env.backup
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env
-- **Location**: /home/dislove/ACGS-2/.env
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/development.env
+- **Location**: /home/dislove/ACGS-2/config/environments/development.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.template
-- **Location**: /home/dislove/ACGS-2/.env.template
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/template.env
+- **Location**: /home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.integrity
-- **Location**: /home/dislove/ACGS-2/.env.integrity
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/integrity.env
+- **Location**: /home/dislove/ACGS-2/config/environments/developmentconfig/environments/integrity.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env
-- **Location**: /home/dislove/ACGS-2/database/.env
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/development.env
+- **Location**: /home/dislove/ACGS-2/database/config/environments/development.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env
-- **Location**: /home/dislove/ACGS-2/services/cli/opencode/.env
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/development.env
+- **Location**: /home/dislove/ACGS-2/services/cli/opencode/config/environments/development.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.staging
-- **Location**: /home/dislove/ACGS-2/services/core/code-analysis/.env.staging
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/development.env.staging
+- **Location**: /home/dislove/ACGS-2/services/core/code-analysis/config/environments/development.env.staging
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/core/policy-governance/pgc_service/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/core/policy-governance/pgc_service/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/core/formal-verification/fv_service/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/core/formal-verification/fv_service/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/core/constitutional-ai/ac_service/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/core/constitutional-ai/ac_service/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/core/governance-synthesis/gs_service/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/core/governance-synthesis/gs_service/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/cli_backup_20250706_110222/opencode_adapter/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/cli_backup_20250706_110222/opencode_adapter/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/platform_services/integrity/integrity_service/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/platform_services/integrity/integrity_service/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.example
-- **Location**: /home/dislove/ACGS-2/services/platform_services/authentication/auth_service/.env.example
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/example.env
+- **Location**: /home/dislove/ACGS-2/services/platform_services/authentication/auth_service/config/environments/developmentconfig/environments/example.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env
-- **Location**: /home/dislove/ACGS-2/infrastructure/phase3/.env
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/development.env
+- **Location**: /home/dislove/ACGS-2/infrastructure/phase3/config/environments/development.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 ### 🟠 HIGH: secrets
-- **Description**: Environment file in repository: .env.production.template
-- **Location**: /home/dislove/ACGS-2/infrastructure/docker/.env.production.template
-- **Recommendation**: Remove .env files from repository, add to .gitignore
+- **Description**: Environment file in repository: config/environments/developmentconfig/environments/production.template.env
+- **Location**: /home/dislove/ACGS-2/infrastructure/docker/config/environments/developmentconfig/environments/production.template.env
+- **Recommendation**: Remove config/environments/development.env files from repository, add to .gitignore
 
 
 ## Hardening Recommendations

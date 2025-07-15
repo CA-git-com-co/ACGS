@@ -25,12 +25,18 @@ from unittest.mock import Mock, mock_open, patch
 import pytest
 import yaml
 
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
+
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # Test imports
 try:
-    from services.core.policy_governance.pgc_service.core.constitutional_hash_validator import (
+    from services.core.policy-governance.pgc_service.core.constitutional_hash_validator import (
         ConstitutionalContext,
         ConstitutionalHashStatus,
         ConstitutionalHashValidator,
@@ -870,7 +876,7 @@ class TestConstitutionalHashValidationModels:
         assert corrected_data["other"] == "data"
 
 
-class TestConstitutionalHashValidationIntegration:
+class TestConstitutionalHashValidationIntegration:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     """Integration tests for constitutional hash validation."""
 
     def test_end_to_end_project_validation(self, tmp_path):
@@ -995,7 +1001,7 @@ service:
 
 
 @pytest.mark.performance
-class TestConstitutionalHashValidationPerformance:
+class TestConstitutionalHashValidationPerformance:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     """Performance tests for constitutional hash validation."""
 
     def test_validation_performance_benchmark(self, tmp_path):

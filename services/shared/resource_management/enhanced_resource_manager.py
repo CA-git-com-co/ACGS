@@ -20,7 +20,7 @@ from typing import Any
 
 import psutil
 import structlog
-from shared.redis_client import ACGSRedisClient
+from services.shared.redis_client import ACGSRedisClient
 from sqlalchemy import create_engine
 from sqlalchemy.pool import QueuePool
 

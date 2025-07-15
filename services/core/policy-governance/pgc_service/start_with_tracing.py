@@ -29,7 +29,7 @@ def main():
     os.environ.setdefault("OTEL_TRACES_SAMPLER_ARG", "0.1")
     os.environ.setdefault(
         "OTEL_RESOURCE_ATTRIBUTES",
-        "service.name=pgc_service,service.version=3.0.0,deployment.environment=production",
+        "service.name=pgc_service,service.version=3.0.0,deploymentconfig/environments/development.environment=production",
     )
 
     # Enable telemetry

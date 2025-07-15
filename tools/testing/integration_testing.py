@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ACGS-1 Integration Testing - End-to-End Workflow Validation
-===========================================================
+===========================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 This script validates that all services communicate properly and governance
 workflows function correctly after the reorganization.

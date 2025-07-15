@@ -54,7 +54,7 @@ The Claude-MCP-ACGS integration creates a comprehensive multi-agent coordination
 - **Security**: Non-root users, network isolation, resource limits, health checks
 
 ### **4. Environment Configuration** ✅
-- **File**: `.env.template`
+- **File**: `config/environments/developmentconfig/environments/template.env`
 - **Integration**: Complete ACGS service endpoint configuration
 - **Security**: Token management, secrets handling, constitutional compliance
 - **Performance**: Resource limits, monitoring settings, optimization parameters
@@ -114,8 +114,8 @@ The Claude-MCP-ACGS integration creates a comprehensive multi-agent coordination
 ### **Quick Start**
 ```bash
 # 1. Configure environment
-cp .env.template .env
-# Edit .env with your GitHub token and settings
+cp config/environments/developmentconfig/environments/template.env config/environments/development.env
+# Edit config/environments/development.env with your GitHub token and settings
 
 # 2. Start ACGS services (if not already running)
 docker-compose -f infrastructure/docker/docker-compose.acgs.yml up -d
@@ -250,7 +250,7 @@ docker-compose exec mcp_aggregator ping host.docker.internal
 - **[Enhanced System Prompt](</home/dislove/ACGS-2/enhanced_system_prompt.md>)**: The core reasoning protocol and sprintlet templates for multi-agent coordination.
 - **[Multi-Agent Coordination Policy Blueprint](</home/dislove/ACGS-2/docs/coordination-policy.md>)**: Detailed specifications for state, action, and reward schemas, RPC protocols, and fault tolerance.
 - **[Production-Ready Docker Compose Stack](</home/dislove/ACGS-2/docker-compose.yml>)**: The complete Docker Compose file for deploying the MCP server stack.
-- **[Environment Configuration](</home/dislove/ACGS-2/.env.template>)**: The template for configuring the environment variables for the MCP server stack.
+- **[Environment Configuration](</home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env>)**: The template for configuring the environment variables for the MCP server stack.
 - **[Operational Runbook](</home/dislove/ACGS-2/DEPLOYMENT.md>)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
 - **[ACGS Integration Documentation](</home/dislove/ACGS-2/docs/integration/CLAUDE_MCP_ACGS_INTEGRATION.md>)**: Comprehensive details on the integration architecture, communication protocols, and monitoring.
 - **[Integration Validation Script](</home/dislove/ACGS-2/scripts/validate_claude_mcp_integration.sh>)**: The script for automated health checks, performance testing, and constitutional compliance validation.

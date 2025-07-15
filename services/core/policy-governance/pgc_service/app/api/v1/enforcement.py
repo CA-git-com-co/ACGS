@@ -276,7 +276,7 @@ async def evaluate_policy_query_with_wina(
             user_id=policy_query_payload.context.user.get("id", "unknown"),
             action_type=policy_query_payload.context.action.get("type", "unknown"),
             resource_id=policy_query_payload.context.resource.get("id", "unknown"),
-            environment_factors=policy_query_payload.context.environment or {},
+            environment_factors=policy_query_payload.contextconfig/environments/development.environment or {},
             priority_level=policy_query_payload.context.get("priority", "normal"),
             constitutional_requirements=policy_query_payload.context.get(
                 "constitutional_requirements", []

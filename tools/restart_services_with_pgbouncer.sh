@@ -1,10 +1,12 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # Restart ACGS services with PgBouncer configuration
 
 echo "🔄 Restarting ACGS services with PgBouncer configuration..."
 
 # Export PgBouncer environment variables
-export DATABASE_URL="postgresql://acgs_user:acgs_password@localhost:6432/acgs_db"
+export DATABASE_URL=os.environ.get("DATABASE_URL")
 export DB_HOST="localhost"
 export DB_PORT="6432"
 export PGBOUNCER_ENABLED="true"

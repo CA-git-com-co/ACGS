@@ -181,7 +181,7 @@ validate_resource_limits() {
 validate_constitutional_hash() {
     log_test "Validating constitutional hash configuration..."
     
-    local constitutional_service="infrastructure/kubernetes/services/constitutional-ai-service.yaml"
+    local constitutional_service="infrastructure/kubernetes/services/constitutional-ai-service.yaml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     if [[ ! -f "$constitutional_service" ]]; then
         log_error "✗ Constitutional AI service file not found"

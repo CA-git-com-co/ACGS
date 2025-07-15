@@ -31,9 +31,9 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 # Add the services directory to the path
 sys.path.append("/home/dislove/ACGS-1/services")
 
-from shared.service_mesh.enhanced_service_stabilizer import get_service_stabilizer
-from shared.service_mesh.registry import ServiceType
-from shared.service_mesh.service_orchestrator import (
+from services.shared.service_mesh.enhanced_service_stabilizer import get_service_stabilizer
+from services.shared.service_mesh.registry import ServiceType
+from services.shared.service_mesh.service_orchestrator import (
     OrchestrationConfig,
     OrchestrationMode,
     get_service_orchestrator,

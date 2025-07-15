@@ -4,8 +4,7 @@
 
 use acgs_blockchain_client::{AcgsClient, governance::ConstitutionalPrinciple};
 use anchor_client::solana_sdk::{
-    signature::{Keypair, Signer},
-    pubkey::Pubkey,
+    signature::Keypair,
 };
 use anyhow::{Result, Context};
 use clap::{Parser, Subcommand};
@@ -268,7 +267,7 @@ impl QuantumagiDeployer {
 
         // Create constitution content
         let constitution_content = self.fetch_constitution_document().await?;
-        let constitution_hash = self.create_constitution_hash(&constitution_content);
+        let _constitution_hash = self.create_constitution_hash(&constitution_content);
 
         // Load deployer keypair
         let deployer_keypair = self.load_keypair(&self.config.deployer_keypair_path)?;
@@ -372,7 +371,7 @@ impl QuantumagiDeployer {
         let client = AcgsClient::devnet(deployer_keypair)?;
 
         // Deploy each policy
-        for (i, policy_spec) in initial_policies.iter().enumerate() {
+        for (_i, policy_spec) in initial_policies.iter().enumerate() {
             match self.deploy_single_policy(&client, policy_spec).await {
                 Ok(_) => {
                     println!("{} Deployed policy: {}", "✅".green(), policy_spec.id);

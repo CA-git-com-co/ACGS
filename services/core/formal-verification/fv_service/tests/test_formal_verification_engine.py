@@ -14,7 +14,13 @@ import time
 from unittest.mock import AsyncMock
 
 import pytest
-from services.core.formal_verification.fv_service.app.services.formal_verification_engine import (
+from services.core.formal-verification.fv_service.app.services.formal_verification_engine import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     FormalVerificationEngine,
     ProofObligation,
     VerificationReport,

@@ -260,7 +260,7 @@ class PenetrationTestSuite:
                 "/api/config",
                 "/config.json",
                 "/settings.json",
-                "/.env",
+                "/config/environments/development.env",
                 "/config.php",
                 "/wp-config.php",
             ]

@@ -31,7 +31,7 @@ class MockCryptoService:
 CryptoService = MockCryptoService
 
 # Mock token for integrity service (in production, use proper auth)
-INTEGRITY_SERVICE_MOCK_TOKEN = "mock_token_for_testing"
+INTEGRITY_SERVICE_MOCK_TOKEN = os.environ.get("AUTH_TOKEN")
 
 import logging
 
@@ -89,7 +89,7 @@ class PolicyManager:
                     # Fetch verified rules from Integrity Service
                     fetched_rules = (
                         await integrity_service_client.list_verified_policy_rules(
-                            auth_token=INTEGRITY_SERVICE_MOCK_TOKEN
+                            auth_token=os.environ.get("AUTH_TOKEN")
                         )
                     )
                     if (

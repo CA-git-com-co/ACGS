@@ -1,6 +1,12 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 [workspace]
-members = [ "blockchain/programs/quantumagi-core", "blockchain/programs/appeals", "blockchain/programs/logging",]
+resolver = "2"
+members = [
+    "services/blockchain/programs/quantumagi-core",
+    "services/blockchain/programs/appeals", 
+    "services/blockchain/programs/logging",
+    "services/ai-governance/pocketflow-rust",
+]
 
 [workspace.dependencies]
 anchor-lang = "0.29.0"

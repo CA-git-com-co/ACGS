@@ -132,13 +132,13 @@ class UserService:
                 return None
 
             # Hash password
-            hashed_password = self._hash_password(user_data.password)
+            hashed_password = os.environ.get("PASSWORD")
 
             # Create user
             db_user = User(
                 username=user_data.username,
                 email=user_data.email,
-                hashed_password=hashed_password,
+                hashed_password=os.environ.get("PASSWORD")
                 full_name=user_data.full_name,
                 is_active=user_data.is_active,
                 is_superuser=user_data.is_superuser,
@@ -170,7 +170,7 @@ class UserService:
             # Update fields
             for field, value in user_data.dict(exclude_unset=True).items():
                 if field == "password" and value:
-                    user.hashed_password = self._hash_password(value)
+                    user.hashed_password = os.environ.get("PASSWORD")
                     user.password_changed_at = datetime.now(timezone.utc)
                 else:
                     setattr(user, field, value)

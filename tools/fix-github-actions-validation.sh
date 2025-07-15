@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # GitHub Actions Validation Fix Script
@@ -34,7 +36,7 @@ check_github_token() {
     if [ -z "${GITHUB_TOKEN:-}" ]; then
         log_error "GITHUB_TOKEN environment variable is not set"
         log_info "Please set your GitHub token:"
-        log_info "export GITHUB_TOKEN='your_github_token_here'"
+        log_info "export GITHUB_TOKEN=os.environ.get("AUTH_TOKEN")"
         log_info ""
         log_info "You can create a token at: https://github.com/settings/tokens"
         log_info "Required permissions: repo, workflow"

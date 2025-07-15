@@ -6,7 +6,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 # The CSRF cookie value from the login response
-csrf_cookie = "ImZkZTliODljNjVkZTRlZWRmZmIwMmI4ZTRlZWUyNTRhZWQ5NGIwYmIi.aDpI2Q._40Qru_FQeSqKc9xkkX_VuSzoqY"
+csrf_cookie = "ImZkZTliODljNjVkZTRlZWRmZmIwMmI4ZTRlZWUyNTRhZWQ5NGIwYmIi.aDpI2Q._40Qru_FQeSqKc9xkkX_VuSzoqY"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 print(f"Original CSRF cookie: {csrf_cookie}")
 

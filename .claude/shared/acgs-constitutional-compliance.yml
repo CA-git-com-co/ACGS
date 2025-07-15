@@ -33,8 +33,7 @@ Security_Framework:
   - All security validations include constitutional hash verification
   - Constitutional compliance is the highest security priority
   - Security audit trail must maintain constitutional context
-  threat_model:
-  - Constitutional bypass attempts are critical security threats
+  threat_model: "- Constitutional bypass attempts are critical security threats"
   - Hash tampering is highest severity security violation
   - Compliance circumvention requires immediate escalation
 Error_Handling:

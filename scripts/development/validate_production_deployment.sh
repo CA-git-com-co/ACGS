@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS-PGP Production Deployment Validation Script
@@ -332,7 +334,7 @@ run_performance_test() {
 # Main validation function
 main() {
     log_info "Starting ACGS-PGP Production Deployment Validation"
-    log_info "================================================"
+    log_info "================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     local validation_functions=(
         "validate_docker_services"

@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # PostgreSQL Replica Setup Script
 
@@ -12,7 +14,7 @@ until pg_isready -h postgres_primary -p 5432 -U acgs_user; do
 done
 
 # Create replication slot on primary (if not exists)
-PGPASSWORD="acgs_password" psql -h postgres_primary -p 5432 -U acgs_user -d acgs_db -c "
+PGPASSWORD=os.environ.get("PASSWORD") psql -h postgres_primary -p 5432 -U acgs_user -d acgs_db -c "
 SELECT pg_create_physical_replication_slot('replica_slot_$(hostname)', true);
 " || echo "Replication slot may already exist"
 
@@ -21,7 +23,7 @@ cat > /var/lib/postgresql/data/postgresql.auto.conf << EOL
 # Replica configuration
 hot_standby = on
 hot_standby_feedback = on
-primary_conninfo = 'host=postgres_primary port=5432 user=replicator password=replication_password'
+primary_conninfo = 'host=postgres_primary port=5432 user=replicator password=os.environ.get("PASSWORD")
 primary_slot_name = 'replica_slot_$(hostname)'
 EOL
 

@@ -28,7 +28,7 @@ jobs:
         image: postgres:13
         env:
           POSTGRES_DB: acgs_test
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -61,8 +61,8 @@ jobs:
           pip install -r requirements.txt
           if [ -f requirements-test.txt ]; then
             pip install -r requirements-test.txt
-          elif [ -f services/shared/requirements/requirements-test.txt ]; then
-            pip install -r services/shared/requirements/requirements-test.txt
+          elif [ -f services/shared/requirements/requirements-test.txt ]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            pip install -r services/shared/requirements/requirements-test.txt  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           else
             # Install common test dependencies
             pip install pytest pytest-cov pytest-asyncio pytest-mock coverage
@@ -71,7 +71,7 @@ jobs:
       - name: Run unit tests
         env:
           CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
           REDIS_URL: redis://localhost:6379/0
         run: |
           if [ -d "tests/unit" ]; then
@@ -83,7 +83,7 @@ jobs:
       - name: Run integration tests
         env:
           CONSTITUTIONAL_HASH: ${{ env.CONSTITUTIONAL_HASH }}
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
           REDIS_URL: redis://localhost:6379/0
         run: |
           if [ -d "tests/integration" ]; then

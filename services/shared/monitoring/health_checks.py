@@ -16,9 +16,9 @@ from enum import Enum
 from typing import Any
 
 import psutil
-from shared.performance.caching import get_cache_manager
-from shared.performance.connection_pool import get_connection_pool_registry
-from shared.resilience.circuit_breaker import get_circuit_breaker_registry
+from services.shared.performance.caching import get_cache_manager
+from services.shared.performance.connection_pool import get_connection_pool_registry
+from services.shared.resilience.circuit_breaker import get_circuit_breaker_registry
 
 logger = logging.getLogger(__name__)
 

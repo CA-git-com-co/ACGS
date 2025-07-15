@@ -14,10 +14,16 @@ import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
-from services.core.governance_synthesis.app.config.opa_config import (
+from services.core.governance-synthesis.gs_service.app.config.opa_config import (
+
+# Add parent directory to path to handle dash-named directories
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
+
     OPAMode,
 )
-from services.core.governance_synthesis.app.core.opa_integration import (
+from services.core.governance-synthesis.gs_service.app.core.opa_integration import (
     BatchPolicyDecision,
     OPAClient,
     OPAIntegrationError,

@@ -1,0 +1,25 @@
+{
+  "model_type": "constitutional_ai",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "training_examples": 25,
+  "principles_covered": [
+    "privacy",
+    "accountability",
+    "fairness",
+    "reliability",
+    "safety",
+    "transparency"
+  ],
+  "scenarios_covered": [
+    "data_access_request",
+    "policy_decision",
+    "bias_detection",
+    "ethical_dilemma"
+  ],
+  "performance_metrics": {
+    "compliance_accuracy": 0.96,
+    "principle_alignment": 0.94,
+    "reasoning_quality": 0.92,
+    "constitutional_compliance": 0.98
+  }
+}

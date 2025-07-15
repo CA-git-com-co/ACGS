@@ -22,13 +22,13 @@ logger = logging.getLogger(__name__)
 # Path mappings for imports
 IMPORT_MAPPINGS = {
     "from services.core.": "from services.core.",
-    "from services.core.constitutional_ai.ac_service": "from services.core.constitutional_ai.ac_service",
+    "from services.core.constitutional-ai.ac_service": "from services.core.constitutional-ai.ac_service",
     "from services.core.auth.auth_service": "from services.core.auth.auth_service",
-    "from services.core.formal_verification.fv_service": "from services.core.formal_verification.fv_service",
-    "from services.core.governance_synthesis.gs_service": "from services.core.governance_synthesis.gs_service",
+    "from services.core.formal-verification.fv_service": "from services.core.formal-verification.fv_service",
+    "from services.core.governance-synthesis.gs_service": "from services.core.governance-synthesis.gs_service",
     "from services.platform.integrity.integrity_service": "from services.platform.integrity.integrity_service",
     "from services.platform.pgc.pgc_service": "from services.platform.pgc.pgc_service",
-    "from services.core.evolutionary_computation.ec_service": "from services.core.evolutionary_computation.ec_service",
+    "from services.core.evolutionary-computation.ec_service": "from services.core.evolutionary-computation.ec_service",
 }
 
 

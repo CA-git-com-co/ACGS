@@ -54,7 +54,7 @@ except ImportError:
     class UserCredentials:
         def __init__(self, username: str, password: str):
             self.username = username
-            self.password = password
+            self.password = os.environ.get("PASSWORD")
 
     class IntegratedAuthManager:
         async def authenticate(

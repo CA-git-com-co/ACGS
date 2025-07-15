@@ -1,0 +1,58 @@
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Build and distribution directories
+dist/
+build/
+*.egg-info/
+
+# Node modules and npm/yarn files
+node_modules/
+package-lock.json
+yarn.lock
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test and coverage directories
+coverage/
+.coverage
+test-results/
+test-output/
+
+# Temporary and cache files
+.cache/
+.tmp/
+*.tmp
+*.temp
+
+# Log files
+*.log
+logs/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Blockchain specific
+**/test-ledger/
+**/accounts/
+**/snapshots/
+**/rocksdb/
+# Sensitive files and credentials
+platform_services/integrity/integrity_service/app/api/v1/services/key_management.py
+platform_services/integrity/integrity_service/app/database.py
+platform_services/integrity/integrity_service_standardized/api/v1/services/key_management.py

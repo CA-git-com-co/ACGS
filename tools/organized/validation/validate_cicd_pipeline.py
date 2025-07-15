@@ -136,7 +136,7 @@ def check_environment_configuration() -> Dict[str, Any]:
     results = {"status": "success", "env_files": [], "config_dirs": [], "issues": []}
 
     # Check for environment files
-    env_files = [".env", ".env.example", ".env.template"]
+    env_files = ["config/environments/development.env", "config/environments/developmentconfig/environments/example.env", "config/environments/developmentconfig/environments/template.env"]
     for env_file in env_files:
         if Path(env_file).exists():
             results["env_files"].append(env_file)

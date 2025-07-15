@@ -6,7 +6,7 @@ Generates secure environment configuration with strong cryptographic keys
 and production-ready security settings for Phase 2.1 Security Hardening.
 
 Usage:
-    python scripts/generate_secure_env.py [--output .env.production] [--environment production]
+    python scripts/generate_secure_env.py [--output config/environments/developmentconfig/environments/production.env.backup] [--environment production]
 """
 
 import argparse
@@ -26,7 +26,7 @@ def generate_secure_key(length: int = 64) -> str:
 
 def generate_strong_password(length: int = 32) -> str:
     """Generate a strong password with mixed characters."""
-    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     return "".join(secrets.choice(alphabet) for _ in range(length))
 
 
@@ -36,7 +36,7 @@ def get_security_config(environment: str) -> dict[str, str]:
     # Generate secure keys
     jwt_secret = generate_secure_key(64)
     csrf_secret = generate_secure_key(32)
-    postgres_password = generate_strong_password(32)
+    postgres_password = os.environ.get("PASSWORD")
 
     # Base configuration
     config = {
@@ -112,14 +112,14 @@ def get_security_config(environment: str) -> dict[str, str]:
 
 
 def generate_env_file(config: dict[str, str], output_file: str, environment: str):
-    """Generate the .env file with security configuration."""
+    """Generate the config/environments/development.env file with security configuration."""
 
-    header = f"""# =============================================================================
+    header = f"""# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # ACGS-PGP Secure Environment Configuration
 # Generated: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 # Environment: {environment.upper()}
 # Security Level: {"CRITICAL" if environment == "production" else "HIGH"}
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # ⚠️  SECURITY WARNING ⚠️
 # This file contains sensitive security credentials.
@@ -203,9 +203,9 @@ def generate_env_file(config: dict[str, str], output_file: str, environment: str
         content += "\n"
 
     # Add security recommendations
-    content += """# =============================================================================
+    content += """# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 # Security Recommendations for Production
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # 1. Key Management:
 #    - Store secrets in a secure key management system (AWS KMS, HashiCorp Vault)
@@ -232,7 +232,7 @@ def generate_env_file(config: dict[str, str], output_file: str, environment: str
 #    - Test disaster recovery procedures
 #    - Document incident response procedures
 
-# =============================================================================
+# =============================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 """
 
     # Write the file
@@ -254,7 +254,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Generate secure ACGS-PGP environment configuration"
     )
-    parser.add_argument("--output", default=".env.secure", help="Output file path")
+    parser.add_argument("--output", default="config/environments/development.env.secure", help="Output file path")
     parser.add_argument(
         "--environment",
         default="production",
@@ -271,15 +271,15 @@ def main():
         sys.exit(1)
 
     print("🔐 Generating ACGS-PGP Secure Environment Configuration")
-    print(f"Environment: {args.environment.upper()}")
+    print(f"Environment: {argsconfig/environments/development.environment.upper()}")
     print(f"Output: {args.output}")
     print()
 
     # Generate configuration
-    config = get_security_config(args.environment)
+    config = get_security_config(argsconfig/environments/development.environment)
 
     # Generate the file
-    generate_env_file(config, args.output, args.environment)
+    generate_env_file(config, args.output, argsconfig/environments/development.environment)
 
     print(f"✅ Secure environment configuration generated: {args.output}")
     print()

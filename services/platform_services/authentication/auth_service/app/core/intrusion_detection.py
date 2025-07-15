@@ -81,7 +81,7 @@ class IntrusionDetectionSystem:
             "/admin",
             "/wp-admin",
             "/phpmyadmin",
-            "/.env",
+            "/config/environments/development.env",
             "/config.php",
             "/backup",
             "/test",

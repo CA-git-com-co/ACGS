@@ -261,7 +261,7 @@ EOF
 # Main execution
 main() {
     echo -e "${BLUE}🚨 ACGS-PGP Emergency Shutdown Testing${NC}"
-    echo "========================================"
+    echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Target RTO: <${RTO_TARGET_MINUTES} minutes"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Services: ${#SERVICES[@]} (ports 8000-8006)"

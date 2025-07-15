@@ -49,7 +49,7 @@ class ConstitutionalComplianceUpdater:
             "infrastructure/**/*.yaml",
             "infrastructure/**/*.yml",
             "docker-compose*.yml",
-            "*.env*",
+            "*config/environments/development.env*",
         ]
 
         # Files to skip (test files, temporary files, etc.)

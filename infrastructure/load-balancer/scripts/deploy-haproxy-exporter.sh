@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # HAProxy Prometheus Exporter Deployment Script for ACGS-1
 # Subtask 13.6: Integrate with Load Balancing Infrastructure
@@ -14,7 +16,7 @@ EXPORTER_GROUP="prometheus"
 EXPORTER_PORT="9101"
 HAPROXY_STATS_URL="http://localhost:8080/stats;csv"
 HAPROXY_USERNAME="admin"
-HAPROXY_PASSWORD="acgs_haproxy_admin_2024"
+HAPROXY_PASSWORD=os.environ.get("PASSWORD")
 
 # Logging
 log() {
@@ -112,7 +114,7 @@ ExecStart=/usr/local/bin/haproxy_exporter \\
     --web.telemetry-path=/metrics \\
     --log.level=info
 Environment=HAPROXY_USERNAME=$HAPROXY_USERNAME
-Environment=HAPROXY_PASSWORD=$HAPROXY_PASSWORD
+Environment=HAPROXY_PASSWORD=os.environ.get("PASSWORD")
 Restart=always
 RestartSec=10
 StandardOutput=journal
@@ -181,7 +183,7 @@ start_exporter_service() {
 update_prometheus_config() {
     log "Updating Prometheus configuration..."
     
-    local prometheus_config="$PROJECT_ROOT/infrastructure/monitoring/prometheus.yml"
+    local prometheus_config="$PROJECT_ROOT/infrastructure/monitoring/prometheus.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Check if HAProxy exporter job already exists
     if grep -q "job_name: 'haproxy-exporter'" "$prometheus_config"; then

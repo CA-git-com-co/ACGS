@@ -293,28 +293,28 @@ def print_api_endpoints():
     endpoints = {
         "Health & Status": [
             "GET /api/v1/wina/performance/health",
-            "GET /api/v1/wina/performance/metrics/realtime",
-            "GET /api/v1/wina/performance/metrics/summary",
+            "GET /api/v1/wina/performance/metrics/realtime",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "GET /api/v1/wina/performance/metrics/summary",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ],
         "Metrics Recording": [
             "POST /api/v1/wina/performance/metrics/neuron-activation",
             "POST /api/v1/wina/performance/metrics/svd-transformation",
-            "POST /api/v1/wina/performance/metrics/dynamic-gating",
-            "POST /api/v1/wina/performance/metrics/constitutional-compliance",
-            "POST /api/v1/wina/performance/metrics/learning-feedback",
-            "POST /api/v1/wina/performance/metrics/integration",
+            "POST /api/v1/wina/performance/metrics/dynamic-gating",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "POST /api/v1/wina/performance/metrics/constitutional-compliance",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "POST /api/v1/wina/performance/metrics/learning-feedback",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "POST /api/v1/wina/performance/metrics/integration",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "POST /api/v1/wina/performance/metrics/system-health",
         ],
         "Reports & Export": [
-            "POST /api/v1/wina/performance/report/generate",
+            "POST /api/v1/wina/performance/report/generate",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "GET /api/v1/wina/performance/prometheus",
             "GET /api/v1/wina/performance/alerts",
         ],
         "Configuration": [
             "GET /api/v1/wina/performance/config",
             "POST /api/v1/wina/performance/config",
-            "POST /api/v1/wina/performance/monitoring/start",
-            "POST /api/v1/wina/performance/monitoring/stop",
+            "POST /api/v1/wina/performance/monitoring/start",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "POST /api/v1/wina/performance/monitoring/stop",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         ],
     }
 

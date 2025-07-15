@@ -333,7 +333,7 @@ CONSTITUTIONAL INTEGRITY AT RISK - IMMEDIATE RESPONSE REQUIRED
             # Generate and save Alertmanager configuration
             alertmanager_config = self.generate_alertmanager_config()
             with open(
-                "infrastructure/monitoring/alertmanager/alertmanager.yml", "w"
+                "infrastructure/monitoring/alertmanager/alertmanager.yml", "w"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ) as f:
                 import yaml
 
@@ -384,7 +384,7 @@ CONSTITUTIONAL INTEGRITY AT RISK - IMMEDIATE RESPONSE REQUIRED
 
             # Validate Alertmanager configuration
             if os.path.exists(
-                "infrastructure/monitoring/alertmanager/alertmanager.yml"
+                "infrastructure/monitoring/alertmanager/alertmanager.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             ):
                 validation_results["alertmanager_config_valid"] = True
 

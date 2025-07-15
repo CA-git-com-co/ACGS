@@ -1,3 +1,7 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 #!/usr/bin/env node
 
 // Colors for output
@@ -338,7 +342,7 @@ async function runTests() {
     TEST_CMD,
     ...TEST_ARGS,
     "-e",
-    "JWT_TOKEN=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0=",
+    "JWT_TOKEN=os.environ.get("AUTH_TOKEN"),
     "--cli",
     "--method",
     "tools/list",

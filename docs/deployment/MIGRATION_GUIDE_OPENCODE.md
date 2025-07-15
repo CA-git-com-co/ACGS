@@ -115,7 +115,7 @@ acgs:
 
 ### OpenCode Adapter Config (After):
 ```bash
-# .env file
+# config/environments/development.env file
 ACGS_AUTH_SERVICE_URL=http://localhost:8016
 ACGS_POLICY_SERVICE_URL=http://localhost:8005
 ACGS_AUDIT_SERVICE_URL=http://localhost:8002

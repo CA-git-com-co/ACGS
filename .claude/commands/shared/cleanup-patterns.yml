@@ -44,7 +44,7 @@ Deps:
 ## Never Remove (Protected)
 ```yaml
 Files:
-  - .env.example, .env.template
+  - config/environments/developmentconfig/environments/example.env, config/environments/developmentconfig/environments/template.env
   - README.md, LICENSE, CHANGELOG
   - .gitignore, .gitattributes
   - package.json, package-lock.json

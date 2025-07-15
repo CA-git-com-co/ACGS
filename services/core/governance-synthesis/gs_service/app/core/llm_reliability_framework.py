@@ -257,7 +257,7 @@ class LLMReliabilityConfig:
 
     # Model configuration
     primary_model: str = (
-        "gpt-4-turbo"  # Protocol: Constitutional prompting and primary synthesis
+        "mixtral-8x22b"  # Protocol: Constitutional prompting and primary synthesis
     )
     secondary_models: list[str] = field(
         default_factory=lambda: [
@@ -269,7 +269,7 @@ class LLMReliabilityConfig:
     )
     model_weights: dict[str, float] = field(
         default_factory=lambda: {
-            "gpt-4-turbo": 0.4,  # Primary synthesizer
+            "mixtral-8x22b": 0.4,  # Primary synthesizer
             "claude-3.5-sonnet": 0.15,  # Validator
             "cohere-command-r-plus": 0.15,  # Validator
             "gemini-1.5-pro": 0.15,  # Validator

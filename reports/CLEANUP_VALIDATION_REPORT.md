@@ -31,7 +31,7 @@ Successfully completed comprehensive cleanup and reorganization of ACGS-2 reposi
 
 ### Phase 1: Build Artifacts Removal ✅
 
-- ✅ Removed HTML coverage directory (htmlcov/)
+- ✅ Removed HTML coverage directory (reports/coverage/htmlcov/)
 - ✅ Removed Python egg-info directories (3 locations)
 - ✅ Removed Rust target directory
 - ✅ Removed node_modules directory (1 location)

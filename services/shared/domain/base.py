@@ -15,7 +15,7 @@ from typing import Any, TypeVar
 from uuid import UUID, uuid4
 
 # Import enhanced error handling
-from shared.resilience.exceptions import (
+from services.shared.resilience.exceptions import (
     BusinessRuleViolationError,
     DomainError,
     OptimisticLockingError,

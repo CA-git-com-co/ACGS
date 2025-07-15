@@ -205,7 +205,7 @@ receivers:
           Description: {{ .Annotations.description }}
           {{ end }}
         headers:
-          X-ACGS-Environment: '{{ .CommonLabels.environment }}'
+          X-ACGS-Environment: '{{ .CommonLabelsconfig/environments/development.environment }}'
 ```
 
 ## Network Security {#network-security}

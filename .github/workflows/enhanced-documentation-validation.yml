@@ -11,7 +11,7 @@ on:
       - '**/*.rst'
       - '**/*.txt'
       - 'docs/**'
-      - 'deploy_constitutional_hash.py'
+      - 'scripts/deployment/deploy_constitutional_hash.py'
       - 'fix_broken_links.py'
   pull_request:
     branches: [ main, develop ]
@@ -72,8 +72,8 @@ jobs:
         run: |
           echo "🔍 Validating constitutional compliance..."
           
-          if [ -f "deploy_constitutional_hash.py" ]; then
-            python3 deploy_constitutional_hash.py --validate > compliance_report.txt
+          if [ -f "scripts/deployment/deploy_constitutional_hash.py" ]; then
+            python3 scripts/deployment/deploy_constitutional_hash.py --validate > compliance_report.txt
             
             # Extract compliance percentage
             COMPLIANCE=$(grep "Current compliance:" compliance_report.txt | grep -o '[0-9.]*%' | head -1 | sed 's/%//')
@@ -99,7 +99,7 @@ jobs:
         if: steps.compliance.outputs.target_met == 'false' && github.event.inputs.fix_issues == 'true'
         run: |
           echo "🔧 Auto-fixing constitutional compliance..."
-          python3 deploy_constitutional_hash.py --target $TARGET_COMPLIANCE
+          python3 scripts/deployment/deploy_constitutional_hash.py --target $TARGET_COMPLIANCE
           
           # Commit changes if any
           git config --local user.email "action@github.com"
@@ -316,7 +316,7 @@ jobs:
       - name: Generate validation summary
         run: |
           echo "📊 ACGS-2 Enhanced Documentation Validation Summary"
-          echo "=================================================="
+          echo "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
           echo "Timestamp: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           echo ""

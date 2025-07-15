@@ -48,7 +48,7 @@ Examples:
 Environment Configuration:
 - Package manager setup (npm/yarn/pnpm)
 - Version management (.nvmrc, .python-version)
-- Environment variables & .env structure
+- Environment variables & config/environments/development.env structure
 - Docker configuration if needed
 
 Code Quality:

@@ -35,7 +35,7 @@ determine_active_environment() {
     log_deploy "Determining current active environment..."
     
     # Check which environment is currently receiving traffic
-    local blue_traffic=$(kubectl get service acgs-production-router -n $PRODUCTION_NAMESPACE -o jsonpath='{.spec.selector.environment}' 2>/dev/null || echo "")
+    local blue_traffic=$(kubectl get service acgs-production-router -n $PRODUCTION_NAMESPACE -o jsonpath='{.spec.selectorconfig/environments/development.environment}' 2>/dev/null || echo "")
     
     if [[ "$blue_traffic" == "blue" ]]; then
         CURRENT_ACTIVE="blue"

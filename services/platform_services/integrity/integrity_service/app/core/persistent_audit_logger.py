@@ -23,7 +23,7 @@ import time
 from datetime import datetime, timezone
 from typing import Any
 
-import aioredis
+import redis.asyncio as aioredis
 import psycopg2
 import psycopg2.extras
 from psycopg2.pool import ThreadedConnectionPool
@@ -94,7 +94,7 @@ class PersistentAuditLogger:
                 port=self.db_config.get("port", 5439),
                 database=self.db_config.get("database", "acgs_integrity"),
                 user=self.db_config.get("user", "acgs_user"),
-                password=self.db_config.get("password", "acgs_password"),
+                password=os.environ.get("PASSWORD")password", "acgs_password"),
                 cursor_factory=psycopg2.extras.RealDictCursor,
             )
 

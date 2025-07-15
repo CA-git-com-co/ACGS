@@ -18,7 +18,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import declarative_mixin
 
-# Try to import shared components
+# Try to import services.shared components
 try:
     from services.shared.database import Base
     from services.shared.database.simplified_rls import SimpleTenantMixin

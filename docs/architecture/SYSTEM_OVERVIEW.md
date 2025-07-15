@@ -199,7 +199,7 @@ Headers: Authorization: Bearer <jwt-token>
    cd ACGS-2
 
    # Create environment file
-   cat > .env << EOF
+   cat > config/environments/development.env << EOF
    DATABASE_URL=postgresql+asyncpg://acgs_user:acgs_secure_password@localhost:5439/acgs_db # pragma: allowlist secret
    REDIS_URL=redis://localhost:6389
    CONSTITUTIONAL_HASH=cdd01ef066bc6cf2

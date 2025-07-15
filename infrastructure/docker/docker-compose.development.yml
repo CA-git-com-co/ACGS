@@ -11,7 +11,7 @@ services:
     container_name: acgs-postgres-dev
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_dev}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs_development}
       POSTGRES_INITDB_ARGS: --encoding=UTF-8
     volumes:
@@ -57,9 +57,9 @@ services:
       target: development
     container_name: acgs-auth-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/0
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true
@@ -94,9 +94,9 @@ services:
       target: development
     container_name: acgs-ac-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/1
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true
@@ -130,9 +130,9 @@ services:
       target: development
     container_name: acgs-integrity-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/2
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true
@@ -166,9 +166,9 @@ services:
       target: development
     container_name: acgs-fv-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/3
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true
@@ -206,9 +206,9 @@ services:
       target: development
     container_name: acgs-gs-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/4
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true
@@ -250,9 +250,9 @@ services:
       target: development
     container_name: acgs-pgc-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/5
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true
@@ -290,9 +290,9 @@ services:
       target: development
     container_name: acgs-ec-service-dev
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/${POSTGRES_DB:-acgs_development}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_dev}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/6
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev_jwt_secret_key_change_in_production}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=development
     - LOG_LEVEL=DEBUG
     - RELOAD=true

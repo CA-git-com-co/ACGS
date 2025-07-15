@@ -163,8 +163,8 @@ createdb acgs_fv
 alembic upgrade head
 
 # 4. Configure environment
-cp .env.example .env
-# Edit .env with your configuration
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# Edit config/environments/development.env with your configuration
 
 # 5. Start service
 uv run uvicorn main:app --reload --port 8003
@@ -175,7 +175,7 @@ uv run uvicorn main:app --reload --port 8003
 ```bash
 # Using Docker
 docker build -t acgs-fv-service .
-docker run -p 8003:8003 --env-file .env acgs-fv-service
+docker run -p 8003:8003 --env-file config/environments/development.env acgs-fv-service
 
 # Using Docker Compose
 docker-compose up -d fv-service
@@ -465,7 +465,7 @@ python tests/performance/stress_test.py --concurrent=50
 - **Health Check**: http://localhost:8003/health
 - **Interactive API Docs**: http://localhost:8003/docs
 - **Logs**: `/logs/fv_service.log`
-- **Configuration**: `services/core/formal-verification/fv_service/.env`
+- **Configuration**: `services/core/formal-verification/fv_service/config/environments/development.env`
 
 ```
 

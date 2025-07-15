@@ -124,8 +124,8 @@ class MonitoringInfrastructureDeployer:
             "monitoring/grafana",
             "monitoring/grafana/dashboards",
             "monitoring/grafana/provisioning",
-            "monitoring/grafana/provisioning/dashboards",
-            "monitoring/grafana/provisioning/datasources",
+            "monitoring/grafana/provisioning/dashboards",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+            "monitoring/grafana/provisioning/datasources",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "monitoring/alertmanager",
             "monitoring/configs",
             "monitoring/scripts",
@@ -403,7 +403,7 @@ class MonitoringInfrastructureDeployer:
         }
 
         datasource_file = (
-            self.monitoring_path / "grafana/provisioning/datasources/prometheus.yml"
+            self.monitoring_path / "grafana/provisioning/datasources/prometheus.yml"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         )
         with open(datasource_file, "w") as f:
             import yaml
@@ -529,7 +529,7 @@ class MonitoringInfrastructureDeployer:
         required_files = [
             "monitoring/prometheus/prometheus.yml",
             "monitoring/grafana/dashboards/service_health.json",
-            "monitoring/grafana/dashboards/governance_workflows.json",
+            "monitoring/grafana/dashboards/governance_workflows.json",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             "monitoring/grafana/dashboards/executive_overview.json",
             "monitoring/docker-compose.yml",
         ]

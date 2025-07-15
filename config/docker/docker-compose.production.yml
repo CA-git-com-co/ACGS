@@ -1,0 +1,136 @@
+networks:
+  acgs-production:
+    driver: bridge
+    name: acgs-production-network
+services:
+  grafana:
+    container_name: acgs-grafana-production
+    depends_on:
+    - prometheus
+    environment:
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+    - GF_USERS_ALLOW_SIGN_UP=false
+    - GF_SECURITY_DISABLE_GRAVATAR=true
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    image: grafana/grafana:latest
+    networks:
+    - acgs-production
+    ports:
+    - 3000:3000
+    restart: unless-stopped
+    volumes:
+    - grafana_data:/var/lib/grafana
+    - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+  hybrid-router:
+    build:
+      context: ./services/shared/routing
+      dockerfile: Dockerfile.production
+    container_name: acgs-hybrid-router-production
+    depends_on:
+    - postgres
+    - redis
+    environment:
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - ENVIRONMENT=production
+    - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+    - GROQ_API_KEY=${GROQ_API_KEY}
+    - REDIS_URL=redis://redis:6379/0
+    - DATABASE_URL=postgresql+asyncpg://acgs_user:${POSTGRES_PASSWORD}@postgres:5432/acgs_production
+    expose:
+    - '8000'
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 40s
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8000/health
+      timeout: 10s
+    networks:
+    - acgs-production
+    restart: unless-stopped
+  nginx:
+    container_name: acgs-nginx-production
+    depends_on:
+    - hybrid-router
+    environment:
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    image: nginx:alpine
+    networks:
+    - acgs-production
+    ports:
+    - 80:80
+    - 443:443
+    restart: unless-stopped
+    volumes:
+    - ./nginx.production.conf:/etc/nginx/nginx.conf:ro
+    - ssl_certs:/etc/ssl:ro
+  postgres:
+    container_name: acgs-postgres-production
+    environment:
+    - POSTGRES_USER=acgs_user
+    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    - POSTGRES_DB=acgs_production
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    expose:
+    - '5432'
+    healthcheck:
+      interval: 30s
+      retries: 5
+      test:
+      - CMD-SHELL
+      - pg_isready -U acgs_user -d acgs_production
+      timeout: 10s
+    image: postgres:15-alpine
+    networks:
+    - acgs-production
+    restart: unless-stopped
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+    - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+  prometheus:
+    container_name: acgs-prometheus-production
+    environment:
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    image: prom/prometheus:latest
+    networks:
+    - acgs-production
+    ports:
+    - 9090:9090
+    restart: unless-stopped
+    volumes:
+    - ./monitoring/prometheus.production.yml:/etc/prometheus/prometheus.yml:ro
+    - ./monitoring/rules:/etc/prometheus/rules:ro
+    - prometheus_data:/prometheus
+  redis:
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    container_name: acgs-redis-production
+    environment:
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    expose:
+    - '6379'
+    healthcheck:
+      interval: 30s
+      retries: 3
+      test:
+      - CMD
+      - redis-cli
+      - --raw
+      - incr
+      - ping
+      timeout: 10s
+    image: redis:7-alpine
+    networks:
+    - acgs-production
+    restart: unless-stopped
+    volumes:
+    - redis_data:/data
+version: '3.8'
+volumes:
+  grafana_data: {}
+  postgres_data: {}
+  prometheus_data: {}
+  redis_data: {}
+  ssl_certs: {}

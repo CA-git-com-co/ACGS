@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 
 # ACGS Phase 3 - Database Schema Fix for Staging
@@ -184,14 +186,14 @@ verify_migration() {
 # Main execution
 main() {
     log "Starting ACGS Phase 3 Database Schema Fix for Staging"
-    log "=================================================="
+    log "=================================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Load environment variables
-    if [ -f "config/env/staging.env" ]; then
-        source config/env/staging.env
+    if [ -f "config/env/stagingconfig/environments/development.env" ]; then
+        source config/env/stagingconfig/environments/development.env
         success "Loaded staging environment variables"
     else
-        error "Staging environment file not found: config/env/staging.env"
+        error "Staging environment file not found: config/env/stagingconfig/environments/development.env"
         exit 1
     fi
     

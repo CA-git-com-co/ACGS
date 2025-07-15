@@ -5,7 +5,7 @@ services:
     container_name: acgs-postgres-staging
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${POSTGRES_DB:-acgs_staging}
       POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
     volumes:
@@ -82,9 +82,9 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-ac-service-staging
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5435/${POSTGRES_DB:-acgs_staging}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/0
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=staging
     - LOG_LEVEL=INFO
     - PYTHONPATH=/app:/app/shared
@@ -118,9 +118,9 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-integrity-service-staging
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5432/${POSTGRES_DB:-acgs_staging}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/1
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=staging
     - LOG_LEVEL=INFO
     - PYTHONPATH=/app:/app/shared
@@ -154,9 +154,9 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-fv-service-staging
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5435/${POSTGRES_DB:-acgs_staging}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/2
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=staging
     - LOG_LEVEL=INFO
     - AC_SERVICE_URL=http://ac_service:8001
@@ -191,17 +191,17 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-gs-service-staging
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5432/${POSTGRES_DB:-acgs_staging}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/3
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=staging
     - LOG_LEVEL=INFO
     - AC_SERVICE_URL=http://ac_service:8001
     - INTEGRITY_SERVICE_URL=http://integrity_service:8002
     - FV_SERVICE_URL=http://fv_service:8003
-    - OPENAI_API_KEY=${OPENAI_API_KEY:-staging-placeholder-key}
-    - GEMINI_API_KEY=${GEMINI_API_KEY:-staging-placeholder-key}
-    - GROQ_API_KEY=${GROQ_API_KEY:-staging-placeholder-key}
+    - OPENAI_API_KEY=os.environ.get("API_KEY")
+    - GEMINI_API_KEY=os.environ.get("API_KEY")
+    - GROQ_API_KEY=os.environ.get("API_KEY")
     - PYTHONPATH=/app:/app/shared
     ports:
     - 8014:8004
@@ -235,9 +235,9 @@ services:
       dockerfile: Dockerfile
     container_name: acgs-pgc-service-staging
     environment:
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_staging_secure_password_2024}@postgres:5435/${POSTGRES_DB:-acgs_staging}
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
     - REDIS_URL=redis://redis:6379/4
-    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}
+    - JWT_SECRET_KEY=${JWT_SECRET_KEY:-acgs_staging_jwt_secret_key_phase3_2024_secure_random_string}  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     - ENVIRONMENT=staging
     - LOG_LEVEL=INFO
     - AC_SERVICE_URL=http://ac_service:8001

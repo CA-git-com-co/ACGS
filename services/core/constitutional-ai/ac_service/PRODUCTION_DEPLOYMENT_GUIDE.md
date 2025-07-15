@@ -54,7 +54,7 @@ importance_scores = {principle: float(shap_values.values[0][i])
 
 ### 4. **配置与Secrets：dotenv + pydantic校验** ✅
 - **⚙️ 配置**: pydantic-settings，环境变量加载
-- **🔐 安全**: .env文件支持，敏感信息环境变量注入
+- **🔐 安全**: config/environments/development.env文件支持，敏感信息环境变量注入
 - **✅ 校验**: 完整的配置验证和类型检查
 
 ```python
@@ -63,7 +63,7 @@ class ProductionGovernanceConfig(BaseSettings):
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
     
     class Config:
-        env_file = '.env'
+        env_file = 'config/environments/development.env'
 ```
 
 ### 5. **异步与限流：asyncio + token bucket** ✅
@@ -165,14 +165,14 @@ cd ACGS-2/services/core/constitutional-ai/ac_service
 pip install -r requirements-production.txt
 
 # 配置环境变量
-cp .env.example .env
-# 编辑 .env 文件，设置必要的配置
+cp config/environments/developmentconfig/environments/example.env config/environments/development.env
+# 编辑 config/environments/development.env 文件，设置必要的配置
 ```
 
 ### 2. 配置文件
 
 ```bash
-# .env 配置示例
+# config/environments/development.env 配置示例
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
 CONFIDENCE_THRESHOLD=0.7
 VIOLATION_THRESHOLD=0.08
@@ -200,7 +200,7 @@ docker run -d \
   --restart unless-stopped \
   -p 8001:8001 \
   -p 8000:8000 \
-  --env-file .env \
+  --env-file config/environments/development.env \
   --memory 2g \
   --cpus 2 \
   acgs-governance:v1.0.0
@@ -322,7 +322,7 @@ docker restart governance-framework
 - [ ] ✅ 依赖管理：requirements.txt + Docker镜像
 - [ ] ✅ 类型注解：mypy --strict兼容
 - [ ] ✅ SHAP集成：真实模型wrapper
-- [ ] ✅ 配置管理：pydantic-settings + .env
+- [ ] ✅ 配置管理：pydantic-settings + config/environments/development.env
 - [ ] ✅ 异步限流：token bucket + asyncio
 - [ ] ✅ 测试覆盖：pytest + >80%覆盖
 - [ ] ✅ 监控告警：Prometheus + AlertManager

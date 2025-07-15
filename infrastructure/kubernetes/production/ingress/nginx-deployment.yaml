@@ -31,7 +31,7 @@ spec:
     spec:
       affinity:
         podAntiAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             - weight: 100
               podAffinityTerm:
                 labelSelector:

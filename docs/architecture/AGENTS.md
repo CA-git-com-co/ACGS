@@ -13,7 +13,7 @@
 ### Environment Setup
 ```bash
 # Quick setup with constitutional compliance
-cp .env.acgs.example .env.acgs && source .env.acgs
+cp config/environments/developmentconfig/environments/acgsconfig/environments/example.env config/environments/developmentconfig/environments/acgs.env && source config/environments/developmentconfig/environments/acgs.env
 uv sync  # Preferred dependency management
 # OR: python -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
 ```

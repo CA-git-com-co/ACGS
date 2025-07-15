@@ -1,0 +1,98 @@
+# Dockerfile for GroqCloud Policy Integration Service
+# Constitutional Hash: cdd01ef066bc6cf2
+
+FROM python:3.11-slim
+
+# Metadata
+LABEL maintainer="ACGS-2 Team"
+LABEL version="1.0.0"
+LABEL description="GroqCloud Policy Integration with OPA-WASM"
+LABEL constitutional-hash="cdd01ef066bc6cf2"
+
+# Build arguments
+ARG PYTHON_VERSION=3.11
+ARG CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+# Environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH}
+ENV PYTHONPATH=/app
+ENV WORKERS=4
+ENV PORT=8015
+
+# Install system dependencies including WASM runtime
+RUN apt-get update && apt-get install -y \
+    curl \
+    wget \
+    git \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    libffi-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install OPA for policy compilation
+RUN curl -L -o /usr/local/bin/opa https://openpolicyagent.org/downloads/latest/opa_linux_amd64_static \
+    && chmod 755 /usr/local/bin/opa
+
+# Install wasmtime for WASM runtime
+RUN curl https://wasmtime.dev/install.sh -sSf | bash \
+    && mv ~/.wasmtime/bin/wasmtime /usr/local/bin/
+
+# Create application user
+RUN groupadd -r acgs && useradd -r -g acgs -s /bin/false acgs
+
+# Set working directory
+WORKDIR /app
+
+# Copy requirements first for better caching
+COPY requirements.txt requirements-groq.txt* ./
+COPY services/shared/requirements/ ./requirements/
+
+# Install Python dependencies
+RUN pip install --no-cache-dir --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt \
+    && if [ -f requirements-groq.txt ]; then pip install --no-cache-dir -r requirements-groq.txt; fi
+
+# Install additional dependencies for WASM and GroqCloud
+RUN pip install --no-cache-dir \
+    wasmtime-py>=1.0.0 \
+    groq>=0.4.0 \
+    structlog>=22.0.0 \
+    uvicorn[standard]>=0.20.0 \
+    prometheus-client>=0.16.0
+
+# Copy application code
+COPY services/ ./services/
+COPY infrastructure/docker/monitoring/ ./monitoring/
+
+# Copy policy files
+COPY services/core/governance-synthesis/policies/ ./policies/
+
+# Create necessary directories
+RUN mkdir -p /app/wasm-cache /app/logs /app/data \
+    && chown -R acgs:acgs /app
+
+# Set up health check script
+COPY infrastructure/docker/scripts/health-check.sh /usr/local/bin/health-check.sh
+RUN chmod +x /usr/local/bin/health-check.sh
+
+# Expose ports
+EXPOSE 8015 9090
+
+# Switch to non-root user
+USER acgs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /usr/local/bin/health-check.sh
+
+# Start script
+COPY infrastructure/docker/scripts/start-groq-policy.sh /usr/local/bin/start-groq-policy.sh
+USER root
+RUN chmod +x /usr/local/bin/start-groq-policy.sh
+USER acgs
+
+# Default command
+CMD ["/usr/local/bin/start-groq-policy.sh"]

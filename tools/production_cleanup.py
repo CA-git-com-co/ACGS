@@ -184,8 +184,8 @@ class ProductionCleanup:
         config_files = [
             "config/environments/production.yaml",
             "config/environments/production.json",
-            "docker-compose.production.yml",
-            ".env.production",
+            "config/docker/docker-compose.production.yml",
+            "config/environments/developmentconfig/environments/production.env.backup",
         ]
 
         for config_file in config_files:
@@ -235,7 +235,7 @@ class ProductionCleanup:
         logger.info("Creating production environment files...")
 
         # Create production environment file
-        env_production = self.project_root / ".env.production"
+        env_production = self.project_root / "config/environments/developmentconfig/environments/production.env.backup"
         env_content = f"""# ACGS Production Environment Configuration
 # Constitutional Hash: {CONSTITUTIONAL_HASH}
 
@@ -249,14 +249,14 @@ POSTGRESQL_HOST=${{POSTGRESQL_HOST:-localhost}}
 POSTGRESQL_PORT=5439
 POSTGRESQL_DATABASE=${{POSTGRESQL_DATABASE:-acgs}}
 POSTGRESQL_USER=${{POSTGRESQL_USER:-acgs_user}}
-POSTGRESQL_PASSWORD=${{POSTGRESQL_PASSWORD}}
+POSTGRESQL_PASSWORD=os.environ.get("PASSWORD")
 POSTGRESQL_POOL_SIZE=20
 POSTGRESQL_MAX_OVERFLOW=10
 
 # Redis Configuration (Port 6389)
 REDIS_HOST=${{REDIS_HOST:-localhost}}
 REDIS_PORT=6389
-REDIS_PASSWORD=${{REDIS_PASSWORD}}
+REDIS_PASSWORD=os.environ.get("PASSWORD")
 REDIS_DB=0
 
 # Service Ports
@@ -281,7 +281,7 @@ CONSTITUTIONAL_VALIDATION_ENABLED=true
         self.cleanup_report["configurations_updated"].append(str(env_production))
 
         # Create production Docker Compose override
-        docker_compose_prod = self.project_root / "docker-compose.production.yml"
+        docker_compose_prod = self.project_root / "config/docker/docker-compose.production.yml"
         compose_content = f"""# ACGS Production Docker Compose Configuration
 # Constitutional Hash: {CONSTITUTIONAL_HASH}
 
@@ -293,7 +293,7 @@ services:
       - "5439:5432"
     environment:
       POSTGRES_USER: ${{POSTGRESQL_USER}}
-      POSTGRES_PASSWORD: ${{POSTGRESQL_PASSWORD}}
+      POSTGRES_PASSWORD: os.environ.get("PASSWORD")
       POSTGRES_DB: ${{POSTGRESQL_DATABASE}}
     deploy:
       resources:
@@ -308,7 +308,7 @@ services:
     ports:
       - "6389:6379"
     environment:
-      REDIS_PASSWORD: ${{REDIS_PASSWORD}}
+      REDIS_PASSWORD: os.environ.get("PASSWORD")
     deploy:
       resources:
         limits:

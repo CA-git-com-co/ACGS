@@ -1,0 +1,925 @@
+{
+  "dataset_type": "policy_governance",
+  "description": "Policy governance training examples for OPA rule generation and compliance",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "examples": [
+    {
+      "id": "policy_gov_demo_0000",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "HIPAA",
+          "scope": "user",
+          "context": "Demo data_protection policy for HIPAA compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    hipaa_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nhipaa_compliance if {\n    input.framework == \"HIPAA\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "escalate",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on HIPAA requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.971,
+          "constitutional_compliance": 0.982,
+          "risk_level": "high"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "HIPAA",
+        "complexity": "simple",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0001",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "ACGS_Constitutional",
+          "scope": "organization",
+          "context": "Demo data_protection policy for ACGS_Constitutional compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    acgs_constitutional_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nacgs_constitutional_compliance if {\n    input.framework == \"ACGS_Constitutional\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "escalate",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on ACGS_Constitutional requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.929,
+          "constitutional_compliance": 0.983,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "ACGS_Constitutional",
+        "complexity": "complex",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0002",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "SOX",
+          "scope": "organization",
+          "context": "Demo compliance_rules policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.967,
+          "constitutional_compliance": 0.959,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "SOX",
+        "complexity": "simple",
+        "enforcement_level": "mandatory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0003",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "GDPR",
+          "scope": "organization",
+          "context": "Demo data_protection policy for GDPR compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    gdpr_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\ngdpr_compliance if {\n    input.framework == \"GDPR\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "escalate",
+          "conditions": [
+            "Implement audit logging"
+          ],
+          "rationale": "Decision based on GDPR requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.985,
+          "constitutional_compliance": 0.979,
+          "risk_level": "high"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "GDPR",
+        "complexity": "complex",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0004",
+      "input": {
+        "policy_request": {
+          "type": "access_control",
+          "framework": "ACGS_Constitutional",
+          "scope": "organization",
+          "context": "Demo access_control policy for ACGS_Constitutional compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.access_control\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"access_control\"\n    constitutional_compliance\n    acgs_constitutional_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nacgs_constitutional_compliance if {\n    input.framework == \"ACGS_Constitutional\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on ACGS_Constitutional requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.964,
+          "constitutional_compliance": 0.999,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "access_control",
+        "framework": "ACGS_Constitutional",
+        "complexity": "simple",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0005",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "GDPR",
+          "scope": "user",
+          "context": "Demo compliance_rules policy for GDPR compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    gdpr_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\ngdpr_compliance if {\n    input.framework == \"GDPR\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on GDPR requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.923,
+          "constitutional_compliance": 0.968,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "GDPR",
+        "complexity": "moderate",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0006",
+      "input": {
+        "policy_request": {
+          "type": "audit_requirements",
+          "framework": "SOX",
+          "scope": "user",
+          "context": "Demo audit_requirements policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.audit_requirements\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"audit_requirements\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "escalate",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.984,
+          "constitutional_compliance": 0.961,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "audit_requirements",
+        "framework": "SOX",
+        "complexity": "complex",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0007",
+      "input": {
+        "policy_request": {
+          "type": "audit_requirements",
+          "framework": "ACGS_Constitutional",
+          "scope": "user",
+          "context": "Demo audit_requirements policy for ACGS_Constitutional compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.audit_requirements\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"audit_requirements\"\n    constitutional_compliance\n    acgs_constitutional_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nacgs_constitutional_compliance if {\n    input.framework == \"ACGS_Constitutional\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on ACGS_Constitutional requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.904,
+          "constitutional_compliance": 0.96,
+          "risk_level": "high"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "audit_requirements",
+        "framework": "ACGS_Constitutional",
+        "complexity": "simple",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0008",
+      "input": {
+        "policy_request": {
+          "type": "access_control",
+          "framework": "ACGS_Constitutional",
+          "scope": "organization",
+          "context": "Demo access_control policy for ACGS_Constitutional compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.access_control\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"access_control\"\n    constitutional_compliance\n    acgs_constitutional_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nacgs_constitutional_compliance if {\n    input.framework == \"ACGS_Constitutional\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging"
+          ],
+          "rationale": "Decision based on ACGS_Constitutional requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.913,
+          "constitutional_compliance": 0.997,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "access_control",
+        "framework": "ACGS_Constitutional",
+        "complexity": "simple",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0009",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "HIPAA",
+          "scope": "system",
+          "context": "Demo compliance_rules policy for HIPAA compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    hipaa_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nhipaa_compliance if {\n    input.framework == \"HIPAA\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on HIPAA requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.964,
+          "constitutional_compliance": 0.963,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "HIPAA",
+        "complexity": "complex",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0010",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "PCI_DSS",
+          "scope": "system",
+          "context": "Demo compliance_rules policy for PCI_DSS compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    pci_dss_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\npci_dss_compliance if {\n    input.framework == \"PCI_DSS\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on PCI_DSS requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.991,
+          "constitutional_compliance": 0.97,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "PCI_DSS",
+        "complexity": "moderate",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0011",
+      "input": {
+        "policy_request": {
+          "type": "audit_requirements",
+          "framework": "HIPAA",
+          "scope": "system",
+          "context": "Demo audit_requirements policy for HIPAA compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.audit_requirements\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"audit_requirements\"\n    constitutional_compliance\n    hipaa_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nhipaa_compliance if {\n    input.framework == \"HIPAA\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on HIPAA requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.925,
+          "constitutional_compliance": 0.98,
+          "risk_level": "high"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "audit_requirements",
+        "framework": "HIPAA",
+        "complexity": "complex",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0012",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "SOX",
+          "scope": "user",
+          "context": "Demo data_protection policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "escalate",
+          "conditions": [
+            "Implement audit logging"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.931,
+          "constitutional_compliance": 0.96,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "SOX",
+        "complexity": "moderate",
+        "enforcement_level": "mandatory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0013",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "SOX",
+          "scope": "user",
+          "context": "Demo data_protection policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.909,
+          "constitutional_compliance": 0.961,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "SOX",
+        "complexity": "complex",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0014",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "SOX",
+          "scope": "system",
+          "context": "Demo compliance_rules policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.992,
+          "constitutional_compliance": 0.982,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "SOX",
+        "complexity": "simple",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0015",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "GDPR",
+          "scope": "user",
+          "context": "Demo compliance_rules policy for GDPR compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    gdpr_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\ngdpr_compliance if {\n    input.framework == \"GDPR\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging"
+          ],
+          "rationale": "Decision based on GDPR requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.92,
+          "constitutional_compliance": 0.986,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "GDPR",
+        "complexity": "simple",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0016",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "SOX",
+          "scope": "organization",
+          "context": "Demo data_protection policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.938,
+          "constitutional_compliance": 0.969,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "SOX",
+        "complexity": "complex",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0017",
+      "input": {
+        "policy_request": {
+          "type": "access_control",
+          "framework": "PCI_DSS",
+          "scope": "user",
+          "context": "Demo access_control policy for PCI_DSS compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.access_control\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"access_control\"\n    constitutional_compliance\n    pci_dss_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\npci_dss_compliance if {\n    input.framework == \"PCI_DSS\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging"
+          ],
+          "rationale": "Decision based on PCI_DSS requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.928,
+          "constitutional_compliance": 0.967,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "access_control",
+        "framework": "PCI_DSS",
+        "complexity": "simple",
+        "enforcement_level": "mandatory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0018",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "SOX",
+          "scope": "organization",
+          "context": "Demo compliance_rules policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.997,
+          "constitutional_compliance": 0.986,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "SOX",
+        "complexity": "moderate",
+        "enforcement_level": "mandatory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0019",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "ACGS_Constitutional",
+          "scope": "system",
+          "context": "Demo compliance_rules policy for ACGS_Constitutional compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    acgs_constitutional_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nacgs_constitutional_compliance if {\n    input.framework == \"ACGS_Constitutional\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve_with_conditions",
+          "conditions": [
+            "Implement audit logging"
+          ],
+          "rationale": "Decision based on ACGS_Constitutional requirements and constitutional principles",
+          "review_period": "quarterly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.911,
+          "constitutional_compliance": 0.995,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "ACGS_Constitutional",
+        "complexity": "complex",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0020",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "SOX",
+          "scope": "system",
+          "context": "Demo data_protection policy for SOX compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    sox_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nsox_compliance if {\n    input.framework == \"SOX\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "escalate",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on SOX requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.934,
+          "constitutional_compliance": 0.954,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "SOX",
+        "complexity": "simple",
+        "enforcement_level": "critical"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0021",
+      "input": {
+        "policy_request": {
+          "type": "compliance_rules",
+          "framework": "PCI_DSS",
+          "scope": "user",
+          "context": "Demo compliance_rules policy for PCI_DSS compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.compliance_rules\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"compliance_rules\"\n    constitutional_compliance\n    pci_dss_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\npci_dss_compliance if {\n    input.framework == \"PCI_DSS\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on PCI_DSS requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.97,
+          "constitutional_compliance": 0.99,
+          "risk_level": "high"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "compliance_rules",
+        "framework": "PCI_DSS",
+        "complexity": "moderate",
+        "enforcement_level": "mandatory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0022",
+      "input": {
+        "policy_request": {
+          "type": "data_protection",
+          "framework": "PCI_DSS",
+          "scope": "organization",
+          "context": "Demo data_protection policy for PCI_DSS compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.data_protection\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"data_protection\"\n    constitutional_compliance\n    pci_dss_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\npci_dss_compliance if {\n    input.framework == \"PCI_DSS\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on PCI_DSS requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.938,
+          "constitutional_compliance": 0.979,
+          "risk_level": "high"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "data_protection",
+        "framework": "PCI_DSS",
+        "complexity": "simple",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0023",
+      "input": {
+        "policy_request": {
+          "type": "audit_requirements",
+          "framework": "PCI_DSS",
+          "scope": "user",
+          "context": "Demo audit_requirements policy for PCI_DSS compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.audit_requirements\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"audit_requirements\"\n    constitutional_compliance\n    pci_dss_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\npci_dss_compliance if {\n    input.framework == \"PCI_DSS\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks",
+            "Require periodic review"
+          ],
+          "rationale": "Decision based on PCI_DSS requirements and constitutional principles",
+          "review_period": "annually"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.912,
+          "constitutional_compliance": 0.97,
+          "risk_level": "low"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "audit_requirements",
+        "framework": "PCI_DSS",
+        "complexity": "moderate",
+        "enforcement_level": "advisory"
+      }
+    },
+    {
+      "id": "policy_gov_demo_0024",
+      "input": {
+        "policy_request": {
+          "type": "access_control",
+          "framework": "HIPAA",
+          "scope": "system",
+          "context": "Demo access_control policy for HIPAA compliance"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "target_output": {
+        "opa_rule": "\npackage acgs.demo.access_control\n\nimport rego.v1\n\ndefault allow := false\n\nallow if {\n    input.user.role in [\"admin\", \"policy_officer\"]\n    input.action.type == \"access_control\"\n    constitutional_compliance\n    hipaa_compliance\n}\n\nconstitutional_compliance if {\n    input.constitutional_hash == \"cdd01ef066bc6cf2\"\n    input.constitutional_principles\n}\n\nhipaa_compliance if {\n    input.framework == \"HIPAA\"\n    input.compliance_verified\n}\n",
+        "governance_decision": {
+          "decision": "approve",
+          "conditions": [
+            "Implement audit logging",
+            "Add constitutional compliance checks"
+          ],
+          "rationale": "Decision based on HIPAA requirements and constitutional principles",
+          "review_period": "monthly"
+        },
+        "compliance_assessment": {
+          "framework_compliance": 0.994,
+          "constitutional_compliance": 0.951,
+          "risk_level": "medium"
+        },
+        "constitutional_hash": "cdd01ef066bc6cf2"
+      },
+      "metadata": {
+        "policy_type": "access_control",
+        "framework": "HIPAA",
+        "complexity": "simple",
+        "enforcement_level": "advisory"
+      }
+    }
+  ],
+  "metadata": {
+    "total_examples": 25,
+    "frameworks_covered": [
+      "HIPAA",
+      "GDPR",
+      "ACGS_Constitutional",
+      "SOX",
+      "PCI_DSS"
+    ],
+    "policy_types_covered": [
+      "data_protection",
+      "compliance_rules",
+      "access_control",
+      "audit_requirements"
+    ]
+  }
+}

@@ -119,9 +119,9 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const auditQuarter = process.env.AUDIT_QUARTER;
-            const auditDate = process.env.AUDIT_TIMESTAMP;
-            const constitutionalHash = process.env.CONSTITUTIONAL_HASH;
+            const auditQuarter = processconfig/environments/development.env.AUDIT_QUARTER;
+            const auditDate = processconfig/environments/development.env.AUDIT_TIMESTAMP;
+            const constitutionalHash = processconfig/environments/development.env.CONSTITUTIONAL_HASH;
             const overallScore = '${{ steps.audit.outputs.overall_score }}';
             const overallPercentage = '${{ steps.audit.outputs.overall_percentage }}';
             const auditGrade = '${{ steps.audit.outputs.audit_grade }}';
@@ -269,7 +269,7 @@ jobs:
       - name: Audit completion summary
         run: |
           echo "🎯 ACGS Quarterly Documentation Audit Summary"
-          echo "=============================================="
+          echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
           echo "Quarter: $AUDIT_QUARTER"
           echo "Date: $AUDIT_TIMESTAMP"
           echo "Overall Score: ${{ steps.audit.outputs.overall_score }} (${{ steps.audit.outputs.overall_percentage }})"

@@ -1,4 +1,4 @@
-# Import models from shared module to maintain consistency across services
+# Import models from services.shared module to maintain consistency across services
 from services.shared.models import (
     ACAmendment,
     ACAmendmentComment,

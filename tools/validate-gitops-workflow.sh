@@ -368,7 +368,7 @@ test_cleanup() {
 # Run all tests
 run_all_tests() {
     log_info "Starting ACGS GitOps Workflow Validation..."
-    echo "=============================================="
+    echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     test_prerequisites
     test_crossplane

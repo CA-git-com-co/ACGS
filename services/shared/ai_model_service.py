@@ -24,6 +24,12 @@ try:
 except ImportError:
     OpenAI = None
 
+try:
+    from .routing.hybrid_inference_router import HybridInferenceRouter, QueryRequest
+except ImportError:
+    HybridInferenceRouter = None
+    QueryRequest = None
+
 
 class ModelProvider(str, Enum):
     """Supported AI model providers"""
@@ -86,60 +92,70 @@ class AIModelService:
     - Performance monitoring
     """
 
-    def __init__(self, default_provider: ModelProvider = ModelProvider.OPENAI):
+    def __init__(self, default_provider: ModelProvider = ModelProvider.GROQ):
         self.logger = logging.getLogger(__name__)
         self.default_provider = default_provider
         self.request_history: list[ModelRequest] = []
         self.response_history: list[ModelResponse] = []
         self.max_history = 1000
 
-        # Model configurations
+        # Model configurations - Using Hybrid Inference Router
         self.model_configs = {
-            ModelProvider.OPENAI: {
-                "chat": ["gpt-4", "gpt-3.5-turbo"],
-                "completion": ["text-davinci-003"],
-                "embedding": ["text-embedding-ada-002"],
-            },
-            ModelProvider.ANTHROPIC: {
-                "chat": ["claude-3-opus", "claude-3-sonnet", "claude-3-haiku"],
-                "completion": ["claude-instant-1"],
-            },
             ModelProvider.GROQ: {
-                "chat": ["llama2-70b-4096", "mixtral-8x7b-32768"],
-                "completion": ["llama2-70b-4096"],
-            },
-            ModelProvider.OPENROUTER: {
-                "chat": ["openrouter/cypher-alpha:free"],
-                "completion": ["openrouter/cypher-alpha:free"],
-                "analysis": ["openrouter/cypher-alpha:free"],
-                "constitutional_validation": ["openrouter/cypher-alpha:free"],
-            },
-            ModelProvider.LOCAL: {
-                "chat": ["local-llm"],
-                "completion": ["local-llm"],
-                "classification": ["local-classifier"],
+                "chat": [
+                    "moonshotai/kimi-k2-instruct",  # Premium reasoning model
+                    "llama-3.3-70b-versatile",
+                    "qwen/qwen3-32b",
+                    "llama-3.1-8b-instant",
+                    "allam-2-7b"
+                ],
+                "completion": [
+                    "moonshotai/kimi-k2-instruct",
+                    "llama-3.3-70b-versatile",
+                    "qwen/qwen3-32b"
+                ],
+                "analysis": [
+                    "moonshotai/kimi-k2-instruct",  # Best for reasoning tasks
+                    "llama-3.3-70b-versatile",
+                    "qwen/qwen3-32b"
+                ],
+                "constitutional_validation": [
+                    "moonshotai/kimi-k2-instruct",  # High constitutional compliance
+                    "llama-3.3-70b-versatile"
+                ],
             },
         }
 
-        # OpenRouter client initialization
-        self.openrouter_client = None
-        self._initialize_openrouter_client()
+        # Hybrid Inference Router initialization
+        self.router = None
+        self._initialize_router()
 
-    def _initialize_openrouter_client(self) -> None:
-        """Initialize OpenRouter client if API key is available"""
+    def _initialize_router(self) -> None:
+        """Initialize Hybrid Inference Router"""
         try:
-            api_key = os.getenv("OPENROUTER_API_KEY")
-            if api_key and OpenAI:
-                self.openrouter_client = OpenAI(
-                    base_url="https://openrouter.ai/api/v1", api_key=api_key
-                )
-                self.logger.info("OpenRouter client initialized successfully")
+            if HybridInferenceRouter:
+                groq_api_key = os.getenv("GROQ_API_KEY")
+                openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+
+                if groq_api_key and openrouter_api_key:
+                    self.router = HybridInferenceRouter(
+                        openrouter_api_key=openrouter_api_key,
+                        groq_api_key=groq_api_key
+                    )
+                    self.logger.info("Hybrid Inference Router initialized successfully")
+                elif groq_api_key:
+                    # Use a dummy OpenRouter key for Groq-only mode
+                    self.router = HybridInferenceRouter(
+                        openrouter_api_key="dummy-key",
+                        groq_api_key=groq_api_key
+                    )
+                    self.logger.info("Hybrid Inference Router initialized with Groq only")
+                else:
+                    self.logger.warning("GROQ_API_KEY not found")
             else:
-                self.logger.warning(
-                    "OpenRouter API key not found or OpenAI library not available"
-                )
+                self.logger.warning("HybridInferenceRouter not available")
         except Exception as e:
-            self.logger.exception(f"Failed to initialize OpenRouter client: {e}")
+            self.logger.exception(f"Failed to initialize Hybrid Inference Router: {e}")
 
     async def generate_response(self, request: ModelRequest) -> ModelResponse:
         """Generate a response using the specified AI model"""
@@ -201,10 +217,12 @@ class AIModelService:
             )
 
     async def _generate_content(self, request: ModelRequest) -> str:
-        """Generate content based on the model provider and type"""
-        # This is a simplified implementation - in practice, this would
-        # interface with actual AI model APIs
+        """Generate content using the Hybrid Inference Router"""
+        # Primary: Use Hybrid Inference Router for all requests
+        if self.router and request.provider == ModelProvider.GROQ:
+            return await self._generate_router_content(request)
 
+        # Fallback: Use direct provider implementations
         if request.provider == ModelProvider.OPENAI:
             return await self._generate_openai_content(request)
         if request.provider == ModelProvider.ANTHROPIC:
@@ -216,6 +234,43 @@ class AIModelService:
         if request.provider == ModelProvider.LOCAL:
             return await self._generate_local_content(request)
         raise ValueError(f"Unsupported provider: {request.provider}")
+
+    async def _generate_router_content(self, request: ModelRequest) -> str:
+        """Generate content using the Hybrid Inference Router"""
+        try:
+            if not self.router:
+                raise ValueError("Hybrid Inference Router not initialized")
+
+            # Create query request for the router
+            query_request = QueryRequest(
+                text=request.prompt,
+                max_tokens=request.max_tokens or 1000,
+                temperature=request.temperature or 0.7,
+                constitutional_hash=getattr(request, 'constitutional_hash', CONSTITUTIONAL_HASH)
+            )
+
+            # Route the query - let the router choose the best model
+            # For Kimi K2, we can specify it directly or let the router decide
+            if request.model_name == "moonshotai/kimi-k2-instruct":
+                # Use Kimi K2 specifically for reasoning tasks
+                result = await self.router.route_query(
+                    query_request,
+                    strategy="constitutional_reasoning"
+                )
+            else:
+                # Let router choose optimal model based on query complexity
+                result = await self.router.route_query(query_request)
+
+            # Extract content from router response
+            if isinstance(result, dict):
+                return result.get("content", result.get("response", str(result)))
+            else:
+                return str(result)
+
+        except Exception as e:
+            self.logger.exception(f"Router generation failed: {e}")
+            # Fallback to direct Groq implementation
+            return await self._generate_groq_content(request)
 
     async def _generate_openai_content(self, request: ModelRequest) -> str:
         """Generate content using OpenAI models"""
@@ -239,10 +294,58 @@ class AIModelService:
         return f"Anthropic {request.model_type} response"
 
     async def _generate_groq_content(self, request: ModelRequest) -> str:
-        """Generate content using Groq models"""
-        await asyncio.sleep(0.05)  # Groq is faster
-
-        return f"Groq {request.model_name} response to: {request.prompt[:50]}..."
+        """Generate content using GroqCloud LPU models"""
+        try:
+            # Import GroqCloud client
+            from .groq_cloud_client import GroqCloudClient, GroqRequest, GroqModel, InferenceMode
+            
+            # Create client if not exists
+            if not hasattr(self, '_groq_client'):
+                self._groq_client = GroqCloudClient(enable_caching=True)
+            
+            # Map model names to GroqCloud models
+            model_mapping = {
+                "moonshotai/kimi-k2-instruct": GroqModel.KIMI_K2_INSTRUCT,  # Premium reasoning
+                "allam-2-7b": GroqModel.ALLAM_2_7B,
+                "llama-3.1-8b-instant": GroqModel.LLAMA_3_1_8B_INSTANT,
+                "qwen/qwen3-32b": GroqModel.QWEN3_32B,
+                "llama-3.3-70b-versatile": GroqModel.LLAMA_3_3_70B_VERSATILE,
+                # Legacy mappings for backwards compatibility
+                "qwen3-32b": GroqModel.QWEN3_32B,
+                "llama-3.1-8b": GroqModel.LLAMA_3_1_8B_INSTANT,
+                "mixtral-8x7b": GroqModel.COMPOUND_BETA,
+                "gemma-7b": GroqModel.ALLAM_2_7B
+            }
+            
+            groq_model = model_mapping.get(request.model_name, GroqModel.BALANCED)
+            
+            # Create GroqCloud request
+            groq_request = GroqRequest(
+                prompt=request.prompt,
+                model=groq_model,
+                mode=InferenceMode.FAST,
+                max_tokens=request.max_tokens or 1000,
+                temperature=request.temperature or 0.7,
+                constitutional_validation=True,
+                policy_enforcement=True,
+                audit_trail=True
+            )
+            
+            # Generate response
+            groq_response = await self._groq_client.generate(groq_request)
+            
+            if groq_response.error:
+                return f"GroqCloud error: {groq_response.error}"
+            
+            return groq_response.content
+            
+        except ImportError:
+            # Fallback if GroqCloud client not available
+            await asyncio.sleep(0.05)
+            return f"Groq {request.model_name} response to: {request.prompt[:50]}..."
+        except Exception as e:
+            self.logger.exception(f"GroqCloud generation failed: {e}")
+            return f"GroqCloud error: {str(e)}"
 
     async def _generate_openrouter_content(self, request: ModelRequest) -> str:
         """Generate content using OpenRouter models"""
@@ -409,7 +512,7 @@ class AIModelService:
         self, content: str, context: dict[str, Any] | None = None
     ) -> ModelResponse:
         """
-        Validate content for constitutional compliance using OpenRouter models.
+        Validate content for constitutional compliance using Groq models.
 
         Args:
             content: The content to validate
@@ -442,8 +545,8 @@ class AIModelService:
 
         request = ModelRequest(
             model_type=ModelType.ANALYSIS,
-            provider=ModelProvider.OPENROUTER,
-            model_name="openrouter/cypher-alpha:free",
+            provider=ModelProvider.GROQ,
+            model_name="moonshotai/kimi-k2-instruct",  # Use Kimi K2 for constitutional analysis
             prompt=prompt,
             parameters={"analysis_type": "constitutional_compliance"},
             context=context,
@@ -483,8 +586,8 @@ class AIModelService:
 
         request = ModelRequest(
             model_type=ModelType.ANALYSIS,
-            provider=ModelProvider.OPENROUTER,
-            model_name="openrouter/cypher-alpha:free",
+            provider=ModelProvider.GROQ,
+            model_name="moonshotai/kimi-k2-instruct",  # Use Kimi K2 for governance analysis
             prompt=prompt,
             parameters={"analysis_type": "governance_decision"},
             context={"decision": decision, "stakeholders": stakeholders},
@@ -527,8 +630,8 @@ class AIModelService:
 
         request = ModelRequest(
             model_type=ModelType.ANALYSIS,
-            provider=ModelProvider.OPENROUTER,
-            model_name="openrouter/cypher-alpha:free",
+            provider=ModelProvider.GROQ,
+            model_name="moonshotai/kimi-k2-instruct",  # Use Kimi K2 for behavior evaluation
             prompt=prompt,
             parameters={"analysis_type": "agent_behavior_evaluation"},
             context={"agent_id": agent_id, "behavior_log": behavior_log},

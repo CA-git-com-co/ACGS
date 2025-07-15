@@ -3,7 +3,7 @@ global:
   smtp_smarthost: localhost:587
   smtp_from: acgs-alerts@constitutional-governance.ai
   smtp_auth_username: acgs-alerts@constitutional-governance.ai
-  smtp_auth_password: secure_password_here
+  smtp_auth_password: os.environ.get("PASSWORD")
   smtp_require_tls: false
 inhibit_rules:
 - source_match:
@@ -70,7 +70,7 @@ receivers:
   - url: http://localhost:8080/webhook/prometheus-alerts
     send_resolved: true
     http_config:
-      bearer_token: acgs-webhook-secret-2024
+      bearer_token: os.environ.get("AUTH_TOKEN")
     title: ACGS-1 Intelligent Alert
     text: "{{ range .Alerts }}\n{\n  \"alert_name\": \"{{ .Labels.alertname }}\",\n\
       \  \"severity\": \"{{ .Labels.severity }}\",\n  \"status\": \"{{ .Status }}\"\

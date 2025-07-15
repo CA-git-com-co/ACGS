@@ -35,7 +35,7 @@ Deployment modes:
 **--rollback:** Revert→previous stable deployment | Maintain deployment history→audit trail | Verify rollback success w/ health checks
 
 Pre-deploy cleanup:
-- Clean previous artifacts | Remove dev-only files (.env.local, debug cfgs)
+- Clean previous artifacts | Remove dev-only files (config/environments/development.env.local, debug cfgs)
 - Validate prod cfg (no debug flags, correct URLs) | Clean old versions→free space
 
 Deployment workflow:

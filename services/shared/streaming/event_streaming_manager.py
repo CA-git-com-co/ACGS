@@ -373,7 +373,7 @@ class EventStreamingManager:
         """
         try:
             logger.info(
-                f"Initializing Event Streaming Manager for {self.environment.value}"
+                f"Initializing Event Streaming Manager for {selfconfig/environments/development.environment.value}"
             )
 
             # Initialize Kafka infrastructure
@@ -411,7 +411,7 @@ class EventStreamingManager:
                 {
                     "event_type": "streaming_manager_initialized",
                     "cluster_id": self.cluster_id,
-                    "environment": self.environment.value,
+                    "environment": selfconfig/environments/development.environment.value,
                     "kafka_healthy": kafka_success,
                     "nats_healthy": nats_success,
                     "timestamp": datetime.utcnow().isoformat(),
@@ -430,7 +430,7 @@ class EventStreamingManager:
         try:
             # Get producer configuration
             producer_config = await self.config_manager.get_producer_config(
-                self.cluster_id, self.environment
+                self.cluster_id, selfconfig/environments/development.environment
             )
 
             # Initialize Kafka producer
@@ -772,7 +772,7 @@ class EventStreamingManager:
             # Get consumer configuration
             consumer_group = group_id or f"acgs-{event_type.value}-group"
             consumer_config = await self.config_manager.get_consumer_config(
-                self.cluster_id, self.environment, consumer_group
+                self.cluster_id, selfconfig/environments/development.environment, consumer_group
             )
             consumer_config["topics"] = [topic_mapping.kafka_topic]
 
@@ -1076,7 +1076,7 @@ class EventStreamingManager:
                 # Check Kafka health
                 if "main" in self.kafka_producers:
                     kafka_healthy = await self.config_manager.test_connection(
-                        self.cluster_id, self.environment
+                        self.cluster_id, selfconfig/environments/development.environment
                     )
                     self.health_status["kafka_healthy"] = kafka_healthy
 

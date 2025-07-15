@@ -98,7 +98,7 @@ class ProductionConfigManager:
         return env_config
 
     def create_env_file(
-        self, config: dict[str, str], filename: str = ".env.production"
+        self, config: dict[str, str], filename: str = "config/environments/developmentconfig/environments/production.env.backup"
     ) -> None:
         """Create production environment file"""
         print(f"\n📝 Creating {filename}...")
@@ -110,7 +110,7 @@ class ProductionConfigManager:
             "# Database Configuration",
             f"DATABASE_URL={config.get('DATABASE_URL', '')}",
             f"POSTGRES_USER={config.get('POSTGRES_USER', '')}",
-            f"POSTGRES_PASSWORD={config.get('POSTGRES_PASSWORD', '')}",
+            f"POSTGRES_PASSWORD=os.environ.get("PASSWORD")POSTGRES_PASSWORD', '')}",
             f"POSTGRES_DB={config.get('POSTGRES_DB', '')}",
             "",
             "# Redis Configuration",
@@ -268,7 +268,7 @@ class ProductionConfigManager:
             return False
         print("✅ Production configuration is ready!")
         print("\n📋 Next Steps:")
-        print("1. Review .env.production file")
+        print("1. Review config/environments/developmentconfig/environments/production.env.backup file")
         print("2. Start services: docker-compose up -d")
         print("3. Run integration tests: python test_service_integration.py")
         return True

@@ -19,7 +19,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import aioredis
+import redis.asyncio as aioredis
 import asyncpg
 import requests
 import yaml
@@ -350,7 +350,7 @@ class ConstitutionalMonitoringValidator:
                 host="localhost",
                 port=5439,
                 user="acgs_user",
-                password="acgs_password",
+                password=os.environ.get("PASSWORD"),
                 database="acgs_constitutional",
                 command_timeout=5,
             )

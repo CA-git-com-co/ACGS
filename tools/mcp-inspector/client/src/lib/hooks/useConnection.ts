@@ -1,3 +1,7 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import {
   SSEClientTransport,
@@ -7,7 +11,7 @@ import {
 import {
   StreamableHTTPClientTransport,
   StreamableHTTPClientTransportOptions,
-} from "@modelcontextprotocol/sdk/client/streamableHttp.js";
+} from "@modelcontextprotocol/sdk/client/streamableHttp.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 import {
   ClientNotification,
   ClientRequest,
@@ -29,7 +33,7 @@ import {
   PromptListChangedNotificationSchema,
   Progress,
 } from "@modelcontextprotocol/sdk/types.js";
-import { RequestOptions } from "@modelcontextprotocol/sdk/shared/protocol.js";
+import { RequestOptions } from "@modelcontextprotocol/sdk/shared/protocol.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 import { useState } from "react";
 import { useToast } from "@/lib/hooks/useToast";
 import { z } from "zod";
@@ -45,7 +49,7 @@ import {
 } from "@/utils/configUtils";
 import { getMCPServerRequestTimeout } from "@/utils/configUtils";
 import { InspectorConfig } from "../configurationTypes";
-import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
+import { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 interface UseConnectionOptions {
   transportType: "stdio" | "sse" | "streamable-http";
@@ -194,7 +198,7 @@ export function useConnection({
       return response?.completion.values || [];
     } catch (e: unknown) {
       // Disable completions silently if the server doesn't support them.
-      // See https://github.com/modelcontextprotocol/specification/discussions/122
+      // See https://github.com/modelcontextprotocol/specification/discussions/122  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       if (e instanceof McpError && e.code === ErrorCode.MethodNotFound) {
         setCompletionsSupported(false);
         return [];

@@ -18,8 +18,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from shared.resilience.exceptions import ConfigurationError
-from shared.validation.validators import SchemaValidator, ValidationResult
+from services.shared.resilience.exceptions import ConfigurationError
+from services.shared.validation.validators import SchemaValidator, ValidationResult
 from watchdog.events import FileSystemEventHandler
 from watchdog.observers import Observer
 
@@ -73,7 +73,7 @@ class ConfigValidator:
         try:
             return self.validation_func(config)
         except Exception as e:
-            from shared.validation.validators import (
+            from services.shared.validation.validators import (
                 ValidationResult,
                 ValidationSeverity,
             )
@@ -123,8 +123,8 @@ class EnvironmentConfig:
     """Environment-specific configuration manager."""
 
     def __init__(self, environment: str | None = None):
-        self.environment = environment or os.getenv("ENVIRONMENT", "development")
-        self.prefix = f"ACGS_{self.environment.upper()}_"
+        selfconfig/environments/development.environment = environment or os.getenv("ENVIRONMENT", "development")
+        self.prefix = f"ACGS_{selfconfig/environments/development.environment.upper()}_"
 
     def get_env_vars(self) -> dict[str, str]:
         """Get environment variables for this environment."""
@@ -148,7 +148,7 @@ class EnvironmentConfig:
 
         # Environment-specific configuration
         for ext in ["json", "yaml", "yml"]:
-            env_file = config_dir / f"config.{self.environment}.{ext}"
+            env_file = config_dir / f"config.{selfconfig/environments/development.environment}.{ext}"
             if env_file.exists():
                 files.append(str(env_file))
 
@@ -159,7 +159,7 @@ class ConfigManager:
     """Centralized configuration management system."""
 
     def __init__(self, environment: str | None = None):
-        self.environment = environment or os.getenv("ENVIRONMENT", "development")
+        selfconfig/environments/development.environment = environment or os.getenv("ENVIRONMENT", "development")
         self._configs: dict[str, dict[str, Any]] = {}
         self._schemas: dict[str, ConfigSchema] = {}
         self._validators: list[ConfigValidator] = []
@@ -436,7 +436,7 @@ class ConfigManager:
         """Get configuration statistics."""
         with self._lock:
             return {
-                "environment": self.environment,
+                "environment": selfconfig/environments/development.environment,
                 "total_configs": len(self._configs),
                 "schemas_count": len(self._schemas),
                 "validators_count": len(self._validators),
@@ -543,7 +543,7 @@ def setup_default_config() -> None:
 
     # Add constitutional compliance validator
     def constitutional_validator(config: dict[str, Any]) -> "ValidationResult":
-        from shared.validation.validators import ValidationResult, ValidationSeverity
+        from services.shared.validation.validators import ValidationResult, ValidationSeverity
 
         result = ValidationResult(is_valid=True)
 

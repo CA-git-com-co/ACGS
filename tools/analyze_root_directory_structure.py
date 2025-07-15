@@ -40,7 +40,7 @@ def analyze_root_directory():
         r"^Cargo\.lock$",
         r"^pyproject\.toml$",
         r"^uv\.lock$",
-        r"^\.env.*",
+        r"^\config/environments/development.env.*",
         r"^docker-compose.*\.yml$",
         r"^docker-compose.*\.yaml$",
         r"^Dockerfile.*",

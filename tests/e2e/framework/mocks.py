@@ -107,7 +107,7 @@ class MockAuthService(MockServiceBase):
                 raise HTTPException(status_code=500, detail="Internal server error")
 
             username = credentials.get("username")
-            password = credentials.get("password")
+            password = os.environ.get("PASSWORD", "test_password")
 
             if not username or not password:
                 raise HTTPException(status_code=400, detail="Missing credentials")

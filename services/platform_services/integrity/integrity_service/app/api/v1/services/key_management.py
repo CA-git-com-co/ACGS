@@ -51,7 +51,7 @@ class KeyManager:
 
             # Generate mock key data (in production, use actual cryptographic libraries)
             public_key_data = f"-----BEGIN PUBLIC KEY-----\n{key_id}_{key_type}_{key_size}_PUBLIC\n-----END PUBLIC KEY-----"
-            private_key_data = f"-----BEGIN PRIVATE KEY-----\n{key_id}_{key_type}_{key_size}_PRIVATE\n-----END PRIVATE KEY-----"
+            private_key_data = f"-----BEGIN PRIVATE KEY-----\n{key_id}_{key_type}_{key_size}_PRIVATE\n-----END PRIVATE KEY-----"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
             key_info = {
                 "key_id": key_id,

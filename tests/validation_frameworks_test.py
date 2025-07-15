@@ -243,7 +243,7 @@ class TestEnhancedAuthMiddleware:
         app.add_middleware(
             EnhancedAuthMiddleware,
             service_name="test_service",
-            service_secret="test_secret",
+service_secret=os.getenv("ACGS_TEST_SECRET", "test_secret_key"),
             public_paths=["/public", "/health"],
             service_only_paths=["/internal"],
         )
@@ -410,7 +410,7 @@ class TestIntegration:
         app.add_middleware(
             EnhancedAuthMiddleware,
             service_name="integration_test",
-            service_secret="test_secret",
+service_secret=os.getenv("ACGS_TEST_SECRET", "test_secret_key"),
             public_paths=["/health", "/public"],
             service_only_paths=["/internal"],
         )

@@ -92,7 +92,7 @@ MISSING_HASH_FILES = [
     "services/core/formal-verification/fv_service/app/core/proof_verification_pipeline.py",
     "services/core/formal-verification/fv_service/app/api/v1/proof_pipeline.py",
     "services/core/constitutional-ai/ac_service/app/services/hybrid_rlhf_constitutional_ai.py",
-    "services/blockchain/client/python/solana_client.py",
+    "services/blockchain/client/python/solana_client.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     "services/cli_backup_20250706_110222/gemini_cli/monitoring.py",
     "services/cli_backup_20250706_110222/gemini_cli/setup.py",
     "services/cli_backup_20250706_110222/gemini_cli/__init__.py",

@@ -47,7 +47,7 @@ Create a clean, scannable root directory with clear purpose for each top-level i
 ├── Makefile                    # Build automation
 ├── docker-compose.yml          # Primary compose file
 ├── .gitignore                  # VCS ignore rules
-├── .env.example                # Environment template
+├── config/environments/developmentconfig/environments/example.env                # Environment template
 ├── 
 ├── docs/                       # All documentation
 ├── services/                   # Microservices code

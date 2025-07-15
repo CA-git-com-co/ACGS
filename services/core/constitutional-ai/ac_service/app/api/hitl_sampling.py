@@ -14,13 +14,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from services.shared.auth import (
     CONSTITUTIONAL_HASH,
-    "cdd01ef066bc6cf2",
-    =,
 )
+
+# Constitutional compliance hash for ACGS
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 from services.shared.auth import (
     get_current_active_user as get_current_user,  # Constitutional compliance hash for ACGS
-)
-from services.shared.auth import (
     require_admin,
     require_policy_manager,
 )
@@ -146,7 +145,7 @@ async def assess_uncertainty(
         return result
 
     except Exception as e:
-        logger.error(f"HITL uncertainty assessment failed: {e}")
+        logger.exception(f"HITL uncertainty assessment failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Uncertainty assessment failed: {e!s}",
@@ -208,7 +207,7 @@ async def trigger_human_oversight(
         }
 
     except Exception as e:
-        logger.error(f"HITL oversight trigger failed: {e}")
+        logger.exception(f"HITL oversight trigger failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Oversight trigger failed: {e!s}",
@@ -271,7 +270,7 @@ async def submit_human_feedback(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Human feedback processing failed: {e}")
+        logger.exception(f"Human feedback processing failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Feedback processing failed: {e!s}",
@@ -300,7 +299,7 @@ async def get_performance_metrics(current_user: User = Depends(require_policy_ma
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Performance metrics retrieval failed: {e}")
+        logger.exception(f"Performance metrics retrieval failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Metrics retrieval failed: {e!s}",
@@ -316,7 +315,7 @@ async def get_hitl_config(current_user: User = Depends(require_admin)):
     weights, and learning parameters.
     """
     try:
-        config = {
+        return {
             "uncertainty_threshold": hitl_sampler.config.uncertainty_threshold,
             "confidence_threshold": hitl_sampler.config.confidence_threshold,
             "false_positive_target": hitl_sampler.config.false_positive_target,
@@ -332,10 +331,8 @@ async def get_hitl_config(current_user: User = Depends(require_admin)):
             "monitoring_enabled": hitl_sampler.config.monitoring_enabled,
         }
 
-        return config
-
     except Exception as e:
-        logger.error(f"HITL config retrieval failed: {e}")
+        logger.exception(f"HITL config retrieval failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Config retrieval failed: {e!s}",
@@ -396,7 +393,7 @@ async def update_hitl_config(
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        logger.error(f"HITL config update failed: {e}")
+        logger.exception(f"HITL config update failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Config update failed: {e!s}",
@@ -499,7 +496,7 @@ async def assess_cross_service_uncertainty(
         return result
 
     except Exception as e:
-        logger.error(f"Cross-service HITL assessment failed: {e}")
+        logger.exception(f"Cross-service HITL assessment failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Cross-service assessment failed: {e!s}",
@@ -584,7 +581,7 @@ async def coordinate_cross_service_oversight(
         }
 
     except Exception as e:
-        logger.error(f"Cross-service oversight coordination failed: {e}")
+        logger.exception(f"Cross-service oversight coordination failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Oversight coordination failed: {e!s}",
@@ -629,7 +626,7 @@ async def get_integration_metrics(current_user: User = Depends(require_policy_ma
         }
 
     except Exception as e:
-        logger.error(f"Integration metrics retrieval failed: {e}")
+        logger.exception(f"Integration metrics retrieval failed: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Integration metrics retrieval failed: {e!s}",

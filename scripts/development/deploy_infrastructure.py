@@ -386,7 +386,7 @@ class InfrastructureDeployer:
                     "--",
                     "curl",
                     "-f",
-                    "http://localhost:8005/api/v1/governance/compliance/status",
+                    "http://localhost:8005/api/v1/governance/compliance/status",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 ]
             )
 
@@ -611,7 +611,7 @@ async def main():
     deployer = InfrastructureDeployer()
 
     try:
-        result = await deployer.deploy_complete_infrastructure(args.environment)
+        result = await deployer.deploy_complete_infrastructure(argsconfig/environments/development.environment)
 
         print("\n" + "=" * 80)
         print("INFRASTRUCTURE DEPLOYMENT SUMMARY")
@@ -620,16 +620,16 @@ async def main():
 
         if result["status"] == "success":
             print(
-                f"\n✅ Infrastructure deployment for {args.environment} completed successfully!"
+                f"\n✅ Infrastructure deployment for {argsconfig/environments/development.environment} completed successfully!"
             )
             print("\nNext steps:")
             print("1. Verify cluster: kubectl cluster-info")
             print("2. Check services: kubectl get pods --all-namespaces")
             print(
-                "3. Test constitutional compliance: curl http://localhost:8005/api/v1/governance/compliance/status"
+                "3. Test constitutional compliance: curl http://localhost:8005/api/v1/governance/compliance/status"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             )
         else:
-            print(f"\n❌ Infrastructure deployment for {args.environment} failed.")
+            print(f"\n❌ Infrastructure deployment for {argsconfig/environments/development.environment} failed.")
 
     except Exception as e:
         logger.error(f"Deployment error: {e}")

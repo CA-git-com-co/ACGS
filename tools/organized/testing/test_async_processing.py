@@ -15,7 +15,7 @@ import time
 # Add the services directory to the path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "services"))
 
-from shared.async_processing_manager import (
+from services.shared.async_processing_manager import (
     AsyncProcessingManager,
     JobPriority,
     JobStatus,

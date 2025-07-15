@@ -35,7 +35,7 @@ struct Cli {
 }
 
 #[derive(Debug, Clone, ValueEnum)]
-enum Cluster {
+pub enum Cluster {
     Devnet,
     Testnet,
     Mainnet,
@@ -60,7 +60,7 @@ struct ConstitutionData {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ConstitutionAccountData {
+pub struct ConstitutionAccountData {
     constitution_hash: String,
     version: String,
     effective_date: String,
@@ -69,7 +69,7 @@ struct ConstitutionAccountData {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct PolicySpec {
+pub struct PolicySpec {
     id: String,
     category: String,
     title: String,
@@ -87,7 +87,7 @@ struct GovernanceConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct InitializationReport {
+pub struct InitializationReport {
     initialization_summary: HashMap<String, serde_json::Value>,
     validation_results: HashMap<String, String>,
     components_initialized: Vec<String>,

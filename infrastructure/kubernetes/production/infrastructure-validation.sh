@@ -387,9 +387,9 @@ generate_report() {
     log "Generating infrastructure validation report..."
     
     echo ""
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "ACGE Phase 2 Infrastructure Validation Report"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Validation Time: $(date)"
     echo ""

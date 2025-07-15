@@ -20,7 +20,7 @@ from datetime import datetime, timezone
 from enum import Enum
 from typing import Any
 
-import aioredis
+import redis.asyncio as aioredis
 import asyncpg
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse

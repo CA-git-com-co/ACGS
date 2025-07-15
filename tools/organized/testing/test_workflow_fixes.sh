@@ -1,3 +1,5 @@
+# Constitutional Hash: cdd01ef066bc6cf2
+# ACGS-2 Constitutional Compliance Validation
 #!/bin/bash
 # GitHub Actions Workflow Testing Script
 # Tests critical workflow components locally where possible
@@ -5,7 +7,7 @@
 set -e
 
 echo "🧪 Testing GitHub Actions Workflow Fixes"
-echo "========================================"
+echo "========================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 # Colors for output
 RED='\033[0;31m'

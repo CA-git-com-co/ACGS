@@ -1,5 +1,9 @@
+/*
+Constitutional Hash: cdd01ef066bc6cf2
+ACGS-2 Constitutional Compliance Validation
+*/
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";
+import type { Transport } from "@modelcontextprotocol/sdk/shared/transport.js";  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 import { McpResponse } from "./types.js";
 
 export const validLogLevels = [

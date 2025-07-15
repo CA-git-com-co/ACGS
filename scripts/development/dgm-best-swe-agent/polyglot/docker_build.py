@@ -1,4 +1,4 @@
-# modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/docker_build.py
+# modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/docker_build.py  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 from __future__ import annotations
 
@@ -239,30 +239,30 @@ def get_env_configs_to_build(
             base_image = base_images[test_spec.base_image_key]
         except docker.errors.ImageNotFound:
             raise Exception(
-                f"Base image {test_spec.base_image_key} not found for {test_spec.env_image_key}\n."
+                f"Base image {test_spec.base_image_key} not found for {test_specconfig/environments/development.env_image_key}\n."
                 "Please build the base images first."
             )
 
         # Check if the environment image exists
         image_exists = False
         try:
-            env_image = client.images.get(test_spec.env_image_key)
+            env_image = client.images.get(test_specconfig/environments/development.env_image_key)
             image_exists = True
 
             if env_image.attrs["Created"] < base_image.attrs["Created"]:
                 # Remove the environment image if it was built after the base_image
-                for dep in find_dependent_images(client, test_spec.env_image_key):
+                for dep in find_dependent_images(client, test_specconfig/environments/development.env_image_key):
                     # Remove instance images that depend on this environment image
                     remove_image(client, dep, "quiet")
-                remove_image(client, test_spec.env_image_key, "quiet")
+                remove_image(client, test_specconfig/environments/development.env_image_key, "quiet")
                 image_exists = False
         except docker.errors.ImageNotFound:
             pass
         if not image_exists:
             # Add the environment image to the list of images to build
-            image_scripts[test_spec.env_image_key] = {
+            image_scripts[test_specconfig/environments/development.env_image_key] = {
                 "setup_script": test_spec.setup_env_script,
-                "dockerfile": test_spec.env_dockerfile,
+                "dockerfile": test_specconfig/environments/development.env_dockerfile,
                 "platform": test_spec.platform,
             }
     return image_scripts
@@ -285,7 +285,7 @@ def build_env_images(
     """
     # Get the environment images to build from the dataset
     if force_rebuild:
-        env_image_keys = {x.env_image_key for x in get_test_specs_from_dataset(dataset)}
+        env_image_keys = {xconfig/environments/development.env_image_key for x in get_test_specs_from_dataset(dataset)}
         for key in env_image_keys:
             remove_image(client, key, "quiet")
     build_base_images(client, dataset, force_rebuild)
@@ -368,10 +368,10 @@ def build_instance_images(
     if len(env_failed) > 0:
         # Don't build images for instances that depend on failed-to-build env images
         dont_run_specs = [
-            spec for spec in test_specs if spec.env_image_key in env_failed
+            spec for spec in test_specs if specconfig/environments/development.env_image_key in env_failed
         ]
         test_specs = [
-            spec for spec in test_specs if spec.env_image_key not in env_failed
+            spec for spec in test_specs if specconfig/environments/development.env_image_key not in env_failed
         ]
         print(
             f"Skipping {len(dont_run_specs)} instances - due to failed env image builds"
@@ -450,7 +450,7 @@ def build_instance_image(
 
     # Get the image names and dockerfile for the instance image
     image_name = test_spec.instance_image_key
-    env_image_name = test_spec.env_image_key
+    env_image_name = test_specconfig/environments/development.env_image_key
     dockerfile = test_spec.instance_dockerfile
 
     # Check that the env. image the instance image is based on exists

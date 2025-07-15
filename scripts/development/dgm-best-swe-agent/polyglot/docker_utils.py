@@ -1,4 +1,4 @@
-# modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/docker_utils.py
+# modified from https://github.com/SWE-bench/SWE-bench/blob/dc4c087c2b9e4cefebf2e3d201d27e362d899e0f/swebench/harness/docker_utils.py  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 from __future__ import annotations
 
@@ -314,7 +314,7 @@ def should_remove(image_name: str, cache_level: str, clean: bool, prior_images: 
     if image_name.startswith("sweb.base"):
         if cache_level in {"none"} and (clean or not existed_before):
             return True
-    elif image_name.startswith("sweb.env"):
+    elif image_name.startswith("swebconfig/environments/development.env"):
         if cache_level in {"none", "base"} and (clean or not existed_before):
             return True
     elif image_name.startswith("sweb.eval"):

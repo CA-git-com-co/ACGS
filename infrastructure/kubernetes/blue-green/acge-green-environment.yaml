@@ -49,7 +49,7 @@ spec:
     spec:
       containers:
         - name: acge-model
-          image: acgs/acge-model:latest
+          image: acgs/acge-model: "latest"
           ports:
             - containerPort: 8080
               name: http
@@ -251,7 +251,7 @@ spec:
         service: constitutional-ai
       annotations:
         acge.constitutional.ai/enabled: 'true'
-        acge.constitutional.ai/single-model: 'true'
+        acge.constitutional.ai/single-model: "true"
     spec:
       containers:
         - name: ac-service

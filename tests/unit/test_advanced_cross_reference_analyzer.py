@@ -32,7 +32,8 @@ class TestAdvancedCrossReferenceAnalyzer(unittest.TestCase):
 
         See also: [Referenced Doc](docs/referenced.md)"""
 
-        file_path = Path("test_docs/test.md")
+        # Use a path within the project directory
+        file_path = Path(__file__).parent.parent.parent / "docs" / "test.md"
         lines = content.split("\n")
 
         extracted_references = self.analyzer._extract_cross_references(

@@ -147,7 +147,7 @@ class HighPerformanceConnectionPool:
     async def initialize_redis_pool(self, redis_url: str, max_connections: int = 50):
         """Initialize Redis connection pool with optimizations."""
         try:
-            import aioredis
+            import redis.asyncio as aioredis
 
             start_time = time.perf_counter()
 

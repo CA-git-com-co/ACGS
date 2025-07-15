@@ -91,7 +91,7 @@ class PortValidator:
             "**/*.md",
             "**/docker-compose*.yml",
             "**/Dockerfile*",
-            "**/.env*",
+            "**/config/environments/development.env*",
         ]
 
         files_checked = 0

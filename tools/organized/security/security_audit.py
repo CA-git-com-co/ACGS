@@ -165,7 +165,7 @@ class SecurityAuditor:
 
         try:
             # Test with invalid JWT token
-            invalid_token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature"
+            invalid_token = os.environ.get("AUTH_TOKEN")
             headers = {"Authorization": f"Bearer {invalid_token}"}
 
             async with self.session.get(
@@ -319,7 +319,7 @@ class SecurityAuditor:
                                     category="Authentication",
                                     level=SecurityLevel.MEDIUM,
                                     title="Weak Password Policy",
-                                    description=f"Auth service accepts weak password: '{weak_password}'",
+                                    description=f"Auth service accepts weak password: os.environ.get("PASSWORD")",
                                     service="auth_service",
                                     endpoint="/api/v1/auth/register",
                                     recommendation="Implement strong password policy (min 8 chars, complexity requirements)",

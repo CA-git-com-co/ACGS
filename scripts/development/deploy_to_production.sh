@@ -575,12 +575,12 @@ EOF
 # Main deployment function
 main() {
     log_phase "🚀 ACGS-PGP MLOps Production Deployment Started"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "Deployment ID: $DEPLOYMENT_ID"
     echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "Timestamp: $(date)"
     echo "Log File: $LOG_FILE"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Create log directory
     mkdir -p "$(dirname "$LOG_FILE")"
@@ -599,13 +599,13 @@ main() {
     send_deployment_alert "SUCCESS" "ACGS-PGP MLOps production deployment completed successfully"
     
     log_success "🎉 ACGS-PGP MLOps Production Deployment Completed Successfully! 🎉"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "✅ All performance targets achieved"
     echo "✅ Constitutional compliance verified"
     echo "✅ System operational and monitoring active"
     echo "✅ Backup created: $BACKUP_DIR"
     echo "✅ Deployment report: /var/log/acgs/deployment_report_${TIMESTAMP}.json"
-    echo "=========================================="
+    echo "=========================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 }
 
 # Script entry point

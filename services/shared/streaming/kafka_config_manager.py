@@ -600,7 +600,7 @@ class KafkaConfigManager:
             if config.replication_factor < 1:
                 errors.append("Replication factor must be at least 1")
             elif (
-                config.environment == EnvironmentType.PRODUCTION
+                configconfig/environments/development.environment == EnvironmentType.PRODUCTION
                 and config.replication_factor < 3
             ):
                 warnings.append(

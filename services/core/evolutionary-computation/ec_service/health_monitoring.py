@@ -476,7 +476,7 @@ class HealthMonitor:
 
             security_files = [
                 "infrastructure/security/sandbox_configs/default.json",
-                "infrastructure/security/policies/evolution.rego",
+                "infrastructure/security/policies/evolution.rego",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 "infrastructure/security/auth/jwt_config.json",
                 "infrastructure/security/audit/config.json",
             ]

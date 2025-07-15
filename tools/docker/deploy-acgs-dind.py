@@ -169,7 +169,7 @@ class ACGSDinDDeployer:
         """Generate environment configuration files."""
         logger.info("Generating environment configuration...")
 
-        # Create .env file
+        # Create config/environments/development.env file
         env_content = f"""# ACGS Docker-in-Docker Environment
 COMPOSE_PROJECT_NAME={self.deployment_config["project_name"]}
 CONSTITUTIONAL_HASH={CONSTITUTIONAL_HASH}
@@ -177,13 +177,13 @@ CONSTITUTIONAL_HASH={CONSTITUTIONAL_HASH}
 # Database Configuration
 POSTGRES_DB=acgs
 POSTGRES_USER=acgs_user
-POSTGRES_PASSWORD=acgs_secure_password
+POSTGRES_PASSWORD=os.environ.get("PASSWORD")
 
 # Redis Configuration
-REDIS_PASSWORD=acgs_redis_password
+REDIS_PASSWORD=os.environ.get("PASSWORD")
 
 # Monitoring Configuration
-GF_SECURITY_ADMIN_PASSWORD=acgs_grafana_admin
+GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
 
 # Docker Configuration
 DOCKER_TLS_VERIFY=1
@@ -194,7 +194,7 @@ DOCKER_HOST=tcp://docker-dind:2376
 CONSTITUTIONAL_HASH={CONSTITUTIONAL_HASH}
 """
 
-        env_file = self.dind_dir / ".env"
+        env_file = self.dind_dir / "config/environments/development.env"
         with open(env_file, "w") as f:
             f.write(env_content)
 

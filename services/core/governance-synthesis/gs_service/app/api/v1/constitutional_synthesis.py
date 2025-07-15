@@ -290,6 +290,6 @@ async def constitutional_synthesis_health():
         "status": "healthy",
         "service": "constitutional_synthesis",
         "version": "1.0.0",
-        "environmental_factors": len(contextual_analyzer.environmental_factors),
+        "environmental_factors": len(contextual_analyzerconfig/environments/development.environmental_factors),
         "context_history": len(contextual_analyzer.context_history),
     }

@@ -227,11 +227,11 @@ validate_service() {
 # Generate summary report
 generate_summary() {
     echo ""
-    echo "================================================================================"
+    echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "                    ACGS SERVICE DEPLOYMENT VALIDATION REPORT"
     echo "                    Constitutional Hash: $CONSTITUTIONAL_HASH"
     echo "                    Generated: $(date -Iseconds)"
-    echo "================================================================================"
+    echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo ""
     
     local total_services=${#SERVICES[@]}
@@ -330,7 +330,7 @@ generate_summary() {
     fi
     
     echo ""
-    echo "================================================================================"
+    echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Return exit code
     if [[ ${#failed_required[@]} -gt 0 ]]; then
@@ -369,10 +369,10 @@ start_missing_services() {
 
 # Main function
 main() {
-    echo "================================================================================"
+    echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     echo "                    ACGS Service Deployment Validation"
     echo "                    Constitutional Hash: $CONSTITUTIONAL_HASH"
-    echo "================================================================================"
+    echo "================================================================================"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     
     # Global arrays to store results
     declare -A SERVICE_CONTAINER_STATUS

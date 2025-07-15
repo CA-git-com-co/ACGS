@@ -451,7 +451,7 @@ generate_mesh_report() {
         echo "Generated: $(date '+%Y-%m-%d %H:%M:%S')"
         echo "Production Namespace: $PRODUCTION_NAMESPACE"
         echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
-        echo "=============================================="
+        echo "=============================================="  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         echo
         
         echo "Linkerd Control Plane Status:"

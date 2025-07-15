@@ -15,7 +15,7 @@ data:
     \       component: constitutional-ai\n          constitutional_hash: cdd01ef066bc6cf2\n\
     \        annotations:\n          summary: \"Constitutional compliance below critical\
     \ threshold\"\n          description: \"Constitutional compliance score is {{\
-    \ $value }} for service {{ $labels.service }} in {{ $labels.environment }} environment.\
+    \ $value }} for service {{ $labels.service }} in {{ $labelsconfig/environments/development.environment }} environment.\
     \ Immediate action required.\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/constitutional-compliance\"\
     \n\n      - alert: ConstitutionalHashMismatch\n        expr: constitutional_hash_valid\
     \ != 1\n        for: 0s\n        labels:\n          severity: critical\n     \
@@ -34,7 +34,7 @@ data:
     \ > 2.0\n        for: 2m\n        labels:\n          severity: high\n        \
     \  component: performance\n        annotations:\n          summary: \"Response\
     \ time above threshold\"\n          description: \"95th percentile response time\
-    \ is {{ $value }}s for service {{ $labels.service }} in {{ $labels.environment\
+    \ is {{ $value }}s for service {{ $labels.service }} in {{ $labelsconfig/environments/development.environment\
     \ }} environment\"\n          runbook_url: \"https://docs.acgs.ai/runbooks/performance\"\
     \n\n      - alert: ThroughputLow\n        expr: rate(http_requests_total[5m])\
     \ < 1000\n        for: 5m\n        labels:\n          severity: high\n       \

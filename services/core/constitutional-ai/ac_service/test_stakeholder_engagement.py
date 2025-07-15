@@ -17,8 +17,8 @@ from datetime import datetime, timezone
 # Add the project root to Python path
 sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent, ".."))
 
-from services.core.constitutional_ai.ac_service.models import ACAmendment
-from services.core.constitutional_ai.ac_service.services.stakeholder_engagement import (
+from services.core.constitutional-ai.ac_service.models import ACAmendment
+from services.core.constitutional-ai.ac_service.services.stakeholder_engagement import (
     NotificationChannel,
     StakeholderEngagementInput,
     StakeholderNotificationService,
@@ -36,7 +36,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Test database URL (in-memory SQLite for testing)
-TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
+TEST_DATABASE_URL = os.environ.get("DATABASE_URL")
 
 
 async def create_test_database():
@@ -63,7 +63,7 @@ async def create_test_data(db: AsyncSession):
             id=1,
             username="constitutional_expert_1",
             email="expert1@acgs-pgp.org",
-            hashed_password="hashed_password",
+            hashed_password=os.environ.get("PASSWORD"),
             role="constitutional_expert",
             is_active=True,
         ),
@@ -71,7 +71,7 @@ async def create_test_data(db: AsyncSession):
             id=2,
             username="policy_admin_1",
             email="admin1@acgs-pgp.org",
-            hashed_password="hashed_password",
+            hashed_password=os.environ.get("PASSWORD"),
             role="policy_administrator",
             is_active=True,
         ),
@@ -79,7 +79,7 @@ async def create_test_data(db: AsyncSession):
             id=3,
             username="system_auditor_1",
             email="auditor1@acgs-pgp.org",
-            hashed_password="hashed_password",
+            hashed_password=os.environ.get("PASSWORD"),
             role="system_auditor",
             is_active=True,
         ),
@@ -87,7 +87,7 @@ async def create_test_data(db: AsyncSession):
             id=4,
             username="public_rep_1",
             email="public1@acgs-pgp.org",
-            hashed_password="hashed_password",
+            hashed_password=os.environ.get("PASSWORD"),
             role="public_representative",
             is_active=True,
         ),

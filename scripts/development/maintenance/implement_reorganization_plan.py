@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 ACGS-1 Comprehensive Cleanup and Reorganization Implementation Plan
-==================================================================
+==================================================================  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
 This script implements the comprehensive cleanup and reorganization plan for the ACGS-1
 constitutional governance system. It preserves all critical functionality while optimizing
@@ -303,7 +303,7 @@ class ACGSReorganizationPlan:
         """
         Phase 1: Preparation and Analysis
         - Create timestamped backup
-        - Document symlinks and .env files
+        - Document symlinks and config/environments/development.env files
         - Run health checks on core services
         - Verify Quantumagi deployment
         - Create rollback script
@@ -329,7 +329,7 @@ class ACGSReorganizationPlan:
                     {},
                 )
 
-            # Step 2: Document symlinks and .env files
+            # Step 2: Document symlinks and config/environments/development.env files
             symlinks = []
             env_files = []
 
@@ -343,7 +343,7 @@ class ACGSReorganizationPlan:
                                 "target": str(file_path.readlink()),
                             }
                         )
-                    elif file.endswith(".env") or file.startswith(".env"):
+                    elif file.endswith("config/environments/development.env") or file.startswith("config/environments/development.env"):
                         env_files.append(str(file_path))
 
             # Step 3: Health check all core services
@@ -632,7 +632,7 @@ echo "Rollback completed. Please verify system functionality."
             # Validate configuration
             config_files_exist = all(
                 [
-                    (self.project_root / "config" / "production.env").exists(),
+                    (self.project_root / "config" / "productionconfig/environments/development.env").exists(),
                     (self.project_root / "config" / "services").exists(),
                     (self.project_root / "docker-compose.yml").exists(),
                 ]

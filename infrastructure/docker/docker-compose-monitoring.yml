@@ -58,7 +58,7 @@ services:
     - ../monitoring/dashboards:/etc/grafana/provisioning/dashboards:ro
     environment:
     - GF_SECURITY_ADMIN_USER=admin
-    - GF_SECURITY_ADMIN_PASSWORD=admin123
+    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
     - GF_USERS_ALLOW_SIGN_UP=false
     - GF_INSTALL_PLUGINS=grafana-clock-panel,grafana-simple-json-datasource
     - GF_FEATURE_TOGGLES_ENABLE=ngalert

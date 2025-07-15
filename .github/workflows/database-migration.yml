@@ -134,7 +134,7 @@ jobs:
       postgres:
         image: postgres:15
         env:
-          POSTGRES_PASSWORD: test_password
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
           POSTGRES_USER: test_user
           POSTGRES_DB: acgs_test
         options: >-
@@ -161,7 +161,7 @@ jobs:
 
       - name: Set up test database
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         run: |
           echo "🗄️ Setting up test database..."
 
@@ -182,7 +182,7 @@ jobs:
 
       - name: Test migrations
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         run: |
           echo "🧪 Testing migrations..."
 
@@ -202,7 +202,7 @@ jobs:
 
       - name: Test rollback (if rollback scripts exist)
         env:
-          DATABASE_URL: postgresql://test_user:test_password@localhost:5432/acgs_test
+          DATABASE_URL: osconfig/environments/development.environ.get("DATABASE_URL")
         run: |
           echo "🔄 Testing rollback functionality..."
 
@@ -372,10 +372,10 @@ jobs:
           echo "Results:"
           echo "- Validation: ${{ needs.migration_validation.result }}"
           echo "- Test Migration: ${{ needs.test_migration.result }}"
-          echo "- Environment Migration: ${{ needs.environment_migration.result }}"
+          echo "- Environment Migration: ${{ needsconfig/environments/development.environment_migration.result }}"
           echo ""
 
-          if [[ "${{ needs.environment_migration.result }}" == "success" ]]; then
+          if [[ "${{ needsconfig/environments/development.environment_migration.result }}" == "success" ]]; then
             echo "✅ Migration completed successfully"
           else
             echo "❌ Migration failed or was skipped"

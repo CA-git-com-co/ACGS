@@ -56,6 +56,15 @@ info:
     - **Code Analysis Service** (Port 8011): Static analysis with tenant routing
 
     - **Context Service** (Port 8012): Governance workflow integration
+    
+    - **GroqCloud Policy Integration** (Port 8015): GroqCloud LPU with OPA-WASM policy enforcement
+
+    ## GroqCloud Model Tiers
+
+    - **Tier 1 (Nano)**: allam-2-7b (4K context, ultra-fast)
+    - **Tier 2 (Fast)**: llama-3.1-8b-instant (131K context)
+    - **Tier 3 (Balanced)**: qwen/qwen3-32b (131K context, 40K completion)
+    - **Tier 4 (Premium)**: llama-3.3-70b-versatile (131K context)
 
 
     ## Performance Targets
@@ -390,14 +399,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConstitutionalComplianceRequest'
+              $ref: '#/components/schemas/ConstitutionalComplianceRequest'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
       responses:
         '200':
           description: Constitutional compliance validation result
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ConstitutionalComplianceResponse'
+                $ref: '#/components/schemas/ConstitutionalComplianceResponse'  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         '400':
           description: Invalid request
           content:
@@ -465,6 +474,244 @@ paths:
                 $ref: '#/components/schemas/EvolutionResponse'
         '404':
           description: Evolution not found
+  /api/v1/groq-policy/generate:
+    post:
+      summary: Generate with GroqCloud Policy Enforcement
+      description: 'Generate text using GroqCloud LPU infrastructure with OPA-WASM policy enforcement.
+        
+        Supports tier-based model selection (Nano, Fast, Balanced, Premium) with sub-5ms policy evaluation.
+        
+        '
+      tags:
+      - GroqCloud Policy Integration
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - prompt
+              - constitutional_hash
+              properties:
+                prompt:
+                  type: string
+                  description: Text prompt for generation
+                model_tier:
+                  type: string
+                  enum:
+                  - nano
+                  - fast
+                  - balanced
+                  - premium
+                  default: balanced
+                max_tokens:
+                  type: integer
+                  minimum: 1
+                  maximum: 4000
+                  default: 1000
+                temperature:
+                  type: number
+                  minimum: 0
+                  maximum: 2
+                  default: 0.7
+                constitutional_compliance_required:
+                  type: boolean
+                  default: true
+                policy_enforcement:
+                  type: object
+                  properties:
+                    enabled:
+                      type: boolean
+                      default: true
+                    policies:
+                      type: array
+                      items:
+                        type: string
+                      default: ["constitutional_compliance", "safety_guardrails"]
+                constitutional_hash:
+                  $ref: '#/components/schemas/ConstitutionalHash'
+      responses:
+        '200':
+          description: Generated text with policy validation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    description: Generated text content
+                  model_used:
+                    type: string
+                    description: Actual model used for generation
+                  tier:
+                    type: string
+                    description: Model tier used
+                  execution_time_ms:
+                    type: number
+                    description: Total execution time in milliseconds
+                  policy_evaluation:
+                    type: object
+                    properties:
+                      compliant:
+                        type: boolean
+                      policies_evaluated:
+                        type: array
+                        items:
+                          type: string
+                      evaluation_time_ms:
+                        type: number
+                      constitutional_hash:
+                        $ref: '#/components/schemas/ConstitutionalHash'
+                  usage:
+                    type: object
+                    properties:
+                      prompt_tokens:
+                        type: integer
+                      completion_tokens:
+                        type: integer
+                      total_tokens:
+                        type: integer
+        '400':
+          description: Invalid request parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+  /api/v1/groq-policy/evaluate:
+    post:
+      summary: Evaluate Policy Compliance
+      description: 'Evaluate text content against GroqCloud governance policies using OPA-WASM.
+        
+        Provides sub-millisecond policy evaluation with constitutional compliance validation.
+        
+        '
+      tags:
+      - GroqCloud Policy Integration
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - input
+              - constitutional_hash
+              properties:
+                input:
+                  type: string
+                  description: Text content to evaluate
+                output:
+                  type: string
+                  description: Generated output to validate (optional)
+                policies:
+                  type: array
+                  items:
+                    type: string
+                  default: ["constitutional_compliance", "safety_guardrails"]
+                  description: Policies to evaluate against
+                context:
+                  type: object
+                  description: Additional context for evaluation
+                constitutional_hash:
+                  $ref: '#/components/schemas/ConstitutionalHash'
+      responses:
+        '200':
+          description: Policy evaluation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  evaluation_result:
+                    type: object
+                    properties:
+                      compliant:
+                        type: boolean
+                      score:
+                        type: number
+                        minimum: 0
+                        maximum: 1
+                      policies:
+                        type: object
+                        additionalProperties:
+                          type: object
+                          properties:
+                            passed:
+                              type: boolean
+                            score:
+                              type: number
+                            violations:
+                              type: array
+                              items:
+                                type: string
+                  evaluation_time_ms:
+                    type: number
+                  constitutional_hash:
+                    $ref: '#/components/schemas/ConstitutionalHash'
+        '400':
+          description: Invalid evaluation request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /api/v1/groq-policy/models:
+    get:
+      summary: Get Available GroqCloud Models
+      description: 'Get list of available GroqCloud models with tier information and performance metrics.
+        
+        Includes constitutional compliance scores and current availability status.
+        
+        '
+      tags:
+      - GroqCloud Policy Integration
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Available models information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  models:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        tier:
+                          type: string
+                          enum:
+                          - nano
+                          - fast
+                          - balanced
+                          - premium
+                        context_length:
+                          type: integer
+                        avg_latency_ms:
+                          type: number
+                        constitutional_compliance_score:
+                          type: number
+                          minimum: 0
+                          maximum: 1
+                        availability_score:
+                          type: number
+                          minimum: 0
+                          maximum: 1
+                  constitutional_hash:
+                    $ref: '#/components/schemas/ConstitutionalHash'
   /api/v1/policy-governance/evaluate:
     post:
       summary: Evaluate Policy Request
@@ -509,4 +756,6 @@ tags:
   description: Formal proof generation and verification
 - name: Authentication
   description: User authentication and authorization
+- name: GroqCloud Policy Integration
+  description: GroqCloud LPU inference with OPA-WASM policy enforcement
 constitutional_hash: cdd01ef066bc6cf2

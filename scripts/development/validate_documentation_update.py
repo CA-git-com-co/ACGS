@@ -78,7 +78,7 @@ def validate_gitignore_patterns() -> tuple[bool, list[str]]:
         ("**/node_modules/", ["**/node_modules/", "node_modules/"]),
         ("**/__pycache__/", ["**/__pycache__/", "__pycache__/"]),
         ("*.pyc", ["*.pyc"]),
-        (".env*", [".env*", ".env", "*.env"]),
+        ("config/environments/development.env*", ["config/environments/development.env*", "config/environments/development.env", "*config/environments/development.env"]),
         ("**/keypairs/", ["**/keypairs/", "keypairs"]),
         ("**/test-ledger/", ["**/test-ledger/", "test-ledger"]),
         ("**/.vscode/", ["**/.vscode/", ".vscode"]),
