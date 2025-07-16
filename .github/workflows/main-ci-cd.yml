@@ -477,6 +477,11 @@ jobs:
             pip install pytest || echo "⚠️ Even minimal test setup failed"
           }
           
+          # Install additional pytest plugins
+          pip install pytest-html pytest-timeout pytest-json-report || {
+            echo "⚠️ Some pytest plugins failed to install, continuing without them"
+          }
+          
       - name: Run Tests - ${{ matrix.test-type }}
         timeout-minutes: ${{ matrix.timeout }}
         env:
