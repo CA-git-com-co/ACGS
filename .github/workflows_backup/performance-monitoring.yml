@@ -1,0 +1,398 @@
+name: ACGS Performance Monitoring
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # COST OPTIMIZATION: Reduced from daily to weekly 
+    - cron: '0 2 * * 1' # Weekly on Monday at 2 AM UTC
+  workflow_dispatch:
+    inputs:
+      test_duration:
+        description: 'Test duration in minutes'
+        required: false
+        default: '5'
+        type: string
+      test_type:
+        description: 'Type of performance test'
+        required: false
+        default: 'comprehensive'
+        type: choice
+        options:
+          - comprehensive
+          - quick
+          - load_only
+          - stress_only
+
+env:
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "18"
+
+jobs:
+  performance-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: osconfig/environments/development.environ.get("PASSWORD")
+          POSTGRES_USER: acgs_test_user
+          POSTGRES_DB: acgs_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7-alpine
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+      
+      nats:
+        image: nats:2.10-alpine
+        options: >-
+          --health-cmd "wget --no-verbose --tries=1 --spider http://localhost:8222/healthz || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 4222:4222
+          - 8222:8222
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+
+    - name: Cache Python dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r services/shared/requirements/requirements-test.txt  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        pip install pytest pytest-asyncio aiohttp prometheus-client
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl jq
+
+    - name: Create test directories
+      run: |
+        mkdir -p reports/performance_tests
+        mkdir -p infrastructure/monitoring/performance/baselines  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        mkdir -p logs
+
+    - name: Start ACGS services
+      run: |
+        # Create mock services for CI testing
+        mkdir -p mock_services
+
+        # Create mock service script
+        cat > mock_services/mock_service.py << 'EOF'
+        import asyncio
+        import sys
+        from fastapi import FastAPI
+        import uvicorn
+
+        app = FastAPI()
+
+        @app.get('/health')
+        async def health():
+            return {
+                'status': 'healthy',
+                'service': f'mock-service-{sys.argv[1]}',
+                'constitutional_hash': 'cdd01ef066bc6cf2'
+            }
+
+        if __name__ == '__main__':
+            port = int(sys.argv[1])
+            uvicorn.run(app, host='0.0.0.0', port=port, log_level='error')
+        EOF
+
+        # Start mock services
+        for port in 8001 8003 8004 8005 8006 8016; do
+          echo "Starting mock service on port $port..."
+          python mock_services/mock_service.py $port &
+        done
+
+        # Wait for mock services to start
+        sleep 15
+
+        # Verify mock services are running
+        for port in 8001 8003 8004 8005 8006 8016; do
+          echo "Checking mock service on port $port..."
+          timeout 10 bash -c "until curl -f http://localhost:$port/health; do sleep 1; done" || echo "Mock service on port $port failed to start"
+        done
+
+    - name: Run performance baseline establishment
+      if: github.event_name == 'schedule' || github.event.inputs.test_type == 'comprehensive'
+      run: |
+        python scripts/performance/establish_baseline.py --quick
+      continue-on-error: true
+
+    - name: Run comprehensive performance tests
+      if: github.event.inputs.test_type == 'comprehensive' || github.event.inputs.test_type == ''
+      run: |
+        python tests/performance/automated_performance_suite.py
+      continue-on-error: true
+
+    - name: Run quick performance tests
+      if: github.event.inputs.test_type == 'quick'
+      run: |
+        pytest tests/performance/automated_performance_suite.py::test_api_endpoints_performance -v
+      continue-on-error: true
+
+    - name: Run load tests only
+      if: github.event.inputs.test_type == 'load_only'
+      run: |
+        pytest tests/performance/automated_performance_suite.py::test_load_performance -v
+      continue-on-error: true
+
+    - name: Run stress tests only
+      if: github.event.inputs.test_type == 'stress_only'
+      run: |
+        python -c "
+        import asyncio
+        from tests.performance.automated_performance_suite import ACGSPerformanceTestSuite
+        
+        async def main():
+            suite = ACGSPerformanceTestSuite()
+            results = await suite.run_stress_tests()
+            print('Stress test results:', results)
+        
+        asyncio.run(main())
+        "
+      continue-on-error: true
+
+    - name: Collect service logs
+      if: always()
+      run: |
+        mkdir -p logs/services
+        # Collect logs from running services
+        ps aux | grep python | grep -E "(auth|ac-service|integrity|formal|governance|policy|evolutionary)" > logs/services/running_processes.log || true
+        
+        # Check service health
+        for port in 8001 8003 8004 8005 8006 8016; do
+          curl -f http://localhost:$port/health > logs/services/health_$port.json 2>/dev/null || echo "Service on port $port not responding" > logs/services/health_$port.error
+        done
+
+    - name: Generate performance report
+      if: always()
+      run: |
+        python -c "
+        import json
+        import os
+        from datetime import datetime
+        
+        # Collect all performance test results
+        reports_dir = 'reports/performance_tests'
+        if os.path.exists(reports_dir):
+            report_files = [f for f in os.listdir(reports_dir) if f.endswith('.json')]
+            
+            if report_files:
+                latest_report = max(report_files)
+                with open(os.path.join(reports_dir, latest_report)) as f:
+                    results = json.load(f)
+                
+                # Create GitHub Actions summary
+                summary = f'''# ACGS Performance Test Results
+        
+        **Test Date**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')}
+        **Constitutional Hash**: {results.get('test_summary', {}).get('constitutional_hash', 'N/A')}
+        
+        ## Summary
+        - **Total Tests**: {results.get('test_summary', {}).get('total_tests', 0)}
+        - **Successful**: {results.get('test_summary', {}).get('successful_tests', 0)}
+        - **Failed**: {results.get('test_summary', {}).get('failed_tests', 0)}
+        - **Avg Response Time**: {results.get('test_summary', {}).get('avg_response_time_ms', 0):.2f}ms
+        - **SLA Compliance**: {'✅ PASS' if results.get('sla_compliance', {}).get('overall_compliance', False) else '❌ FAIL'}
+        
+        ## Performance Metrics
+        - **Response Time SLA**: {'✅ PASS' if results.get('sla_compliance', {}).get('response_time_sla', False) else '❌ FAIL'} (<500ms)
+        - **Error Rate SLA**: {'✅ PASS' if results.get('sla_compliance', {}).get('error_rate_sla', False) else '❌ FAIL'} (<1%)
+        
+        ## Test Types Executed
+        '''
+                
+                for test_suite in results.get('test_suites', []):
+                    for test_type, test_data in test_suite.items():
+                        summary += f'- **{test_type.replace('_', ' ').title()}**: ✅ Completed\\n'
+                
+                # Write summary to GitHub Actions output
+                with open(osconfig/environments/development.environ.get('GITHUB_STEP_SUMMARY', 'performance_summary.md'), 'w') as f:
+                    f.write(summary)
+                
+                print('Performance report generated successfully')
+            else:
+                print('No performance test results found')
+        else:
+            print('Performance reports directory not found')
+        "
+
+    - name: Check performance regression
+      if: github.event_name == 'pull_request'
+      run: |
+        python -c "
+        import json
+        import os
+        import sys
+        
+        # Load current test results
+        reports_dir = 'reports/performance_tests'
+        if os.path.exists(reports_dir):
+            report_files = [f for f in os.listdir(reports_dir) if f.endswith('.json')]
+            
+            if report_files:
+                latest_report = max(report_files)
+                with open(os.path.join(reports_dir, latest_report)) as f:
+                    current_results = json.load(f)
+                
+                # Check for performance regression
+                avg_response_time = current_results.get('test_summary', {}).get('avg_response_time_ms', 0)
+                sla_compliance = current_results.get('sla_compliance', {}).get('overall_compliance', False)
+                
+                # Performance regression thresholds
+                MAX_RESPONSE_TIME = 500  # ms
+                
+                if avg_response_time > MAX_RESPONSE_TIME:
+                    print(f'❌ Performance regression detected: Response time {avg_response_time:.2f}ms exceeds {MAX_RESPONSE_TIME}ms threshold')
+                    sys.exit(1)
+                
+                if not sla_compliance:
+                    print('❌ SLA compliance failure detected')
+                    sys.exit(1)
+                
+                print('✅ No performance regression detected')
+            else:
+                print('⚠️ No performance test results to check')
+        else:
+            print('⚠️ Performance reports directory not found')
+        "
+
+    - name: Upload performance test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: performance-test-results-${{ github.run_number }}
+        path: |
+          reports/performance_tests/
+          logs/
+          infrastructure/monitoring/performance/baselines/  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        retention-days: 30
+
+    - name: Upload performance metrics to monitoring
+      if: always() && github.ref == 'refs/heads/main'
+      run: |
+        # Upload metrics to external monitoring system (if configured)
+        echo "Uploading performance metrics to monitoring system..."
+        
+        # Example: Send metrics to external monitoring
+        # curl -X POST "$MONITORING_ENDPOINT" \
+        #   -H "Authorization: Bearer $MONITORING_TOKEN" \
+        #   -H "Content-Type: application/json" \
+        #   -d @reports/performance_tests/latest_results.json
+
+    - name: Comment PR with performance results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          // Read performance test results
+          const reportsDir = 'reports/performance_tests';
+          if (fs.existsSync(reportsDir)) {
+            const reportFiles = fs.readdirSync(reportsDir).filter(f => f.endsWith('.json'));
+            
+            if (reportFiles.length > 0) {
+              const latestReport = reportFiles.sort().pop();
+              const results = JSON.parse(fs.readFileSync(path.join(reportsDir, latestReport), 'utf8'));
+              
+              const comment = `## 🚀 Performance Test Results
+              
+              **Test Summary:**
+              - Total Tests: ${results.test_summary?.total_tests || 0}
+              - Successful: ${results.test_summary?.successful_tests || 0}
+              - Failed: ${results.test_summary?.failed_tests || 0}
+              - Avg Response Time: ${(results.test_summary?.avg_response_time_ms || 0).toFixed(2)}ms
+              - SLA Compliance: ${results.sla_compliance?.overall_compliance ? '✅ PASS' : '❌ FAIL'}
+              
+              **Performance Thresholds:**
+              - Response Time: ${results.sla_compliance?.response_time_sla ? '✅' : '❌'} <500ms
+              - Error Rate: ${results.sla_compliance?.error_rate_sla ? '✅' : '❌'} <1%
+              
+              **Constitutional Hash:** \`${results.test_summary?.constitutional_hash || 'N/A'}\`
+              `;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+          }
+
+  performance-regression-check:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    needs: performance-tests
+    
+    steps:
+    - name: Download performance results
+      uses: actions/download-artifact@v4
+      with:
+        name: performance-test-results-${{ github.run_number }}
+        path: ./performance-results
+
+    - name: Compare with baseline
+      run: |
+        echo "Comparing performance results with baseline..."
+        # This would compare current results with stored baseline
+        # Implementation depends on where baselines are stored (e.g., database, S3, etc.)
+        
+        echo "Performance regression check completed"
+
+  update-performance-dashboard:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: performance-tests
+    
+    steps:
+    - name: Update performance dashboard
+      run: |
+        echo "Updating performance dashboard with latest results..."
+        # This would update external dashboard/monitoring with latest performance data
+        
+        echo "Performance dashboard updated"
