@@ -246,7 +246,7 @@ jobs:
                 
                 for test_suite in results.get('test_suites', []):
                     for test_type, test_data in test_suite.items():
-                        summary += f'- **{test_type.replace("_", " ").title()}**: ✅ Completed\\n'
+                        summary += f'- **{test_type.replace(\"_\", \" \").title()}**: ✅ Completed\\n'
 
                 # Write summary to GitHub Actions output
                 with open(os.environ.get('GITHUB_STEP_SUMMARY', 'performance_summary.md'), 'w') as f:
