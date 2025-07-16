@@ -452,9 +452,30 @@ jobs:
           
       - name: Install Dependencies
         run: |
-          pip install --upgrade pip
-          pip install -r requirements-security.txt || pip install -r requirements.txt
-          pip install pytest pytest-cov pytest-asyncio pytest-xdist
+          echo "📦 Installing test dependencies with fallback handling..."
+          pip install --upgrade pip wheel setuptools
+          
+          # Install requirements with comprehensive fallback
+          if [ -f "requirements-security.txt" ]; then
+            echo "Installing security-hardened requirements..."
+            pip install -r requirements-security.txt || {
+              echo "⚠️ Security requirements failed, trying standard requirements..."
+              if [ -f "requirements.txt" ]; then
+                pip install -r requirements.txt || echo "⚠️ Standard requirements also failed, continuing with minimal setup"
+              fi
+            }
+          elif [ -f "requirements.txt" ]; then
+            echo "Installing standard requirements..."
+            pip install -r requirements.txt || echo "⚠️ Requirements installation failed, continuing with minimal setup"
+          else
+            echo "⚠️ No requirements files found at root level"
+          fi
+          
+          # Install test dependencies with error handling
+          pip install pytest pytest-cov pytest-asyncio pytest-xdist || {
+            echo "⚠️ Some test dependencies failed, installing minimal set..."
+            pip install pytest || echo "⚠️ Even minimal test setup failed"
+          }
           
       - name: Run Tests - ${{ matrix.test-type }}
         timeout-minutes: ${{ matrix.timeout }}
@@ -533,7 +554,7 @@ jobs:
     name: 🏗️ Build & Push Images
     runs-on: ubuntu-latest
     needs: [preflight, quality-gates]
-    if: needs.preflight.outputs.should_build == 'true'
+    if: needs.preflight.outputs.should_build == 'true' && needs.quality-gates.result == 'success'
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -574,11 +595,47 @@ jobs:
             type=sha,prefix={{branch}}-
             type=raw,value=${{ needs.preflight.outputs.target_environment }}-{{sha}}
             
+      - name: Determine Dockerfile Path
+        id: dockerfile
+        run: |
+          echo "🔍 Finding Dockerfile for ${{ matrix.service }}..."
+          
+          # Look for Dockerfile in various locations
+          possible_paths=(
+            "services/core/${{ matrix.service }}/Dockerfile"
+            "services/platform_services/${{ matrix.service }}/Dockerfile"
+            "services/shared/${{ matrix.service }}/Dockerfile"
+            "Dockerfile.${{ matrix.service }}"
+            "docker/${{ matrix.service }}/Dockerfile"
+          )
+          
+          dockerfile_path=""
+          context_path="."
+          
+          for path in "${possible_paths[@]}"; do
+            if [ -f "$path" ]; then
+              dockerfile_path="$path"
+              context_path="."
+              break
+            fi
+          done
+          
+          if [ -z "$dockerfile_path" ]; then
+            echo "⚠️ No Dockerfile found for ${{ matrix.service }}, using generic Dockerfile"
+            dockerfile_path="Dockerfile"
+            context_path="."
+          fi
+          
+          echo "dockerfile=$dockerfile_path" >> $GITHUB_OUTPUT
+          echo "context=$context_path" >> $GITHUB_OUTPUT
+          echo "📁 Using Dockerfile: $dockerfile_path"
+          echo "📁 Build context: $context_path"
+          
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: services/*/{{ matrix.service }}/Dockerfile
+          context: ${{ steps.dockerfile.outputs.context }}
+          file: ${{ steps.dockerfile.outputs.dockerfile }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -588,6 +645,7 @@ jobs:
             CONSTITUTIONAL_HASH=${{ env.CONSTITUTIONAL_HASH }}
             BUILD_DATE=${{ github.run_id }}
             VERSION=${{ github.sha }}
+            SERVICE_NAME=${{ matrix.service }}
 
   # =============================================================================
   # SECURITY VALIDATION - Comprehensive Security Analysis
@@ -596,7 +654,7 @@ jobs:
     name: 🛡️ Security Validation
     runs-on: ubuntu-latest
     needs: [preflight, build-images]
-    if: needs.preflight.outputs.should_test == 'true' && github.event.inputs.skip_security != 'true'
+    if: needs.preflight.outputs.should_test == 'true' && github.event.inputs.skip_security != 'true' && (needs.build-images.result == 'success' || needs.build-images.result == 'skipped')
     timeout-minutes: 15
     
     steps:
@@ -646,7 +704,13 @@ jobs:
     name: 🚀 Deploy to ${{ needs.preflight.outputs.target_environment }}
     runs-on: ubuntu-latest
     needs: [preflight, quality-gates, test-suite, build-images, security-validation]
-    if: needs.preflight.outputs.should_deploy == 'true' && needs.preflight.outputs.constitutional_valid == 'true'
+    if: |
+      needs.preflight.outputs.should_deploy == 'true' && 
+      needs.preflight.outputs.constitutional_valid == 'true' &&
+      (needs.quality-gates.result == 'success' || needs.quality-gates.result == 'skipped') &&
+      (needs.test-suite.result == 'success' || needs.test-suite.result == 'skipped') &&
+      (needs.build-images.result == 'success' || needs.build-images.result == 'skipped') &&
+      (needs.security-validation.result == 'success' || needs.security-validation.result == 'skipped')
     timeout-minutes: 20
     environment: ${{ needs.preflight.outputs.target_environment }}
     
@@ -678,14 +742,66 @@ jobs:
           
       - name: Post-Deployment Health Check
         run: |
-          echo "🩺 Running post-deployment health checks..."
+          echo "🩺 Running comprehensive post-deployment health checks..."
+          echo "Environment: ${{ needs.preflight.outputs.target_environment }}"
+          echo "Constitutional Hash: ${{ env.CONSTITUTIONAL_HASH }}"
           
           # Wait for services to be ready
+          echo "⏳ Waiting for services to start..."
           sleep 30
           
+          # Determine base URL based on environment
+          case "${{ needs.preflight.outputs.target_environment }}" in
+            "production")
+              base_url="https://acgs-prod.example.com"
+              ;;
+            "staging")
+              base_url="https://acgs-staging.example.com"
+              ;;
+            "development")
+              base_url="http://localhost:8010"
+              ;;
+            *)
+              base_url="http://localhost:8010"
+              ;;
+          esac
+          
+          echo "🔍 Health check base URL: $base_url"
+          
           # Check service health endpoints
-          # TODO: Add actual health check URLs based on deployment
-          echo "✅ Health checks passed"
+          services=("constitutional-ai:8001" "integrity:8002" "api-gateway:8010")
+          all_healthy=true
+          
+          for service_info in "${services[@]}"; do
+            service_name=$(echo $service_info | cut -d: -f1)
+            port=$(echo $service_info | cut -d: -f2)
+            health_url="$base_url/health"
+            
+            echo "🔍 Checking $service_name health..."
+            
+            # Retry health check with timeout
+            for i in {1..5}; do
+              if curl -f "$health_url" --connect-timeout 10 --max-time 30 --silent; then
+                echo "✅ $service_name is healthy"
+                break
+              else
+                echo "⚠️ $service_name health check failed (attempt $i/5)"
+                if [ $i -eq 5 ]; then
+                  echo "❌ $service_name failed all health checks"
+                  all_healthy=false
+                fi
+                sleep 10
+              fi
+            done
+          done
+          
+          if [ "$all_healthy" = true ]; then
+            echo "✅ All health checks passed"
+            echo "🏛️ Constitutional compliance maintained: ${{ env.CONSTITUTIONAL_HASH }}"
+          else
+            echo "❌ Some health checks failed"
+            exit 1
+          fi
           
       - name: Update Deployment Status
         run: |

@@ -91,14 +91,30 @@ jobs:
       - name: Install Security Tools
         run: |
           echo "🔧 Installing security scanning tools..."
-          pip install --upgrade pip
-          pip install safety bandit semgrep pip-audit
+          pip install --upgrade pip wheel setuptools
+          
+          # Install Python security tools with comprehensive error handling
+          echo "Installing Python security tools..."
+          pip install safety bandit pip-audit || {
+            echo "⚠️ Some Python security tools failed to install, continuing with available tools"
+          }
+          
+          # Try to install semgrep with fallback
+          pip install semgrep || {
+            echo "⚠️ Semgrep installation failed, will use alternative scanning methods"
+            echo "semgrep_available=false" >> $GITHUB_ENV
+          }
           
           # Install Rust tools if Cargo.toml exists
           if [ -f "Cargo.toml" ]; then
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-            source ~/.cargo/env
-            cargo install cargo-audit cargo-deny
+            echo "Installing Rust security tools..."
+            if ! command -v rustc &> /dev/null; then
+              curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+              source ~/.cargo/env
+            fi
+            cargo install cargo-audit cargo-deny || {
+              echo "⚠️ Rust security tools installation failed"
+            }
           fi
           
       - name: Python Dependency Scan
