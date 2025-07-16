@@ -204,11 +204,12 @@ jobs:
           for path in "${possible_paths[@]}"; do
             if [ -f "$path" ]; then
               dockerfile_path="$path"
-              context_path=$(dirname "$path")
+              # Always use repository root as context for access to shared files
+              context_path="."
               break
             fi
           done
-          
+
           if [ -z "$dockerfile_path" ]; then
             echo "⚠️ No Dockerfile found for ${{ matrix.service }}, using generic Dockerfile"
             dockerfile_path="Dockerfile"
