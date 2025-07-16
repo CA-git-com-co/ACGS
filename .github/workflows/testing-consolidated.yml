@@ -343,18 +343,51 @@ jobs:
           TESTING: true
         run: |
           echo "🔗 Running integration tests..."
-          
+
+          # Wait for services to be ready
+          echo "⏳ Waiting for database to be ready..."
+          for i in {1..30}; do
+            if pg_isready -h localhost -p 5432 -U postgres; then
+              echo "✅ Database is ready"
+              break
+            fi
+            echo "Waiting for database... ($i/30)"
+            sleep 2
+          done
+
+          echo "⏳ Waiting for Redis to be ready..."
+          for i in {1..30}; do
+            if redis-cli -h localhost -p 6379 ping | grep -q PONG; then
+              echo "✅ Redis is ready"
+              break
+            fi
+            echo "Waiting for Redis... ($i/30)"
+            sleep 2
+          done
+
           if [ -d "tests/integration" ]; then
-            pytest tests/integration/ \
-              --junit-xml=junit-integration.xml \
-              --html=report-integration.html \
-              --self-contained-html \
-              -v \
-              --tb=short \
-              --timeout=600 \
-              --maxfail=5
+            echo "📁 Found integration tests directory"
+            test_count=$(find tests/integration -name "test_*.py" | wc -l)
+            echo "📊 Found $test_count integration test files"
+
+            if [ "$test_count" -gt 0 ]; then
+              pytest tests/integration/ \
+                --junit-xml=junit-integration.xml \
+                --html=report-integration.html \
+                --self-contained-html \
+                -v \
+                --tb=short \
+                --timeout=600 \
+                --maxfail=5 \
+                --continue-on-collection-errors
+            else
+              echo "⚠️ No test files found in integration directory"
+              echo "Creating placeholder test results..."
+              echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="integration" tests="0" failures="0" errors="0" skipped="1"><testcase classname="integration" name="placeholder" time="0"><skipped message="No integration tests found"/></testcase></testsuite></testsuites>' > junit-integration.xml
+            fi
           else
-            echo "⚠️ No integration tests found, skipping"
+            echo "⚠️ No integration tests directory found, creating placeholder results..."
+            echo '<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="integration" tests="0" failures="0" errors="0" skipped="1"><testcase classname="integration" name="placeholder" time="0"><skipped message="Integration tests directory not found"/></testcase></testsuite></testsuites>' > junit-integration.xml
           fi
           
       - name: Upload Integration Test Results

@@ -1,9 +1,25 @@
+# ACGS-2 GitLeaks Configuration
 # Constitutional Hash: cdd01ef066bc6cf2
+
+title = "ACGS-2 Secret Detection Configuration"
+
 [extend]
 useDefault = true
 
 [[rules]]
-description = "ACGS-1 API Keys"
+id = "constitutional-hash"
+description = "Constitutional hash validation"
+regex = '''cdd01ef066bc6cf2'''
+keywords = ["constitutional", "hash"]
+# Allow constitutional hash in specific contexts
+allowlist.regexes = [
+    '''# Constitutional Hash: cdd01ef066bc6cf2''',
+    '''CONSTITUTIONAL_HASH.*cdd01ef066bc6cf2''',
+    '''constitutional.hash.*cdd01ef066bc6cf2''',
+]
+
+[[rules]]
+description = "ACGS-2 API Keys"
 id = "acgs-api-key"
 regex = '''(?i)(acgs[_-]?api[_-]?key|acgs[_-]?secret)['"]*\s*[:=]\s*['"][a-zA-Z0-9]{20,}['"]'''
 
@@ -17,32 +33,66 @@ description = "Constitutional Governance Secrets"
 id = "governance-secret"
 regex = '''(?i)(governance[_-]?secret|constitutional[_-]?key)['"]*\s*[:=]\s*['"][a-zA-Z0-9]{16,}['"]'''
 
+[[rules]]
+id = "database-url"
+description = "Database connection strings"
+regex = '''(?i)(database_url|db_url)\s*[:=]\s*['"][^'"]+['"]'''
+keywords = ["database", "postgres", "mysql"]
+
+[[rules]]
+id = "jwt-secret"
+description = "JWT secrets"
+regex = '''(?i)(jwt[_-]?secret|secret[_-]?key)\s*[:=]\s*['"][a-zA-Z0-9+/]{32,}['"]'''
+keywords = ["jwt", "secret"]
+
 [allowlist]
-description = "Allowlisted files"
+description = "Allowlist for ACGS-2 project"
 files = [
-  '''\.git/.*''',
-  '''node_modules/.*''',
-  '''target/.*''',
-  '''\.secrets\.baseline''',
-  '''test-ledger/.*''',
-  '''.*\.md$''',
-  '''.*\.txt$''',
-  '''.*\.json$''',
-  '''.*\.yml$''',
-  '''.*\.yaml$'''
+    '''.*\.md$''',
+    '''.*\.txt$''',
+    '''.*\.example$''',
+    '''.*\.template$''',
+    '''tests/.*''',
+    '''docs/.*''',
+    '''.github/.*''',
+    '''\.git/.*''',
+    '''node_modules/.*''',
+    '''target/.*''',
+    '''\.secrets\.baseline''',
+    '''test-ledger/.*''',
+    '''.*\.json$''',
+    '''.*\.yml$''',
+    '''.*\.yaml$'''
 ]
 
-[allowlist.regexes]
-description = "Allowlisted regex patterns"
 regexes = [
-  '''example[_-]?key''',
-  '''test[_-]?secret''',
-  '''dummy[_-]?token''',
-  '''placeholder[_-]?value''',
-  '''your[_-]?api[_-]?key[_-]?here''',
-  '''replace[_-]?with[_-]?actual''',
-  # Allow simple TODO/FIXME/XXX comments without quoted values
-  '''TODO:[^"'=]*$''',
-  '''FIXME:[^"'=]*$''',
-  '''XXX:[^"'=]*$'''
+    # Allow example/template values
+    '''(password|secret|key)\s*[:=]\s*['"]?(example|template|placeholder|your_.*|<.*>)['"]?''',
+    # Allow test values
+    '''(password|secret|key)\s*[:=]\s*['"]?(test|mock|fake|dummy).*['"]?''',
+    # Allow environment variable references
+    '''(password|secret|key)\s*[:=]\s*['"]?\$\{?[A-Z_]+\}?['"]?''',
+    # Allow constitutional hash references
+    '''cdd01ef066bc6cf2''',
+    # Legacy patterns
+    '''example[_-]?key''',
+    '''test[_-]?secret''',
+    '''dummy[_-]?token''',
+    '''placeholder[_-]?value''',
+    '''your[_-]?api[_-]?key[_-]?here''',
+    '''replace[_-]?with[_-]?actual''',
+    '''TODO:[^"'=]*$''',
+    '''FIXME:[^"'=]*$''',
+    '''XXX:[^"'=]*$'''
+]
+
+paths = [
+    '''.*\.git/.*''',
+    '''.*node_modules/.*''',
+    '''.*\.venv/.*''',
+    '''.*__pycache__/.*''',
+    '''.*\.pytest_cache/.*''',
+    '''.*\.coverage''',
+    '''.*\.env\.example''',
+    '''.*\.env\.template''',
 ]

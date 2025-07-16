@@ -199,9 +199,35 @@ jobs:
           path: |
             .venv/
             venv/
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+            __pycache__/
+            .pytest_cache/
+            .mypy_cache/
+            .ruff_cache/
+            .coverage
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/setup.py') }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
+            ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/setup.py') }}-
             ${{ runner.os }}-venv-
+
+      - name: Layer 3 - Tool Cache Optimization
+        if: fromJson(needs.cache_analysis.outputs.cache_config).python_cache_layers >= 2
+        run: |
+          echo "🔧 Optimizing Python tool caches..."
+
+          # Pre-compile Python files for faster imports
+          python -m compileall . -q || true
+
+          # Optimize pytest cache
+          if [ -d ".pytest_cache" ]; then
+            echo "📊 Pytest cache size: $(du -sh .pytest_cache 2>/dev/null || echo '0B')"
+          fi
+
+          # Optimize mypy cache
+          if [ -d ".mypy_cache" ]; then
+            echo "🔍 MyPy cache size: $(du -sh .mypy_cache 2>/dev/null || echo '0B')"
+          fi
+
+          echo "✅ Tool cache optimization completed"
 
   # Node.js/TypeScript Caching
   node_cache_optimization:
