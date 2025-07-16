@@ -823,6 +823,42 @@ class FormalVerificationEngine:
             logger.exception(f"Proof obligation verification failed: {e}")
             return []
 
+    async def verify_constitutional_compliance(self, policy_data: dict[str, Any]) -> VerificationReport:
+        """
+        Verify constitutional compliance of policy data.
+        
+        This method provides the missing interface expected by the test framework.
+        
+        Args:
+            policy_data: Dictionary containing policy information
+            
+        Returns:
+            VerificationReport with verification results
+        """
+        try:
+            # Extract policy content from policy_data
+            policy_content = policy_data.get("content", "")
+            if not policy_content:
+                policy_content = policy_data.get("text", "")
+            if not policy_content:
+                policy_content = str(policy_data)
+            
+            # Extract constraints from policy
+            constraints = self._extract_constraints_from_policy(policy_content)
+            
+            # Perform constitutional policy verification
+            return self.verify_constitutional_policy(constraints)
+            
+        except Exception as e:
+            logger.exception(f"Constitutional compliance verification error: {e}")
+            return VerificationReport(
+                obligation_id=f"compliance_error_{int(time.time())}",
+                result=VerificationResult.ERROR,
+                proof_time_ms=0.0,
+                constitutional_compliance=False,
+                confidence_score=0.0,
+            )
+
     def _extract_constraints_from_policy(self, policy_content: str) -> list[str]:
         """
         Extract formal constraints from policy text.

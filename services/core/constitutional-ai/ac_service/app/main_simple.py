@@ -8,13 +8,23 @@ basic health checks and constitutional compliance validation.
 
 import logging
 import os
+import sys
 from datetime import datetime, timezone
 from typing import Dict, Any
 
 from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
+
+# Add services directory to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
+
+try:
+    from services.shared.middleware.standard_middleware_config import setup_standard_acgs_service
+    STANDARD_MIDDLEWARE_AVAILABLE = True
+except ImportError:
+    from fastapi.middleware.cors import CORSMiddleware
+    STANDARD_MIDDLEWARE_AVAILABLE = False
 
 # Constitutional compliance
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
@@ -32,14 +42,20 @@ app = FastAPI(
     redoc_url="/redoc",
 )
 
-# Add CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Apply standard ACGS middleware configuration
+if STANDARD_MIDDLEWARE_AVAILABLE:
+    setup_standard_acgs_service(app, "constitutional-ai-service")
+    logger.info("Standard ACGS middleware configuration applied")
+else:
+    # Fallback to basic CORS if standard middleware not available
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    logger.warning("Using fallback CORS middleware - standard middleware not available")
 
 # Service startup time
 startup_time = datetime.now(timezone.utc)
@@ -123,18 +139,8 @@ async def shutdown_event():
     logger.info("🛑 Shutting down Constitutional AI Service")
 
 
-# Add constitutional compliance headers to all responses
-@app.middleware("http")
-async def add_constitutional_headers(request, call_next):
-    """Add constitutional compliance headers to all responses."""
-    response = await call_next(request)
-    response.headers["X-Constitutional-Hash"] = CONSTITUTIONAL_HASH
-    response.headers["X-Service-Name"] = "constitutional-core"
-    response.headers["X-Service-Version"] = "1.0.0"
-    response.headers["X-Content-Type-Options"] = "nosniff"
-    response.headers["X-Frame-Options"] = "DENY"
-    response.headers["X-XSS-Protection"] = "1; mode=block"
-    return response
+# Constitutional headers are now handled by the standard middleware configuration
+# This ensures consistent security headers and constitutional compliance across all services
 
 
 if __name__ == "__main__":

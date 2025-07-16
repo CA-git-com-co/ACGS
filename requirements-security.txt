@@ -8,7 +8,7 @@
 # ============================================================================
 
 # Image processing security (Critical vulnerability CVE-2024-xxx)
-Pillow>=10.2.0,<11.0.0
+Pillow>=10.2.0
 
 # Cryptographic operations (High/Critical vulnerabilities)
 cryptography>=43.0.1
@@ -33,15 +33,15 @@ numpy>=1.24.4
 # Web framework security
 fastapi>=0.115.6
 uvicorn>=0.34.0
-starlette>=0.27.0,<1.0.0
+starlette>=0.27.0
 
 # Database security
-sqlalchemy>=2.0.23,<3.0.0
-asyncpg>=0.29.0,<1.0.0
-redis>=5.0.1,<6.0.0
+sqlalchemy>=2.0.23
+asyncpg>=0.29.0
+redis>=5.0.1
 
 # Authentication and JWT security
-pyjwt[crypto]>=2.8.0,<3.0.0
+pyjwt>=2.10.1
 passlib[bcrypt]>=1.7.4,<2.0.0
 bcrypt>=4.0.1,<5.0.0
 
@@ -72,13 +72,13 @@ pyyaml>=6.0.1,<7.0.0
 # Security scanning and auditing
 bandit>=1.7.5,<2.0.0
 safety>=2.3.0,<3.0.0
-pip-audit>=2.6.0,<3.0.0
+pip>=23.3.0
 semgrep>=1.45.0,<2.0.0
 
 # Testing security
 pytest>=8.3.4
-pytest-cov>=4.1.0,<5.0.0
-pytest-asyncio>=0.21.0,<1.0.0
+pytest>=8.3.4
+pytest>=8.3.4
 
 # Type checking and quality
 mypy>=1.13.0
@@ -121,9 +121,9 @@ jsonschema>=4.19.0,<5.0.0  # Schema validation for constitutional compliance
 # ============================================================================
 
 # Prevent vulnerable transitive dependencies
-setuptools>=80.9.0  # Fix for arbitrary code execution
-wheel>=0.42.0,<1.0.0
-pip>=23.3.0,<24.0.0
+setuptools>=80.9.0
+wheel>=0.42.0
+pip>=23.3.0
 
 # Networking stack security
 idna>=3.7
