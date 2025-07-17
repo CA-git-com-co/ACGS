@@ -155,7 +155,7 @@ services:
     environment:
     - SERVICE_NAME=api_gateway
     - SERVICE_PORT=8080
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379/0
     - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY environment variable required}
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -225,7 +225,7 @@ services:
     environment:
     - SERVICE_NAME=auth_service
     - SERVICE_PORT=8016
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379/1
     - SECRET_KEY=${AUTH_SECRET_KEY:?AUTH_SECRET_KEY environment variable required}
     - JWT_SECRET_KEY=${JWT_SECRET_KEY:?JWT_SECRET_KEY environment variable required}
@@ -291,7 +291,7 @@ services:
     environment:
     - SERVICE_NAME=constitutional_core
     - SERVICE_PORT=8001
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379/1
     - API_GATEWAY_URL=http://api_gateway:8080
     - ENVIRONMENT=${ENVIRONMENT:-development}
@@ -354,7 +354,7 @@ services:
     environment:
     - SERVICE_NAME=integrity_service
     - SERVICE_PORT=8002
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379/2
     - API_GATEWAY_URL=http://api_gateway:8080
     - CONSTITUTIONAL_CORE_URL=http://constitutional_core:8001
@@ -415,7 +415,7 @@ services:
     environment:
     - SERVICE_NAME=governance_engine
     - SERVICE_PORT=8004
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379/4
     - AUTH_SERVICE_URL=http://auth_service:8016
     - AC_SERVICE_URL=http://constitutional_core:8001
@@ -481,7 +481,7 @@ services:
     environment:
     - SERVICE_NAME=ec_service
     - SERVICE_PORT=8006
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379/6
     - AUTH_SERVICE_URL=http://auth_service:8016
     - AC_SERVICE_URL=http://constitutional_core:8001
@@ -633,7 +633,7 @@ services:
     container_name: acgs_agent_hitl
     environment:
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:os.environ.get("PASSWORD")
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
     - REDIS_URL=redis://redis:6379
     - AGENT_IDENTITY_SERVICE_URL=http://auth_service:8016
     - CONSTITUTIONAL_AI_SERVICE_URL=http://constitutional_core:8001
@@ -704,7 +704,7 @@ services:
     container_name: acgs_grafana
     environment:
     - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USER:?GRAFANA_ADMIN_USER environment variable required}
-    - GF_SECURITY_ADMIN_PASSWORD=os.environ.get("PASSWORD")
+    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD required}
     - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
     - ${ACGS_ROOT}/infrastructure/scripts/docker/grafana/provisioning:/etc/grafana/provisioning:ro
@@ -721,3 +721,701 @@ services:
         limits:
           memory: 512M
           cpus: '0.5'
+
+  # Phase 1 Multi-Agent Coordination Services
+  multi_agent_coordinator:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_multi_agent_coordinator
+    environment:
+    - SERVICE_NAME=multi_agent_coordinator
+    - SERVICE_PORT=8008
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/7
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - WORKER_AGENTS_URL=http://worker_agents:8009
+    - BLACKBOARD_URL=http://blackboard_service:8010
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - COORDINATION_TIMEOUT=300
+    - MAX_AGENTS=50
+    - CONSENSUS_THRESHOLD=0.7
+    working_dir: /app/services/core/multi_agent_coordinator
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8008'
+    ports:
+    - 8008:8008
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8008/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.2'
+
+  worker_agents:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_worker_agents
+    environment:
+    - SERVICE_NAME=worker_agents
+    - SERVICE_PORT=8009
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/8
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - MULTI_AGENT_COORDINATOR_URL=http://multi_agent_coordinator:8008
+    - BLACKBOARD_URL=http://blackboard_service:8010
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - MAX_AGENT_CAPACITY=10
+    - TASK_TIMEOUT=300
+    - ETHICS_ENABLED=true
+    - LEGAL_ENABLED=true
+    - OPERATIONAL_ENABLED=true
+    working_dir: /app/services/core/worker_agents
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8009'
+    ports:
+    - 8009:8009
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      multi_agent_coordinator:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8009/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+          cpus: '0.75'
+        reservations:
+          memory: 768M
+          cpus: '0.3'
+
+  blackboard_service:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_blackboard_service
+    environment:
+    - SERVICE_NAME=blackboard_service
+    - SERVICE_PORT=8010
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/9
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - MULTI_AGENT_COORDINATOR_URL=http://multi_agent_coordinator:8008
+    - WORKER_AGENTS_URL=http://worker_agents:8009
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - KNOWLEDGE_TTL=3600
+    - MAX_KNOWLEDGE_SIZE=10485760
+    - COORDINATION_TIMEOUT=1800
+    - CONSENSUS_THRESHOLD=0.7
+    working_dir: /app/services/shared/blackboard
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8010'
+    ports:
+    - 8010:8010
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8010/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.4'
+
+  # Phase 2: GroqCloud Policy Integration Service
+  groqcloud_policy_integration:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_groqcloud_policy_integration
+    environment:
+    - SERVICE_NAME=groqcloud_policy_integration
+    - SERVICE_PORT=8015
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/10
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - GROQ_API_KEY=${GROQ_API_KEY}
+    - GROQ_API_URL=https://api.groq.com/openai/v1
+    - OPA_SERVER_URL=http://opa:8181
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - POLICY_CACHE_TTL=300
+    - MAX_BATCH_SIZE=100
+    - TIER_SELECTION_ENABLED=true
+    - CONSTITUTIONAL_VALIDATION_ENABLED=true
+    - LATENCY_TARGET_NANO_MS=1
+    - LATENCY_TARGET_FAST_MS=2
+    - LATENCY_TARGET_BALANCED_MS=3
+    - LATENCY_TARGET_PREMIUM_MS=5
+    - KIMI_K2_ENABLED=true
+    - PREMIUM_MODEL_NAME=moonshotai/kimi-k2-instruct
+    - PREMIUM_CONTEXT_LENGTH=131072
+    working_dir: /app/services/core/groqcloud-policy-integration
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8015'
+    ports:
+    - 8015:8015
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      opa:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8015/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.4'
+
+  # Phase 3: MCP Protocol Services
+  mcp_aggregator:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_mcp_aggregator
+    environment:
+    - SERVICE_NAME=mcp_aggregator
+    - SERVICE_PORT=3000
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/11
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - FILESYSTEM_MCP_URL=http://filesystem_mcp:3001
+    - GITHUB_MCP_URL=http://github_mcp:3002
+    - BROWSER_MCP_URL=http://browser_mcp:3003
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - SESSION_TIMEOUT=3600
+    - MAX_SESSIONS=10000
+    - HEALTH_CHECK_INTERVAL=30
+    - CONSTITUTIONAL_VALIDATION_ENABLED=true
+    working_dir: /app/services/mcp/aggregator
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '3000'
+    ports:
+    - 3000:3000
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:3000/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.2'
+
+  filesystem_mcp:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_filesystem_mcp
+    environment:
+    - SERVICE_NAME=filesystem_mcp
+    - SERVICE_PORT=3001
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - MCP_AGGREGATOR_URL=http://mcp_aggregator:3000
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - ALLOWED_BASE_PATHS=/app/data,/app/workspace,/app/temp,/app/uploads
+    - MAX_FILE_SIZE=104857600
+    - MAX_DIRECTORY_DEPTH=10
+    - SECURITY_VALIDATION_ENABLED=true
+    working_dir: /app/services/mcp/filesystem
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '3001'
+    ports:
+    - 3001:3001
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    - /app/workspace:/app/workspace
+    - /app/temp:/app/temp
+    - /app/uploads:/app/uploads
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:3001/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+
+  github_mcp:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_github_mcp
+    environment:
+    - SERVICE_NAME=github_mcp
+    - SERVICE_PORT=3002
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - MCP_AGGREGATOR_URL=http://mcp_aggregator:3000
+    - GITHUB_TOKEN=${GITHUB_TOKEN}
+    - GITHUB_API_URL=https://api.github.com
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - MAX_REQUESTS_PER_HOUR=1000
+    - REQUEST_TIMEOUT=30
+    - SECURITY_VALIDATION_ENABLED=true
+    - RATE_LIMIT_BUFFER=100
+    working_dir: /app/services/mcp/github
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '3002'
+    ports:
+    - 3002:3002
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:3002/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+        reservations:
+          memory: 256M
+          cpus: '0.1'
+
+  browser_mcp:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_browser_mcp
+    environment:
+    - SERVICE_NAME=browser_mcp
+    - SERVICE_PORT=3003
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - MCP_AGGREGATOR_URL=http://mcp_aggregator:3000
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - ALLOWED_DOMAINS=wikipedia.org,github.com,stackoverflow.com,arxiv.org,scholar.google.com,pubmed.ncbi.nlm.nih.gov,docs.python.org,developer.mozilla.org,w3.org
+    - MAX_PAGE_SIZE=10485760
+    - REQUEST_TIMEOUT=30
+    - SECURITY_VALIDATION_ENABLED=true
+    - USER_AGENT=ACGS-2-Browser-MCP/1.0
+    working_dir: /app/services/mcp/browser
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '3003'
+    ports:
+    - 3003:3003
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:3003/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '0.5'
+        reservations:
+          memory: 512M
+          cpus: '0.2'
+
+  # Phase 4: A2A Policy Integration Service
+  a2a_policy_integration:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_a2a_policy_integration
+    environment:
+    - SERVICE_NAME=a2a_policy_integration
+    - SERVICE_PORT=8020
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/12
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - MCP_AGGREGATOR_URL=http://mcp_aggregator:3000
+    - MULTI_AGENT_COORDINATOR_URL=http://multi_agent_coordinator:8008
+    - WORKER_AGENTS_URL=http://worker_agents:8009
+    - BLACKBOARD_URL=http://blackboard_service:8010
+    - GROQCLOUD_POLICY_URL=http://groqcloud_policy_integration:8015
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - JWT_SECRET=${A2A_JWT_SECRET:-acgs-2-a2a-constitutional-secret}
+    - MAX_CONCURRENT_CONNECTIONS=1000
+    - MESSAGE_QUEUE_SIZE=10000
+    - HEARTBEAT_INTERVAL=30
+    - DISCOVERY_REFRESH_INTERVAL=60
+    - DEFAULT_MESSAGE_TTL=300
+    - MAX_MESSAGE_SIZE=10485760
+    - COMPRESSION_ENABLED=true
+    - ENCRYPTION_ENABLED=true
+    - SIGNATURE_REQUIRED=true
+    - CONSTITUTIONAL_VALIDATION_ENABLED=true
+    - AUDIT_LOGGING_ENABLED=true
+    working_dir: /app/services/core/a2a-policy-integration
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8020'
+    ports:
+    - 8020:8020
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      multi_agent_coordinator:
+        condition: service_healthy
+      mcp_aggregator:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8020/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 1G
+          cpus: '0.4'
+
+  # Phase 5: Advanced Security & Validation Service
+  security_validation:
+    build:
+      context: ../..
+      dockerfile: infrastructure/docker/Dockerfile.acgs
+      target: production-runtime
+    container_name: acgs_security_validation
+    environment:
+    - SERVICE_NAME=security_validation
+    - SERVICE_PORT=8021
+    - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:?POSTGRES_USER required}:${POSTGRES_PASSWORD:?POSTGRES_PASSWORD required}@postgres:5432/${POSTGRES_DB:-acgs_db}
+    - REDIS_URL=redis://redis:6379/13
+    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+    - CONSTITUTIONAL_AI_URL=http://constitutional_core:8001
+    - INTEGRITY_SERVICE_URL=http://integrity_service:8002
+    - AUTH_SERVICE_URL=http://auth_service:8016
+    - A2A_POLICY_URL=http://a2a_policy_integration:8020
+    - MCP_AGGREGATOR_URL=http://mcp_aggregator:3000
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    - THREAT_DETECTION_ENABLED=true
+    - ZERO_TRUST_ENABLED=true
+    - ML_DETECTION_ENABLED=true
+    - BEHAVIORAL_ANALYSIS_ENABLED=true
+    - AUTO_REMEDIATION_ENABLED=false
+    - COMPLIANCE_MONITORING_ENABLED=true
+    - THREAT_DETECTION_SENSITIVITY=medium
+    - FALSE_POSITIVE_TOLERANCE=0.05
+    - INCIDENT_AUTO_ESCALATION_THRESHOLD=high
+    - RETENTION_PERIOD_DAYS=365
+    - ANONYMIZATION_ENABLED=true
+    - ENCRYPTION_AT_REST=true
+    - ENCRYPTION_IN_TRANSIT=true
+    - AUDIT_ALL_ACCESS=true
+    - MAX_CONCURRENT_SCANS=10
+    - SCAN_THROTTLE_RATE=100
+    working_dir: /app/services/core/security-validation
+    command:
+    - uvicorn
+    - main:app
+    - --host
+    - 0.0.0.0
+    - --port
+    - '8021'
+    ports:
+    - 8021:8021
+    volumes:
+    - acgs_logs:/app/logs
+    - acgs_data:/app/data
+    networks:
+    - acgs_network
+    depends_on:
+      constitutional_core:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      a2a_policy_integration:
+        condition: service_healthy
+    healthcheck:
+      test:
+      - CMD
+      - curl
+      - -f
+      - http://localhost:8021/health
+      - '||'
+      - exit
+      - '1'
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+          cpus: '1.5'
+        reservations:
+          memory: 1.5G
+          cpus: '0.6'
+
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
+# Constitutional Compliance: cdd01ef066bc6cf2
+# Implementation Status: ✅ IMPLEMENTED
+
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
+# Constitutional Compliance: cdd01ef066bc6cf2
+# Implementation Status: 🔄 IN PROGRESS

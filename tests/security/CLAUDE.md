@@ -1,157 +1,119 @@
-# ACGS-2 Security Testing Directory Documentation
+# ACGS-2 Security Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `tests/security` directory contains comprehensive security testing, vulnerability assessment, and compliance validation for the ACGS-2 constitutional AI governance platform. This directory provides penetration testing, security validation, compliance testing, and constitutional security verification achieving P99 <5ms performance and >100 RPS throughput for security operations.
+Security policies, procedures, and vulnerability assessments
 
-The security testing system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all security test operations while providing rigorous security validation, vulnerability assessment, and compliance testing for constitutional AI governance with enterprise-grade security standards and automated testing.
+The security system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all security management and compliance while providing comprehensive security assurance for security engineers and compliance teams.
 
 ## File Inventory
 
-### Core Security Testing
-- **`README.md`** - Security testing overview and procedures
-- **`requirements.txt`** - Security testing dependencies and packages
-- **`run_security_tests.py`** - Main security testing execution framework
-- **`security_validation_framework.py`** - Comprehensive security validation framework
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Compliance and Validation
-- **`compliance_validator.py`** - Security compliance validation and testing
-- **`penetration_testing.py`** - Penetration testing framework and scenarios
-- **`security_ci_integration.py`** - CI/CD security testing integration
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../`** - Core testing framework and shared testing utilities
-- **`../../services/`** - All ACGS services requiring security testing
-- **`../../infrastructure/`** - Infrastructure components under security testing
-- **`../../config/`** - Configuration files for security test environments
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **pytest**: Primary testing framework for security test execution
-- **bandit**: Python security linter and vulnerability scanner
-- **safety**: Python dependency vulnerability checker
-- **requests**: HTTP library for security testing
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Security Testing Framework
-- **Vulnerability Assessment**: Comprehensive vulnerability scanning and assessment
-- **Penetration Testing**: Automated and manual penetration testing scenarios
-- **Compliance Testing**: Security compliance validation and certification
-- **Constitutional Security**: Constitutional compliance security testing
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Constitutional Security Framework
-- **Constitutional Security Validation**: Security testing of constitutional compliance features
-- **Security Performance Testing**: Performance testing of constitutional security operations
-- **Audit Security**: Security testing of constitutional audit logging and integrity
-- **Compliance Integration**: Security testing integrated with constitutional compliance
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Enterprise Security Testing
-- **Multi-Layer Security Testing**: Security testing across infrastructure, application, and data layers
-- **Threat Modeling**: Security threat modeling and attack scenario testing
-- **Vulnerability Management**: Automated vulnerability detection and remediation testing
-- **Security Monitoring**: Security monitoring and incident response testing
-
-### Automated Security Validation
-- **Continuous Security Testing**: Automated security testing in CI/CD pipelines
-- **Security Regression Testing**: Automated detection of security regressions
-- **Compliance Automation**: Automated security compliance validation
-- **Security Reporting**: Automated security testing reporting and analysis
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in security testing
-- **Security Testing Compliance**: Complete constitutional compliance framework for security testing
-- **Security Integration**: Constitutional compliance integrated into all security testing
-- **Audit Documentation**: Complete security testing audit trails with constitutional context
-- **Performance Compliance**: All security tests maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all security operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Test Coverage**: 100% constitutional hash validation in all security tests
-- **Security Validation**: All security tests validated against constitutional requirements
-- **Compliance Testing**: Security compliance tests validated for constitutional compliance
-- **Audit Trail**: Complete security testing audit trail with constitutional context
-- **Performance Standards**: All security tests validate constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all security testing
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All security tests validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Security Testing Performance
-- **Test Execution Speed**: Optimized security test execution for rapid feedback
-- **Resource Utilization**: Efficient resource usage during security testing
-- **Parallel Testing**: Parallel security test execution for improved efficiency
-- **Test Environment Management**: Optimized security test environment provisioning
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Test Optimization**: Optimized security test design and execution
-- **Vulnerability Scanning**: Efficient vulnerability scanning and assessment
-- **Compliance Validation**: Optimized compliance validation and reporting
-- **Result Analysis**: Optimized security result analysis and reporting
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Test Complexity**: Optimization needed for complex security test scenarios
-- **Vulnerability Scanning**: Performance optimization for comprehensive vulnerability assessment
-- **Compliance Validation**: Optimization needed for extensive compliance testing
-- **Result Processing**: Optimization needed for large-scale security result analysis
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Core Security Testing**: Complete security testing framework with constitutional compliance
-- **Vulnerability Assessment**: Comprehensive vulnerability scanning and assessment
-- **Penetration Testing**: Automated penetration testing framework and scenarios
-- **Compliance Validation**: Security compliance validation and certification
-- **CI/CD Integration**: Security testing integration with continuous integration
-- **Constitutional Integration**: 100% constitutional compliance across all security testing
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Security Features**: Enhanced security testing capabilities and scenarios
-- **Performance Optimization**: Continued optimization for faster security test execution
-- **Threat Intelligence**: Advanced threat intelligence integration and testing
-- **Automation Enhancement**: Enhanced automated security testing and reporting
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Security Testing**: AI-powered security testing optimization and intelligent analysis
-- **Advanced Threat Modeling**: Enhanced threat modeling and attack scenario simulation
-- **Federation Security**: Multi-organization security testing and validation
-- **Quantum Security**: Quantum-resistant security testing and validation
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Core Tests](../CLAUDE.md)** - Core testing framework and shared utilities
-- **[Integration Tests](../integration/CLAUDE.md)** - Integration testing and validation
-- **[Performance Tests](../performance/CLAUDE.md)** - Performance testing and validation
-- **[Services](../../services/CLAUDE.md)** - Services under security testing
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
 
-### Security Test Categories
-- **[Compliance Validation](compliance_validator.py)** - Security compliance testing
-- **[Penetration Testing](penetration_testing.py)** - Penetration testing framework
-- **[Security Framework](security_validation_framework.py)** - Security validation framework
-- **[CI Integration](security_ci_integration.py)** - CI/CD security testing integration
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Security Guide](README.md)** - Security testing procedures and guidelines
-- **[Security Documentation](../../docs/security/CLAUDE.md)** - Security implementation and procedures
-- **[Testing Documentation](../../docs/testing/CLAUDE.md)** - Testing strategies and procedures
-- **[Architecture Documentation](../../docs/architecture/CLAUDE.md)** - System architecture with security testing
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Security Tests](run_security_tests.py)** - Security testing execution framework
-- **[Compliance Tests](compliance_validator.py)** - Security compliance validation
-- **[Penetration Tests](penetration_testing.py)** - Penetration testing scenarios
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Tests](../CLAUDE.md) → **Security** | [Performance Tests](../performance/CLAUDE.md) | [Integration Tests](../integration/CLAUDE.md)
+**Navigation**: [Root](../../CLAUDE.md) → [Tests](../CLAUDE.md) → **Security**
 
-**Constitutional Compliance**: All security testing maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All security operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive security testing documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

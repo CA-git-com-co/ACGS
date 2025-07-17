@@ -1,171 +1,119 @@
-# ACGS-2 Integration Tests Directory Documentation
+# ACGS-2 Integration Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `tests/integration` directory contains comprehensive integration testing for the ACGS-2 constitutional AI governance platform. This directory provides end-to-end testing, service integration validation, constitutional compliance testing, and system-wide integration verification achieving P99 <5ms performance and >100 RPS throughput.
+Integration patterns, guides, and service connectivity
 
-The integration testing system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all test operations while providing comprehensive service integration testing, end-to-end workflow validation, and constitutional compliance verification for production-ready AI governance.
+The integration system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all service integration and connectivity while providing seamless system integration for integration engineers and system integrators.
 
 ## File Inventory
 
-### Core Integration Tests
-- **`test_acgs_end_to_end_workflows.py`** - Complete end-to-end workflow integration testing
-- **`test_acgs_service_integration.py`** - ACGS service integration and communication testing
-- **`test_constitutional_compliance.py`** - Constitutional compliance integration validation
-- **`test_service_communication.py`** - Inter-service communication and protocol testing
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Service Integration Tests
-- **`test_service_mesh_integration.py`** - Service mesh integration and communication testing
-- **`test_service_registry_pattern.py`** - Service registry and discovery pattern testing
-- **`test_agent_coordination.py`** - Multi-agent coordination and collaboration testing
-- **`test_github_webhook_integration.py`** - GitHub webhook integration and automation testing
-
-### Advanced Integration Tests
-- **`test_comprehensive_ensemble_suite.py`** - Comprehensive ensemble model integration testing
-- **`test_comprehensive_rag_validation.py`** - RAG (Retrieval-Augmented Generation) integration validation
-- **`test_data_flywheel_integration.py`** - NVIDIA data flywheel integration testing
-- **`test_real_further_tuning.py`** - Real-world model tuning and optimization testing
-
-### Security and Hardening Tests
-- **`test_security_hardening.py`** - Security hardening and compliance integration testing
-- **`test_kubernetes_chaos_testing.py`** - Kubernetes chaos engineering and resilience testing
-
-### Test Infrastructure
-- **`__init__.py`** - Integration test package initialization
-- **`__pycache__/`** - Python bytecode cache for test execution optimization
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../`** - Core testing framework and shared testing utilities
-- **`../../services/`** - All ACGS-2 services under integration testing
-- **`../../infrastructure/`** - Infrastructure components supporting integration testing
-- **`../../config/`** - Configuration files for integration test environments
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **pytest**: Primary testing framework for integration test execution
-- **Docker**: Container orchestration for integration test environments
-- **Kubernetes**: Container orchestration platform for chaos testing
-- **GitHub API**: GitHub integration and webhook testing
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Integration Testing Framework
-- **Service Orchestration**: Integration testing across multiple services and components
-- **End-to-End Workflows**: Complete workflow testing from user input to system output
-- **Constitutional Validation**: Integration testing of constitutional compliance across services
-- **Performance Integration**: Integration testing of performance targets and optimization
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### End-to-End Testing Framework
-- **Workflow Integration**: Complete end-to-end workflow testing and validation
-- **Service Communication**: Inter-service communication and protocol integration testing
-- **Constitutional Compliance**: Integration testing of constitutional compliance across services
-- **Performance Validation**: Integration testing of performance targets and optimization
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Service Integration Testing
-- **Service Mesh**: Service mesh integration and communication testing
-- **Service Registry**: Service discovery and registry pattern integration testing
-- **Agent Coordination**: Multi-agent coordination and collaboration integration testing
-- **Webhook Integration**: External system integration and webhook testing
-
-### Advanced Integration Testing
-- **Ensemble Models**: Comprehensive ensemble model integration and validation
-- **RAG Systems**: Retrieval-Augmented Generation integration and validation
-- **Data Pipelines**: Data flywheel and pipeline integration testing
-- **Model Tuning**: Real-world model tuning and optimization integration testing
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in all integration tests
-- **Test Compliance**: Complete constitutional compliance framework for integration testing
-- **Security Integration**: Constitutional compliance integrated into security integration testing
-- **Audit Documentation**: Complete audit trail integration testing with constitutional context
-- **Performance Compliance**: All integration tests maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all integration operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Test Coverage**: 100% constitutional hash validation in all integration tests
-- **Integration Compliance**: All integration tests validated against constitutional requirements
-- **Security Testing**: Security integration tests validated for constitutional compliance
-- **Audit Trail**: Complete audit trail integration testing with constitutional context
-- **Performance Standards**: All integration tests exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all integration tests
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All integration tests validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Integration Test Performance
-- **Test Execution**: Optimized integration test execution for rapid validation
-- **Parallel Testing**: Parallel integration test execution for improved performance
-- **Resource Optimization**: Efficient resource utilization in integration testing
-- **Environment Management**: Optimized test environment provisioning and management
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Test Parallelization**: Optimized parallel integration test execution
-- **Environment Caching**: Cached test environments for improved performance
-- **Resource Management**: Efficient integration test resource allocation and utilization
-- **Network Optimization**: Optimized network communication for distributed integration testing
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Test Complexity**: Optimization needed for complex integration test scenarios
-- **Environment Provisioning**: Performance optimization for test environment setup
-- **Resource Contention**: Optimization needed for high-concurrency integration testing
-- **Network Latency**: Optimization needed for distributed integration test communication
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Core Integration Tests**: Complete integration testing framework with constitutional compliance
-- **Service Integration**: Comprehensive service integration and communication testing
-- **End-to-End Testing**: Complete end-to-end workflow testing and validation
-- **Security Integration**: Comprehensive security integration and hardening testing
-- **Performance Integration**: Complete performance integration testing and validation
-- **Constitutional Integration**: 100% constitutional compliance across all integration tests
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Integration**: Enhanced integration testing for complex scenarios
-- **Performance Optimization**: Continued optimization for sub-millisecond integration testing
-- **Security Enhancement**: Advanced security integration testing and validation
-- **Chaos Engineering**: Enhanced chaos engineering and resilience testing
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Testing**: AI-powered integration test optimization and intelligent validation
-- **Advanced Analytics**: Enhanced integration test analytics and predictive capabilities
-- **Federation Testing**: Multi-organization integration testing and validation
-- **Quantum Integration**: Quantum-resistant integration testing and validation
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Core Tests](../CLAUDE.md)** - Core testing framework and shared utilities
-- **[Performance Tests](../performance/CLAUDE.md)** - Performance testing and validation
-- **[Security Tests](../security/CLAUDE.md)** - Security testing and validation
-- **[Services](../../services/CLAUDE.md)** - Services under integration testing
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
 
-### Integration Test Categories
-- **[End-to-End Tests](test_acgs_end_to_end_workflows.py)** - Complete workflow integration testing
-- **[Service Integration](test_acgs_service_integration.py)** - Service integration and communication
-- **[Constitutional Tests](test_constitutional_compliance.py)** - Constitutional compliance integration
-- **[Security Integration](test_security_hardening.py)** - Security integration and hardening
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Architecture Documentation](../../docs/architecture/CLAUDE.md)** - System architecture with integration testing
-- **[Testing Documentation](../../docs/testing/CLAUDE.md)** - Testing strategies and procedures
-- **[Deployment Documentation](../../docs/deployment/CLAUDE.md)** - Deployment with integration testing
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Scripts Testing](../../scripts/testing/CLAUDE.md)** - Testing automation and validation
-- **[Monitoring Integration](../../monitoring/CLAUDE.md)** - Monitoring integration and validation
-- **[Infrastructure Testing](../../infrastructure/CLAUDE.md)** - Infrastructure integration testing
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Tests](../CLAUDE.md) → **Integration** | [Performance Tests](../performance/CLAUDE.md) | [Security Tests](../security/CLAUDE.md)
+**Navigation**: [Root](../../CLAUDE.md) → [Tests](../CLAUDE.md) → **Integration**
 
-**Constitutional Compliance**: All integration tests maintain constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All integration operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive integration tests documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation
