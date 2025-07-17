@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import path from "path"
 import fs from "fs/promises"
 import { Global } from "../global"

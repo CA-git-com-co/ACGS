@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 'use strict';
 // tests/quantumagi_core.ts
 // Comprehensive End-to-End Tests for Quantumagi Constitutional Governance Framework

@@ -13,6 +13,8 @@ Key Features:
 - Memory-efficient attention patterns
 - Zero-copy policy compilation
 """
+# Constitutional Hash: cdd01ef066bc6cf2
+
 
 import asyncio
 import json

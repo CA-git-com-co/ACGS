@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import path from "node:path"
 import { Decimal } from "decimal.js"
 import { z, ZodSchema } from "zod"

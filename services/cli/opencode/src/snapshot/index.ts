@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { App } from "../app/app"
 import { $ } from "bun"
 import path from "path"

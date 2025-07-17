@@ -1,0 +1,68 @@
+# Recommendation System Service Dependencies
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Core framework
+fastapi==0.115.6
+uvicorn==0.34.0
+pydantic==2.10.3
+pydantic-settings==2.6.1
+
+# Machine Learning and Recommendations - Updated for 2025
+scikit-learn==1.5.1
+pandas==2.2.2
+numpy==1.26.4
+scipy==1.13.1
+
+# Deep Learning for embeddings - Latest transformers
+torch==2.3.1
+sentence-transformers==3.0.1
+transformers==4.42.0
+
+# Advanced recommendation frameworks
+tensorflow-recommenders==0.7.3
+lightfm==1.17
+
+# Vector database for similarity search - Enhanced
+qdrant-client==1.10.1
+pinecone-client==4.1.0
+
+# Collaborative filtering - Advanced
+surprise==1.1.4
+implicit==0.7.2
+
+# Fairness and bias mitigation
+aif360==0.6.1
+fairlearn==0.10.0
+
+# Time series and sequence modeling
+torch-audiomentations==0.11.1
+pytorch-lightning==2.3.3
+
+# Streaming and real-time processing
+kafka-python==2.0.2
+apache-beam==2.59.0
+
+# Database and storage
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.23
+alembic==1.13.1
+
+# Caching and performance
+redis==5.0.1
+cachetools==5.3.2
+
+# Async and HTTP
+aiohttp==3.12.14
+httpx==0.25.2
+
+# Constitutional compliance
+services-shared @ file:///home/dislove/ACGS-2/services/shared
+
+# Monitoring and logging
+prometheus-client==0.19.0
+structlog==23.2.0
+
+# Testing
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-mock==3.12.0

@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 const anchor = require('@coral-xyz/anchor');
 
 // Optimized Policy Synthesis Engine with four-tier risk strategy

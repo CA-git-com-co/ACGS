@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { OAuthStep, AuthDebuggerState } from "./auth-types";
 import { DebugInspectorOAuthClientProvider } from "./auth";
 import {

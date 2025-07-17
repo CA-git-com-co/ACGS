@@ -16,9 +16,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 sys.path.insert(0, os.path.join(pathlib.Path(__file__).parent, ".."))
 
 # Import the models and database configuration
-from models import Base
-
-from database import DATABASE_URL
+from database import Base, DATABASE_URL
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

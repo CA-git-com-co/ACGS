@@ -1,0 +1,839 @@
+{
+  "summary": {
+    "total_files": 81,
+    "files_with_broken_links": 3,
+    "files_with_valid_links": 78,
+    "link_validity_rate": 98.42022116903634,
+    "navigation_consistency_rate": 100.0,
+    "constitutional_compliance_rate": 100.0,
+    "total_links": 633,
+    "valid_links": 623,
+    "timestamp": "2025-07-17T17:02:11.147451",
+    "constitutional_hash": "cdd01ef066bc6cf2"
+  },
+  "results": [
+    {
+      "file_path": "CLAUDE.md",
+      "total_links": 6,
+      "valid_links": 6,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "deployments/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "web/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "archive/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 5,
+      "broken_links": [
+        "Core -> core/CLAUDE.md",
+        "Platform Services -> platform_services/CLAUDE.md"
+      ],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 71.42857142857143
+    },
+    {
+      "file_path": "docs/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 1,
+      "broken_links": [
+        "API -> api/CLAUDE.md",
+        "Architecture -> architecture/CLAUDE.md",
+        "API Documentation -> api/CLAUDE.md",
+        "Architecture -> architecture/CLAUDE.md",
+        "Development Guide -> development/CLAUDE.md",
+        "Deployment Guide -> deployment/CLAUDE.md"
+      ],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 14.285714285714285
+    },
+    {
+      "file_path": "security/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "claude-code-hooks-mastery/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "training_outputs/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "frontend/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "config/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "tests/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "validation_results/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "reports/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "infrastructure/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 5,
+      "broken_links": [
+        "Docker -> docker/CLAUDE.md",
+        "Kubernetes -> kubernetes/CLAUDE.md"
+      ],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 71.42857142857143
+    },
+    {
+      "file_path": "tools/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "monitoring/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "scripts/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "performance/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "training_data/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "examples/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": ".claude/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "database/CLAUDE.md",
+      "total_links": 7,
+      "valid_links": 7,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "deployments/production/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "web/templates/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/cli/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/contexts/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/blockchain/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/shared/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/platform_services/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/multi_agent_coordinator/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/evolutionary-computation/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/policy-governance/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/formal-verification/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/constitutional-ai/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/core/governance-synthesis/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/blockchain/expert-service/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/platform_services/api_gateway/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "services/platform_services/integrity/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/deployment/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/training/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/performance/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/operations/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/compliance/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/architecture/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/monitoring/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/research/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/workflows/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/reports/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/validation/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/quality/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/security/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/maintenance/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/api/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/development/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/testing/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/standards/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/production/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs/integration/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "tests/security/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "tests/integration/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "tests/performance/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "infrastructure/docker/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "infrastructure/terraform/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "infrastructure/monitoring/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "infrastructure/kubernetes/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "tools/mcp-inspector/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "scripts/development/mcp-inspector/CLAUDE.md",
+      "total_links": 9,
+      "valid_links": 9,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/architecture/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/operations/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/quality/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/deployment/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/development/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/security/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/api/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/testing/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/training/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/performance/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    },
+    {
+      "file_path": "docs_backup_20250717_155154/research/CLAUDE.md",
+      "total_links": 8,
+      "valid_links": 8,
+      "broken_links": [],
+      "missing_references": [],
+      "navigation_consistency": true,
+      "constitutional_compliance": true,
+      "link_validity_rate": 100.0
+    }
+  ]
+}

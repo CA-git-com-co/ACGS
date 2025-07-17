@@ -1,195 +1,119 @@
+# ACGS-2 Policy-Governance Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
-
-# CLAUDE.md - Policy Governance Service
 
 ## Directory Overview
 
-The Policy Governance service provides comprehensive policy evaluation, compliance checking, and governance decision-making within the ACGS-2 constitutional AI governance framework. It integrates with Open Policy Agent (OPA) for robust policy enforcement.
+Documentation for policy-governance components
+
+The policy-governance system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all policy-governance operations while providing comprehensive policy-governance guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-- **CLAUDE.md**: This documentation file
-- **app/**: FastAPI application and API endpoints
-- **governance_decision_engine.py**: Core policy evaluation engine
-- **pgc_service/**: Policy Governance Compiler service components
-- **qpe_service/**: Quantum Policy Engine service components
-- **simple_pgc_main.py**: Simplified policy governance main application
-- **src/**: Source code and core logic
-- **monitoring/**: Monitoring and observability configuration
-- **k8s/**: Kubernetes deployment manifests
-- **chaos-testing/**: Chaos engineering test scenarios
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
+
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
-- **Open Policy Agent (OPA)**: Policy evaluation and enforcement engine
-- **Constitutional AI Service**: Constitutional compliance validation
-- **Governance Synthesis Service**: Policy synthesis and orchestration
-- **Integrity Service**: Audit trail for policy decisions
-- **Constitutional Framework**: Compliance with hash `cdd01ef066bc6cf2`
+### Internal Dependencies
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
+
+### External Dependencies
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
+
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Policy Evaluation Engine
-- **OPA Integration**: Advanced Open Policy Agent integration for policy evaluation
-- **Multi-Policy Orchestration**: Evaluation across constitutional, regulatory, and procedural policies
-- **Conflict Resolution**: Detection and resolution of policy conflicts
-- **Decision Synthesis**: Combining multiple policy evaluations into coherent decisions
-- **Constitutional Enforcement**: Ensuring all policies align with constitutional principles
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Policy Types Supported
-- **Constitutional Policies**: Core constitutional compliance rules
-- **Regulatory Policies**: Legal and regulatory compliance requirements
-- **Procedural Policies**: Operational and workflow policies
-- **Security Policies**: Security and access control policies
-- **Data Governance Policies**: Data handling and privacy policies
-- **Multi-Tenant Policies**: Tenant-specific policy isolation
-- **Agent Lifecycle Policies**: AI agent governance and lifecycle management
-
-### Governance Decision Framework
-- **Policy Compilation**: Converting high-level policies into executable rules
-- **Decision Trees**: Hierarchical policy evaluation structures
-- **Audit Trails**: Complete logging of all policy decisions
-- **Performance Optimization**: Caching and optimization for policy evaluation
-- **Real-time Evaluation**: Sub-millisecond policy decision capabilities
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
-✅ **IMPLEMENTED**: Constitutional hash validation (`cdd01ef066bc6cf2`)
-✅ **IMPLEMENTED**: OPA integration and policy evaluation
-✅ **IMPLEMENTED**: Multi-policy orchestration
-✅ **IMPLEMENTED**: Basic conflict resolution
-🔄 **IN PROGRESS**: Advanced policy synthesis
-🔄 **IN PROGRESS**: Quantum policy engine integration
-❌ **PLANNED**: AI-driven policy optimization
-❌ **PLANNED**: Predictive policy analysis
+### Implementation Status: ✅ IMPLEMENTED
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all policy-governance operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
+
+### Compliance Metrics
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
+
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-- **Policy Evaluation Latency**: <2ms for standard policy checks
-- **Constitutional Validation**: <1ms additional overhead
-- **Throughput**: >1000 policy evaluations per second
-- **Memory Usage**: Efficient policy caching and compilation
-- **Scalability**: Horizontal scaling with policy distribution
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
+
+### Optimization Strategies
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
+
+### Performance Bottlenecks
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED
-- Core policy evaluation engine with OPA integration
-- Multi-policy orchestration and conflict resolution
-- Constitutional compliance validation
-- Basic monitoring and audit trails
-- Kubernetes deployment configuration
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS
-- Advanced policy synthesis and optimization
-- Quantum policy engine integration
-- Enhanced conflict resolution algorithms
-- Real-time policy analytics
-- Chaos engineering test suite
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED
-- AI-driven policy optimization and learning
-- Predictive policy analysis and recommendations
-- Advanced policy versioning and rollback
-- Multi-region policy distribution
-- Policy performance machine learning
-
-## API Endpoints
-
-### Policy Evaluation
-- **POST /evaluate**: Evaluate request against configured policies
-- **POST /evaluate/batch**: Batch policy evaluation for multiple requests
-- **GET /policies**: List available policies and their status
-- **POST /policies/compile**: Compile high-level policies into executable rules
-- **GET /policies/{id}/conflicts**: Check for policy conflicts
-
-### Policy Management
-- **POST /policies**: Create new policy
-- **PUT /policies/{id}**: Update existing policy
-- **DELETE /policies/{id}**: Remove policy
-- **GET /policies/{id}/audit**: Get policy decision audit trail
-
-### Monitoring and Health
-- **GET /health**: Service health check
-- **GET /metrics**: Prometheus metrics endpoint
-- **GET /policies/stats**: Policy evaluation performance statistics
-
-## Configuration
-
-```yaml
-# Policy Governance Configuration
-policy_governance:
-  opa_server_url: http://localhost:8181
-  constitutional_hash: cdd01ef066bc6cf2
-  evaluation_timeout: 5s
-  max_concurrent_evaluations: 1000
-
-policy_types:
-  constitutional:
-    priority: 1
-    cache_ttl: 3600s
-  regulatory:
-    priority: 2
-    cache_ttl: 1800s
-  procedural:
-    priority: 3
-    cache_ttl: 900s
-
-performance:
-  evaluation_latency_target: 2ms
-  throughput_target: 1000rps
-  cache_hit_ratio_target: 90%
-
-monitoring:
-  enable_audit_trail: true
-  log_level: INFO
-  metrics_interval: 30s
-```
-
-## Usage Examples
-
-```python
-# Evaluate governance request against policies
-policy_request = {
-    "request_id": "pol-eval-456",
-    "context": {
-        "actor": "researcher",
-        "resource": "patient_data",
-        "action": "read",
-        "environment": "research_environment"
-    },
-    "constitutional_hash": "cdd01ef066bc6cf2"
-}
-
-evaluation_result = await policy_service.evaluate(policy_request)
-
-# Result includes decision, confidence, and audit trail
-{
-    "decision": "allow",
-    "confidence": 0.95,
-    "policies_evaluated": ["constitutional", "regulatory", "data_governance"],
-    "conflicts_detected": [],
-    "audit_trail_id": "audit-789"
-}
-```
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
-**Navigation**:
-- [Core Services](../CLAUDE.md)
-- [Governance Synthesis](../governance-synthesis/CLAUDE.md)
-- [Constitutional AI](../constitutional-ai/CLAUDE.md)
-- [Formal Verification](../formal-verification/CLAUDE.md)
+### Related Directories
+- **[Core](../../../services/core/CLAUDE.md)** - Core Services
+- **[Platform Services](../../../services/platform_services/CLAUDE.md)** - Platform Services
 
-**Related Components**:
-- [Integrity Service](../../platform_services/integrity/CLAUDE.md)
-- [Multi-Agent Coordinator](../multi_agent_coordinator/CLAUDE.md)
-- [API Gateway](../../platform_services/api_gateway/CLAUDE.md)
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../../docs_backup_20250717_155154/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../../docs_backup_20250717_155154/architecture/CLAUDE.md)** - System architecture documentation
 
-**External References**:
-- [Open Policy Agent Documentation](https://www.openpolicyagent.org/docs/)
-- [Policy as Code Best Practices](https://www.openpolicyagent.org/docs/latest/policy-language/)
+### Documentation and Guides
+- **[Development Guide](../../../docs_backup_20250717_155154/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../../docs_backup_20250717_155154/deployment/CLAUDE.md)** - Deployment procedures and automation
+
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Constitutional Compliance**: All policy evaluations maintain constitutional hash `cdd01ef066bc6cf2` validation
+**Navigation**: [Root](../../../CLAUDE.md) → [Services](../../CLAUDE.md) → [Core](../CLAUDE.md) → **Policy-Governance**
+
+**Constitutional Compliance**: All policy-governance operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
+
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

@@ -98,6 +98,18 @@ The {DIRECTORY_NAME_LOWER} system maintains constitutional hash `cdd01ef066bc6cf
 - **[{DOC_GUIDE_1}](../docs/{DOC_GUIDE_1_PATH}/claude.md)** - {DOC_GUIDE_1_DESCRIPTION}
 - **[{DOC_GUIDE_2}](../docs/{DOC_GUIDE_2_PATH}/claude.md)** - {DOC_GUIDE_2_DESCRIPTION}
 
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
+
 ---
 
 **Navigation**: [Root](../claude.md) → **{DIRECTORY_NAME}** | [{BREADCRUMB_1}](../{BREADCRUMB_1_PATH}/claude.md) | [{BREADCRUMB_2}](../{BREADCRUMB_2_PATH}/claude.md) | [{BREADCRUMB_3}](../{BREADCRUMB_3_PATH}/claude.md)

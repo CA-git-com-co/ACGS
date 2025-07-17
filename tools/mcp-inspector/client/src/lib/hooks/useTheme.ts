@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Theme = "light" | "dark" | "system";

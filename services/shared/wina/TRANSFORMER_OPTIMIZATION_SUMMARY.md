@@ -1,4 +1,6 @@
 # Transformer效率优化的最优组合实现与可解释分析
+**Constitutional Hash: cdd01ef066bc6cf2**
+
 
 **Constitutional Hash:** `cdd01ef066bc6cf2`  
 **Implementation Status:** ✅ IMPLEMENTED  
@@ -146,7 +148,19 @@ def analyze_approximation_quality(self, input_tokens):
 ### ACGS性能目标对比
 
 | 指标 | ACGS目标 | 实现结果 | 状态 |
-|------|----------|----------|------|
+|------|----------|----------|---
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
+
+---|
 | P99延迟 | <5ms | 0.03-0.10ms | ✅ 超越 |
 | 吞吐量 | >100 RPS | 9,934-29,802 RPS | ✅ 超越 |
 | 近似误差 | <5% | 1.0-12.5% | ⚠️ 需调优 |

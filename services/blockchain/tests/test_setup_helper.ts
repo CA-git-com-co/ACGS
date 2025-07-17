@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 // ACGS-1 Test Infrastructure Helper
 // Implements governance specialist protocol v2.0 requirements
 // requires: Unique governance accounts per test suite

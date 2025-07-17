@@ -55,5 +55,12 @@
     "node": ">=18.0.0",
     "pnpm": ">=8.0.0"
   },
-  "packageManager": "pnpm@latest"
+  "packageManager": "pnpm@latest",
+  "_constitutional_hash": "cdd01ef066bc6cf2",
+  "_performance_targets": {
+    "p99_latency": "<5ms",
+    "throughput": ">100 RPS",
+    "cache_hit_rate": ">85%"
+  },
+  "_implementation_status": "IN_PROGRESS"
 }

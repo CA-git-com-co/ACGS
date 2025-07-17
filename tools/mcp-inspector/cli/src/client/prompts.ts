@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { McpResponse } from "./types.js";
 

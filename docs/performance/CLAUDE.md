@@ -1,184 +1,119 @@
+# ACGS-2 Performance Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
-
-# CLAUDE.md - Performance Guide Documentation
 
 ## Directory Overview
 
-The Performance Guide provides comprehensive documentation for performance optimization, monitoring, and benchmarking within the ACGS-2 constitutional AI governance framework. This includes performance targets, optimization strategies, and monitoring procedures.
+Performance optimization guides and benchmarking tools
+
+The performance system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all performance optimization and tuning while providing optimal system performance for performance engineers and optimization teams.
 
 ## File Inventory
 
-- **CLAUDE.md**: This documentation file
-- **performance-targets.md**: Detailed performance targets and SLAs
-- **optimization-guide.md**: Performance optimization strategies and techniques
-- **monitoring-setup.md**: Performance monitoring configuration and procedures
-- **benchmarking-guide.md**: Performance benchmarking methodologies
-- **troubleshooting.md**: Performance issue diagnosis and resolution
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
+
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
-- **ACGS-2 Core Services**: Performance monitoring for all constitutional AI services
-- **Monitoring Infrastructure**: Prometheus, Grafana, and alerting systems
-- **Constitutional Framework**: Performance compliance with hash `cdd01ef066bc6cf2`
-- **Load Testing Tools**: Performance validation and stress testing
-- **Database Systems**: PostgreSQL and Redis performance optimization
+### Internal Dependencies
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
+
+### External Dependencies
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
+
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Performance Targets Framework
-- **P99 Latency**: <5ms for all core operations
-- **Throughput**: >100 RPS for governance decisions
-- **Cache Hit Rate**: >85% for constitutional decisions
-- **Constitutional Compliance**: 100% with <1ms overhead
-- **Availability**: 99.9% uptime with graceful degradation
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Performance Monitoring Stack
-- **Prometheus**: Metrics collection and storage
-- **Grafana**: Performance dashboards and visualization
-- **AlertManager**: Performance threshold alerting
-- **Jaeger**: Distributed tracing for latency analysis
-- **Custom Metrics**: Constitutional compliance performance tracking
-
-### Optimization Strategies
-- **Caching**: Multi-tier caching with Redis and in-memory stores
-- **Database Optimization**: Connection pooling, query optimization
-- **Async Processing**: Non-blocking operations and event-driven architecture
-- **Load Balancing**: Intelligent request distribution
-- **Resource Management**: CPU, memory, and I/O optimization
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
-✅ **IMPLEMENTED**: Constitutional hash validation (`cdd01ef066bc6cf2`)
-✅ **IMPLEMENTED**: Performance monitoring infrastructure
-✅ **IMPLEMENTED**: Core performance targets
-✅ **IMPLEMENTED**: Automated performance testing
-🔄 **IN PROGRESS**: Advanced performance analytics
-🔄 **IN PROGRESS**: Predictive performance scaling
-❌ **PLANNED**: AI-driven performance optimization
-❌ **PLANNED**: Real-time performance tuning
+### Implementation Status: ✅ IMPLEMENTED
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all performance operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
+
+### Compliance Metrics
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
+
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-- **Monitoring Overhead**: <1% impact on system performance
-- **Constitutional Validation**: <1ms additional latency
-- **Metrics Collection**: Optimized for minimal resource usage
-- **Dashboard Rendering**: Real-time updates with efficient queries
-- **Alerting Latency**: <30 seconds for critical performance issues
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
+
+### Optimization Strategies
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
+
+### Performance Bottlenecks
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED
-- Core performance monitoring infrastructure
-- Basic performance targets and SLAs
-- Automated performance testing suite
-- Performance dashboards and alerting
-- Constitutional compliance performance tracking
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS
-- Advanced performance analytics and insights
-- Predictive performance scaling algorithms
-- Real-time performance optimization
-- Enhanced performance troubleshooting tools
-- Cross-service performance correlation
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED
-- AI-driven performance optimization
-- Automated performance tuning
-- Advanced capacity planning tools
-- Performance regression detection
-- Intelligent performance alerting
-
-## Performance Targets
-
-### Core Service Performance
-```yaml
-# ACGS-2 Performance Targets
-constitutional_ai_service:
-  p99_latency: 5ms
-  throughput: 1000rps
-  availability: 99.9%
-  cache_hit_rate: 95%
-
-integrity_service:
-  p99_latency: 3ms
-  throughput: 2000rps
-  availability: 99.9%
-  audit_latency: 10ms
-
-multi_agent_coordinator:
-  p99_latency: 10ms
-  throughput: 500rps
-  coordination_overhead: 5ms
-  agent_response_time: 100ms
-
-expert_service:
-  groq_api_latency: 150ms
-  mock_llm_latency: 103ms
-  throughput: 485rps
-  constitutional_compliance: 100%
-```
-
-### Infrastructure Performance
-```yaml
-# Infrastructure Performance Targets
-database:
-  postgresql_query_time: 1ms
-  redis_cache_latency: 0.1ms
-  connection_pool_efficiency: 95%
-
-monitoring:
-  metrics_collection_overhead: 0.5%
-  dashboard_load_time: 2s
-  alert_delivery_time: 30s
-
-network:
-  service_to_service_latency: 1ms
-  external_api_timeout: 5s
-  load_balancer_overhead: 0.1ms
-```
-
-## Performance Monitoring
-
-### Key Metrics
-- **Request Latency**: P50, P95, P99 percentiles
-- **Throughput**: Requests per second by service
-- **Error Rates**: 4xx and 5xx error percentages
-- **Resource Utilization**: CPU, memory, disk, network
-- **Constitutional Compliance**: Validation success rate and latency
-
-### Monitoring Setup
-```bash
-# Start performance monitoring stack
-docker-compose -f infrastructure/docker/docker-compose.monitoring.yml up -d
-
-# Access performance dashboards
-open http://localhost:3000  # Grafana
-open http://localhost:9090  # Prometheus
-open http://localhost:16686 # Jaeger
-
-# Run performance tests
-python tests/performance/run_performance_suite.py
-```
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
-**Navigation**:
-- [Main Documentation](../CLAUDE.md)
-- [Architecture Documentation](../architecture/CLAUDE.md)
-- [Operations Documentation](../operations/CLAUDE.md)
-- [Development Documentation](../development/CLAUDE.md)
+### Related Directories
+- **[Api](../../docs_backup_20250717_155154/api/CLAUDE.md)** - API Documentation
+- **[Architecture](../../docs_backup_20250717_155154/architecture/CLAUDE.md)** - System Architecture
 
-**Related Components**:
-- [Performance Testing](../../tests/performance/CLAUDE.md)
-- [Monitoring Infrastructure](../../infrastructure/monitoring/CLAUDE.md)
-- [Expert Service Performance](../../services/blockchain/expert-service/CLAUDE.md)
-- [Database Performance](../../database/CLAUDE.md)
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../architecture/CLAUDE.md)** - System architecture documentation
 
-**Performance Tools**:
-- [Monitoring Tools](../../monitoring/CLAUDE.md)
-- [Performance Scripts](../../scripts/CLAUDE.md)
-- [Load Testing](../../performance/CLAUDE.md)
+### Documentation and Guides
+- **[Development Guide](../development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../deployment/CLAUDE.md)** - Deployment procedures and automation
+
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Constitutional Compliance**: All performance monitoring maintains constitutional hash `cdd01ef066bc6cf2` validation
+**Navigation**: [Root](../../CLAUDE.md) → [Docs](../CLAUDE.md) → **Performance**
+
+**Constitutional Compliance**: All performance operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
+
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

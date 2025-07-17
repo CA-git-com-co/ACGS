@@ -16,7 +16,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # revision identifiers, used by Alembic.
 revision = "006_add_mab_optimization_tables"
-down_revision = "005_fix_refresh_token_length"
+down_revision = "006_add_wina_constitutional_updates"
 branch_labels = None
 depends_on = None
 

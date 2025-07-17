@@ -1,0 +1,50 @@
+from graphviz import Digraph
+
+# Create a new directed graph
+graph = Digraph(comment="Production Architecture")
+
+graph.attr("node", shape="box", style="filled", fillcolor="#e1f5fe", color="#0277bd")
+graph.node("CAI", "Constitutional AI Service\n:8001")
+graph.node("IS", "Integrity Service\n:8002")
+
+graph.attr("node", shape="box", style="filled", fillcolor="#f3e5f5", color="#7b1fa2")
+graph.node("MAC", "Multi-Agent Coordinator\n:8008")
+graph.node("WA1", "Worker Agent 1\n:8009")
+graph.node("WA2", "Worker Agent 2\n:8009")
+graph.node("WAN", "Worker Agent N\n:8009")
+
+graph.attr("node", shape="box", style="filled", fillcolor="#e8f5e8", color="#2e7d32")
+graph.node("BB", "Blackboard Service\n:8010")
+graph.node("AuditDB", "Audit Database")
+
+graph.attr("node", shape="box", style="filled", fillcolor="#fff3e0", color="#ef6c00")
+graph.node("Client", "Client Request")
+graph.node("Gateway", "API Gateway")
+graph.node("MCP", "MCP Aggregator\n:3000")
+graph.node("Tools", "External Tools\nContext7, Sequential, etc.")
+
+graph.edge("Client", "Gateway")
+graph.edge("Gateway", "CAI")
+graph.edge("CAI", "MAC", label="Constitutional Hash\ncdd01ef066bc6cf2")
+graph.edge("CAI", "IS", label="Compliance Validation")
+graph.edge("MAC", "WA1", label="Task Assignment\n+ Hash Validation")
+graph.edge("MAC", "WA2", label="Task Assignment\n+ Hash Validation")
+graph.edge("MAC", "WAN", label="Task Assignment\n+ Hash Validation")
+graph.edge("WA1", "BB", label="Knowledge Sharing\n+ Compliance Check")
+graph.edge("WA2", "BB", label="Knowledge Sharing\n+ Compliance Check")
+graph.edge("WAN", "BB", label="Knowledge Sharing\n+ Compliance Check")
+graph.edge("MAC", "BB", label="State Management\n+ Hash Validation")
+graph.edge("WA1", "IS", label="Compliance Report")
+graph.edge("WA2", "IS", label="Compliance Report")
+graph.edge("WAN", "IS", label="Compliance Report")
+graph.edge("IS", "AuditDB", label="Audit Log")
+graph.edge("BB", "AuditDB", label="Knowledge Log")
+graph.edge("MCP", "CAI")
+graph.edge("MCP", "MAC")
+graph.edge("Tools", "MCP")
+graph.edge("MAC", "CAI", label="Aggregated Response\n+ Hash Validation")
+graph.edge("CAI", "Gateway", label="Constitutional Response")
+graph.edge("Gateway", "Client")
+
+graph.render("figures/production_architecture", format="svg", cleanup=True)
+graph.render("figures/production_architecture", format="pdf", cleanup=True)

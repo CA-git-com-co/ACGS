@@ -1,0 +1,397 @@
+name: ACGS-2 Automated Documentation Maintenance
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  schedule:
+    # Weekly maintenance on Sundays at 3 AM UTC
+    - cron: '0 3 * * 0'
+    # Monthly comprehensive maintenance on 1st of month at 4 AM UTC
+    - cron: '0 4 1 * *'
+  workflow_dispatch:
+    inputs:
+      maintenance_type:
+        description: 'Maintenance Type'
+        required: true
+        default: 'standard'
+        type: choice
+        options:
+          - standard
+          - comprehensive
+          - emergency-fix
+      auto_commit:
+        description: 'Auto-commit fixes'
+        required: true
+        default: false
+        type: boolean
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  PYTHON_VERSION: '3.11'
+  MAINTENANCE_BRANCH: 'automated-maintenance'
+
+jobs:
+  link-maintenance:
+    name: Automated Link Maintenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Create Maintenance Branch
+      if: github.event.inputs.auto_commit == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git checkout -b ${{ env.MAINTENANCE_BRANCH }}-$(date +%Y%m%d)
+    
+    - name: Run Link Validation and Fixes
+      id: link-fixes
+      run: |
+        echo "🔗 Running automated link maintenance..."
+        
+        # Run cross-reference validation
+        python scripts/validation/claude_md_cross_reference_validator.py . > link_validation_before.txt
+        VALIDITY_BEFORE=$(grep "Link validity:" link_validation_before.txt | grep -o '[0-9.]*%' | head -1)
+        echo "Link validity before fixes: $VALIDITY_BEFORE"
+        
+        # Apply advanced link fixes
+        python scripts/enhancement/advanced_link_fixer.py > link_fixes.log 2>&1
+        
+        # Run validation again
+        python scripts/validation/claude_md_cross_reference_validator.py . > link_validation_after.txt
+        VALIDITY_AFTER=$(grep "Link validity:" link_validation_after.txt | grep -o '[0-9.]*%' | head -1)
+        echo "Link validity after fixes: $VALIDITY_AFTER"
+        
+        # Calculate improvement
+        BEFORE_NUM=$(echo $VALIDITY_BEFORE | sed 's/%//')
+        AFTER_NUM=$(echo $VALIDITY_AFTER | sed 's/%//')
+        IMPROVEMENT=$(echo "$AFTER_NUM - $BEFORE_NUM" | bc -l)
+        
+        echo "validity_before=${VALIDITY_BEFORE}" >> $GITHUB_OUTPUT
+        echo "validity_after=${VALIDITY_AFTER}" >> $GITHUB_OUTPUT
+        echo "improvement=${IMPROVEMENT}" >> $GITHUB_OUTPUT
+        
+        if (( $(echo "$IMPROVEMENT > 0" | bc -l) )); then
+          echo "✅ Link maintenance improved validity by ${IMPROVEMENT}%"
+          echo "fixes_applied=true" >> $GITHUB_OUTPUT
+        else
+          echo "ℹ️ No link improvements needed"
+          echo "fixes_applied=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Link Maintenance Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: link-maintenance-report
+        path: |
+          link_validation_*.txt
+          link_fixes.log
+        retention-days: 30
+
+  compliance-maintenance:
+    name: Constitutional Compliance Maintenance
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Run Compliance Enhancement
+      id: compliance-fixes
+      run: |
+        echo "🛡️ Running constitutional compliance maintenance..."
+        
+        # Run compliance validation before
+        python scripts/reorganization/constitutional_compliance_validator.py > compliance_before.txt
+        COMPLIANCE_BEFORE=$(grep "Overall compliance:" compliance_before.txt | grep -o '[0-9.]*%' | head -1)
+        echo "Compliance before enhancement: $COMPLIANCE_BEFORE"
+        
+        # Apply compliance enhancements
+        python scripts/enhancement/constitutional_compliance_enhancer.py > compliance_fixes.log 2>&1
+        
+        # Run validation after
+        python scripts/reorganization/constitutional_compliance_validator.py > compliance_after.txt
+        COMPLIANCE_AFTER=$(grep "Overall compliance:" compliance_after.txt | grep -o '[0-9.]*%' | head -1)
+        echo "Compliance after enhancement: $COMPLIANCE_AFTER"
+        
+        # Calculate improvement
+        BEFORE_NUM=$(echo $COMPLIANCE_BEFORE | sed 's/%//')
+        AFTER_NUM=$(echo $COMPLIANCE_AFTER | sed 's/%//')
+        IMPROVEMENT=$(echo "$AFTER_NUM - $BEFORE_NUM" | bc -l)
+        
+        echo "compliance_before=${COMPLIANCE_BEFORE}" >> $GITHUB_OUTPUT
+        echo "compliance_after=${COMPLIANCE_AFTER}" >> $GITHUB_OUTPUT
+        echo "improvement=${IMPROVEMENT}" >> $GITHUB_OUTPUT
+        
+        if (( $(echo "$IMPROVEMENT > 1.0" | bc -l) )); then
+          echo "✅ Compliance maintenance improved by ${IMPROVEMENT}%"
+          echo "fixes_applied=true" >> $GITHUB_OUTPUT
+        else
+          echo "ℹ️ No significant compliance improvements needed"
+          echo "fixes_applied=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Compliance Maintenance Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: compliance-maintenance-report
+        path: |
+          compliance_*.txt
+          compliance_fixes.log
+          reports/constitutional_compliance_report_*.json
+        retention-days: 30
+
+  documentation-cleanup:
+    name: Documentation Cleanup and Optimization
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Clean Up Documentation
+      id: cleanup
+      run: |
+        echo "🧹 Running documentation cleanup..."
+        
+        CHANGES_MADE=0
+        
+        # Remove trailing whitespace from markdown files
+        echo "Removing trailing whitespace..."
+        find docs/ -name "*.md" -type f -exec sed -i 's/[[:space:]]*$//' {} \;
+        
+        # Fix common markdown formatting issues
+        echo "Fixing markdown formatting..."
+        find docs/ -name "*.md" -type f -exec sed -i 's/\t/    /g' {} \;  # Convert tabs to spaces
+        
+        # Ensure constitutional hash is properly formatted
+        echo "Standardizing constitutional hash format..."
+        find docs/ -name "*.md" -type f -exec sed -i "s/constitutional hash: $CONSTITUTIONAL_HASH/Constitutional Hash: $CONSTITUTIONAL_HASH/gi" {} \;
+        find docs/ -name "*.md" -type f -exec sed -i "s/hash: $CONSTITUTIONAL_HASH/Constitutional Hash: $CONSTITUTIONAL_HASH/gi" {} \;
+        
+        # Check if any changes were made
+        if ! git diff --quiet; then
+          CHANGES_MADE=1
+          echo "✅ Documentation cleanup applied changes"
+          echo "changes_made=true" >> $GITHUB_OUTPUT
+        else
+          echo "ℹ️ No cleanup changes needed"
+          echo "changes_made=false" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Validate Documentation Structure
+      run: |
+        echo "📋 Validating documentation structure..."
+        
+        # Check for required CLAUDE.md files
+        MISSING_CLAUDE=0
+        for dir in docs/*/; do
+          if [ -d "$dir" ] && [ ! -f "${dir}CLAUDE.md" ]; then
+            echo "⚠️ Missing CLAUDE.md in $dir"
+            MISSING_CLAUDE=$((MISSING_CLAUDE + 1))
+          fi
+        done
+        
+        if [ $MISSING_CLAUDE -eq 0 ]; then
+          echo "✅ All directories have CLAUDE.md files"
+        else
+          echo "⚠️ $MISSING_CLAUDE directories missing CLAUDE.md files"
+        fi
+
+  performance-monitoring:
+    name: Performance Targets Monitoring
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Monitor Performance Documentation
+      run: |
+        echo "⚡ Monitoring performance targets documentation..."
+        
+        # Count performance target mentions
+        P99_MENTIONS=$(grep -r "P99.*5ms" docs/ --include="*.md" | wc -l)
+        RPS_MENTIONS=$(grep -r "100.*RPS" docs/ --include="*.md" | wc -l)
+        CACHE_MENTIONS=$(grep -r "85%.*cache" docs/ --include="*.md" | wc -l)
+        
+        echo "Performance target mentions:"
+        echo "  P99 <5ms: $P99_MENTIONS"
+        echo "  >100 RPS: $RPS_MENTIONS"
+        echo "  >85% cache: $CACHE_MENTIONS"
+        
+        # Generate performance monitoring report
+        cat > performance_monitoring.md << EOF
+        # Performance Targets Monitoring Report
+        
+        **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+        **Constitutional Hash**: \`$CONSTITUTIONAL_HASH\`
+        
+        ## Performance Target Documentation Coverage
+        
+        | Target | Mentions | Status |
+        |--------|----------|--------|
+        | P99 <5ms | $P99_MENTIONS | $([ $P99_MENTIONS -ge 10 ] && echo "✅ Good" || echo "⚠️ Needs improvement") |
+        | >100 RPS | $RPS_MENTIONS | $([ $RPS_MENTIONS -ge 10 ] && echo "✅ Good" || echo "⚠️ Needs improvement") |
+        | >85% cache | $CACHE_MENTIONS | $([ $CACHE_MENTIONS -ge 10 ] && echo "✅ Good" || echo "⚠️ Needs improvement") |
+        
+        ## Recommendations
+        
+        - Ensure all service documentation includes performance targets
+        - Add performance sections to API documentation
+        - Include benchmarking results in deployment guides
+        EOF
+    
+    - name: Upload Performance Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-monitoring-report
+        path: performance_monitoring.md
+        retention-days: 30
+
+  commit-changes:
+    name: Commit Maintenance Changes
+    runs-on: ubuntu-latest
+    needs: [link-maintenance, compliance-maintenance, documentation-cleanup]
+    if: |
+      always() && 
+      github.event.inputs.auto_commit == 'true' && 
+      (needs.link-maintenance.outputs.fixes_applied == 'true' || 
+       needs.compliance-maintenance.outputs.fixes_applied == 'true' || 
+       needs.documentation-cleanup.outputs.changes_made == 'true')
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Apply All Maintenance Fixes
+      run: |
+        echo "🔧 Applying all maintenance fixes..."
+        
+        # Re-run all maintenance scripts
+        python scripts/enhancement/advanced_link_fixer.py
+        python scripts/enhancement/constitutional_compliance_enhancer.py
+        
+        # Clean up documentation
+        find docs/ -name "*.md" -type f -exec sed -i 's/[[:space:]]*$//' {} \;
+        find docs/ -name "*.md" -type f -exec sed -i 's/\t/    /g' {} \;
+    
+    - name: Commit and Push Changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "ACGS-2 Automated Maintenance"
+        
+        git add .
+        git commit -m "🤖 Automated maintenance: constitutional compliance and link fixes
+        
+        Constitutional Hash: $CONSTITUTIONAL_HASH
+        
+        - Applied link validation and fixes
+        - Enhanced constitutional compliance
+        - Cleaned up documentation formatting
+        - Maintained performance targets documentation
+        
+        Auto-generated by GitHub Actions"
+        
+        git push origin HEAD
+
+  generate-maintenance-summary:
+    name: Generate Maintenance Summary
+    runs-on: ubuntu-latest
+    needs: [link-maintenance, compliance-maintenance, documentation-cleanup, performance-monitoring]
+    if: always()
+    
+    steps:
+    - name: Download All Reports
+      uses: actions/download-artifact@v3
+    
+    - name: Generate Summary
+      run: |
+        echo "# ACGS-2 Automated Maintenance Summary" > maintenance_summary.md
+        echo "**Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> maintenance_summary.md
+        echo "**Constitutional Hash**: \`$CONSTITUTIONAL_HASH\`" >> maintenance_summary.md
+        echo "" >> maintenance_summary.md
+        
+        echo "## Maintenance Results" >> maintenance_summary.md
+        echo "" >> maintenance_summary.md
+        
+        # Link maintenance results
+        if [ "${{ needs.link-maintenance.result }}" = "success" ]; then
+          echo "✅ **Link Maintenance**: Completed successfully" >> maintenance_summary.md
+          if [ "${{ needs.link-maintenance.outputs.fixes_applied }}" = "true" ]; then
+            echo "  - Improved validity from ${{ needs.link-maintenance.outputs.validity_before }} to ${{ needs.link-maintenance.outputs.validity_after }}" >> maintenance_summary.md
+          fi
+        else
+          echo "❌ **Link Maintenance**: Failed or skipped" >> maintenance_summary.md
+        fi
+        
+        # Compliance maintenance results
+        if [ "${{ needs.compliance-maintenance.result }}" = "success" ]; then
+          echo "✅ **Compliance Maintenance**: Completed successfully" >> maintenance_summary.md
+          if [ "${{ needs.compliance-maintenance.outputs.fixes_applied }}" = "true" ]; then
+            echo "  - Improved compliance from ${{ needs.compliance-maintenance.outputs.compliance_before }} to ${{ needs.compliance-maintenance.outputs.compliance_after }}" >> maintenance_summary.md
+          fi
+        else
+          echo "❌ **Compliance Maintenance**: Failed or skipped" >> maintenance_summary.md
+        fi
+        
+        # Documentation cleanup results
+        if [ "${{ needs.documentation-cleanup.result }}" = "success" ]; then
+          echo "✅ **Documentation Cleanup**: Completed successfully" >> maintenance_summary.md
+        else
+          echo "❌ **Documentation Cleanup**: Failed or skipped" >> maintenance_summary.md
+        fi
+        
+        # Performance monitoring results
+        if [ "${{ needs.performance-monitoring.result }}" = "success" ]; then
+          echo "✅ **Performance Monitoring**: Completed successfully" >> maintenance_summary.md
+        else
+          echo "❌ **Performance Monitoring**: Failed or skipped" >> maintenance_summary.md
+        fi
+        
+        echo "" >> maintenance_summary.md
+        echo "## Next Scheduled Maintenance" >> maintenance_summary.md
+        echo "- **Weekly**: Every Sunday at 3 AM UTC" >> maintenance_summary.md
+        echo "- **Monthly**: 1st of each month at 4 AM UTC" >> maintenance_summary.md
+        echo "- **Manual**: Available via workflow dispatch" >> maintenance_summary.md
+        
+        cat maintenance_summary.md
+    
+    - name: Upload Maintenance Summary
+      uses: actions/upload-artifact@v3
+      with:
+        name: maintenance-summary
+        path: maintenance_summary.md
+        retention-days: 90

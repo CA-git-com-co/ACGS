@@ -1,0 +1,25 @@
+{
+  "service": [
+    "api-gateway",
+    "auth-service",
+    "integrity-service",
+    "ac-service",
+    "gs-service",
+    "fv-service",
+    "pgc-service",
+    "context-service",
+    "ec-service",
+    "worker-agents",
+    "auto-agent-hitl",
+    "auto-audit_aggregator",
+    "auto-code-analysis",
+    "auto-constitutional-ai",
+    "auto-constitutional-core",
+    "auto-xai-integration",
+    "auto-formal-verification",
+    "auto-governance-engine",
+    "auto-governance-synthesis",
+    "auto-policy-governance",
+    "auto-evolutionary-computation"
+  ]
+}

@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 // Re-export everything from the client modules
 export * from "./connection.js";
 export * from "./prompts.js";

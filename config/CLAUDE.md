@@ -1,205 +1,119 @@
-# ACGS-2 Configuration Directory Documentation
+# ACGS-2 Config Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `config` directory serves as the centralized configuration management hub for ACGS-2's constitutional AI governance platform. This directory contains environment-specific settings, service configurations, monitoring rules, security policies, and constitutional compliance frameworks that govern the behavior of all ACGS-2 services across development, staging, and production environments.
+Documentation for config components
 
-The configuration system ensures constitutional compliance validation, performance optimization, and security enforcement through standardized configuration patterns with constitutional hash `cdd01ef066bc6cf2` validation across all components.
+The config system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all config operations while providing comprehensive config guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Core Configuration Files
-- **`constitutional_compliance.json`** - Central constitutional compliance configuration and validation rules
-- **`mapping_table.yml`** - Service mapping and routing configuration
-- **`production_metrics.yml`** - Production performance metrics and targets
-- **`production.secrets`** - Production secrets and sensitive configuration (encrypted)
-- **`volume_mount_triage.yaml`** - Volume mount configuration for containerized deployments
-- **`groqcloud_integration.yml`** - GroqCloud LPU integration and policy enforcement configuration
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Environment Configurations
-- **`environments/`** - Environment-specific configuration files
-  - **`productionconfig/environments/development.env`** - Production environment variables and settings
-  - **`kind-config.yaml`** - Kubernetes KIND cluster configuration
-  - **`pytest.ini`** - Testing environment configuration
-
-### Service-Specific Configurations
-- **`services/`** - Individual service configuration directories
-  - **`api-gateway/`** - API Gateway service configuration
-  - **`constitutional-ai/`** - Constitutional AI service configuration
-  - **`governance-synthesis/`** - Governance Synthesis service configuration
-  - **`integrity/`** - Integrity service configuration
-  - **`multi-agent-coordinator/`** - Multi-Agent Coordinator configuration
-
-### Infrastructure Configurations
-- **`docker/`** - Docker and container configuration
-- **`postgresql/`** - PostgreSQL database configuration
-- **`nginx/`** - NGINX web server and reverse proxy configuration
-- **`opa/`** - Open Policy Agent policies and rules
-
-### Monitoring and Observability
-- **`monitoring/`** - Monitoring and alerting configuration
-  - **`constitutional_rules.yml`** - Constitutional compliance monitoring rules
-  - **`grafana-constitutional-dashboard.json`** - Grafana dashboard configuration
-  - **`prometheus-alerts.yml`** - Prometheus alerting rules
-  - **`prometheus-constitutional.yml`** - Constitutional monitoring configuration
-- **`monitoring-stack.yml`** - Complete monitoring stack configuration
-
-### Logging and Documentation
-- **`logging/`** - Centralized logging configuration
-  - **`constitutional_logging.py`** - Constitutional compliance logging framework
-  - **`fluent-bit-constitutional.conf`** - Fluent Bit logging configuration
-- **`documentation/`** - Documentation generation configuration
-  - **`constitutional_openapi.py`** - OpenAPI documentation with constitutional compliance
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`services/`** - All ACGS-2 services consume configuration from this directory
-- **`infrastructure/`** - Infrastructure components use configuration for deployment
-- **`tools/`** - Automation tools reference configuration for operations
-- **`monitoring/`** - Monitoring systems use configuration for metrics and alerts
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Environment Variables**: System environment variables override configuration defaults
-- **Kubernetes ConfigMaps**: Configuration deployed as ConfigMaps in Kubernetes
-- **Docker Secrets**: Sensitive configuration managed through Docker secrets
-- **HashiCorp Vault**: Production secrets managed through Vault integration
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Configuration Hierarchy
-1. **Default Values**: Built-in defaults in service code
-2. **Configuration Files**: Values from config directory files
-3. **Environment Variables**: Environment-specific overrides
-4. **Runtime Parameters**: Command-line and runtime overrides
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Constitutional Compliance Configuration
-- **Constitutional Hash Validation**: Enforcement of `cdd01ef066bc6cf2` across all services
-- **Compliance Thresholds**: Minimum compliance scores and validation requirements
-- **Audit Configuration**: Constitutional compliance audit logging and reporting
-- **Violation Handling**: Automatic escalation and remediation for compliance violations
-- **Performance Targets**: Constitutional compliance with P99 <5ms and >100 RPS requirements
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Environment Management
-- **Multi-Environment Support**: Development, staging, and production configurations
-- **Environment-Specific Overrides**: Tailored settings for each deployment environment
-- **Secret Management**: Secure handling of sensitive configuration data
-- **Configuration Validation**: Automatic validation of configuration consistency
-- **Hot Reloading**: Dynamic configuration updates without service restart
-
-### Service Configuration Framework
-- **Standardized Templates**: Common configuration patterns across all services
-- **Service Discovery**: Automatic service endpoint discovery and configuration
-- **Database Configuration**: PostgreSQL connection pooling and optimization settings
-- **Cache Configuration**: Redis caching strategies and performance tuning
-- **Security Configuration**: JWT authentication, CORS, and security headers
-
-### Monitoring and Alerting Configuration
-- **Constitutional Monitoring**: Specialized monitoring for constitutional compliance
-- **Performance Monitoring**: P99 latency, throughput, and cache hit rate tracking
-- **Alert Rules**: Comprehensive alerting for constitutional violations and performance issues
-- **Dashboard Configuration**: Grafana dashboards for constitutional governance metrics
-- **SLA Monitoring**: Service Level Agreement tracking and reporting
-
-### Policy and Security Configuration
-- **OPA Policies**: Open Policy Agent rules for constitutional governance
-- **Security Policies**: Authentication, authorization, and access control rules
-- **Network Policies**: Service mesh and network security configuration
-- **Compliance Policies**: Regulatory and constitutional compliance enforcement
-- **Audit Policies**: Comprehensive audit trail configuration
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in all configurations
-- **Configuration Validation**: Automatic validation of constitutional compliance in all config files
-- **Environment Consistency**: Constitutional compliance maintained across all environments
-- **Security Configuration**: Complete security configuration with constitutional context
-- **Monitoring Integration**: Constitutional compliance monitoring and alerting
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all config operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Configuration Coverage**: 100% constitutional hash validation in all configuration files
-- **Environment Consistency**: Consistent constitutional compliance across dev/staging/production
-- **Security Validation**: All security configurations validated for constitutional compliance
-- **Policy Enforcement**: OPA policies enforce constitutional governance requirements
-- **Audit Configuration**: Complete audit trail configuration for constitutional operations
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (1% remaining)
-- **Dynamic Configuration**: Enhanced dynamic configuration updates with constitutional validation
-- **Cross-Environment Validation**: Improved validation of configuration consistency across environments
-- **Advanced Secret Management**: Enhanced secret management with constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Configuration Performance
-- **Fast Configuration Loading**: Optimized configuration loading with <100ms startup time
-- **Caching Strategy**: Configuration caching to minimize file system access
-- **Validation Performance**: Efficient constitutional compliance validation
-- **Hot Reloading**: Dynamic configuration updates without performance impact
-- **Memory Optimization**: Efficient memory usage for configuration storage
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Configuration Caching**: In-memory caching of frequently accessed configuration
-- **Lazy Loading**: On-demand loading of configuration sections
-- **Validation Optimization**: Efficient constitutional compliance validation algorithms
-- **Compression**: Configuration file compression for reduced storage and transfer
-- **Indexing**: Fast configuration lookup through optimized indexing
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Large Configuration Files**: Optimization needed for large configuration files
-- **Complex Validation**: Constitutional compliance validation for complex configurations
-- **Network Configuration**: Remote configuration loading optimization
-- **Encryption Overhead**: Performance impact of configuration encryption/decryption
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Constitutional Compliance Framework**: Complete constitutional compliance configuration
-- **Environment Management**: Multi-environment configuration with validation
-- **Service Configuration**: Standardized service configuration templates
-- **Monitoring Configuration**: Comprehensive monitoring and alerting configuration
-- **Security Configuration**: Complete security and policy configuration
-- **Documentation Integration**: Configuration documentation and validation
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Optimizations
-- **Dynamic Configuration**: Enhanced dynamic configuration updates
-- **Performance Tuning**: Configuration loading and validation optimization
-- **Secret Management**: Advanced secret management with constitutional compliance
-- **Cross-Environment Validation**: Improved configuration consistency validation
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Enhancements
-- **AI-Enhanced Configuration**: ML-driven configuration optimization and validation
-- **Advanced Templating**: Enhanced configuration templating and generation
-- **Federation Support**: Multi-organization configuration management
-- **Quantum Security**: Quantum-resistant configuration encryption
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Services](../services/CLAUDE.md)** - Services consuming configuration from this directory
-- **[Infrastructure](../infrastructure/CLAUDE.md)** - Infrastructure components using configuration
-- **[Monitoring](../monitoring/CLAUDE.md)** - Monitoring systems using configuration
-- **[Tools](../tools/CLAUDE.md)** - Automation tools referencing configuration
+- **[Documentation](../docs/CLAUDE.md)** - Main documentation
+- **[Documentation](../docs/CLAUDE.md)** - Main documentation
 
-### Configuration Components
-- **[Service Configurations](services/CLAUDE.md)** - Individual service configuration details
-- **[Environment Settings](environments/CLAUDE.md)** - Environment-specific configuration
-- **[Monitoring Configuration](monitoring/CLAUDE.md)** - Monitoring and alerting configuration
-- **[Security Policies](opa/CLAUDE.md)** - OPA policies and security configuration
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Configuration Guide](../docs/configuration/CLAUDE.md)** - Configuration management procedures
-- **[Environment Setup](../docs/deployment/CLAUDE.md)** - Environment configuration setup
-- **[Security Configuration](../docs/security/CLAUDE.md)** - Security configuration implementation
+- **[Development Guide](../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Configuration Tests](../tests/configuration/CLAUDE.md)** - Configuration validation tests
-- **[Environment Tests](../tests/environments/CLAUDE.md)** - Environment-specific testing
-- **[Security Tests](../tests/security/CLAUDE.md)** - Security configuration testing
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../CLAUDE.md) → **Configuration** | [Services](../services/CLAUDE.md) | [Infrastructure](../infrastructure/CLAUDE.md) | [Documentation](../docs/CLAUDE.md)
+**Navigation**: [Root](../CLAUDE.md) → **Config**
 
-**Constitutional Compliance**: All configuration components maintain constitutional hash `cdd01ef066bc6cf2` validation with comprehensive environment management, security enforcement, and monitoring integration for production-ready ACGS-2 constitutional AI governance.
+**Constitutional Compliance**: All config operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
+
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

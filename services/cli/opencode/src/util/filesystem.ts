@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { exists } from "fs/promises"
 import { dirname, join } from "path"
 

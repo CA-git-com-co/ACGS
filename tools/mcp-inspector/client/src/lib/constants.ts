@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { InspectorConfig } from "./configurationTypes";
 
 // OAuth-related session storage keys

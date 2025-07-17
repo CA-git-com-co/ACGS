@@ -3,153 +3,117 @@
 
 ## Directory Overview
 
-The `training_data` directory contains comprehensive training datasets for the ACGS-2 constitutional AI governance platform. This directory provides curated training data, synthetic data generation, and specialized datasets for constitutional AI training achieving P99 <5ms performance and >100 RPS throughput for training data access and processing.
+Documentation for training_data components
 
-The training data system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all data operations while providing high-quality, diverse, and constitutionally compliant training datasets for constitutional AI governance with enterprise-grade data quality and privacy protection.
+The training_data system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all training_data operations while providing comprehensive training_data guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Constitutional AI Training Data
-- **`constitutional_ai_train.json`** - Constitutional AI training dataset with governance scenarios
-- **`policy_governance_train.json`** - Policy governance training data with rule generation examples
-- **`multi_agent_coordination_train.json`** - Multi-agent coordination training data with collaboration scenarios
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Performance and Optimization Training Data
-- **`performance_optimization_train.json`** - Performance optimization training data with benchmark scenarios
-- **`transformer_efficiency_train.json`** - Transformer efficiency training data with attention mechanisms
-- **`wina_optimization_train.json`** - WINA optimization training data with neural efficiency examples
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../services/shared/training_data/`** - Shared training data generation and management utilities
-- **`../services/shared/training/`** - Training orchestration and model training services
-- **`../training_outputs/`** - Training outputs and model artifacts
-- **`../config/`** - Configuration files for training data settings
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Datasets Library**: Hugging Face datasets for data loading and processing
-- **Pandas**: Data manipulation and analysis for training data
-- **NumPy**: Numerical computing for data processing
-- **JSON**: Data serialization and storage format
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Training Data Integration
-- **Data Pipeline**: Training data pipeline for preprocessing and augmentation
-- **Quality Assurance**: Data quality validation and constitutional compliance checking
-- **Privacy Protection**: Data privacy and anonymization for sensitive information
-- **Version Control**: Training data versioning and lineage tracking
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Constitutional Training Datasets
-- **Constitutional AI Training**: High-quality constitutional AI training scenarios and examples
-- **Governance Scenarios**: Policy governance training data with real-world governance examples
-- **Compliance Examples**: Constitutional compliance training data with validation scenarios
-- **Ethical Scenarios**: Ethical decision-making training data with moral reasoning examples
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Specialized Training Data
-- **Multi-Agent Coordination**: Agent coordination training data with collaboration patterns
-- **Performance Optimization**: Performance optimization training data with benchmark scenarios
-- **Transformer Efficiency**: Transformer efficiency training data with attention mechanisms
-- **WINA Optimization**: Neural efficiency training data with optimization examples
-
-### Data Quality and Compliance
-- **Constitutional Validation**: Training data validated for constitutional compliance
-- **Quality Assurance**: Comprehensive data quality validation and verification
-- **Privacy Protection**: Data privacy and anonymization for sensitive training data
-- **Bias Detection**: Training data bias detection and mitigation
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in training data operations
-- **Data Compliance**: Complete constitutional compliance framework for training data
-- **Privacy Integration**: Constitutional compliance integrated into data privacy protection
-- **Audit Documentation**: Complete training data audit trails with constitutional context
-- **Performance Compliance**: All training data operations maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all training_data operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Data Coverage**: 100% constitutional hash validation in all training datasets
-- **Quality Validation**: All training data validated against constitutional requirements
-- **Privacy Compliance**: Training data privacy protection validated for constitutional compliance
-- **Audit Trail**: Complete training data audit trail with constitutional context
-- **Performance Standards**: All training data operations exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all training data
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All training data validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Training Data Performance
-- **Data Loading Speed**: Optimized training data loading for rapid model training
-- **Processing Efficiency**: Efficient data preprocessing and augmentation
-- **Memory Utilization**: Optimized memory usage for large-scale training datasets
-- **Storage Optimization**: Efficient training data storage and retrieval
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Data Caching**: Optimized training data caching for improved performance
-- **Parallel Processing**: Parallel data processing for improved throughput
-- **Compression**: Data compression for efficient storage and transfer
-- **Streaming**: Data streaming for large-scale training scenarios
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Data Volume**: Optimization needed for very large training datasets
-- **Processing Complexity**: Performance optimization for complex data preprocessing
-- **Network Transfer**: Optimization needed for distributed training data access
-- **Storage I/O**: Optimization needed for high-throughput data storage operations
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Core Training Datasets**: Complete training data collection with constitutional compliance
-- **Constitutional AI Data**: Constitutional AI training scenarios and governance examples
-- **Multi-Agent Data**: Multi-agent coordination training data and collaboration patterns
-- **Performance Data**: Performance optimization training data and benchmark scenarios
-- **Quality Assurance**: Training data quality validation and constitutional compliance
-- **Constitutional Integration**: 100% constitutional compliance across all training data
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Data Features**: Enhanced training data generation and augmentation
-- **Performance Optimization**: Continued optimization for faster data processing
-- **Privacy Enhancement**: Advanced privacy protection and anonymization techniques
-- **Quality Improvement**: Enhanced data quality validation and bias detection
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Data Generation**: AI-powered training data generation and augmentation
-- **Advanced Analytics**: Enhanced training data analytics and quality metrics
-- **Federation Support**: Multi-organization training data federation and sharing
-- **Quantum Integration**: Quantum-resistant training data security and privacy
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Training Outputs](../training_outputs/CLAUDE.md)** - Training outputs and model artifacts
-- **[Shared Training](../services/shared/training/)** - Training orchestration and model training
-- **[Shared Training Data](../services/shared/training_data/)** - Training data generation utilities
-- **[Configuration](../config/CLAUDE.md)** - Configuration files for training data
+- **[Documentation](../docs/CLAUDE.md)** - Main documentation
+- **[Documentation](../docs/CLAUDE.md)** - Main documentation
 
-### Training Data Categories
-- **[Constitutional AI](constitutional_ai_train.json)** - Constitutional AI training scenarios
-- **[Policy Governance](policy_governance_train.json)** - Policy governance training data
-- **[Multi-Agent](multi_agent_coordination_train.json)** - Multi-agent coordination training
-- **[Performance](performance_optimization_train.json)** - Performance optimization training
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Training Documentation](../docs/training/CLAUDE.md)** - Training procedures and guidelines
-- **[Research Documentation](../docs/research/CLAUDE.md)** - Research methodologies and findings
-- **[Architecture Documentation](../docs/architecture/CLAUDE.md)** - System architecture with training data
+- **[Development Guide](../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Training Tests](../tests/training/)** - Training data testing and validation
-- **[Integration Tests](../tests/integration/CLAUDE.md)** - Training data integration testing
-- **[Performance Tests](../tests/performance/CLAUDE.md)** - Training data performance validation
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../CLAUDE.md) → **Training Data** | [Training Outputs](../training_outputs/CLAUDE.md) | [Services](../services/CLAUDE.md)
+**Navigation**: [Root](../CLAUDE.md) → **Training Data**
 
-**Constitutional Compliance**: All training data maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All training_data operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive training data documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

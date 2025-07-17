@@ -1,0 +1,3050 @@
+{
+  "note": "This file is an internal implementation detail to speed up HTML report generation. Its format can change at any time. You might be looking for the JSON report: https://coverage.rtfd.io/cmd.html#cmd-json",
+  "format": 5,
+  "version": "7.9.2",
+  "globals": "07fa69e3f130cea28284b78585064035",
+  "files": {
+    "z_010f330266fb53be___init___py": {
+      "hash": "25b8c90e3f07334c42ae58eb78f055b7",
+      "index": {
+        "url": "z_010f330266fb53be___init___py.html",
+        "file": "services/shared/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 5,
+          "n_excluded": 2,
+          "n_missing": 5,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_acgs_robustness_benchmarks_py": {
+      "hash": "337e22842d490b774edc5196b7596d2b",
+      "index": {
+        "url": "z_010f330266fb53be_acgs_robustness_benchmarks_py.html",
+        "file": "services/shared/acgs_robustness_benchmarks.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 281,
+          "n_excluded": 14,
+          "n_missing": 281,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_advanced_redis_client_py": {
+      "hash": "0d2fa00670c067556e436934c5bea085",
+      "index": {
+        "url": "z_010f330266fb53be_advanced_redis_client_py.html",
+        "file": "services/shared/advanced_redis_client.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 3,
+          "n_excluded": 0,
+          "n_missing": 3,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4___init___py": {
+      "hash": "104cfba96e4796d2d4dd0d6d200f78c5",
+      "index": {
+        "url": "z_e587443a217f6be4___init___py.html",
+        "file": "services/shared/agents/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 5,
+          "n_excluded": 0,
+          "n_missing": 5,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_a2a_protocol_adapter_py": {
+      "hash": "d221373364abddbe2b731bd23a7f192f",
+      "index": {
+        "url": "z_e587443a217f6be4_a2a_protocol_adapter_py.html",
+        "file": "services/shared/agents/a2a_protocol_adapter.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 221,
+          "n_excluded": 12,
+          "n_missing": 221,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_apgf_event_publisher_py": {
+      "hash": "0f9f7d7b721efbb6ca1acf9beb7f1437",
+      "index": {
+        "url": "z_e587443a217f6be4_apgf_event_publisher_py.html",
+        "file": "services/shared/agents/apgf_event_publisher.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 65,
+          "n_excluded": 0,
+          "n_missing": 65,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_apgf_orchestrator_py": {
+      "hash": "779ed6ad7ca87e5ae084b15ee422e5f3",
+      "index": {
+        "url": "z_e587443a217f6be4_apgf_orchestrator_py.html",
+        "file": "services/shared/agents/apgf_orchestrator.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 402,
+          "n_excluded": 21,
+          "n_missing": 402,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_dynamic_agent_py": {
+      "hash": "f6d9ff97cc4845d1ead222e5ec1dc20f",
+      "index": {
+        "url": "z_e587443a217f6be4_dynamic_agent_py.html",
+        "file": "services/shared/agents/dynamic_agent.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 559,
+          "n_excluded": 0,
+          "n_missing": 559,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_policy_builder_py": {
+      "hash": "510d55694dc3cfeb12e53b4cb533924a",
+      "index": {
+        "url": "z_e587443a217f6be4_policy_builder_py.html",
+        "file": "services/shared/agents/policy_builder.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 283,
+          "n_excluded": 8,
+          "n_missing": 283,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_specialized_agent_roles_py": {
+      "hash": "72c0997d9cf0b4d386157ef3c2117b24",
+      "index": {
+        "url": "z_e587443a217f6be4_specialized_agent_roles_py.html",
+        "file": "services/shared/agents/specialized_agent_roles.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 300,
+          "n_excluded": 9,
+          "n_missing": 300,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_e587443a217f6be4_tool_router_py": {
+      "hash": "2c7d1431776ae0889ea56bb84f343138",
+      "index": {
+        "url": "z_e587443a217f6be4_tool_router_py.html",
+        "file": "services/shared/agents/tool_router.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 309,
+          "n_excluded": 6,
+          "n_missing": 309,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_ai_model_service_py": {
+      "hash": "17e7bcecaac864d8aa080d43994152e4",
+      "index": {
+        "url": "z_010f330266fb53be_ai_model_service_py.html",
+        "file": "services/shared/ai_model_service.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 168,
+          "n_excluded": 11,
+          "n_missing": 168,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_api_models_py": {
+      "hash": "620f1003eafbf230686668ffeb2cc895",
+      "index": {
+        "url": "z_010f330266fb53be_api_models_py.html",
+        "file": "services/shared/api_models.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 86,
+          "n_excluded": 2,
+          "n_missing": 86,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_0705136acf9c6bc7___init___py": {
+      "hash": "d9900735433e09a3f64ed7c2c994a694",
+      "index": {
+        "url": "z_0705136acf9c6bc7___init___py.html",
+        "file": "services/shared/async_processing/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 3,
+          "n_excluded": 0,
+          "n_missing": 3,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_0705136acf9c6bc7_concurrent_execution_manager_py": {
+      "hash": "3932122358f751e0e0a20dedb1bc2348",
+      "index": {
+        "url": "z_0705136acf9c6bc7_concurrent_execution_manager_py.html",
+        "file": "services/shared/async_processing/concurrent_execution_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 282,
+          "n_excluded": 2,
+          "n_missing": 282,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_0705136acf9c6bc7_enhanced_task_scheduler_py": {
+      "hash": "789dc13a0c9b7923c6116111f0e66308",
+      "index": {
+        "url": "z_0705136acf9c6bc7_enhanced_task_scheduler_py.html",
+        "file": "services/shared/async_processing/enhanced_task_scheduler.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 381,
+          "n_excluded": 3,
+          "n_missing": 381,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_auth_py": {
+      "hash": "e90e62fc6259e2c0910957950b2e6273",
+      "index": {
+        "url": "z_010f330266fb53be_auth_py.html",
+        "file": "services/shared/auth.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 119,
+          "n_excluded": 3,
+          "n_missing": 119,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_fa8a8ff7101ae226___init___py": {
+      "hash": "3303216e1e8458193c59353cfdc08728",
+      "index": {
+        "url": "z_fa8a8ff7101ae226___init___py.html",
+        "file": "services/shared/auth/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 2,
+          "n_excluded": 0,
+          "n_missing": 2,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_fa8a8ff7101ae226_multi_tenant_jwt_py": {
+      "hash": "f54ec46b18896d4e0021f1d2d8249729",
+      "index": {
+        "url": "z_fa8a8ff7101ae226_multi_tenant_jwt_py.html",
+        "file": "services/shared/auth/multi_tenant_jwt.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 32,
+          "n_excluded": 4,
+          "n_missing": 32,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_fa8a8ff7101ae226_tenant_auth_py": {
+      "hash": "cb85af9c9c56a373d33d264fe763d9ca",
+      "index": {
+        "url": "z_fa8a8ff7101ae226_tenant_auth_py.html",
+        "file": "services/shared/auth/tenant_auth.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 176,
+          "n_excluded": 85,
+          "n_missing": 176,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3___init___py": {
+      "hash": "e6f5e561260f3b3558bbacf3db838dc7",
+      "index": {
+        "url": "z_f448d1be1d0121d3___init___py.html",
+        "file": "services/shared/blackboard/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 8,
+          "n_excluded": 0,
+          "n_missing": 8,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_blackboard_service_py": {
+      "hash": "40192cc4dfb168bbb6d1b5f1a19a08ce",
+      "index": {
+        "url": "z_f448d1be1d0121d3_blackboard_service_py.html",
+        "file": "services/shared/blackboard/blackboard_service.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 412,
+          "n_excluded": 1,
+          "n_missing": 412,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_conflict_manager_py": {
+      "hash": "afff234adf6e6dab640bb8bfe94666dc",
+      "index": {
+        "url": "z_f448d1be1d0121d3_conflict_manager_py.html",
+        "file": "services/shared/blackboard/conflict_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 86,
+          "n_excluded": 0,
+          "n_missing": 86,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_core_service_py": {
+      "hash": "da7ce14b059b023e13e1cf07b20f38c8",
+      "index": {
+        "url": "z_f448d1be1d0121d3_core_service_py.html",
+        "file": "services/shared/blackboard/core_service.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 132,
+          "n_excluded": 0,
+          "n_missing": 132,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_event_publisher_py": {
+      "hash": "aa76966287edc6a70e5026d50558f0e3",
+      "index": {
+        "url": "z_f448d1be1d0121d3_event_publisher_py.html",
+        "file": "services/shared/blackboard/event_publisher.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 38,
+          "n_excluded": 0,
+          "n_missing": 38,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_knowledge_manager_py": {
+      "hash": "2406be61af741f627989e1221fc47873",
+      "index": {
+        "url": "z_f448d1be1d0121d3_knowledge_manager_py.html",
+        "file": "services/shared/blackboard/knowledge_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 68,
+          "n_excluded": 0,
+          "n_missing": 68,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_models_py": {
+      "hash": "87edd3cb16868d9c06239520aec9aba1",
+      "index": {
+        "url": "z_f448d1be1d0121d3_models_py.html",
+        "file": "services/shared/blackboard/models.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 46,
+          "n_excluded": 0,
+          "n_missing": 46,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_f448d1be1d0121d3_task_manager_py": {
+      "hash": "a6112f36ad7c73b1c27d5c5c6caaede3",
+      "index": {
+        "url": "z_f448d1be1d0121d3_task_manager_py.html",
+        "file": "services/shared/blackboard/task_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 102,
+          "n_excluded": 0,
+          "n_missing": 102,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_causal_bias_detector_py": {
+      "hash": "349bd60ab3102033be0414d1e43d2906",
+      "index": {
+        "url": "z_010f330266fb53be_causal_bias_detector_py.html",
+        "file": "services/shared/causal_bias_detector.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 317,
+          "n_excluded": 18,
+          "n_missing": 317,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_causal_constitutional_framework_py": {
+      "hash": "a0f753e970cb565ef7e8f3de1e98c090",
+      "index": {
+        "url": "z_010f330266fb53be_causal_constitutional_framework_py.html",
+        "file": "services/shared/causal_constitutional_framework.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 190,
+          "n_excluded": 0,
+          "n_missing": 190,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_causal_coordination_model_py": {
+      "hash": "f9e657e2e2d0ab713da33ca11f77a60f",
+      "index": {
+        "url": "z_010f330266fb53be_causal_coordination_model_py.html",
+        "file": "services/shared/causal_coordination_model.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 310,
+          "n_excluded": 2,
+          "n_missing": 310,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_299aacdd1bc5020b___init___py": {
+      "hash": "419701de363b341555d497c8d6813b1d",
+      "index": {
+        "url": "z_299aacdd1bc5020b___init___py.html",
+        "file": "services/shared/common/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 1,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_299aacdd1bc5020b_error_handling_py": {
+      "hash": "e5d23f3363025047b2b483ac74945b00",
+      "index": {
+        "url": "z_299aacdd1bc5020b_error_handling_py.html",
+        "file": "services/shared/common/error_handling.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 12,
+          "n_excluded": 0,
+          "n_missing": 12,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_299aacdd1bc5020b_formatting_py": {
+      "hash": "c03dcdcb35ae5ac5363ad51cbfa815d7",
+      "index": {
+        "url": "z_299aacdd1bc5020b_formatting_py.html",
+        "file": "services/shared/common/formatting.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 4,
+          "n_excluded": 0,
+          "n_missing": 4,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_299aacdd1bc5020b_validation_py": {
+      "hash": "f4d58bff31ecf2fd29150a801c239e2e",
+      "index": {
+        "url": "z_299aacdd1bc5020b_validation_py.html",
+        "file": "services/shared/common/validation.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 5,
+          "n_excluded": 0,
+          "n_missing": 5,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_9c5471dacd1e05a9___init___py": {
+      "hash": "e6e1db307117465113ae37f8331ed336",
+      "index": {
+        "url": "z_9c5471dacd1e05a9___init___py.html",
+        "file": "services/shared/compliance/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 6,
+          "n_excluded": 0,
+          "n_missing": 6,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_9c5471dacd1e05a9_compliance_monitor_py": {
+      "hash": "eeda40afdb4697cadafa6ffc36f2dba3",
+      "index": {
+        "url": "z_9c5471dacd1e05a9_compliance_monitor_py.html",
+        "file": "services/shared/compliance/compliance_monitor.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 373,
+          "n_excluded": 3,
+          "n_missing": 373,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_9c5471dacd1e05a9_eu_ai_act_compliance_py": {
+      "hash": "8c2b90180c460acddfcb601b4511b65c",
+      "index": {
+        "url": "z_9c5471dacd1e05a9_eu_ai_act_compliance_py.html",
+        "file": "services/shared/compliance/eu_ai_act_compliance.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 271,
+          "n_excluded": 4,
+          "n_missing": 271,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_9c5471dacd1e05a9_human_oversight_py": {
+      "hash": "97a8fe3427c976f6b40c468130bb1577",
+      "index": {
+        "url": "z_9c5471dacd1e05a9_human_oversight_py.html",
+        "file": "services/shared/compliance/human_oversight.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 390,
+          "n_excluded": 7,
+          "n_missing": 390,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_9c5471dacd1e05a9_technical_documentation_py": {
+      "hash": "da44474a9c11141271ffaafc8bfa1e24",
+      "index": {
+        "url": "z_9c5471dacd1e05a9_technical_documentation_py.html",
+        "file": "services/shared/compliance/technical_documentation.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 373,
+          "n_excluded": 7,
+          "n_missing": 373,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_338de5bdd85ce07a___init___py": {
+      "hash": "0e99b835ca0e4f46b8b1e3486cc68f8c",
+      "index": {
+        "url": "z_338de5bdd85ce07a___init___py.html",
+        "file": "services/shared/config/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 0,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_338de5bdd85ce07a_cache_config_loader_py": {
+      "hash": "2ee1ae284d34981a1564f6e924296d0d",
+      "index": {
+        "url": "z_338de5bdd85ce07a_cache_config_loader_py.html",
+        "file": "services/shared/config/cache_config_loader.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 124,
+          "n_excluded": 0,
+          "n_missing": 124,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_338de5bdd85ce07a_infrastructure_config_py": {
+      "hash": "5f6d87268e3e10be894f82b316f13d5b",
+      "index": {
+        "url": "z_338de5bdd85ce07a_infrastructure_config_py.html",
+        "file": "services/shared/config/infrastructure_config.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 140,
+          "n_excluded": 8,
+          "n_missing": 132,
+          "n_branches": 22,
+          "n_partial_branches": 0,
+          "n_missing_branches": 22
+        }
+      }
+    },
+    "z_338de5bdd85ce07a_service_registry_py": {
+      "hash": "70b937a7bbd494e8806e754e63960228",
+      "index": {
+        "url": "z_338de5bdd85ce07a_service_registry_py.html",
+        "file": "services/shared/config/service_registry.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 22,
+          "n_excluded": 0,
+          "n_missing": 22,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_338de5bdd85ce07a_settings_py": {
+      "hash": "fc8aafc1cf5f11564b5896ac436af97e",
+      "index": {
+        "url": "z_338de5bdd85ce07a_settings_py.html",
+        "file": "services/shared/config/settings.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 147,
+          "n_excluded": 10,
+          "n_missing": 147,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constants_py": {
+      "hash": "105c52e209abf1a1907fede3cb226562",
+      "index": {
+        "url": "z_010f330266fb53be_constants_py.html",
+        "file": "services/shared/constants.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 157,
+          "n_excluded": 0,
+          "n_missing": 157,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constitutional_augmentation_pipeline_py": {
+      "hash": "38de30f824b09bf114bf41c97dcdbd70",
+      "index": {
+        "url": "z_010f330266fb53be_constitutional_augmentation_pipeline_py.html",
+        "file": "services/shared/constitutional_augmentation_pipeline.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 180,
+          "n_excluded": 0,
+          "n_missing": 180,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constitutional_cache_py": {
+      "hash": "40abb8ce5c5dbeeaece904af235732c0",
+      "index": {
+        "url": "z_010f330266fb53be_constitutional_cache_py.html",
+        "file": "services/shared/constitutional_cache.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 102,
+          "n_excluded": 0,
+          "n_missing": 102,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constitutional_counterfactual_generator_py": {
+      "hash": "07000abcb04f2cda3441e7cdb679422a",
+      "index": {
+        "url": "z_010f330266fb53be_constitutional_counterfactual_generator_py.html",
+        "file": "services/shared/constitutional_counterfactual_generator.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 181,
+          "n_excluded": 0,
+          "n_missing": 181,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constitutional_mcp_integration_py": {
+      "hash": "d9d2ca9c7f76b827082c103cc1ba551d",
+      "index": {
+        "url": "z_010f330266fb53be_constitutional_mcp_integration_py.html",
+        "file": "services/shared/constitutional_mcp_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 156,
+          "n_excluded": 4,
+          "n_missing": 156,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constitutional_persona_validator_py": {
+      "hash": "a357a07624e8d26b60e54772996914bd",
+      "index": {
+        "url": "z_010f330266fb53be_constitutional_persona_validator_py.html",
+        "file": "services/shared/constitutional_persona_validator.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 200,
+          "n_excluded": 21,
+          "n_missing": 200,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_constitutional_safety_framework_py": {
+      "hash": "4559e45d4ff1590e6165440b6f133300",
+      "index": {
+        "url": "z_010f330266fb53be_constitutional_safety_framework_py.html",
+        "file": "services/shared/constitutional_safety_framework.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 194,
+          "n_excluded": 0,
+          "n_missing": 194,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_counterfactual_coordination_tester_py": {
+      "hash": "61bf94fc44779dc992ddd47ed9bf84ab",
+      "index": {
+        "url": "z_010f330266fb53be_counterfactual_coordination_tester_py.html",
+        "file": "services/shared/counterfactual_coordination_tester.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 290,
+          "n_excluded": 8,
+          "n_missing": 290,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_database_py": {
+      "hash": "81be70955e24dfe11871a3bf297a2e53",
+      "index": {
+        "url": "z_010f330266fb53be_database_py.html",
+        "file": "services/shared/database.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 45,
+          "n_excluded": 4,
+          "n_missing": 45,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_database_optimizer_py": {
+      "hash": "e1e171b86c1e33fe3806abacb5eebedb",
+      "index": {
+        "url": "z_010f330266fb53be_database_optimizer_py.html",
+        "file": "services/shared/database_optimizer.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 178,
+          "n_excluded": 0,
+          "n_missing": 178,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_725972b591e86f54___init___py": {
+      "hash": "34971260b170d7e874a8f2f48a721ebf",
+      "index": {
+        "url": "z_725972b591e86f54___init___py.html",
+        "file": "services/shared/domain/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 4,
+          "n_excluded": 0,
+          "n_missing": 4,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_725972b591e86f54_base_py": {
+      "hash": "f356fe125836fd34b63e672451bf7869",
+      "index": {
+        "url": "z_725972b591e86f54_base_py.html",
+        "file": "services/shared/domain/base.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 123,
+          "n_excluded": 23,
+          "n_missing": 123,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_725972b591e86f54_events_py": {
+      "hash": "079e70ee23218ee654030e7c92e1d607",
+      "index": {
+        "url": "z_725972b591e86f54_events_py.html",
+        "file": "services/shared/domain/events.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 115,
+          "n_excluded": 18,
+          "n_missing": 115,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_725972b591e86f54_specifications_py": {
+      "hash": "5d022c0e033e415e01943085e32246e9",
+      "index": {
+        "url": "z_725972b591e86f54_specifications_py.html",
+        "file": "services/shared/domain/specifications.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 54,
+          "n_excluded": 4,
+          "n_missing": 54,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_enhanced_auth_middleware_py": {
+      "hash": "8fee887371cd0066d400126c1c7863dd",
+      "index": {
+        "url": "z_010f330266fb53be_enhanced_auth_middleware_py.html",
+        "file": "services/shared/enhanced_auth_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 44,
+          "n_excluded": 0,
+          "n_missing": 44,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_ethical_scenario_generator_py": {
+      "hash": "6f7acb7b794a11dcdeaa2b09b9bc04f4",
+      "index": {
+        "url": "z_010f330266fb53be_ethical_scenario_generator_py.html",
+        "file": "services/shared/ethical_scenario_generator.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 237,
+          "n_excluded": 0,
+          "n_missing": 237,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_c2f96656121e6e66___init___py": {
+      "hash": "6324feb7ce379191124437dd3204028f",
+      "index": {
+        "url": "z_c2f96656121e6e66___init___py.html",
+        "file": "services/shared/events/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 3,
+          "n_excluded": 0,
+          "n_missing": 3,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_c2f96656121e6e66_bus_py": {
+      "hash": "a8c226cde4c5b801815300ad79072ad4",
+      "index": {
+        "url": "z_c2f96656121e6e66_bus_py.html",
+        "file": "services/shared/events/bus.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 90,
+          "n_excluded": 1,
+          "n_missing": 90,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_0b8be425ea7de1b2___init___py": {
+      "hash": "59b54f2c3bb3d9744080d892248bb171",
+      "index": {
+        "url": "z_0b8be425ea7de1b2___init___py.html",
+        "file": "services/shared/exceptions/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 1,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_0b8be425ea7de1b2_custom_exceptions_py": {
+      "hash": "87de374e5b3a02c1942d7a1f1f261911",
+      "index": {
+        "url": "z_0b8be425ea7de1b2_custom_exceptions_py.html",
+        "file": "services/shared/exceptions/custom_exceptions.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 116,
+          "n_excluded": 0,
+          "n_missing": 116,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_b82aa8fab72ba13d___init___py": {
+      "hash": "c2b4bb883709b97a037e05341a160852",
+      "index": {
+        "url": "z_b82aa8fab72ba13d___init___py.html",
+        "file": "services/shared/explainability/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 4,
+          "n_excluded": 0,
+          "n_missing": 4,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_b82aa8fab72ba13d_hybrid_explainability_engine_py": {
+      "hash": "f65882f4f81c587369d1c950185d6299",
+      "index": {
+        "url": "z_b82aa8fab72ba13d_hybrid_explainability_engine_py.html",
+        "file": "services/shared/explainability/hybrid_explainability_engine.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 333,
+          "n_excluded": 3,
+          "n_missing": 333,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_b82aa8fab72ba13d_lime_integration_py": {
+      "hash": "cbc1d4ccff5b7b714cbb5370f88728ed",
+      "index": {
+        "url": "z_b82aa8fab72ba13d_lime_integration_py.html",
+        "file": "services/shared/explainability/lime_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 241,
+          "n_excluded": 8,
+          "n_missing": 241,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_b82aa8fab72ba13d_shap_integration_py": {
+      "hash": "04ff1971ae87821e483241232a61fb4f",
+      "index": {
+        "url": "z_b82aa8fab72ba13d_shap_integration_py.html",
+        "file": "services/shared/explainability/shap_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 264,
+          "n_excluded": 11,
+          "n_missing": 264,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2f8e3aeb72786636___init___py": {
+      "hash": "37bdcc84cb5f7df635226763dae3955c",
+      "index": {
+        "url": "z_2f8e3aeb72786636___init___py.html",
+        "file": "services/shared/fairness/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 4,
+          "n_excluded": 0,
+          "n_missing": 4,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2f8e3aeb72786636_bias_drift_monitor_py": {
+      "hash": "dd7704beb2661902faecc52105fdef4e",
+      "index": {
+        "url": "z_2f8e3aeb72786636_bias_drift_monitor_py.html",
+        "file": "services/shared/fairness/bias_drift_monitor.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 904,
+          "n_excluded": 116,
+          "n_missing": 904,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2f8e3aeb72786636_bias_mitigation_engine_py": {
+      "hash": "7a818c61b23b9b928a2f47e3f4b375d9",
+      "index": {
+        "url": "z_2f8e3aeb72786636_bias_mitigation_engine_py.html",
+        "file": "services/shared/fairness/bias_mitigation_engine.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 724,
+          "n_excluded": 4,
+          "n_missing": 724,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2f8e3aeb72786636_enhanced_fairness_framework_py": {
+      "hash": "e9190df6c1cb2678ff5a5ac7ccc2c1c2",
+      "index": {
+        "url": "z_2f8e3aeb72786636_enhanced_fairness_framework_py.html",
+        "file": "services/shared/fairness/enhanced_fairness_framework.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 237,
+          "n_excluded": 1,
+          "n_missing": 237,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2f8e3aeb72786636_fairlearn_integration_py": {
+      "hash": "2042d8977c290bdb6e5c88ca7e6a233d",
+      "index": {
+        "url": "z_2f8e3aeb72786636_fairlearn_integration_py.html",
+        "file": "services/shared/fairness/fairlearn_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 232,
+          "n_excluded": 6,
+          "n_missing": 232,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2f8e3aeb72786636_whatif_tool_integration_py": {
+      "hash": "f8e4e7652a3f6a32065d5b4e9d48828c",
+      "index": {
+        "url": "z_2f8e3aeb72786636_whatif_tool_integration_py.html",
+        "file": "services/shared/fairness/whatif_tool_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 220,
+          "n_excluded": 6,
+          "n_missing": 220,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_58045d88b7812c54___init___py": {
+      "hash": "3f43d6220de5c3f224a2b69e59079252",
+      "index": {
+        "url": "z_58045d88b7812c54___init___py.html",
+        "file": "services/shared/infrastructure/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 5,
+          "n_excluded": 0,
+          "n_missing": 5,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_58045d88b7812c54_event_store_py": {
+      "hash": "61b5817389f9b98f658053bfa9533675",
+      "index": {
+        "url": "z_58045d88b7812c54_event_store_py.html",
+        "file": "services/shared/infrastructure/event_store.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 160,
+          "n_excluded": 101,
+          "n_missing": 160,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_58045d88b7812c54_outbox_py": {
+      "hash": "e98838055382fdecaf9711929d66d2ec",
+      "index": {
+        "url": "z_58045d88b7812c54_outbox_py.html",
+        "file": "services/shared/infrastructure/outbox.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 194,
+          "n_excluded": 76,
+          "n_missing": 194,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_58045d88b7812c54_repositories_py": {
+      "hash": "b752012d43487051657bed2f33f5c99c",
+      "index": {
+        "url": "z_58045d88b7812c54_repositories_py.html",
+        "file": "services/shared/infrastructure/repositories.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 149,
+          "n_excluded": 103,
+          "n_missing": 149,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_58045d88b7812c54_saga_py": {
+      "hash": "62158a84ed6b0a0ded9007ea9eda2324",
+      "index": {
+        "url": "z_58045d88b7812c54_saga_py.html",
+        "file": "services/shared/infrastructure/saga.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 323,
+          "n_excluded": 62,
+          "n_missing": 323,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_58045d88b7812c54_unit_of_work_py": {
+      "hash": "04cf0c7195ff9948a00cd58bcb6da38b",
+      "index": {
+        "url": "z_58045d88b7812c54_unit_of_work_py.html",
+        "file": "services/shared/infrastructure/unit_of_work.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 185,
+          "n_excluded": 22,
+          "n_missing": 185,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_542a853cee37b4ca___init___py": {
+      "hash": "bc875fe3bacafd55f3c4f4806e56fa5c",
+      "index": {
+        "url": "z_542a853cee37b4ca___init___py.html",
+        "file": "services/shared/interfaces/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 1,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e___init___py": {
+      "hash": "edc598c9266ddbb94f384aeeaa2384be",
+      "index": {
+        "url": "z_5572d48a2e7ed70e___init___py.html",
+        "file": "services/shared/middleware/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 2,
+          "n_excluded": 0,
+          "n_missing": 2,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_cache_optimization_middleware_py": {
+      "hash": "9f433a71a27b18f551bd6610006e1e90",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_cache_optimization_middleware_py.html",
+        "file": "services/shared/middleware/cache_optimization_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 173,
+          "n_excluded": 2,
+          "n_missing": 173,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_constitutional_validation_py": {
+      "hash": "c4ab59926e55d70e35d84b4f301ce369",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_constitutional_validation_py.html",
+        "file": "services/shared/middleware/constitutional_validation.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 120,
+          "n_excluded": 0,
+          "n_missing": 120,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_enhanced_auth_middleware_py": {
+      "hash": "825491bf1cba6225f48ad964d24f3ead",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_enhanced_auth_middleware_py.html",
+        "file": "services/shared/middleware/enhanced_auth_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 114,
+          "n_excluded": 0,
+          "n_missing": 114,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_error_handling_py": {
+      "hash": "a144077021fd012595cd47bdde519abf",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_error_handling_py.html",
+        "file": "services/shared/middleware/error_handling.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 152,
+          "n_excluded": 0,
+          "n_missing": 152,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_health_check_middleware_py": {
+      "hash": "281ac35a259df3eba65b9405646e1a9a",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_health_check_middleware_py.html",
+        "file": "services/shared/middleware/health_check_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 251,
+          "n_excluded": 2,
+          "n_missing": 251,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_prometheus_metrics_py": {
+      "hash": "d6e23e6f2e010a57ddc9ad6a2edc9735",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_prometheus_metrics_py.html",
+        "file": "services/shared/middleware/prometheus_metrics.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 139,
+          "n_excluded": 0,
+          "n_missing": 139,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_prometheus_metrics_middleware_py": {
+      "hash": "002394d88d11fe7f297958f488d36d76",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_prometheus_metrics_middleware_py.html",
+        "file": "services/shared/middleware/prometheus_metrics_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 251,
+          "n_excluded": 3,
+          "n_missing": 251,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_service_discovery_middleware_py": {
+      "hash": "e47b4b8dd7e4096773b14bf1f2a5c53e",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_service_discovery_middleware_py.html",
+        "file": "services/shared/middleware/service_discovery_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 133,
+          "n_excluded": 1,
+          "n_missing": 133,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_simple_tenant_middleware_py": {
+      "hash": "d958073be37d42857a1b41fc2ba960cb",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_simple_tenant_middleware_py.html",
+        "file": "services/shared/middleware/simple_tenant_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 119,
+          "n_excluded": 0,
+          "n_missing": 119,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_5572d48a2e7ed70e_tenant_middleware_py": {
+      "hash": "d86da4d2c263e95d79a72d2e26285736",
+      "index": {
+        "url": "z_5572d48a2e7ed70e_tenant_middleware_py.html",
+        "file": "services/shared/middleware/tenant_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 207,
+          "n_excluded": 38,
+          "n_missing": 207,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_ml_routing_optimizer_py": {
+      "hash": "80dd19cf715b69d52fa744f6aa97a90d",
+      "index": {
+        "url": "z_010f330266fb53be_ml_routing_optimizer_py.html",
+        "file": "services/shared/ml_routing_optimizer.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 203,
+          "n_excluded": 0,
+          "n_missing": 203,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_62bb792f3c569c05___init___py": {
+      "hash": "9b5324acefa61884df032fa11359cc1a",
+      "index": {
+        "url": "z_62bb792f3c569c05___init___py.html",
+        "file": "services/shared/models/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 1,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_62bb792f3c569c05_api_models_py": {
+      "hash": "72b1734a520001f042c07afe6c09f661",
+      "index": {
+        "url": "z_62bb792f3c569c05_api_models_py.html",
+        "file": "services/shared/models/api_models.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 130,
+          "n_excluded": 115,
+          "n_missing": 130,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_62bb792f3c569c05_multi_tenant_py": {
+      "hash": "c7f45c37b1100d86bb3a42e238669ded",
+      "index": {
+        "url": "z_62bb792f3c569c05_multi_tenant_py.html",
+        "file": "services/shared/models/multi_tenant.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 182,
+          "n_excluded": 1,
+          "n_missing": 182,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_678f586c5c6e7f9e___init___py": {
+      "hash": "019f23d7241beffda056233685c768dc",
+      "index": {
+        "url": "z_678f586c5c6e7f9e___init___py.html",
+        "file": "services/shared/monitoring/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 2,
+          "n_excluded": 0,
+          "n_missing": 2,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_678f586c5c6e7f9e_advanced_metrics_collector_py": {
+      "hash": "32ac8cf06ed6ae544e174fe9aa8cde18",
+      "index": {
+        "url": "z_678f586c5c6e7f9e_advanced_metrics_collector_py.html",
+        "file": "services/shared/monitoring/advanced_metrics_collector.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 477,
+          "n_excluded": 3,
+          "n_missing": 477,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_678f586c5c6e7f9e_enhanced_performance_monitor_py": {
+      "hash": "cd3f569f1cc9be0eccd1611730ddfd9d",
+      "index": {
+        "url": "z_678f586c5c6e7f9e_enhanced_performance_monitor_py.html",
+        "file": "services/shared/monitoring/enhanced_performance_monitor.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 239,
+          "n_excluded": 4,
+          "n_missing": 239,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_678f586c5c6e7f9e_human_intervention_tracker_py": {
+      "hash": "5dd57536a1cb8f9fd500a40ac56b7c7c",
+      "index": {
+        "url": "z_678f586c5c6e7f9e_human_intervention_tracker_py.html",
+        "file": "services/shared/monitoring/human_intervention_tracker.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 636,
+          "n_excluded": 3,
+          "n_missing": 636,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_678f586c5c6e7f9e_intelligent_alerting_system_py": {
+      "hash": "f87fb867245a8747927d28107817867f",
+      "index": {
+        "url": "z_678f586c5c6e7f9e_intelligent_alerting_system_py.html",
+        "file": "services/shared/monitoring/intelligent_alerting_system.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 338,
+          "n_excluded": 1,
+          "n_missing": 338,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_678f586c5c6e7f9e_model_drift_detector_py": {
+      "hash": "fd74c287095ff8b98772c2309fa5014f",
+      "index": {
+        "url": "z_678f586c5c6e7f9e_model_drift_detector_py.html",
+        "file": "services/shared/monitoring/model_drift_detector.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 620,
+          "n_excluded": 3,
+          "n_missing": 620,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_performance_monitoring_py": {
+      "hash": "ce56a09b9b1f246fb838cac79ade198d",
+      "index": {
+        "url": "z_010f330266fb53be_performance_monitoring_py.html",
+        "file": "services/shared/performance_monitoring.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 269,
+          "n_excluded": 1,
+          "n_missing": 269,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_performance_optimizer_py": {
+      "hash": "ccc13ea1c960c1fa287375559abe25e8",
+      "index": {
+        "url": "z_010f330266fb53be_performance_optimizer_py.html",
+        "file": "services/shared/performance_optimizer.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 237,
+          "n_excluded": 0,
+          "n_missing": 237,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_redis_client_py": {
+      "hash": "fd8574fc5ee3e1972f8cc2d425edf51f",
+      "index": {
+        "url": "z_010f330266fb53be_redis_client_py.html",
+        "file": "services/shared/redis_client.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 142,
+          "n_excluded": 1,
+          "n_missing": 142,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_1335b19d2ae504d7___init___py": {
+      "hash": "e9d3613ba50660372745f4fd614d2e8d",
+      "index": {
+        "url": "z_1335b19d2ae504d7___init___py.html",
+        "file": "services/shared/resource_management/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 2,
+          "n_excluded": 0,
+          "n_missing": 2,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_1335b19d2ae504d7_enhanced_resource_manager_py": {
+      "hash": "9db956de04d2ee7731ba58da5321c3ce",
+      "index": {
+        "url": "z_1335b19d2ae504d7_enhanced_resource_manager_py.html",
+        "file": "services/shared/resource_management/enhanced_resource_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 312,
+          "n_excluded": 3,
+          "n_missing": 312,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_1335b19d2ae504d7_memory_isolation_py": {
+      "hash": "1063eb8be162f08ab3777649631af629",
+      "index": {
+        "url": "z_1335b19d2ae504d7_memory_isolation_py.html",
+        "file": "services/shared/resource_management/memory_isolation.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 286,
+          "n_excluded": 4,
+          "n_missing": 286,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_robust_coordination_metrics_py": {
+      "hash": "f68afb3692179c741802887dd63784d9",
+      "index": {
+        "url": "z_010f330266fb53be_robust_coordination_metrics_py.html",
+        "file": "services/shared/robust_coordination_metrics.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 279,
+          "n_excluded": 0,
+          "n_missing": 279,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_secrets_manager_py": {
+      "hash": "a91da84b6363ab38b3bfb69b042bd1ff",
+      "index": {
+        "url": "z_010f330266fb53be_secrets_manager_py.html",
+        "file": "services/shared/secrets_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 67,
+          "n_excluded": 0,
+          "n_missing": 67,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d___init___py": {
+      "hash": "60817a9a7e855894124d438350a9bc70",
+      "index": {
+        "url": "z_2a630059d310111d___init___py.html",
+        "file": "services/shared/security/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 6,
+          "n_excluded": 2,
+          "n_missing": 6,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_auth_security_integration_py": {
+      "hash": "ed4e1897430335e2c4c0b5c3c0d60ecd",
+      "index": {
+        "url": "z_2a630059d310111d_auth_security_integration_py.html",
+        "file": "services/shared/security/auth_security_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 71,
+          "n_excluded": 155,
+          "n_missing": 71,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_csrf_protection_py": {
+      "hash": "3e7fe5faf8ada6d4bb426ac18faf83b8",
+      "index": {
+        "url": "z_2a630059d310111d_csrf_protection_py.html",
+        "file": "services/shared/security/csrf_protection.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 206,
+          "n_excluded": 2,
+          "n_missing": 206,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_enhanced_audit_logging_py": {
+      "hash": "9402c0697f66baa74ec836857f3ff38b",
+      "index": {
+        "url": "z_2a630059d310111d_enhanced_audit_logging_py.html",
+        "file": "services/shared/security/enhanced_audit_logging.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 333,
+          "n_excluded": 23,
+          "n_missing": 333,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_enhanced_encryption_py": {
+      "hash": "255ab80c2fbe0d6338ddb23b86d3a461",
+      "index": {
+        "url": "z_2a630059d310111d_enhanced_encryption_py.html",
+        "file": "services/shared/security/enhanced_encryption.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 320,
+          "n_excluded": 68,
+          "n_missing": 320,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_enhanced_rbac_py": {
+      "hash": "94f1cdd887ef2cc471616c05c1a6d730",
+      "index": {
+        "url": "z_2a630059d310111d_enhanced_rbac_py.html",
+        "file": "services/shared/security/enhanced_rbac.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 275,
+          "n_excluded": 10,
+          "n_missing": 275,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_middleware_integration_py": {
+      "hash": "81c94e9e3211c45c3f63641734220d19",
+      "index": {
+        "url": "z_2a630059d310111d_middleware_integration_py.html",
+        "file": "services/shared/security/middleware_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 92,
+          "n_excluded": 2,
+          "n_missing": 92,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_security_config_helper_py": {
+      "hash": "21d5861009c826245085a2387a26e0dd",
+      "index": {
+        "url": "z_2a630059d310111d_security_config_helper_py.html",
+        "file": "services/shared/security/security_config_helper.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 95,
+          "n_excluded": 0,
+          "n_missing": 95,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_2a630059d310111d_unified_input_validation_py": {
+      "hash": "c27961a35c36022d96b49c3ef5bcfe96",
+      "index": {
+        "url": "z_2a630059d310111d_unified_input_validation_py.html",
+        "file": "services/shared/security/unified_input_validation.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 332,
+          "n_excluded": 23,
+          "n_missing": 332,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_security_headers_middleware_py": {
+      "hash": "0049b2ad840a2f611c00667385988ff2",
+      "index": {
+        "url": "z_010f330266fb53be_security_headers_middleware_py.html",
+        "file": "services/shared/security_headers_middleware.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 14,
+          "n_excluded": 0,
+          "n_missing": 14,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_security_monitoring_py": {
+      "hash": "3a6f5961b1c1d250032f4ce20276f736",
+      "index": {
+        "url": "z_010f330266fb53be_security_monitoring_py.html",
+        "file": "services/shared/security_monitoring.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 45,
+          "n_excluded": 0,
+          "n_missing": 45,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_7769bc4b3ee9bfbf___init___py": {
+      "hash": "7f9cf13dd1c40596eaee12ca7e3d1610",
+      "index": {
+        "url": "z_7769bc4b3ee9bfbf___init___py.html",
+        "file": "services/shared/service_clients/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 0,
+          "n_excluded": 0,
+          "n_missing": 0,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_7769bc4b3ee9bfbf_base_client_py": {
+      "hash": "49fc0e94951af80566acd730ab389b1a",
+      "index": {
+        "url": "z_7769bc4b3ee9bfbf_base_client_py.html",
+        "file": "services/shared/service_clients/base_client.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 86,
+          "n_excluded": 5,
+          "n_missing": 86,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_7769bc4b3ee9bfbf_registry_py": {
+      "hash": "83caa636ec31cae063bbf0ac17ee47b9",
+      "index": {
+        "url": "z_7769bc4b3ee9bfbf_registry_py.html",
+        "file": "services/shared/service_clients/registry.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 37,
+          "n_excluded": 0,
+          "n_missing": 37,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848___init___py": {
+      "hash": "9c0b24aa1d53dc7e561288d0c6a3d4e2",
+      "index": {
+        "url": "z_3472c43e0b056848___init___py.html",
+        "file": "services/shared/service_mesh/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 6,
+          "n_excluded": 0,
+          "n_missing": 6,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_circuit_breaker_py": {
+      "hash": "546e7fa53664ae247b0888b67722f59a",
+      "index": {
+        "url": "z_3472c43e0b056848_circuit_breaker_py.html",
+        "file": "services/shared/service_mesh/circuit_breaker.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 162,
+          "n_excluded": 0,
+          "n_missing": 162,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_client_py": {
+      "hash": "2d74ca29aa56b6f9fe69551008bbf397",
+      "index": {
+        "url": "z_3472c43e0b056848_client_py.html",
+        "file": "services/shared/service_mesh/client.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 147,
+          "n_excluded": 1,
+          "n_missing": 147,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_common_types_py": {
+      "hash": "51664a91b18e67f69b1f2870d2ab5f17",
+      "index": {
+        "url": "z_3472c43e0b056848_common_types_py.html",
+        "file": "services/shared/service_mesh/common_types.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 61,
+          "n_excluded": 0,
+          "n_missing": 61,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_discovery_py": {
+      "hash": "4381ada428cbc25c47d4c5300d6791bd",
+      "index": {
+        "url": "z_3472c43e0b056848_discovery_py.html",
+        "file": "services/shared/service_mesh/discovery.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 257,
+          "n_excluded": 1,
+          "n_missing": 257,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_enhanced_service_stabilizer_py": {
+      "hash": "d4db2c2dbc64a71b4d4b2acc50b94a91",
+      "index": {
+        "url": "z_3472c43e0b056848_enhanced_service_stabilizer_py.html",
+        "file": "services/shared/service_mesh/enhanced_service_stabilizer.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 322,
+          "n_excluded": 1,
+          "n_missing": 322,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_failover_circuit_breaker_py": {
+      "hash": "b3c8c60fa6d410d12f937842f6f9ce1a",
+      "index": {
+        "url": "z_3472c43e0b056848_failover_circuit_breaker_py.html",
+        "file": "services/shared/service_mesh/failover_circuit_breaker.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 182,
+          "n_excluded": 1,
+          "n_missing": 182,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_governance_session_manager_py": {
+      "hash": "4ac0d8b3fe358f51d17ec032e052b76d",
+      "index": {
+        "url": "z_3472c43e0b056848_governance_session_manager_py.html",
+        "file": "services/shared/service_mesh/governance_session_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 202,
+          "n_excluded": 1,
+          "n_missing": 202,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_infrastructure_integration_py": {
+      "hash": "9d67985f3a03b1fa4908276d6746a0c3",
+      "index": {
+        "url": "z_3472c43e0b056848_infrastructure_integration_py.html",
+        "file": "services/shared/service_mesh/infrastructure_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 198,
+          "n_excluded": 1,
+          "n_missing": 198,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_load_balancer_py": {
+      "hash": "e18790fe15db0a86fea61e2714132827",
+      "index": {
+        "url": "z_3472c43e0b056848_load_balancer_py.html",
+        "file": "services/shared/service_mesh/load_balancer.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 141,
+          "n_excluded": 0,
+          "n_missing": 141,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_performance_monitor_py": {
+      "hash": "a728c47cb19c308c348789078cf6f927",
+      "index": {
+        "url": "z_3472c43e0b056848_performance_monitor_py.html",
+        "file": "services/shared/service_mesh/performance_monitor.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 254,
+          "n_excluded": 2,
+          "n_missing": 254,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_registry_py": {
+      "hash": "fdd350794691192d71f26cdc8f557d81",
+      "index": {
+        "url": "z_3472c43e0b056848_registry_py.html",
+        "file": "services/shared/service_mesh/registry.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 116,
+          "n_excluded": 0,
+          "n_missing": 116,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_3472c43e0b056848_service_orchestrator_py": {
+      "hash": "5473f2a51a9f3e339ec00261bc8f2a57",
+      "index": {
+        "url": "z_3472c43e0b056848_service_orchestrator_py.html",
+        "file": "services/shared/service_mesh/service_orchestrator.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 237,
+          "n_excluded": 0,
+          "n_missing": 237,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_service_registry_py": {
+      "hash": "9472f13a45a0dad11659a5ff742de19f",
+      "index": {
+        "url": "z_010f330266fb53be_service_registry_py.html",
+        "file": "services/shared/service_registry.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 211,
+          "n_excluded": 1,
+          "n_missing": 211,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_spurious_correlation_detector_py": {
+      "hash": "9b8cd058f0c992ab9470c91a8b3d320c",
+      "index": {
+        "url": "z_010f330266fb53be_spurious_correlation_detector_py.html",
+        "file": "services/shared/spurious_correlation_detector.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 240,
+          "n_excluded": 2,
+          "n_missing": 240,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_a81a9d2e545fd66c___init___py": {
+      "hash": "6672b7ea36b4945b13b8db1ce55debd8",
+      "index": {
+        "url": "z_a81a9d2e545fd66c___init___py.html",
+        "file": "services/shared/streaming/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 4,
+          "n_excluded": 0,
+          "n_missing": 4,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_a81a9d2e545fd66c_event_streaming_manager_py": {
+      "hash": "9f4ed92a275eda95ce1bf8501653bd21",
+      "index": {
+        "url": "z_a81a9d2e545fd66c_event_streaming_manager_py.html",
+        "file": "services/shared/streaming/event_streaming_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 480,
+          "n_excluded": 8,
+          "n_missing": 480,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_a81a9d2e545fd66c_example_usage_py": {
+      "hash": "0f9f8a0fc804ffa08823d896dcdd4a9b",
+      "index": {
+        "url": "z_a81a9d2e545fd66c_example_usage_py.html",
+        "file": "services/shared/streaming/example_usage.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 213,
+          "n_excluded": 4,
+          "n_missing": 213,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_a81a9d2e545fd66c_kafka_config_manager_py": {
+      "hash": "59cb8a18704a210dda490632df230f47",
+      "index": {
+        "url": "z_a81a9d2e545fd66c_kafka_config_manager_py.html",
+        "file": "services/shared/streaming/kafka_config_manager.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 279,
+          "n_excluded": 6,
+          "n_missing": 279,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_a81a9d2e545fd66c_kafka_integration_py": {
+      "hash": "e9acbdcdeb3e11d5385d26cca7e9f88c",
+      "index": {
+        "url": "z_a81a9d2e545fd66c_kafka_integration_py.html",
+        "file": "services/shared/streaming/kafka_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 476,
+          "n_excluded": 7,
+          "n_missing": 476,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_superclaude_performance_monitor_py": {
+      "hash": "ad2c22e8cc2668853bfcea99c13895a5",
+      "index": {
+        "url": "z_010f330266fb53be_superclaude_performance_monitor_py.html",
+        "file": "services/shared/superclaude_performance_monitor.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 175,
+          "n_excluded": 0,
+          "n_missing": 175,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_superclaude_persona_integration_py": {
+      "hash": "4aafe285b37a72a8f9ae9960cadb8ec2",
+      "index": {
+        "url": "z_010f330266fb53be_superclaude_persona_integration_py.html",
+        "file": "services/shared/superclaude_persona_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 103,
+          "n_excluded": 5,
+          "n_missing": 103,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_bf2b44dc8fad825b___init___py": {
+      "hash": "e4ad03d824c6905f13778c15206780e8",
+      "index": {
+        "url": "z_bf2b44dc8fad825b___init___py.html",
+        "file": "services/shared/types/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 1,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_20c7d1ec8123abaf___init___py": {
+      "hash": "2a87e1af0cfa4122855bb3ce8c4362c9",
+      "index": {
+        "url": "z_20c7d1ec8123abaf___init___py.html",
+        "file": "services/shared/utils/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 1,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_20c7d1ec8123abaf_cleanup_dead_code_py": {
+      "hash": "b37bdb11cb60f629320b8baa8491bd1b",
+      "index": {
+        "url": "z_20c7d1ec8123abaf_cleanup_dead_code_py.html",
+        "file": "services/shared/utils/cleanup_dead_code.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 129,
+          "n_excluded": 8,
+          "n_missing": 129,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_20c7d1ec8123abaf_http_client_py": {
+      "hash": "e48b0f5564f76382ac256e4733e03383",
+      "index": {
+        "url": "z_20c7d1ec8123abaf_http_client_py.html",
+        "file": "services/shared/utils/http_client.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 240,
+          "n_excluded": 0,
+          "n_missing": 240,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_20c7d1ec8123abaf_jwt_utils_py": {
+      "hash": "9712200c5676dd26aee04df726d44833",
+      "index": {
+        "url": "z_20c7d1ec8123abaf_jwt_utils_py.html",
+        "file": "services/shared/utils/jwt_utils.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 38,
+          "n_excluded": 0,
+          "n_missing": 38,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_validation_helpers_py": {
+      "hash": "e75b79b4040cd2846ace9a1e0934b4ba",
+      "index": {
+        "url": "z_010f330266fb53be_validation_helpers_py.html",
+        "file": "services/shared/validation_helpers.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 116,
+          "n_excluded": 2,
+          "n_missing": 116,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_010f330266fb53be_validation_models_py": {
+      "hash": "285b44f5dce71514fdfa24ff9645af5e",
+      "index": {
+        "url": "z_010f330266fb53be_validation_models_py.html",
+        "file": "services/shared/validation_models.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 113,
+          "n_excluded": 50,
+          "n_missing": 113,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da___init___py": {
+      "hash": "7934cd0efd46251908927cfe4711cfef",
+      "index": {
+        "url": "z_dcdd9d041504a2da___init___py.html",
+        "file": "services/shared/wina/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 11,
+          "n_excluded": 0,
+          "n_missing": 11,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_config_py": {
+      "hash": "72f84e4bb464986ca4c3a5f2cfc0cccb",
+      "index": {
+        "url": "z_dcdd9d041504a2da_config_py.html",
+        "file": "services/shared/wina/config.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 84,
+          "n_excluded": 0,
+          "n_missing": 84,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_constitutional_integration_py": {
+      "hash": "72e19d6fffd51b97c91876fba433cff3",
+      "index": {
+        "url": "z_dcdd9d041504a2da_constitutional_integration_py.html",
+        "file": "services/shared/wina/constitutional_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 461,
+          "n_excluded": 0,
+          "n_missing": 461,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_continuous_learning_py": {
+      "hash": "2939928856f48b9a05aaa421c4c8b1d7",
+      "index": {
+        "url": "z_dcdd9d041504a2da_continuous_learning_py.html",
+        "file": "services/shared/wina/continuous_learning.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 503,
+          "n_excluded": 11,
+          "n_missing": 503,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_core_py": {
+      "hash": "f82c225336801f9b702600120f26087a",
+      "index": {
+        "url": "z_dcdd9d041504a2da_core_py.html",
+        "file": "services/shared/wina/core.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 163,
+          "n_excluded": 1,
+          "n_missing": 163,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_dashboard_py": {
+      "hash": "82337bb7c43a821cc5467d14b94d0423",
+      "index": {
+        "url": "z_dcdd9d041504a2da_dashboard_py.html",
+        "file": "services/shared/wina/dashboard.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 322,
+          "n_excluded": 2,
+          "n_missing": 322,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_exceptions_py": {
+      "hash": "00c642ca164d238ba3ed337fae2609bb",
+      "index": {
+        "url": "z_dcdd9d041504a2da_exceptions_py.html",
+        "file": "services/shared/wina/exceptions.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 8,
+          "n_excluded": 0,
+          "n_missing": 8,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_gating_py": {
+      "hash": "827791bcc914e4c1f9ea6a93b8237054",
+      "index": {
+        "url": "z_dcdd9d041504a2da_gating_py.html",
+        "file": "services/shared/wina/gating.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 347,
+          "n_excluded": 0,
+          "n_missing": 347,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_learning_api_py": {
+      "hash": "d62f9b472dfc6f8b0a2b4c082b2f118a",
+      "index": {
+        "url": "z_dcdd9d041504a2da_learning_api_py.html",
+        "file": "services/shared/wina/learning_api.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 55,
+          "n_excluded": 6,
+          "n_missing": 55,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_metrics_py": {
+      "hash": "f4ebcec189f4579060b2a74a48d1bf03",
+      "index": {
+        "url": "z_dcdd9d041504a2da_metrics_py.html",
+        "file": "services/shared/wina/metrics.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 167,
+          "n_excluded": 4,
+          "n_missing": 167,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_model_integration_py": {
+      "hash": "cbb0f5c2544ebb2bb4716a3ebbce0054",
+      "index": {
+        "url": "z_dcdd9d041504a2da_model_integration_py.html",
+        "file": "services/shared/wina/model_integration.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 219,
+          "n_excluded": 18,
+          "n_missing": 219,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_performance_monitoring_py": {
+      "hash": "8959cf210dceb10d4946c6855d168976",
+      "index": {
+        "url": "z_dcdd9d041504a2da_performance_monitoring_py.html",
+        "file": "services/shared/wina/performance_monitoring.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 473,
+          "n_excluded": 2,
+          "n_missing": 473,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_dcdd9d041504a2da_svd_transformation_py": {
+      "hash": "23acbd90827c08c5b101b495eacb15a9",
+      "index": {
+        "url": "z_dcdd9d041504a2da_svd_transformation_py.html",
+        "file": "services/shared/wina/svd_transformation.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 148,
+          "n_excluded": 2,
+          "n_missing": 148,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_8c75beec1267dd47___init___py": {
+      "hash": "d4f01896ec8532092c9896a45c25f9bf",
+      "index": {
+        "url": "z_8c75beec1267dd47___init___py.html",
+        "file": "services/platform_services/integrity/integrity_service/app/__init__.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 1,
+          "n_excluded": 0,
+          "n_missing": 0,
+          "n_branches": 0,
+          "n_partial_branches": 0,
+          "n_missing_branches": 0
+        }
+      }
+    },
+    "z_8c75beec1267dd47_main_py": {
+      "hash": "a8cc7157d565ee2125032cb05058cafd",
+      "index": {
+        "url": "z_8c75beec1267dd47_main_py.html",
+        "file": "services/platform_services/integrity/integrity_service/app/main.py",
+        "description": "",
+        "nums": {
+          "precision": 2,
+          "n_files": 1,
+          "n_statements": 240,
+          "n_excluded": 24,
+          "n_missing": 232,
+          "n_branches": 12,
+          "n_partial_branches": 0,
+          "n_missing_branches": 12
+        }
+      }
+    }
+  }
+}

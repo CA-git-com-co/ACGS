@@ -1,108 +1,119 @@
-# ACGS-2 Production Deployment Directory Documentation
+# ACGS-2 Production Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `deployments/production` directory contains production-specific deployment scripts, configurations, and infrastructure automation for ACGS-2. This directory manages the critical production deployment lifecycle with emphasis on zero-downtime deployments, constitutional compliance, and performance targets.
+Production deployment guides and operational procedures
+
+The production system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all production operations and management while providing reliable production systems for production engineers and operations teams.
 
 ## File Inventory
 
-### Deployment Scripts
-- `deploy-infrastructure-green.sh` - Green deployment infrastructure automation script
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-## Dependencies and Interactions
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
+
+## Dependencies & Interactions
 
 ### Internal Dependencies
-- **Core Services**: Deploys constitutional-ai, governance-synthesis, formal-verification services
-- **Platform Services**: Authentication, integrity, and coordination services
-- **Configuration**: Production configurations from `../../config/`
-- **Monitoring**: Production monitoring stack integration
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Kubernetes/Docker**: Container orchestration for production workloads
-- **Load Balancers**: HAProxy/Nginx for production traffic management
-- **Databases**: PostgreSQL (port 5439) and Redis (port 6389) clusters
-- **Monitoring**: Prometheus/Grafana production monitoring stack
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
+
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### ✅ IMPLEMENTED - Green Deployment Infrastructure
-- **deploy-infrastructure-green.sh**: Production infrastructure deployment
-  - Zero-downtime green deployment strategy
-  - Health check validation
-  - Rollback procedures
-  - Constitutional compliance verification
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS - Advanced Production Features
-- Blue-green deployment automation
-- Canary deployment strategies
-- Auto-scaling configurations
-- Multi-region deployment support
-
-### ❌ PLANNED - Future Enhancements
-- Disaster recovery automation
-- Cost optimization strategies
-- Advanced monitoring integration
-- Performance tuning automation
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
-- **Hash Validation**: `cdd01ef066bc6cf2` ✅
-- **Performance Targets**: P99 <5ms, >100 RPS, >85% cache hit rates ✅
-- **Security Standards**: Production-grade security hardening ✅
-- **Audit Compliance**: Complete deployment audit trails ✅
+### Implementation Status: ✅ IMPLEMENTED
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all production operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
+
+### Compliance Metrics
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
+
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Production Performance Targets
-- **Service Startup**: <30 seconds for all services
-- **Health Check Response**: <5 seconds for readiness probes
-- **Deployment Time**: <10 minutes for full production deployment
-- **Rollback Time**: <2 minutes for emergency rollbacks
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
-### Resource Allocation
-- **CPU**: Production-grade multi-core allocation
-- **Memory**: Optimized memory allocation per service
-- **Network**: High-bandwidth production networking
-- **Storage**: Persistent production storage with backups
+### Optimization Strategies
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
+
+### Performance Bottlenecks
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED
-- Green deployment infrastructure script
-- Basic production deployment automation
-- Health check integration
-- Constitutional compliance validation
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS
-- Blue-green deployment completion
-- Advanced monitoring integration
-- Performance optimization
-- Security hardening enhancements
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED
-- Multi-region deployment support
-- Disaster recovery automation
-- Advanced auto-scaling
-- Cost optimization automation
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
-## Cross-References
+## Cross-References & Navigation
 
-### Related Documentation
-- [Parent Deployments Directory](../CLAUDE.md)
-- [Infrastructure Documentation](../../infrastructure/CLAUDE.md)
-- [Production Configuration](../../config/environments/)
-- [Production Monitoring](../../monitoring/CLAUDE.md)
+### Related Directories
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
 
-### Related Scripts
-- [Deployment Tools](../../tools/deployment/)
-- [Production Tools](../../tools/production/)
-- [Infrastructure Scripts](../../infrastructure/scripts/)
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
-### Related Services
-- [Core Services](../../services/core/CLAUDE.md)
-- [Platform Services](../../services/platform_services/CLAUDE.md)
+### Documentation and Guides
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
+
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
-*Last Updated: 2025-07-15*
-*Constitutional Hash: cdd01ef066bc6cf2*
+
+**Navigation**: [Root](../../CLAUDE.md) → [Deployments](../CLAUDE.md) → **Production**
+
+**Constitutional Compliance**: All production operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
+
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

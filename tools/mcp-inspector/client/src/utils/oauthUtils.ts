@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 // The parsed query parameters returned by the Authorization Server
 // representing either a valid authorization_code or an error
 // ref: https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1-12#section-4.1.2

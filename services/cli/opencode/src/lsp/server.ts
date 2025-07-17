@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { spawn, type ChildProcessWithoutNullStreams } from "child_process"
 import type { App } from "../app/app"
 import path from "path"

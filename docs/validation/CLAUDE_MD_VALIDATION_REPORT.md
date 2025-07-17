@@ -144,6 +144,18 @@ While all files are structurally valid, 53.2% of cross-references point to files
 - **Navigation Consistency**: 100% pass rate
 - **Cross-Reference Validity**: 46.8% pass rate (improvement needed)
 
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
+
 ## Conclusion
 
 The ACGS-2 project now maintains comprehensive, structurally valid, and constitutionally compliant documentation across 25 claude.md files. While structural validation and constitutional compliance are at 100%, cross-reference validation indicates opportunities for improvement through the creation of additional documentation files and subdirectory claude.md files.

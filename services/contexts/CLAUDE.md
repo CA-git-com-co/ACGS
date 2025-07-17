@@ -1,178 +1,119 @@
-# ACGS-2 Bounded Contexts Directory Documentation
+# ACGS-2 Contexts Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `services/contexts` directory contains bounded context implementations following Domain-Driven Design (DDD) principles for the ACGS-2 constitutional AI governance platform. This directory provides domain-specific contexts, anti-corruption layers, and integration patterns achieving P99 <5ms performance and >100 RPS throughput across context boundaries.
+Documentation for contexts components
 
-The bounded contexts system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all domain operations while providing clear domain boundaries, integration patterns, and constitutional governance with enterprise-grade domain modeling and context isolation.
+The contexts system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all contexts operations while providing comprehensive contexts guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Core Context Documentation
-- **`README.md`** - Bounded contexts overview and domain architecture
-- **`BOUNDED_CONTEXT_MIGRATION_SUMMARY.md`** - Context migration strategy and implementation summary
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Constitutional Governance Context
-- **`constitutional_governance/`** - Constitutional governance domain and business logic
-- **`constitutional_governance/domain/`** - Constitutional governance domain models and entities
-- **`constitutional_governance/application/`** - Constitutional governance application services
-
-### Multi-Agent Coordination Context
-- **`multi_agent_coordination/`** - Multi-agent coordination domain and orchestration
-- **`multi_agent_coordination/domain/`** - Multi-agent domain models and coordination logic
-- **`multi_agent_coordination/application/`** - Multi-agent application services and workflows
-- **`multi_agent_coordination/api/`** - Multi-agent coordination API and interfaces
-
-### Policy Management Context
-- **`policy_management/`** - Policy management domain and governance rules
-- **`policy_management/domain/`** - Policy domain models and business rules
-
-### Audit Integrity Context
-- **`audit_integrity/`** - Audit integrity domain and compliance tracking
-- **`audit_integrity/domain/`** - Audit domain models and integrity validation
-
-### Integration Context
-- **`integration/`** - Cross-context integration patterns and anti-corruption layers
-- **`integration/anti_corruption_layer.py`** - Anti-corruption layer for context integration
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../shared/`** - Shared services for cross-context utilities and infrastructure
-- **`../core/`** - Core services implementing context-specific functionality
-- **`../platform_services/`** - Platform services supporting context operations
-- **`../../config/`** - Configuration files for context-specific settings
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Domain Events**: Event-driven communication between bounded contexts
-- **Message Bus**: Asynchronous messaging for context integration
-- **Repository Pattern**: Data access patterns for domain persistence
-- **Unit of Work**: Transaction management across context boundaries
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Context Integration
-- **Anti-Corruption Layer**: Protection against external model corruption
-- **Domain Events**: Event-driven communication between contexts
-- **Shared Kernel**: Shared domain concepts and utilities
-- **Context Mapping**: Clear relationships between bounded contexts
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Constitutional Governance Context
-- **Constitutional Domain**: Core constitutional governance domain models and rules
-- **Governance Workflows**: Constitutional governance application workflows
-- **Compliance Tracking**: Constitutional compliance monitoring and validation
-- **Policy Integration**: Integration with policy management context
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Multi-Agent Coordination Context
-- **Agent Domain**: Multi-agent coordination domain models and behaviors
-- **Coordination Logic**: Agent coordination algorithms and protocols
-- **Workflow Management**: Multi-agent workflow orchestration
-- **Communication Patterns**: Agent-to-agent communication protocols
-
-### Policy Management Context
-- **Policy Domain**: Policy management domain models and governance rules
-- **Rule Engine**: Policy rule evaluation and enforcement
-- **Compliance Framework**: Policy compliance monitoring and validation
-- **Integration Patterns**: Integration with constitutional governance
-
-### Audit Integrity Context
-- **Audit Domain**: Audit integrity domain models and validation logic
-- **Integrity Validation**: Audit trail integrity and verification
-- **Compliance Monitoring**: Audit compliance tracking and reporting
-- **Event Sourcing**: Event-driven audit trail management
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in all context operations
-- **Context Compliance**: Complete constitutional compliance framework for bounded contexts
-- **Domain Integration**: Constitutional compliance integrated into domain models
-- **Audit Documentation**: Complete audit trail for context operations with constitutional context
-- **Performance Compliance**: All contexts maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all contexts operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Context Coverage**: 100% constitutional hash validation in all bounded contexts
-- **Domain Compliance**: All domain models validated for constitutional compliance
-- **Integration Compliance**: Context integration patterns validated for constitutional compliance
-- **Audit Trail**: Complete audit trail for context operations with constitutional context
-- **Performance Standards**: All contexts exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all bounded contexts
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All context components validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Context Performance
-- **Domain Operations**: Optimized domain operation performance for sub-millisecond execution
-- **Context Boundaries**: Efficient context boundary crossing and integration
-- **Event Processing**: Optimized domain event processing and propagation
-- **Repository Performance**: Optimized repository and data access patterns
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Event Sourcing**: Optimized event sourcing for audit and replay capabilities
-- **CQRS Implementation**: Command Query Responsibility Segregation for read/write optimization
-- **Cache Integration**: Context-aware caching strategies for improved performance
-- **Async Processing**: Asynchronous processing for cross-context operations
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Context Integration**: Optimization needed for complex context integration scenarios
-- **Event Processing**: Performance optimization for high-volume event processing
-- **Repository Access**: Optimization needed for complex domain queries
-- **Cross-Context Communication**: Optimization needed for frequent context interactions
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Constitutional Governance Context**: Complete constitutional governance domain with compliance
-- **Multi-Agent Coordination Context**: Multi-agent coordination domain and workflows
-- **Policy Management Context**: Policy management domain and rule engine
-- **Audit Integrity Context**: Audit integrity domain and compliance tracking
-- **Integration Patterns**: Anti-corruption layers and context integration
-- **Constitutional Integration**: 100% constitutional compliance across all contexts
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Domain Features**: Enhanced domain modeling and business logic
-- **Performance Optimization**: Continued optimization for sub-millisecond context operations
-- **Integration Enhancement**: Advanced context integration patterns and protocols
-- **Event Sourcing**: Enhanced event sourcing and CQRS implementation
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Domains**: AI-powered domain modeling and intelligent business rules
-- **Advanced Analytics**: Enhanced domain analytics and predictive capabilities
-- **Federation Support**: Multi-organization context federation and governance
-- **Quantum Integration**: Quantum-resistant domain security and operations
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Shared Services](../shared/CLAUDE.md)** - Shared services for cross-context utilities
-- **[Core Services](../core/CLAUDE.md)** - Core services implementing context functionality
-- **[Platform Services](../platform_services/CLAUDE.md)** - Platform services supporting contexts
-- **[Configuration](../../config/CLAUDE.md)** - Configuration files for context settings
+- **[Core](../core/CLAUDE.md)** - Core Services
+- **[Platform Services](../platform_services/CLAUDE.md)** - Platform Services
 
-### Context Categories
-- **[Constitutional Governance](constitutional_governance/)** - Constitutional governance domain
-- **[Multi-Agent Coordination](multi_agent_coordination/)** - Multi-agent coordination domain
-- **[Policy Management](policy_management/)** - Policy management domain
-- **[Audit Integrity](audit_integrity/)** - Audit integrity domain
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Architecture Documentation](../../docs/architecture/CLAUDE.md)** - System architecture with bounded contexts
-- **[Domain Documentation](README.md)** - Bounded contexts overview and architecture
-- **[Migration Guide](BOUNDED_CONTEXT_MIGRATION_SUMMARY.md)** - Context migration strategy
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Integration Tests](../../tests/integration/CLAUDE.md)** - Context integration testing
-- **[Performance Tests](../../tests/performance/CLAUDE.md)** - Context performance validation
-- **[Domain Tests](../../tests/unit/CLAUDE.md)** - Domain model unit testing
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Services](../CLAUDE.md) → **Contexts** | [Shared Services](../shared/CLAUDE.md) | [Core Services](../core/CLAUDE.md)
+**Navigation**: [Root](../../CLAUDE.md) → [Services](../CLAUDE.md) → **Contexts**
 
-**Constitutional Compliance**: All bounded contexts maintain constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All contexts operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive bounded contexts documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

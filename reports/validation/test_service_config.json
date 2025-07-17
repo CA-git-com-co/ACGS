@@ -1,0 +1,666 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "discovery_timestamp": "2025-07-11T00:00:00Z",
+  "services": {
+    "auth-service": {
+      "name": "auth_service",
+      "logical_name": "auth-service",
+      "path": "/home/dislove/ACGS-2/services/platform_services/authentication/auth_service",
+      "service_type": "platform_services",
+      "main_files": [
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "asyncpg",
+        "sqlalchemy[asyncio]",
+        "alembic",
+        "pydantic",
+        "pydantic-settings",
+        "python-jose[cryptography]",
+        "passlib[bcrypt]",
+        "python-multipart",
+        "aioredis",
+        "httpx",
+        "cryptography",
+        "prometheus-client",
+        "ecdsa",
+        "torch",
+        "requests",
+        "urllib3",
+        "certifi",
+        "setuptools"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 95.0,
+      "priority": "critical"
+    },
+    "integrity-service": {
+      "name": "integrity_service",
+      "logical_name": "integrity-service",
+      "path": "/home/dislove/ACGS-2/services/platform_services/integrity/integrity_service",
+      "service_type": "platform_services",
+      "main_files": [
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "pydantic",
+        "asyncpg",
+        "cryptography",
+        "structlog",
+        "prometheus-client",
+        "aioredis",
+        "httpx",
+        "python-multipart"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 98.0,
+      "priority": "critical"
+    },
+    "api-gateway": {
+      "name": "gateway_service",
+      "logical_name": "api-gateway",
+      "path": "/home/dislove/ACGS-2/services/platform_services/api_gateway/gateway_service",
+      "service_type": "platform_services",
+      "main_files": [
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/platform_services/api_gateway/gateway_service/tests"
+      ],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "pydantic",
+        "aioredis",
+        "asyncpg",
+        "sqlalchemy[asyncio]",
+        "prometheus-client",
+        "structlog",
+        "httpx",
+        "tenacity",
+        "python-jose[cryptography]",
+        "passlib[bcrypt]",
+        "python-multipart",
+        "slowapi"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 92.0,
+      "priority": "critical"
+    },
+    "ac-service": {
+      "name": "ac_service",
+      "logical_name": "ac-service",
+      "path": "/home/dislove/ACGS-2/services/core/constitutional-ai/ac_service",
+      "service_type": "core",
+      "main_files": [
+        "main.py",
+        "__init__.py",
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/constitutional-ai/ac_service/tests"
+      ],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 99.0,
+      "priority": "high"
+    },
+    "gs-service": {
+      "name": "gs_service",
+      "logical_name": "gs-service",
+      "path": "/home/dislove/ACGS-2/services/core/governance-synthesis/gs_service",
+      "service_type": "core",
+      "main_files": [
+        "main.py",
+        "__init__.py",
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/governance-synthesis/gs_service/tests"
+      ],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 90.0,
+      "priority": "high"
+    },
+    "fv-service": {
+      "name": "fv_service",
+      "logical_name": "fv-service",
+      "path": "/home/dislove/ACGS-2/services/core/formal-verification/fv_service",
+      "service_type": "core",
+      "main_files": [
+        "main.py",
+        "__init__.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/formal-verification/fv_service/tests"
+      ],
+      "config_files": [],
+      "dependencies": [
+        "uvicorn",
+        "python-jose",
+        "z3-solver",
+        "fastapi",
+        "sqlalchemy",
+        "asyncio-mqtt",
+        "ecdsa",
+        "torch",
+        "cryptography",
+        "requests",
+        "urllib3",
+        "certifi",
+        "setuptools"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 95.0,
+      "priority": "high"
+    },
+    "pgc-service": {
+      "name": "pgc_service",
+      "logical_name": "pgc-service",
+      "path": "/home/dislove/ACGS-2/services/core/policy-governance/pgc_service",
+      "service_type": "core",
+      "main_files": [
+        "main.py",
+        "__init__.py",
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/policy-governance/pgc_service/tests"
+      ],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 93.0,
+      "priority": "high"
+    },
+    "ec-service": {
+      "name": "ec_service",
+      "logical_name": "ec-service",
+      "path": "/home/dislove/ACGS-2/services/core/evolutionary-computation/ec_service",
+      "service_type": "core",
+      "main_files": [
+        "main.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 88.0,
+      "priority": "medium"
+    },
+    "context-service": {
+      "name": "context_service",
+      "logical_name": "context-service",
+      "path": "/home/dislove/ACGS-2/services/core/context/context_service",
+      "service_type": "core",
+      "main_files": [
+        "main.py",
+        "__init__.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 85.0,
+      "priority": "medium"
+    },
+    "worker-agents": {
+      "name": "worker_agents",
+      "logical_name": "worker-agents",
+      "path": "/home/dislove/ACGS-2/services/core/worker_agents",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 80.0,
+      "priority": "medium"
+    },
+    "auto-evolutionary-computation": {
+      "name": "evolutionary-computation",
+      "logical_name": "auto-evolutionary-computation",
+      "path": "/home/dislove/ACGS-2/services/core/evolutionary-computation",
+      "service_type": "core",
+      "main_files": [
+        "main.py",
+        "__init__.py",
+        "app/main.py",
+        "app/__init__.py",
+        "src/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/evolutionary-computation/tests"
+      ],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "pydantic",
+        "asyncpg",
+        "sqlalchemy",
+        "aioredis",
+        "httpx",
+        "structlog",
+        "prometheus-client",
+        "python-multipart",
+        "python-jose",
+        "ecdsa",
+        "cryptography",
+        "requests",
+        "urllib3",
+        "certifi",
+        "setuptools",
+        "pytest",
+        "pytest-asyncio"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-policy-governance": {
+      "name": "policy-governance",
+      "logical_name": "auto-policy-governance",
+      "path": "/home/dislove/ACGS-2/services/core/policy-governance",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py",
+        "src/__init__.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-xai-integration": {
+      "name": "xai-integration",
+      "logical_name": "auto-xai-integration",
+      "path": "/home/dislove/ACGS-2/services/core/xai-integration",
+      "service_type": "core",
+      "main_files": [],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-code-analysis": {
+      "name": "code-analysis",
+      "logical_name": "auto-code-analysis",
+      "path": "/home/dislove/ACGS-2/services/core/code-analysis",
+      "service_type": "core",
+      "main_files": [],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-formal-verification": {
+      "name": "formal-verification",
+      "logical_name": "auto-formal-verification",
+      "path": "/home/dislove/ACGS-2/services/core/formal-verification",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py",
+        "src/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/formal-verification/tests"
+      ],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-governance-engine": {
+      "name": "governance-engine",
+      "logical_name": "auto-governance-engine",
+      "path": "/home/dislove/ACGS-2/services/core/governance-engine",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py",
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/governance-engine/tests"
+      ],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "pydantic",
+        "aioredis",
+        "asyncpg",
+        "sqlalchemy[asyncio]",
+        "prometheus-client",
+        "structlog",
+        "httpx",
+        "tenacity",
+        "numpy",
+        "scipy"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-constitutional-ai": {
+      "name": "constitutional-ai",
+      "logical_name": "auto-constitutional-ai",
+      "path": "/home/dislove/ACGS-2/services/core/constitutional-ai",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py",
+        "src/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/constitutional-ai/tests"
+      ],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-governance-synthesis": {
+      "name": "governance-synthesis",
+      "logical_name": "auto-governance-synthesis",
+      "path": "/home/dislove/ACGS-2/services/core/governance-synthesis",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py",
+        "src/__init__.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-agent-hitl": {
+      "name": "agent-hitl",
+      "logical_name": "auto-agent-hitl",
+      "path": "/home/dislove/ACGS-2/services/core/agent-hitl",
+      "service_type": "core",
+      "main_files": [],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [],
+      "health_endpoint": "/health",
+      "constitutional_compliance": false,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-constitutional-core": {
+      "name": "constitutional-core",
+      "logical_name": "auto-constitutional-core",
+      "path": "/home/dislove/ACGS-2/services/core/constitutional-core",
+      "service_type": "core",
+      "main_files": [
+        "__init__.py",
+        "app/main.py",
+        "app/__init__.py"
+      ],
+      "test_paths": [
+        "services/core/constitutional-core/tests"
+      ],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "pydantic",
+        "aioredis",
+        "asyncpg",
+        "sqlalchemy[asyncio]",
+        "alembic",
+        "prometheus-client",
+        "structlog",
+        "httpx",
+        "tenacity",
+        "cryptography",
+        "jose[cryptography]",
+        "passlib[bcrypt]",
+        "python-multipart",
+        "python-jose[cryptography]"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    },
+    "auto-audit_aggregator": {
+      "name": "audit_aggregator",
+      "logical_name": "auto-audit_aggregator",
+      "path": "/home/dislove/ACGS-2/services/platform_services/audit_aggregator",
+      "service_type": "platform_services",
+      "main_files": [
+        "main.py"
+      ],
+      "test_paths": [],
+      "config_files": [],
+      "dependencies": [
+        "fastapi",
+        "uvicorn[standard]",
+        "pydantic",
+        "sqlalchemy[asyncio]",
+        "asyncpg",
+        "redis[hiredis]",
+        "cryptography",
+        "passlib[bcrypt]",
+        "prometheus-client",
+        "structlog",
+        "pytest",
+        "pytest-asyncio",
+        "pytest-cov",
+        "httpx"
+      ],
+      "health_endpoint": "/health",
+      "constitutional_compliance": true,
+      "coverage_target": 75.0,
+      "priority": "low"
+    }
+  },
+  "dependency_graph": {
+    "auth-service": {
+      "depends_on": [],
+      "dependents": [
+        "pgc-service",
+        "auto-policy-governance"
+      ]
+    },
+    "integrity-service": {
+      "depends_on": [],
+      "dependents": [
+        "fv-service",
+        "pgc-service",
+        "auto-policy-governance",
+        "auto-formal-verification"
+      ]
+    },
+    "api-gateway": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "ac-service": {
+      "depends_on": [],
+      "dependents": [
+        "gs-service",
+        "fv-service",
+        "auto-evolutionary-computation",
+        "auto-formal-verification",
+        "auto-governance-synthesis"
+      ]
+    },
+    "gs-service": {
+      "depends_on": [
+        "ac-service"
+      ],
+      "dependents": [
+        "auto-evolutionary-computation",
+        "auto-governance-synthesis"
+      ]
+    },
+    "fv-service": {
+      "depends_on": [
+        "integrity-service",
+        "ac-service"
+      ],
+      "dependents": []
+    },
+    "pgc-service": {
+      "depends_on": [
+        "integrity-service",
+        "auth-service"
+      ],
+      "dependents": [
+        "auto-evolutionary-computation"
+      ]
+    },
+    "ec-service": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "context-service": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "worker-agents": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "auto-evolutionary-computation": {
+      "depends_on": [
+        "ac-service",
+        "gs-service",
+        "pgc-service"
+      ],
+      "dependents": []
+    },
+    "auto-policy-governance": {
+      "depends_on": [
+        "integrity-service",
+        "auth-service"
+      ],
+      "dependents": [
+        "auto-governance-engine"
+      ]
+    },
+    "auto-xai-integration": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "auto-code-analysis": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "auto-formal-verification": {
+      "depends_on": [
+        "integrity-service",
+        "ac-service"
+      ],
+      "dependents": []
+    },
+    "auto-governance-engine": {
+      "depends_on": [
+        "auto-policy-governance",
+        "auto-governance-synthesis"
+      ],
+      "dependents": []
+    },
+    "auto-constitutional-ai": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "auto-governance-synthesis": {
+      "depends_on": [
+        "gs-service",
+        "ac-service"
+      ],
+      "dependents": [
+        "auto-governance-engine"
+      ]
+    },
+    "auto-agent-hitl": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "auto-constitutional-core": {
+      "depends_on": [],
+      "dependents": []
+    },
+    "auto-audit_aggregator": {
+      "depends_on": [],
+      "dependents": []
+    }
+  },
+  "testing_matrix": [
+    "api-gateway",
+    "auth-service",
+    "integrity-service",
+    "ac-service",
+    "gs-service",
+    "fv-service",
+    "pgc-service",
+    "context-service",
+    "ec-service",
+    "worker-agents",
+    "auto-agent-hitl",
+    "auto-audit_aggregator",
+    "auto-code-analysis",
+    "auto-constitutional-ai",
+    "auto-constitutional-core",
+    "auto-xai-integration",
+    "auto-formal-verification",
+    "auto-governance-engine",
+    "auto-governance-synthesis",
+    "auto-policy-governance",
+    "auto-evolutionary-computation"
+  ]
+}

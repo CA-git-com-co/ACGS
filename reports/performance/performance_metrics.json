@@ -1,0 +1,105 @@
+{
+  "timestamp": "2025-07-02T23:34:18.711723",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "targets": {
+    "p99_latency_ms": 5.0,
+    "cache_hit_rate": 0.85,
+    "throughput_rps": 100.0,
+    "error_rate": 0.01,
+    "constitutional_compliance": 0.95
+  },
+  "metrics": [
+    {
+      "timestamp": "2025-07-02T23:34:18.707760",
+      "service_name": "auth_service",
+      "p50_latency_ms": 0.49800150736700743,
+      "p95_latency_ms": 3.9603580080438405,
+      "p99_latency_ms": 3.9603580080438405,
+      "avg_latency_ms": 0.6837207532953471,
+      "cache_hit_rate": null,
+      "throughput_rps": null,
+      "error_rate": 0.0,
+      "constitutional_compliance": null
+    },
+    {
+      "timestamp": "2025-07-02T23:34:18.707832",
+      "service_name": "ac_service",
+      "p50_latency_ms": 0.48877600056584924,
+      "p95_latency_ms": 2.7519119903445244,
+      "p99_latency_ms": 2.7519119903445244,
+      "avg_latency_ms": 0.6486089550890028,
+      "cache_hit_rate": null,
+      "throughput_rps": null,
+      "error_rate": 0.0,
+      "constitutional_compliance": null
+    },
+    {
+      "timestamp": "2025-07-02T23:34:18.707478",
+      "service_name": "fv_service",
+      "p50_latency_ms": 0.8224030025303364,
+      "p95_latency_ms": 3.000107011757791,
+      "p99_latency_ms": 3.000107011757791,
+      "avg_latency_ms": 0.9614579015760683,
+      "cache_hit_rate": null,
+      "throughput_rps": null,
+      "error_rate": 0.0,
+      "constitutional_compliance": null
+    },
+    {
+      "timestamp": "2025-07-02T23:34:18.707897",
+      "service_name": "gs_service",
+      "p50_latency_ms": 0.48044550931081176,
+      "p95_latency_ms": 2.729230996919796,
+      "p99_latency_ms": 2.729230996919796,
+      "avg_latency_ms": 0.6117566503235139,
+      "cache_hit_rate": null,
+      "throughput_rps": null,
+      "error_rate": 0.0,
+      "constitutional_compliance": null
+    },
+    {
+      "timestamp": "2025-07-02T23:34:18.707670",
+      "service_name": "pgc_service",
+      "p50_latency_ms": 0.4136594943702221,
+      "p95_latency_ms": 2.298651001183316,
+      "p99_latency_ms": 2.298651001183316,
+      "avg_latency_ms": 0.5236587006947957,
+      "cache_hit_rate": null,
+      "throughput_rps": null,
+      "error_rate": 0.0,
+      "constitutional_compliance": null
+    }
+  ],
+  "validation": {
+    "auth_service": {
+      "p99_latency": true,
+      "cache_hit_rate": true,
+      "error_rate": true,
+      "constitutional_compliance": true
+    },
+    "ac_service": {
+      "p99_latency": true,
+      "cache_hit_rate": true,
+      "error_rate": true,
+      "constitutional_compliance": true
+    },
+    "fv_service": {
+      "p99_latency": true,
+      "cache_hit_rate": true,
+      "error_rate": true,
+      "constitutional_compliance": true
+    },
+    "gs_service": {
+      "p99_latency": true,
+      "cache_hit_rate": true,
+      "error_rate": true,
+      "constitutional_compliance": true
+    },
+    "pgc_service": {
+      "p99_latency": true,
+      "cache_hit_rate": true,
+      "error_rate": true,
+      "constitutional_compliance": true
+    }
+  }
+}

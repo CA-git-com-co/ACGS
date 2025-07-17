@@ -1,200 +1,119 @@
-# ACGS-2 Monitoring Infrastructure Directory Documentation
+# ACGS-2 Monitoring Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `infrastructure/monitoring` directory contains comprehensive monitoring, observability, and alerting infrastructure for the ACGS-2 constitutional AI governance platform. This directory provides real-time monitoring, performance analytics, security monitoring, and automated remediation achieving P99 <5ms performance and >100 RPS throughput monitoring capabilities.
+Monitoring configurations, dashboards, and observability tools
 
-The monitoring infrastructure maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all monitoring operations while providing enterprise-grade observability, alerting, and performance monitoring for constitutional AI governance with comprehensive compliance tracking and automated response.
+The monitoring system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all system monitoring and observability while providing comprehensive system visibility for monitoring engineers and operations teams.
 
 ## File Inventory
 
-### Core Monitoring Documentation
-- **`README.md`** - Monitoring infrastructure overview and setup guide
-- **`IMPLEMENTATION_SUMMARY.md`** - Monitoring implementation strategy and summary
-- **`METRICS_DOCUMENTATION.md`** - Comprehensive metrics documentation and reference
-- **`OPERATIONAL_RUNBOOKS.md`** - Operational procedures and troubleshooting guides
-- **`PRODUCTION_DEPLOYMENT_GUIDE.md`** - Production monitoring deployment procedures
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Prometheus Configuration
-- **`prometheus.yml`** - Main Prometheus monitoring configuration
-- **`prometheus/`** - Prometheus server configuration and rules
-- **`config/prometheus-ai-governance.yml`** - AI governance specific Prometheus config
-- **`config/prometheus-enhanced.yml`** - Enhanced Prometheus configuration
-
-### Grafana Dashboards
-- **`grafana/`** - Grafana dashboard configuration and provisioning
-- **`grafana_dashboards/`** - ACGS-specific Grafana dashboards
-- **`dashboards/acgs_services_dashboard.json`** - ACGS services monitoring dashboard
-- **`grafana/executive_dashboard.json`** - Executive-level monitoring dashboard
-
-### Alerting and Notifications
-- **`alertmanager/`** - AlertManager configuration and routing
-- **`alerting/`** - Performance alerting and notification systems
-- **`rules/`** - Prometheus alerting rules and thresholds
-- **`constitutional_compliance_alerts.yml`** - Constitutional compliance alerting
-
-### Security Monitoring
-- **`elk-config/`** - ELK stack configuration for security monitoring
-- **`elk-config/security-processor/`** - Security event processing
-- **`docker-compose.elk-security.yml`** - ELK security monitoring stack
-- **`SECURITY_MONITORING_GUIDE.md`** - Security monitoring procedures
-
-### Performance Monitoring
-- **`performance/`** - Performance monitoring and baseline collection
-- **`performance_alerts.yml`** - Performance-specific alerting rules
-- **`sla_validation/`** - SLA monitoring and validation
-- **`PERFORMANCE_VALIDATION_GUIDE.md`** - Performance validation procedures
-
-### Compliance and Governance
-- **`compliance/`** - Compliance monitoring and regulatory reporting
-- **`policies/`** - OPA policies for governance monitoring
-- **`constitutional_compliance_rules.yml`** - Constitutional compliance monitoring rules
-
-### Automated Operations
-- **`automated_remediation_service.py`** - Automated issue remediation
-- **`automated_reporting.py`** - Automated monitoring reports
-- **`error_analysis/`** - Error tracking and remediation engines
-- **`remediation_scripts/`** - Automated remediation scripts
-
-### Deployment and Orchestration
-- **`deploy-monitoring.sh`** - Monitoring stack deployment automation
-- **`deploy-production.sh`** - Production monitoring deployment
-- **`docker-compose.monitoring.yml`** - Monitoring services composition
-- **`monitoring_setup_report.json`** - Monitoring setup validation report
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../docker/`** - Docker infrastructure for monitoring container deployment
-- **`../kubernetes/`** - Kubernetes infrastructure for monitoring orchestration
-- **`../../services/`** - All ACGS services requiring monitoring and observability
-- **`../../config/`** - Configuration files for monitoring service settings
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Prometheus**: Metrics collection and time-series database
-- **Grafana**: Visualization and dashboard platform
-- **AlertManager**: Alert routing and notification management
-- **ELK Stack**: Elasticsearch, Logstash, Kibana for log analysis
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Monitoring Integration
-- **Service Discovery**: Automatic service discovery and monitoring registration
-- **Metrics Collection**: Comprehensive metrics collection from all ACGS services
-- **Log Aggregation**: Centralized log collection and analysis
-- **Distributed Tracing**: Request tracing across service boundaries
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Constitutional Monitoring Framework
-- **Constitutional Compliance Monitoring**: Real-time constitutional compliance tracking
-- **Performance Target Monitoring**: Constitutional performance target validation
-- **Security Monitoring**: Constitutional security compliance monitoring
-- **Audit Integration**: Constitutional audit trail monitoring and analysis
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Enterprise Monitoring Stack
-- **Multi-Tier Monitoring**: Infrastructure, application, and business metrics
-- **Real-Time Alerting**: Intelligent alerting with automated escalation
-- **Performance Analytics**: Advanced performance analysis and optimization
-- **Capacity Planning**: Predictive capacity planning and resource optimization
-
-### Automated Operations
-- **Self-Healing Systems**: Automated issue detection and remediation
-- **Intelligent Alerting**: AI-powered alert correlation and noise reduction
-- **Predictive Analytics**: Predictive failure detection and prevention
-- **Automated Reporting**: Comprehensive automated monitoring reports
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in monitoring operations
-- **Monitoring Compliance**: Complete constitutional compliance framework for monitoring
-- **Security Integration**: Constitutional compliance integrated into security monitoring
-- **Audit Documentation**: Complete monitoring audit trails with constitutional context
-- **Performance Compliance**: All monitoring systems maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all monitoring operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Monitoring Coverage**: 100% constitutional hash validation in all monitoring components
-- **Alert Compliance**: All alerting rules validated for constitutional compliance
-- **Dashboard Compliance**: All monitoring dashboards validated for constitutional compliance
-- **Audit Trail**: Complete monitoring audit trail with constitutional context
-- **Performance Standards**: All monitoring systems exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all monitoring infrastructure
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All monitoring components validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Monitoring Performance
-- **Metrics Collection**: Optimized metrics collection for minimal performance impact
-- **Dashboard Rendering**: Fast dashboard rendering and real-time updates
-- **Alert Processing**: Rapid alert processing and notification delivery
-- **Data Retention**: Efficient data retention and storage optimization
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Metric Optimization**: Optimized metric collection and aggregation
-- **Query Optimization**: Efficient monitoring queries and data retrieval
-- **Storage Optimization**: Optimized time-series data storage and compression
-- **Network Optimization**: Optimized monitoring data transmission
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Data Volume**: Optimization needed for high-volume metric collection
-- **Query Complexity**: Performance optimization for complex monitoring queries
-- **Dashboard Complexity**: Optimization needed for complex dashboard rendering
-- **Alert Volume**: Optimization needed for high-volume alert processing
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Core Monitoring Infrastructure**: Complete monitoring stack with constitutional compliance
-- **Prometheus Monitoring**: Comprehensive metrics collection and time-series storage
-- **Grafana Dashboards**: Rich visualization and monitoring dashboards
-- **AlertManager Integration**: Intelligent alerting and notification management
-- **Security Monitoring**: ELK stack for security monitoring and analysis
-- **Constitutional Integration**: 100% constitutional compliance across all monitoring infrastructure
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Analytics**: Enhanced monitoring analytics and predictive capabilities
-- **Performance Optimization**: Continued optimization for sub-millisecond monitoring operations
-- **Security Enhancement**: Advanced security monitoring and threat detection
-- **Automation Enhancement**: Enhanced automated remediation and response
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Monitoring**: AI-powered monitoring optimization and intelligent analysis
-- **Advanced Predictive Analytics**: Enhanced predictive monitoring and failure prevention
-- **Federation Support**: Multi-organization monitoring federation and governance
-- **Quantum Integration**: Quantum-resistant monitoring security and operations
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Infrastructure](../CLAUDE.md)** - Core infrastructure components and shared configurations
-- **[Docker](../docker/CLAUDE.md)** - Docker infrastructure for monitoring containers
-- **[Kubernetes](../kubernetes/CLAUDE.md)** - Kubernetes infrastructure for monitoring orchestration
-- **[Services](../../services/CLAUDE.md)** - Services requiring monitoring and observability
+- **[Docker](../docker/CLAUDE.md)** - Docker Configuration
+- **[Kubernetes](../kubernetes/CLAUDE.md)** - Kubernetes Deployment
 
-### Monitoring Component Categories
-- **[Prometheus](prometheus/)** - Metrics collection and time-series storage
-- **[Grafana](grafana/)** - Visualization and dashboard platform
-- **[AlertManager](alertmanager/)** - Alert routing and notification management
-- **[Security Monitoring](elk-config/)** - Security monitoring and log analysis
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Implementation Guide](IMPLEMENTATION_SUMMARY.md)** - Monitoring implementation procedures
-- **[Operational Runbooks](OPERATIONAL_RUNBOOKS.md)** - Operational procedures and troubleshooting
-- **[Security Guide](SECURITY_MONITORING_GUIDE.md)** - Security monitoring procedures
-- **[Performance Guide](PERFORMANCE_VALIDATION_GUIDE.md)** - Performance monitoring validation
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Monitoring Tests](test_constitutional_monitoring.py)** - Monitoring system testing
-- **[Integration Tests](../../tests/integration/CLAUDE.md)** - Monitoring integration testing
-- **[Performance Tests](../../tests/performance/CLAUDE.md)** - Monitoring performance validation
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Infrastructure](../CLAUDE.md) → **Monitoring** | [Docker](../docker/CLAUDE.md) | [Kubernetes](../kubernetes/CLAUDE.md)
+**Navigation**: [Root](../../CLAUDE.md) → [Infrastructure](../CLAUDE.md) → **Monitoring**
 
-**Constitutional Compliance**: All monitoring infrastructure maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All monitoring operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive monitoring infrastructure documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

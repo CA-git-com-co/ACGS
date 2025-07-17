@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { App } from "../app/app"
 import { ConfigHooks } from "../config/hooks"
 import { FileWatcher } from "../file/watch"

@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 export function lazy<T>(fn: () => T) {
   let value: T | undefined
   let loaded = false

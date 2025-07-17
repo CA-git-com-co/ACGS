@@ -3,173 +3,117 @@
 
 ## Directory Overview
 
-The `security` directory contains comprehensive security infrastructure, policies, and procedures for the ACGS-2 constitutional AI governance platform. This directory provides security frameworks, compliance validation, threat detection, and security monitoring achieving P99 <5ms performance and >100 RPS throughput for security operations.
+Security policies, procedures, and vulnerability assessments
 
-The security system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all security operations while providing enterprise-grade security, compliance validation, and threat protection for constitutional AI governance with comprehensive security monitoring and automated response.
+The security system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all security management and compliance while providing comprehensive security assurance for security engineers and compliance teams.
 
 ## File Inventory
 
-### Core Security Framework
-- **`security_framework.py`** - Core security framework and validation
-- **`constitutional_security.py`** - Constitutional security compliance and validation
-- **`threat_detection.py`** - Threat detection and security monitoring
-- **`security_policies.yaml`** - Security policies and configuration
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Authentication and Authorization
-- **`authentication/`** - Authentication services and multi-factor authentication
-- **`authorization/`** - Authorization policies and role-based access control
-- **`rbac/`** - Role-based access control implementation
-- **`jwt_validation.py`** - JWT token validation and security
-
-### Security Monitoring
-- **`monitoring/`** - Security monitoring and incident detection
-- **`audit_logging.py`** - Security audit logging and compliance tracking
-- **`incident_response.py`** - Security incident response and remediation
-- **`security_metrics.py`** - Security metrics collection and analysis
-
-### Compliance and Governance
-- **`compliance/`** - Security compliance validation and certification
-- **`governance/`** - Security governance policies and procedures
-- **`constitutional_compliance.py`** - Constitutional security compliance validation
-- **`regulatory_compliance.py`** - Regulatory compliance and certification
-
-### Threat Protection
-- **`threat_protection/`** - Threat protection and vulnerability management
-- **`vulnerability_scanning.py`** - Vulnerability scanning and assessment
-- **`penetration_testing.py`** - Penetration testing and security validation
-- **`security_hardening.py`** - Security hardening and configuration
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../services/shared/security/`** - Shared security services and utilities
-- **`../docs/security/`** - Security documentation and procedures
-- **`../tests/security/`** - Security testing and validation
-- **`../config/`** - Configuration files for security settings
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **OAuth2**: Authentication and authorization framework
-- **JWT**: JSON Web Token for secure authentication
-- **RBAC**: Role-based access control implementation
-- **OWASP**: Security best practices and guidelines
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Security Integration
-- **Service Security**: Security integration across all ACGS services
-- **Infrastructure Security**: Security for infrastructure and deployment
-- **Data Security**: Data protection and encryption
-- **Network Security**: Network security and traffic protection
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Constitutional Security Framework
-- **Constitutional Compliance**: Security framework for constitutional compliance validation
-- **Performance Security**: Security procedures for constitutional performance targets
-- **Audit Security**: Security procedures for constitutional audit logging
-- **Governance Security**: Security procedures for constitutional governance
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Enterprise Security Features
-- **Multi-Layer Security**: Security across infrastructure, application, and data layers
-- **Zero Trust Architecture**: Zero trust security model and implementation
-- **Threat Intelligence**: Security threat intelligence and analysis
-- **Incident Response**: Security incident response and recovery procedures
-
-### Automated Security Operations
-- **Security Automation**: Automated security monitoring and response
-- **Compliance Automation**: Automated compliance validation and reporting
-- **Threat Detection**: Automated threat detection and analysis
-- **Security Reporting**: Automated security reporting and metrics
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in security operations
-- **Security Compliance**: Complete constitutional compliance framework for security
-- **Security Integration**: Constitutional compliance integrated into all security features
-- **Audit Documentation**: Complete security audit trails with constitutional context
-- **Performance Compliance**: All security operations maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all security operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Security Coverage**: 100% constitutional hash validation in all security components
-- **Compliance Validation**: All security policies validated for constitutional compliance
-- **Threat Protection**: Security threat protection validated for constitutional compliance
-- **Audit Trail**: Complete security audit trail with constitutional context
-- **Performance Standards**: All security operations exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all security infrastructure
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All security components validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Security Performance
-- **Authentication Speed**: Optimized authentication for sub-millisecond response times
-- **Authorization Efficiency**: Efficient authorization and access control
-- **Monitoring Performance**: Real-time security monitoring with minimal overhead
-- **Incident Response**: Rapid security incident detection and response
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Security Caching**: Optimized security caching for improved performance
-- **Parallel Processing**: Parallel security processing for improved throughput
-- **Resource Management**: Efficient security resource allocation and utilization
-- **Network Optimization**: Optimized security network communication
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Authentication Complexity**: Optimization needed for complex authentication scenarios
-- **Monitoring Overhead**: Performance optimization for comprehensive security monitoring
-- **Compliance Validation**: Optimization needed for extensive compliance checking
-- **Incident Processing**: Optimization needed for high-volume incident processing
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Core Security Framework**: Complete security framework with constitutional compliance
-- **Authentication Services**: Multi-factor authentication and JWT validation
-- **Authorization Policies**: Role-based access control and authorization
-- **Security Monitoring**: Real-time security monitoring and incident detection
-- **Compliance Validation**: Security compliance validation and certification
-- **Constitutional Integration**: 100% constitutional compliance across all security infrastructure
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Security Features**: Enhanced security capabilities and threat protection
-- **Performance Optimization**: Continued optimization for sub-millisecond security operations
-- **Threat Intelligence**: Advanced threat intelligence integration and analysis
-- **Automation Enhancement**: Enhanced security automation and response
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Security**: AI-powered security optimization and intelligent threat detection
-- **Advanced Analytics**: Enhanced security analytics and predictive capabilities
-- **Federation Support**: Multi-organization security federation and governance
-- **Quantum Integration**: Quantum-resistant security and encryption
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Shared Security](../services/shared/security/)** - Shared security services and utilities
-- **[Security Documentation](../docs/security/CLAUDE.md)** - Security documentation and procedures
-- **[Security Tests](../tests/security/CLAUDE.md)** - Security testing and validation
-- **[Configuration](../config/CLAUDE.md)** - Configuration files for security
+- **[Documentation](../docs/CLAUDE.md)** - Main documentation
+- **[Documentation](../docs/CLAUDE.md)** - Main documentation
 
-### Security Component Categories
-- **[Authentication](authentication/)** - Authentication services and multi-factor authentication
-- **[Authorization](authorization/)** - Authorization policies and access control
-- **[Monitoring](monitoring/)** - Security monitoring and incident detection
-- **[Compliance](compliance/)** - Security compliance validation and certification
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Security Documentation](../docs/security/CLAUDE.md)** - Security implementation and procedures
-- **[Architecture Documentation](../docs/architecture/CLAUDE.md)** - System architecture with security
-- **[Operations Documentation](../docs/operations/CLAUDE.md)** - Operations procedures with security
+- **[Development Guide](../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Security Tests](../tests/security/CLAUDE.md)** - Security testing and validation
-- **[Integration Tests](../tests/integration/CLAUDE.md)** - Security integration testing
-- **[Performance Tests](../tests/performance/CLAUDE.md)** - Security performance validation
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../CLAUDE.md) → **Security** | [Services](../services/CLAUDE.md) | [Documentation](../docs/CLAUDE.md)
+**Navigation**: [Root](../CLAUDE.md) → **Security**
 
-**Constitutional Compliance**: All security infrastructure maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All security operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive security directory documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

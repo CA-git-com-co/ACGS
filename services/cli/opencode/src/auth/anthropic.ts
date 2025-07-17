@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { generatePKCE } from "@openauthjs/openauth/pkce"
 import { Auth } from "./index"
 

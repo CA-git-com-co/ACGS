@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { describe, expect, test } from "bun:test"
 import { App } from "../../src/app/app"
 import { GlobTool } from "../../src/tool/glob"

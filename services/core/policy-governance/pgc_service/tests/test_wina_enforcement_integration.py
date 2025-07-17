@@ -15,15 +15,15 @@ from fastapi.testclient import TestClient
 # sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))  # Removed during reorganization
 
 try:
-    from services.core.policy-governance.pgc_service.app import schemas
-    from services.core.policy-governance.pgc_service.app.core.wina_enforcement_optimizer import (
+    from app import schemas
+    from app.core.wina_enforcement_optimizer import (
         EnforcementContext,
         EnforcementStrategy,
         WINAEnforcementMetrics,
         WINAEnforcementOptimizer,
         WINAEnforcementResult,
     )
-    from services.core.policy-governance.pgc_service.app.main import app
+    from app.main import app
 except ImportError:
     # Mock implementations for testing when modules are not available
     from dataclasses import dataclass

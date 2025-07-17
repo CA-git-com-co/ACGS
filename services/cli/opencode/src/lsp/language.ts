@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 export const LANGUAGE_EXTENSIONS: Record<string, string> = {
   ".abap": "abap",
   ".bat": "bat",

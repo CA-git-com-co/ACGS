@@ -3,3 +3,11 @@ openapi_spec_url: https://storage.googleapis.com/stainless-sdk-openapi-specs/ope
 openapi_spec_hash: 522a44f6cb0677435fe2ac7693848ad7
 config_hash: 6c8822d278ba83456e5eed6d774ca230
 constitutional_hash: cdd01ef066bc6cf2
+
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
+# Constitutional Compliance: cdd01ef066bc6cf2
+# Implementation Status: 🔄 IN PROGRESS
+
+# Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
+# Constitutional Compliance: cdd01ef066bc6cf2
+# Implementation Status: 🔄 IN PROGRESS

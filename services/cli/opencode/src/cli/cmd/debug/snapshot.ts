@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Snapshot } from "../../../snapshot"
 import { bootstrap } from "../../bootstrap"
 import { cmd } from "../cmd"

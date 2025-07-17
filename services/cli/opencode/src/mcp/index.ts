@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { experimental_createMCPClient, type Tool } from "ai"
 import { Experimental_StdioMCPTransport } from "ai/mcp-stdio"
 import { App } from "../app/app"

@@ -15,7 +15,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # revision identifiers, used by Alembic.
 revision = "004_add_missing_user_columns"
-down_revision = "c2a48966"
+down_revision = "003_acgs_enhancements"
 branch_labels = None
 depends_on = None
 

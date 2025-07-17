@@ -18,7 +18,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../../../..'))
 
 import pytest
-from services.core.policy-governance.pgc_service.core.constitutional_hash_validator import (
+from core.constitutional_hash_validator import (
     ConstitutionalContext,
     ConstitutionalHashStatus,
     ConstitutionalHashValidator,

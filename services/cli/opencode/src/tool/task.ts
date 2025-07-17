@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Tool } from "./tool"
 import DESCRIPTION from "./task.txt"
 import { z } from "zod"

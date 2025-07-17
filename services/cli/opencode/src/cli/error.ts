@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Config } from "../config/config"
 import { MCP } from "../mcp"
 import { UI } from "./ui"

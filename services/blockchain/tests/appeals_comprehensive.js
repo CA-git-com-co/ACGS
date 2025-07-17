@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 'use strict';
 // ACGS-1 Appeals Program Test Suite - Protocol v2.0
 // requires: Appeals program deployed with correct method signatures

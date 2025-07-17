@@ -1,0 +1,355 @@
+name: ACGS-2 Documentation Validation Pipeline
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    branches: [ main, master, develop ]
+    paths:
+      - '**.md'
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+      - 'docs/**'
+      - 'scripts/**'
+      - '.github/workflows/**'
+  pull_request:
+    branches: [ main, master ]
+    paths:
+      - '**.md'
+      - '**.yaml'
+      - '**.yml'
+      - '**.json'
+      - 'docs/**'
+      - 'scripts/**'
+  schedule:
+    # Run daily at 2 AM UTC for continuous monitoring
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      validation_level:
+        description: 'Validation Level'
+        required: true
+        default: 'standard'
+        type: choice
+        options:
+          - standard
+          - comprehensive
+          - constitutional-only
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  PYTHON_VERSION: '3.11'
+  PERFORMANCE_TARGETS: 'P99 <5ms, >100 RPS, >85% cache hit rates'
+
+jobs:
+  constitutional-compliance:
+    name: Constitutional Compliance Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+        cache: 'pip'
+    
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pathlib json datetime
+    
+    - name: Validate Constitutional Hash Presence
+      id: hash-validation
+      run: |
+        echo "🔍 Validating constitutional hash presence..."
+        python scripts/reorganization/constitutional_compliance_validator.py > compliance_results.txt
+        
+        # Extract compliance rate
+        COMPLIANCE_RATE=$(grep "Overall compliance:" compliance_results.txt | grep -o '[0-9.]*%' | head -1)
+        echo "compliance_rate=${COMPLIANCE_RATE}" >> $GITHUB_OUTPUT
+        
+        # Check if meets minimum threshold
+        RATE_NUM=$(echo $COMPLIANCE_RATE | sed 's/%//')
+        if (( $(echo "$RATE_NUM >= 50.0" | bc -l) )); then
+          echo "✅ Constitutional compliance: $COMPLIANCE_RATE (meets minimum 50%)"
+          echo "status=pass" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Constitutional compliance: $COMPLIANCE_RATE (below minimum 50%)"
+          echo "status=fail" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Compliance Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: constitutional-compliance-report
+        path: |
+          compliance_results.txt
+          reports/constitutional_compliance_report_*.json
+        retention-days: 30
+    
+    - name: Fail on Low Compliance
+      if: steps.hash-validation.outputs.status == 'fail'
+      run: |
+        echo "❌ Constitutional compliance below minimum threshold"
+        exit 1
+
+  cross-reference-validation:
+    name: Cross-Reference Integrity Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Validate Cross-References
+      id: link-validation
+      run: |
+        echo "🔗 Validating cross-reference integrity..."
+        python scripts/validation/claude_md_cross_reference_validator.py . > link_results.txt
+        
+        # Extract link validity rate
+        VALIDITY_RATE=$(grep "Link validity:" link_results.txt | grep -o '[0-9.]*%' | head -1)
+        echo "validity_rate=${VALIDITY_RATE}" >> $GITHUB_OUTPUT
+        
+        # Check if meets target
+        RATE_NUM=$(echo $VALIDITY_RATE | sed 's/%//')
+        if (( $(echo "$RATE_NUM >= 80.0" | bc -l) )); then
+          echo "✅ Cross-reference validity: $VALIDITY_RATE (meets target ≥80%)"
+          echo "status=pass" >> $GITHUB_OUTPUT
+        else
+          echo "⚠️ Cross-reference validity: $VALIDITY_RATE (below target 80%)"
+          echo "status=warning" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Link Validation Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: cross-reference-report
+        path: |
+          link_results.txt
+          claude_md_cross_reference_report.json
+        retention-days: 30
+
+  documentation-standards:
+    name: Documentation Standards Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Validate CLAUDE.md Standards
+      id: standards-validation
+      run: |
+        echo "📝 Validating CLAUDE.md standards..."
+        python scripts/validation/claude_md_validator.py . > standards_results.txt
+        
+        # Extract validation rate
+        VALIDATION_RATE=$(grep "files valid" standards_results.txt | grep -o '[0-9.]*%' | tail -1)
+        echo "validation_rate=${VALIDATION_RATE}" >> $GITHUB_OUTPUT
+        
+        # Check if meets standard
+        RATE_NUM=$(echo $VALIDATION_RATE | sed 's/%//')
+        if (( $(echo "$RATE_NUM >= 90.0" | bc -l) )); then
+          echo "✅ Documentation standards: $VALIDATION_RATE (meets target ≥90%)"
+          echo "status=pass" >> $GITHUB_OUTPUT
+        else
+          echo "⚠️ Documentation standards: $VALIDATION_RATE (below target 90%)"
+          echo "status=warning" >> $GITHUB_OUTPUT
+        fi
+    
+    - name: Upload Standards Report
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: documentation-standards-report
+        path: |
+          standards_results.txt
+          claude_md_validation_report.json
+        retention-days: 30
+
+  performance-targets-validation:
+    name: Performance Targets Documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Validate Performance Targets
+      id: performance-validation
+      run: |
+        echo "⚡ Validating performance targets documentation..."
+        
+        # Search for performance targets in documentation
+        P99_COUNT=$(grep -r "P99.*5ms" docs/ --include="*.md" | wc -l)
+        RPS_COUNT=$(grep -r "100.*RPS" docs/ --include="*.md" | wc -l)
+        CACHE_COUNT=$(grep -r "85%.*cache" docs/ --include="*.md" | wc -l)
+        
+        echo "Performance targets found:"
+        echo "  P99 <5ms: $P99_COUNT files"
+        echo "  >100 RPS: $RPS_COUNT files"
+        echo "  >85% cache: $CACHE_COUNT files"
+        
+        # Calculate coverage score
+        TOTAL_SCORE=$((P99_COUNT + RPS_COUNT + CACHE_COUNT))
+        
+        if [ $TOTAL_SCORE -ge 15 ]; then
+          echo "✅ Performance targets well documented (score: $TOTAL_SCORE)"
+          echo "status=pass" >> $GITHUB_OUTPUT
+        elif [ $TOTAL_SCORE -ge 5 ]; then
+          echo "⚠️ Performance targets partially documented (score: $TOTAL_SCORE)"
+          echo "status=warning" >> $GITHUB_OUTPUT
+        else
+          echo "❌ Performance targets poorly documented (score: $TOTAL_SCORE)"
+          echo "status=fail" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "score=${TOTAL_SCORE}" >> $GITHUB_OUTPUT
+
+  security-compliance:
+    name: Security and Compliance Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Check for Sensitive Information
+      run: |
+        echo "🔒 Checking for sensitive information..."
+        
+        # Check for potential secrets (excluding our constitutional hash)
+        SECRETS_FOUND=0
+        
+        # Check for API keys, passwords, tokens (excluding our known hash)
+        if grep -r -i "api[_-]key\|password\|secret\|token" docs/ --include="*.md" | grep -v "$CONSTITUTIONAL_HASH" | grep -v "example\|placeholder\|<.*>" | head -5; then
+          echo "⚠️ Potential sensitive information found in documentation"
+          SECRETS_FOUND=1
+        fi
+        
+        # Check for hardcoded URLs with credentials
+        if grep -r "://.*:.*@" docs/ --include="*.md" | head -5; then
+          echo "⚠️ URLs with embedded credentials found"
+          SECRETS_FOUND=1
+        fi
+        
+        if [ $SECRETS_FOUND -eq 0 ]; then
+          echo "✅ No sensitive information detected"
+        fi
+    
+    - name: Validate Constitutional Hash Integrity
+      run: |
+        echo "🛡️ Validating constitutional hash integrity..."
+        
+        # Count occurrences of constitutional hash
+        HASH_COUNT=$(grep -r "$CONSTITUTIONAL_HASH" . --exclude-dir=.git --exclude-dir=node_modules | wc -l)
+        
+        echo "Constitutional hash found in $HASH_COUNT locations"
+        
+        if [ $HASH_COUNT -ge 100 ]; then
+          echo "✅ Constitutional hash well distributed"
+        elif [ $HASH_COUNT -ge 50 ]; then
+          echo "⚠️ Constitutional hash moderately distributed"
+        else
+          echo "❌ Constitutional hash poorly distributed"
+          exit 1
+        fi
+
+  summary-report:
+    name: Generate Summary Report
+    runs-on: ubuntu-latest
+    needs: [constitutional-compliance, cross-reference-validation, documentation-standards, performance-targets-validation, security-compliance]
+    if: always()
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
+    - name: Download All Artifacts
+      uses: actions/download-artifact@v3
+    
+    - name: Generate Summary Report
+      run: |
+        echo "# ACGS-2 Documentation Validation Summary" > validation_summary.md
+        echo "**Constitutional Hash**: \`$CONSTITUTIONAL_HASH\`" >> validation_summary.md
+        echo "**Validation Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> validation_summary.md
+        echo "**Performance Targets**: $PERFORMANCE_TARGETS" >> validation_summary.md
+        echo "" >> validation_summary.md
+        
+        echo "## Validation Results" >> validation_summary.md
+        echo "" >> validation_summary.md
+        
+        # Constitutional Compliance
+        if [ "${{ needs.constitutional-compliance.result }}" = "success" ]; then
+          echo "✅ **Constitutional Compliance**: PASSED" >> validation_summary.md
+        else
+          echo "❌ **Constitutional Compliance**: FAILED" >> validation_summary.md
+        fi
+        
+        # Cross-Reference Validation
+        if [ "${{ needs.cross-reference-validation.result }}" = "success" ]; then
+          echo "✅ **Cross-Reference Integrity**: PASSED" >> validation_summary.md
+        else
+          echo "⚠️ **Cross-Reference Integrity**: NEEDS ATTENTION" >> validation_summary.md
+        fi
+        
+        # Documentation Standards
+        if [ "${{ needs.documentation-standards.result }}" = "success" ]; then
+          echo "✅ **Documentation Standards**: PASSED" >> validation_summary.md
+        else
+          echo "⚠️ **Documentation Standards**: NEEDS ATTENTION" >> validation_summary.md
+        fi
+        
+        # Performance Targets
+        if [ "${{ needs.performance-targets-validation.result }}" = "success" ]; then
+          echo "✅ **Performance Targets**: WELL DOCUMENTED" >> validation_summary.md
+        else
+          echo "⚠️ **Performance Targets**: NEEDS IMPROVEMENT" >> validation_summary.md
+        fi
+        
+        # Security Compliance
+        if [ "${{ needs.security-compliance.result }}" = "success" ]; then
+          echo "✅ **Security Compliance**: PASSED" >> validation_summary.md
+        else
+          echo "❌ **Security Compliance**: FAILED" >> validation_summary.md
+        fi
+        
+        echo "" >> validation_summary.md
+        echo "## Next Steps" >> validation_summary.md
+        echo "" >> validation_summary.md
+        echo "- Review failed validations and apply necessary fixes" >> validation_summary.md
+        echo "- Run \`scripts/enhancement/\` scripts for automated improvements" >> validation_summary.md
+        echo "- Ensure constitutional hash \`$CONSTITUTIONAL_HASH\` is present in all new files" >> validation_summary.md
+        echo "- Maintain performance targets: $PERFORMANCE_TARGETS" >> validation_summary.md
+        
+        cat validation_summary.md
+    
+    - name: Upload Summary Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: validation-summary
+        path: validation_summary.md
+        retention-days: 90

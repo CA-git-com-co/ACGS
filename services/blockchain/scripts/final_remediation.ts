@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 #!/usr/bin/env ts-node
 // ACGS-1 Final Test Remediation Script
 // requires: Current test failures with PDA constraints and cost overruns

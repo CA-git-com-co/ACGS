@@ -1,0 +1,334 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ACGS-2 Constitutional Design System - Resend Inspired */
+@layer base {
+  :root {
+    /* Resend-inspired color palette */
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 200 100% 50%; /* Resend blue #00A3FF */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 200 100% 50%;
+    --radius: 8px; /* Slightly more rounded like Resend */
+  }
+
+  .dark {
+    /* Dark mode with Resend-inspired colors */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 200 100% 50%; /* Keep Resend blue in dark mode */
+    --primary-foreground: 240 10% 3.9%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 200 100% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  /* Resend-inspired Card Components */
+  .card {
+    @apply rounded-xl border bg-card text-card-foreground shadow-resend;
+  }
+
+  .card-header {
+    @apply flex flex-col space-y-2 p-8;
+  }
+
+  .card-title {
+    @apply text-xl font-semibold leading-tight tracking-tight text-foreground;
+  }
+
+  .card-description {
+    @apply text-sm text-muted-foreground leading-relaxed;
+  }
+
+  .card-content {
+    @apply p-8 pt-0;
+  }
+
+  .card-footer {
+    @apply flex items-center p-8 pt-0;
+  }
+
+  /* Constitutional Compliance Styles */
+  .constitutional-indicator {
+    @apply inline-flex items-center space-x-1 text-xs font-medium;
+  }
+
+  .constitutional-indicator.compliant {
+    @apply text-success-600;
+  }
+
+  .constitutional-indicator.non-compliant {
+    @apply text-error-600;
+  }
+
+  .constitutional-score-bar {
+    @apply w-full;
+  }
+
+  /* Utility Classes */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Constitutional compliance styles */
+  .constitutional-compliant {
+    @apply border-constitutional-500 bg-constitutional-50 text-constitutional-900;
+  }
+
+  .constitutional-warning {
+    @apply border-warning-500 bg-warning-50 text-warning-900;
+  }
+
+  .constitutional-error {
+    @apply border-error-500 bg-error-50 text-error-900;
+  }
+
+  /* Accessibility improvements */
+  .focus-visible {
+    @apply outline-none ring-2 ring-primary ring-offset-2 ring-offset-background;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    :root {
+      --border: 0 0% 0%;
+      --input: 0 0% 0%;
+      --ring: 0 0% 0%;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-md;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* Constitutional compliance indicator */
+  .constitutional-indicator {
+    @apply inline-flex items-center gap-1 text-xs font-medium;
+  }
+
+  .constitutional-indicator.compliant {
+    @apply text-success-600;
+  }
+
+  .constitutional-indicator.non-compliant {
+    @apply text-error-600;
+  }
+
+  /* Governance action button */
+  .governance-action {
+    @apply inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background;
+  }
+
+  .governance-action.primary {
+    @apply bg-constitutional-600 text-white hover:bg-constitutional-700;
+  }
+
+  .governance-action.secondary {
+    @apply bg-governance-200 text-governance-900 hover:bg-governance-300;
+  }
+
+  .governance-action.destructive {
+    @apply bg-error-600 text-white hover:bg-error-700;
+  }
+
+  /* Adaptive layout utilities */
+  .layout-compact {
+    @apply text-sm leading-tight;
+  }
+
+  .layout-comfortable {
+    @apply text-base leading-normal;
+  }
+
+  .layout-spacious {
+    @apply text-lg leading-relaxed;
+  }
+
+  /* Loading states */
+  .loading-shimmer {
+    @apply bg-gradient-to-r from-muted via-muted-foreground/10 to-muted bg-[length:200%_100%] animate-[shimmer_2s_infinite];
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Resend-inspired button styles */
+  .btn-resend {
+    @apply inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-resend-primary {
+    @apply btn-resend bg-primary text-primary-foreground shadow-resend hover:bg-primary/90 hover:shadow-resend-md;
+  }
+
+  .btn-resend-secondary {
+    @apply btn-resend border border-input bg-background hover:bg-accent hover:text-accent-foreground;
+  }
+
+  .btn-resend-ghost {
+    @apply btn-resend hover:bg-accent hover:text-accent-foreground;
+  }
+}
+
+@layer utilities {
+  /* Constitutional compliance utilities */
+  .constitutional-hash::before {
+    content: "cdd01ef066bc6cf2";
+    @apply sr-only;
+  }
+
+  /* Accessibility utilities */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .not-sr-only {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  /* Focus utilities */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  /* Responsive text utilities */
+  .text-responsive {
+    @apply text-sm md:text-base lg:text-lg;
+  }
+
+  /* Constitutional status indicators */
+  .status-compliant {
+    @apply bg-success-100 text-success-800 border-success-200;
+  }
+
+  .status-warning {
+    @apply bg-warning-100 text-warning-800 border-warning-200;
+  }
+
+  .status-error {
+    @apply bg-error-100 text-error-800 border-error-200;
+  }
+
+  /* Truncate utilities */
+  .truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}

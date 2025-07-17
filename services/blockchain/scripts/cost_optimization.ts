@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 #!/usr/bin/env ts-node
 // ACGS-1 SOL Cost Optimization Script
 // requires: Current cost 0.012714 SOL > 0.01 SOL target

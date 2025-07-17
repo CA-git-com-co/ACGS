@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import type { JsonValue, JsonSchemaType, JsonObject } from "./jsonUtils";
 import Ajv from "ajv";
 import type { ValidateFunction } from "ajv";

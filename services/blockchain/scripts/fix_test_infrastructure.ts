@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 #!/usr/bin/env ts-node
 // ACGS-1 Test Infrastructure Remediation Script
 // requires: Node.js environment with Anchor framework

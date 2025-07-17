@@ -16,7 +16,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # revision identifiers, used by Alembic.
 revision = "task8_incremental_compilation"
-down_revision = "i4j5k6l7m8n9"
+down_revision = "add_violation_detection_tables"
 branch_labels = None
 depends_on = None
 

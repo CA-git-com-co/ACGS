@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { AuthAnthropic } from "../../auth/anthropic"
 import { AuthCopilot } from "../../auth/copilot"
 import { Auth } from "../../auth"

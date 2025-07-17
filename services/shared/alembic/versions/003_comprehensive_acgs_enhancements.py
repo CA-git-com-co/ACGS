@@ -22,7 +22,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 # revision identifiers, used by Alembic.
 revision: str = "003_acgs_enhancements"
-down_revision: str | None = "f1a2b3c4d5e6"
+down_revision: str | None = "002_enhance_rls"
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 

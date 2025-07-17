@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 #!/usr/bin/env node
 
 import { join, dirname } from "path";

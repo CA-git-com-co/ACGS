@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Bus } from "../bus"
 import { Installation } from "../installation"
 import { Session } from "../session"

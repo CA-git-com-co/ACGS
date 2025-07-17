@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { z } from "zod"
 import * as path from "path"
 import { Tool } from "./tool"

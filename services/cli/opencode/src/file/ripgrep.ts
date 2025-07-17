@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 // Ripgrep utility functions
 import path from "path"
 import { Global } from "../global"

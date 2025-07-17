@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import {
   ResourceReference,

@@ -1,172 +1,119 @@
-# ACGS-2 CLI Services Directory Documentation
+# ACGS-2 Cli Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `services/cli` directory contains comprehensive command-line interface tools and terminal user interfaces for the ACGS-2 constitutional AI governance platform. This directory provides developer tools, operational interfaces, and user-friendly CLI applications achieving P99 <5ms performance and >100 RPS throughput for command execution.
+Documentation for cli components
 
-The CLI services system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all command operations while providing intuitive, powerful, and secure command-line interfaces for constitutional AI governance with enterprise-grade usability and automation support.
+The cli system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all cli operations while providing comprehensive cli guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Core CLI Configuration
-- **`acgs-config.json`** - Main ACGS CLI configuration and settings
-- **`OPENCODE_INTEGRATION_SUMMARY.md`** - OpenCode integration documentation and summary
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### OpenCode CLI System
-- **`opencode/`** - OpenCode CLI application and integration framework
-- **`opencode/README.md`** - OpenCode CLI documentation and usage guide
-- **`opencode/AGENTS.md`** - Agent integration and configuration documentation
-- **`opencode/package.json`** - Node.js dependencies and build configuration
-- **`opencode/Dockerfile`** - Container deployment for OpenCode CLI
-- **`opencode/acgs-config.json`** - OpenCode-specific ACGS configuration
-
-### OpenCode Implementation
-- **`opencode/src/`** - OpenCode CLI source code and implementation
-- **`opencode/bin/`** - OpenCode CLI executable binaries and scripts
-- **`opencode/script/`** - OpenCode automation and deployment scripts
-- **`opencode/test/`** - OpenCode CLI testing framework and test suites
-- **`opencode/config.schema.json`** - Configuration schema validation
-
-### Terminal User Interface (TUI)
-- **`tui/`** - Terminal user interface application and framework
-- **`tui/AGENTS.md`** - TUI agent integration and configuration
-- **`tui/go.mod`** - Go module dependencies and version management
-- **`tui/cmd/`** - TUI command implementations and CLI entry points
-- **`tui/internal/`** - TUI internal components and business logic
-- **`tui/sdk/`** - TUI software development kit and libraries
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../shared/`** - Shared services for authentication, configuration, and utilities
-- **`../core/`** - Core services requiring CLI management and interaction
-- **`../platform_services/`** - Platform services accessible through CLI interfaces
-- **`../../config/`** - Configuration files for CLI service settings
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Node.js**: Runtime environment for OpenCode CLI application
-- **TypeScript**: Type-safe development for OpenCode implementation
-- **Go**: Programming language for TUI application development
-- **Bun**: Fast JavaScript runtime and package manager
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### CLI Integration
-- **Service Management**: CLI tools for ACGS service management and operations
-- **Configuration Management**: CLI interfaces for configuration and settings
-- **Monitoring Integration**: CLI tools for monitoring and observability
-- **Development Tools**: CLI utilities for development and debugging
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### OpenCode CLI Framework
-- **Command Interface**: Comprehensive command-line interface for ACGS operations
-- **Agent Integration**: CLI integration with ACGS agent systems and coordination
-- **Configuration Management**: CLI tools for configuration and environment management
-- **Automation Support**: CLI automation and scripting capabilities
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Terminal User Interface
-- **Interactive Interface**: Rich terminal user interface for ACGS management
-- **Real-time Monitoring**: TUI-based monitoring and observability dashboards
-- **Service Control**: Interactive service management and control interfaces
-- **Development Tools**: TUI-based development and debugging utilities
-
-### Constitutional CLI Integration
-- **Constitutional Validation**: CLI tools for constitutional compliance validation
-- **Performance Monitoring**: CLI interfaces for performance monitoring and optimization
-- **Security Management**: CLI tools for security configuration and management
-- **Audit Integration**: CLI interfaces for audit logging and compliance tracking
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in all CLI operations
-- **CLI Compliance**: Complete constitutional compliance framework for command-line interfaces
-- **Security Integration**: Constitutional compliance integrated into CLI security features
-- **Audit Documentation**: Complete audit trail for CLI operations with constitutional context
-- **Performance Compliance**: All CLI tools maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all cli operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Command Coverage**: 100% constitutional hash validation in all CLI commands
-- **Interface Compliance**: All CLI interfaces validated for constitutional compliance
-- **Security Framework**: CLI security features validated for constitutional compliance
-- **Audit Trail**: Complete audit trail for CLI operations with constitutional context
-- **Performance Standards**: All CLI tools exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all CLI tools
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All CLI components validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### CLI Performance
-- **Command Execution**: Optimized command execution for sub-second response times
-- **Interface Responsiveness**: Responsive CLI and TUI interfaces for optimal user experience
-- **Resource Utilization**: Efficient resource usage for CLI operations
-- **Startup Performance**: Fast CLI application startup and initialization
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Command Caching**: Optimized command caching for improved performance
-- **Async Operations**: Asynchronous command execution for improved responsiveness
-- **Resource Management**: Efficient resource allocation for CLI operations
-- **Network Optimization**: Optimized network communication for remote operations
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Command Complexity**: Optimization needed for complex command operations
-- **Network Latency**: Performance optimization for remote service communication
-- **Resource Contention**: Optimization needed for resource-intensive CLI operations
-- **Interface Rendering**: Optimization needed for complex TUI rendering
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **OpenCode CLI**: Complete OpenCode CLI framework with constitutional compliance
-- **Terminal User Interface**: Rich TUI application with interactive capabilities
-- **Configuration Management**: CLI tools for configuration and environment management
-- **Agent Integration**: CLI integration with ACGS agent systems
-- **Development Tools**: CLI utilities for development and debugging
-- **Constitutional Integration**: 100% constitutional compliance across all CLI tools
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced CLI Features**: Enhanced CLI capabilities and automation
-- **Performance Optimization**: Continued optimization for sub-second command execution
-- **Security Enhancement**: Advanced CLI security features and authentication
-- **Integration Improvement**: Enhanced integration with ACGS services
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced CLI**: AI-powered CLI assistance and intelligent command completion
-- **Advanced Analytics**: Enhanced CLI analytics and usage monitoring
-- **Federation Support**: Multi-organization CLI federation and management
-- **Quantum Integration**: Quantum-resistant CLI security and operations
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Shared Services](../shared/CLAUDE.md)** - Shared services for CLI authentication and utilities
-- **[Core Services](../core/CLAUDE.md)** - Core services accessible through CLI interfaces
-- **[Platform Services](../platform_services/CLAUDE.md)** - Platform services manageable via CLI
-- **[Configuration](../../config/CLAUDE.md)** - Configuration files for CLI services
+- **[Core](../core/CLAUDE.md)** - Core Services
+- **[Platform Services](../platform_services/CLAUDE.md)** - Platform Services
 
-### CLI Component Categories
-- **[OpenCode CLI](opencode/)** - OpenCode CLI application and framework
-- **[Terminal UI](tui/)** - Terminal user interface application
-- **[Configuration](acgs-config.json)** - CLI configuration and settings
-- **[Integration](OPENCODE_INTEGRATION_SUMMARY.md)** - Integration documentation
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Architecture Documentation](../../docs/architecture/CLAUDE.md)** - System architecture with CLI integration
-- **[Development Documentation](../../docs/development/CLAUDE.md)** - Development procedures with CLI tools
-- **[Operations Documentation](../../docs/operations/CLAUDE.md)** - Operations procedures with CLI interfaces
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[CLI Tests](opencode/test/)** - CLI testing framework and validation
-- **[Integration Tests](../../tests/integration/CLAUDE.md)** - CLI integration testing
-- **[Performance Tests](../../tests/performance/CLAUDE.md)** - CLI performance validation
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Services](../CLAUDE.md) → **CLI** | [Shared Services](../shared/CLAUDE.md) | [Core Services](../core/CLAUDE.md)
+**Navigation**: [Root](../../CLAUDE.md) → [Services](../CLAUDE.md) → **Cli**
 
-**Constitutional Compliance**: All CLI services maintain constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All cli operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive CLI services documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

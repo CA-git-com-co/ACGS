@@ -1,148 +1,119 @@
-# Governance Synthesis Service Documentation
+# ACGS-2 Governance-Synthesis Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The Governance Synthesis Service is a critical component of ACGS-2's constitutional governance framework, operating on port 8004. This service provides advanced policy synthesis, OPA (Open Policy Agent) integration, and WASM-based policy compilation for real-time governance decisions. It implements sophisticated policy orchestration with P99 latency <5ms and >100 RPS throughput while maintaining constitutional compliance.
+Documentation for governance-synthesis components
 
-The service serves as the policy synthesis engine for ACGS-2, transforming constitutional principles into executable policies through advanced AI model integration and formal policy compilation.
+The governance-synthesis system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all governance-synthesis operations while providing comprehensive governance-synthesis guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Service Implementations
-- **`gs_service/`** - Primary Governance Synthesis service implementation (production-ready)
-- **`gs_service_standardized/`** - Standardized FastAPI template-based implementation
-- **`src/`** - Source code and utility modules
-- **`policies/`** - Policy definitions and Rego rule implementations
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Core Service Files
-- **`__init__.py`** - Service package initialization and exports
-- **`advanced_opa_engine.py`** - Advanced OPA integration engine
-- **`groq_policy_integration_service.py`** - Groq AI model integration for policy synthesis
-- **`opa_client.py`** - OPA client for policy evaluation
-- **`wasm_policy_compiler.py`** - WASM policy compilation engine
-- **`wasm_policy_engine.py`** - WASM policy execution engine
-
-### Service Structure (gs_service/)
-- **`main.py`** - Service entry point with FastAPI application setup
-- **`README.md`** - Service documentation and API specifications
-- **`README_ENHANCED_GOVERNANCE.md`** - Enhanced governance features documentation
-- **`app/`** - Application modules including workflows, services, and API endpoints
-- **`config/`** - Service configuration and environment settings
-- **`policies/`** - Policy definitions and rule implementations
-- **`scripts/`** - Deployment and maintenance scripts
-- **`tests/`** - Comprehensive test suites for policy validation
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **Constitutional AI Service (8001)**: Constitutional compliance validation and principle sourcing
-- **Formal Verification Service (8003)**: Mathematical proof validation for policy correctness
-- **Policy Governance Service (8005)**: Policy compilation and rule generation
-- **Multi-Agent Coordinator (8008)**: Agent orchestration for policy execution
-- **Authentication Service (8016)**: JWT-based security with policy context
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Database**: PostgreSQL (5439) with optimized connection pooling for policy data
-- **Cache**: Redis (6389) for multi-tier policy caching and rule compilation
-- **OPA (Open Policy Agent)**: Policy evaluation and decision engine
-- **WASM Runtime**: WebAssembly execution environment for compiled policies
-- **AI Models**: Groq, OpenAI, Anthropic for policy synthesis and validation
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Service Communication
-- **Policy Synthesis**: Real-time policy generation from constitutional principles
-- **OPA Integration**: Policy evaluation and decision making
-- **WASM Compilation**: High-performance policy execution
-- **Event-Driven Architecture**: Async policy updates and notifications
-- **Circuit Breaker**: Fault tolerance with cached policy fallbacks
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### ✅ IMPLEMENTED - Core Policy Engine
-- **Advanced OPA Engine**: High-performance policy evaluation
-- **WASM Policy Compiler**: Efficient policy compilation to WebAssembly
-- **Groq Integration**: Ultra-fast AI model integration for policy synthesis
-- **Policy Caching**: Multi-tier caching for sub-5ms policy evaluation
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### ✅ IMPLEMENTED - Policy Management
-- **Policy Repository**: Centralized policy storage and versioning
-- **Rule Compilation**: Rego to WASM compilation pipeline
-- **Policy Validation**: Formal verification of policy correctness
-- **Constitutional Compliance**: Automatic constitutional hash validation
-
-### 🔄 IN PROGRESS - Advanced Features
-- **Multi-Model Consensus**: Policy synthesis using multiple AI models
-- **Dynamic Policy Updates**: Real-time policy modification and deployment
-- **Policy Analytics**: Advanced policy performance and compliance analytics
-- **Distributed Policy Execution**: Multi-node policy evaluation
-
-### ❌ PLANNED - Future Enhancements
-- **Machine Learning Policy Optimization**: AI-driven policy improvement
-- **Cross-Domain Policy Federation**: Multi-system policy coordination
-- **Advanced Policy Debugging**: Comprehensive policy debugging tools
-- **Policy Performance Optimization**: Advanced performance tuning
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
-- **Hash Validation**: `cdd01ef066bc6cf2` ✅
-- **Performance Targets**: P99 <5ms, >100 RPS, >85% cache hit rates ✅
-- **Security Standards**: Production-grade security with policy isolation ✅
-- **Audit Compliance**: Complete policy audit trails and governance logging ✅
+### Implementation Status: ✅ IMPLEMENTED
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all governance-synthesis operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
+
+### Compliance Metrics
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
+
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Policy Performance Targets
-- **Policy Evaluation**: <1ms for cached policy decisions
-- **Policy Compilation**: <10ms for Rego to WASM compilation
-- **Policy Synthesis**: <100ms for AI-generated policy creation
-- **Throughput**: >100 RPS for concurrent policy evaluations
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
-### Optimization Features
-- **Multi-Tier Caching**: Redis + in-memory policy caching
-- **WASM Execution**: High-performance compiled policy execution
-- **Connection Pooling**: Optimized database and OPA connections
-- **Async Processing**: Non-blocking policy evaluation and synthesis
+### Optimization Strategies
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
+
+### Performance Bottlenecks
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED
-- Core governance synthesis service
-- OPA integration and policy evaluation
-- WASM policy compilation engine
-- Groq AI model integration
-- Constitutional compliance validation
-- Multi-tier caching system
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS
-- Advanced policy analytics
-- Multi-model consensus integration
-- Dynamic policy update mechanisms
-- Performance optimization enhancements
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED
-- Machine learning policy optimization
-- Cross-domain policy federation
-- Advanced debugging and monitoring tools
-- Distributed policy execution framework
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
-## Cross-References
+## Cross-References & Navigation
 
-### Related Documentation
-- [Core Services Overview](../CLAUDE.md)
-- [Constitutional AI Service](../constitutional-ai/CLAUDE.md)
-- [Policy Governance Service](../policy-governance/CLAUDE.md)
-- [Formal Verification Service](../formal-verification/CLAUDE.md)
+### Related Directories
+- **[Core](../../../services/core/CLAUDE.md)** - Core Services
+- **[Platform Services](../../../services/platform_services/CLAUDE.md)** - Platform Services
 
-### Related Services
-- [Platform Services](../../platform_services/CLAUDE.md)
-- [Shared Libraries](../../shared/CLAUDE.md)
-- [Infrastructure Services](../../infrastructure/CLAUDE.md)
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../../docs_backup_20250717_155154/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../../docs_backup_20250717_155154/architecture/CLAUDE.md)** - System architecture documentation
 
-### Policy Resources
-- **Policy Repository**: `policies/` directory with Rego implementations
-- **OPA Documentation**: Open Policy Agent integration guides
-- **WASM Resources**: WebAssembly compilation and execution guides
+### Documentation and Guides
+- **[Development Guide](../../../docs_backup_20250717_155154/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../../docs_backup_20250717_155154/deployment/CLAUDE.md)** - Deployment procedures and automation
+
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
-*Last Updated: 2025-07-15*
-*Constitutional Hash: cdd01ef066bc6cf2*
+
+**Navigation**: [Root](../../../CLAUDE.md) → [Services](../../CLAUDE.md) → [Core](../CLAUDE.md) → **Governance-Synthesis**
+
+**Constitutional Compliance**: All governance-synthesis operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
+
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

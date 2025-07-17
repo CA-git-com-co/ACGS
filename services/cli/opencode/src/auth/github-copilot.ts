@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { z } from "zod"
 import { Auth } from "./index"
 import { NamedError } from "../util/error"

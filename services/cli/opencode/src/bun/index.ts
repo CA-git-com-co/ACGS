@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { z } from "zod"
 import { Global } from "../global"
 import { Log } from "../util/log"

@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Global } from "../global"
 import { Log } from "../util/log"
 import path from "path"

@@ -1,0 +1,840 @@
+{
+  "assessment_timestamp": "2025-07-07T14:56:21.155145+00:00",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "security_scores": {
+    "Authentication Security": {
+      "score": 0.8999999999999999,
+      "findings": [
+        "JWT implementation found",
+        "Constitutional compliance in JWT",
+        "IP binding implemented",
+        "Session tracking implemented",
+        "Token revocation implemented",
+        "Security middleware found"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "Authorization Controls": {
+      "score": 0.7346820809248554,
+      "findings": [
+        "Authorization files found: 29",
+        "Security context implementation found",
+        "Endpoint protection: 20/173 (11.6%)"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "Input Validation": {
+      "score": 1.0,
+      "findings": [
+        "Pydantic validation found in 372 files",
+        "Input sanitization mechanisms found",
+        "SQL query files found - check for parameterization"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "API Security": {
+      "score": 1.0,
+      "findings": [
+        "CORS middleware found",
+        "Rate limiting found",
+        "HTTPS enforcement found",
+        "Security headers found: 116/3"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "Dependency Security": {
+      "score": 0.48679706601466993,
+      "findings": [
+        "Requirements files found: 18",
+        "Pinned dependencies: 191/409 (46.7%)"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "Secrets Management": {
+      "score": 0.7,
+      "findings": [
+        "Environment variable usage found in 1109 files",
+        "Vault integration found"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "Code Security": {
+      "score": 1.0,
+      "findings": [
+        "Constitutional compliance maintained",
+        "Security-related imports found",
+        "Logging implementation found in 3138 files"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    },
+    "Infrastructure Security": {
+      "score": 1.0,
+      "findings": [
+        "Docker files found: 34",
+        "Non-root user in Docker",
+        "Security configuration files found",
+        "TLS/SSL configuration found"
+      ],
+      "constitutional_hash": "cdd01ef066bc6cf2"
+    }
+  },
+  "vulnerabilities": [
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/check_replica_health.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/test_groq_acgs_integration.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/comprehensive_security_vulnerability_scanner.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/comprehensive_security_vulnerability_scanner.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/core/evolutionary-computation/ec_service/security_architecture.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/core/code-analysis/code_analysis_service/test_priority3_integration.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/core/constitutional-ai/ac_service/test_stakeholder_engagement.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/core/governance-synthesis/gs_service/tests/test_gemini_validators.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/core/governance-synthesis/gs_service/tests/test_evolutionary_tensor_integration.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/core/governance-synthesis/gs_service/tests/test_groq_tensor_service.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/shared/security/enhanced_rbac.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/platform_services/authentication/auth_service/test_agent_system.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/services/platform_services/authentication/auth_service/app/tests/test_token.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/venv/lib/python3.12/site-packages/pydantic/types.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/venv/lib/python3.12/site-packages/psycopg2/__init__.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/venv/lib/python3.12/site-packages/psycopg2/errorcodes.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/venv/lib/python3.12/site-packages/starlette/datastructures.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/httpx/_urls.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/fsspec/spec.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/amqp/connection.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/huggingface_hub/hf_api.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/huggingface_hub/_webhooks_server.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/starlette/datastructures.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/pydantic/types.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/passlib/context.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/psycopg2/__init__.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/psycopg2/errorcodes.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/ecdsa/test_ecdh.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/opentelemetry/semconv/_incubating/attributes/k8s_attributes.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/opentelemetry/sdk/environment_variables/__init__.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/safety/scan/util.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/google/genai/_test_api_client.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/google/genai/client.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/google/generativeai/generative_models.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/bandit/plugins/general_hardcoded_password.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/openai/resources/webhooks.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/huggingface_hub/inference/_client.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/huggingface_hub/inference/_generated/_async_client.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/pip/_internal/utils/misc.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/werkzeug/debug/tbtools.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/safety_schemas/models/base.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/safety_schemas/report/schemas/v3_0/main.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/sqlite/provision.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/oracle/oracledb.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/oracle/provision.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/oracle/cx_oracle.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/mysql/mysqldb.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/sqlalchemy/dialects/mssql/pyodbc.py",  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/passlib/tests/test_context.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/passlib/tests/utils.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/passlib/tests/utils.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/passlib/tests/test_handlers_bcrypt.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/.venv/lib/python3.12/site-packages/passlib/tests/test_handlers.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/testing/performance/production-performance-test.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tests/security/security_validation_framework.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tests/security/penetration_testing.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tests/security/penetration_testing.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tests/unit/test_openrouter_integration.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/infrastructure/scaling/database_sharding_manager.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/infrastructure/monitoring/pgbouncer_exporter.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/infrastructure/monitoring/health_check_service.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/infrastructure/database/read_replica_config.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/testing/security_validator.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/security/test_security_hardening.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/security/test_security_hardening.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "critical",
+      "category": "authentication",
+      "description": "Potential hardcoded credential found",
+      "location": "/home/dislove/ACGS-2/tools/migration/run_migrations.py",
+      "recommendation": "Move credentials to secure environment variables or vault"
+    },
+    {
+      "severity": "medium",
+      "category": "authorization",
+      "description": "Only 11.6% of endpoints are protected",
+      "location": "API endpoints",
+      "recommendation": "Add authentication/authorization to unprotected endpoints"
+    },
+    {
+      "severity": "medium",
+      "category": "dependency",
+      "description": "Only 46.7% of dependencies are pinned",
+      "location": "requirements.txt",
+      "recommendation": "Pin all dependency versions for security"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/tools/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/tools/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/database/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/services/core/evolutionary-computation/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/services/core/evolutionary-computation/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/services/core/code-analysis/code_analysis_service/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/services/core/code-analysis/code_analysis_service/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/services/core/code-analysis/code_analysis_service/requirements_minimal.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/services/core/formal-verification/fv_service/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/services/core/formal-verification/fv_service/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/services/cli_backup_20250706_110222/gemini_cli/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/services/cli_backup_20250706_110222/gemini_cli/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/services/platform_services/authentication/auth_service/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/services/platform_services/authentication/auth_service/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/docs/research/arxiv_submission_package/requirements-test.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/tests/security/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/tests/load_testing/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/infrastructure/monitoring/elk-config/security-processor/requirements.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/infrastructure/monitoring/elk-config/security-processor/requirements.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: requests",
+      "location": "/home/dislove/ACGS-2/tools/dgm-best-swe-agent/requirements_dev.txt",
+      "recommendation": "Update to version >= 2.25.1"
+    },
+    {
+      "severity": "high",
+      "category": "dependency",
+      "description": "Potentially vulnerable package: urllib3",
+      "location": "/home/dislove/ACGS-2/tools/dgm-best-swe-agent/requirements_dev.txt",
+      "recommendation": "Update to version >= 1.26.5"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/production.env.backup",
+      "location": "/home/dislove/ACGS-2/config/environments/developmentconfig/environments/production.env.backup",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/development.env",
+      "location": "/home/dislove/ACGS-2/config/environments/development.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/template.env",
+      "location": "/home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/integrity.env",
+      "location": "/home/dislove/ACGS-2/config/environments/developmentconfig/environments/integrity.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/development.env",
+      "location": "/home/dislove/ACGS-2/database/config/environments/development.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/development.env",
+      "location": "/home/dislove/ACGS-2/services/cli/opencode/config/environments/development.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/development.env.staging",
+      "location": "/home/dislove/ACGS-2/services/core/code-analysis/config/environments/development.env.staging",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/core/policy-governance/pgc_service/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/core/formal-verification/fv_service/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/core/constitutional-ai/ac_service/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/core/governance-synthesis/gs_service/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/cli_backup_20250706_110222/opencode_adapter/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/platform_services/integrity/integrity_service/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/example.env",
+      "location": "/home/dislove/ACGS-2/services/platform_services/authentication/auth_service/config/environments/developmentconfig/environments/example.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/development.env",
+      "location": "/home/dislove/ACGS-2/infrastructure/phase3/config/environments/development.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    },
+    {
+      "severity": "high",
+      "category": "secrets",
+      "description": "Environment file in repository: config/environments/developmentconfig/environments/production.template.env",
+      "location": "/home/dislove/ACGS-2/infrastructure/docker/config/environments/developmentconfig/environments/production.template.env",
+      "recommendation": "Remove config/environments/development.env files from repository, add to .gitignore"
+    }
+  ],
+  "hardening_recommendations": [],
+  "compliance_status": {
+    "meets_security_targets": false,
+    "critical_vulnerabilities": 67,
+    "high_vulnerabilities": 38,
+    "constitutional_compliance": true
+  },
+  "overall_security_score": 0.8526848933674407
+}

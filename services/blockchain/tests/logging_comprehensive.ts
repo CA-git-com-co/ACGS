@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 // ACGS-1 Logging Program Test Suite - Protocol v2.0
 // requires: Logging program deployed with correct method signatures
 // ensures: >90% test pass rate, comprehensive audit trail validation

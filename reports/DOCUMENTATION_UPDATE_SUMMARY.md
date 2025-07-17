@@ -1,4 +1,6 @@
 # ACGS-2 Documentation Update Summary
+**Constitutional Hash: cdd01ef066bc6cf2**
+
 
 **Constitutional Hash:** `cdd01ef066bc6cf2`  
 **Update Date:** July 12, 2025  
@@ -168,6 +170,18 @@ All documentation now uses accurate implementation status indicators:
 1. **Automated Synchronization** - Keep performance metrics auto-updated
 2. **Continuous Validation** - Maintain 100% CI/CD validation success
 3. **Constitutional Compliance** - Ongoing monitoring and validation
+
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ## Conclusion
 

@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   let timeout: NodeJS.Timeout
   return Promise.race([

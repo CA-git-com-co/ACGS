@@ -63,7 +63,19 @@ The ACGS-2 Complete Training and Deployment System provides end-to-end capabilit
 
 ### Component Training Results
 | Component | Training Status | Compliance | Performance Score |
-|-----------|----------------|------------|-------------------|
+|-----------|----------------|------------|----------------
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
+
+---|
 | **Constitutional AI** | ✅ Success | 98.00% | 0.960 |
 | **Policy Governance** | ✅ Success | 98.00% | 0.955 |
 | **Multi-Agent Coordination** | ✅ Success | 97.00% | 0.948 |

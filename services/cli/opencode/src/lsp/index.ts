@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { App } from "../app/app"
 import { Log } from "../util/log"
 import { LSPClient } from "./client"

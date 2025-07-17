@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import type { StandardSchemaV1 } from "@standard-schema/spec"
 
 export namespace Tool {

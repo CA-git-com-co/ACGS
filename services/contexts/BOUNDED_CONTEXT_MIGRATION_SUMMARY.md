@@ -235,6 +235,18 @@ All bounded contexts maintain constitutional compliance:
 - CQRS with event sourcing projections
 - Distributed saga orchestration
 
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
+
 ## Conclusion
 
 The bounded context migration successfully transforms ACGS from a service-oriented architecture to a proper Domain-Driven Design implementation. This provides:

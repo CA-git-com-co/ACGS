@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { Global } from "../global"
 import { lazy } from "../util/lazy"
 import path from "path"

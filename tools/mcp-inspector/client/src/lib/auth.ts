@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { OAuthClientProvider } from "@modelcontextprotocol/sdk/client/auth.js";
 import {
   OAuthClientInformationSchema,

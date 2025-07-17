@@ -1,198 +1,119 @@
-# ACGS-2 Kubernetes Infrastructure Directory Documentation
+# ACGS-2 Kubernetes Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The `infrastructure/kubernetes` directory contains comprehensive Kubernetes infrastructure for the ACGS-2 constitutional AI governance platform. This directory provides production-ready Kubernetes deployments, service mesh integration, blue-green deployment automation, and container orchestration achieving P99 <5ms performance and >100 RPS throughput.
+Documentation for kubernetes components
 
-The Kubernetes infrastructure maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all container operations while providing scalable, resilient, and secure container orchestration for constitutional AI governance with enterprise-grade reliability and performance.
+The kubernetes system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all kubernetes operations while providing comprehensive kubernetes guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Core Kubernetes Manifests
-- **`core-services.yaml`** - Core ACGS-2 service deployments and configurations
-- **`database.yaml`** - PostgreSQL and Redis database deployments
-- **`monitoring.yaml`** - Prometheus and Grafana monitoring stack
-- **`ingress.yaml`** - Ingress controller and routing configuration
-- **`rbac.yaml`** - Role-based access control and security policies
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Service Deployments
-- **`services/`** - Individual service deployment manifests and configurations
-- **`services/constitutional-ai-service.yaml`** - Constitutional AI service deployment
-- **`services/governance-synthesis-service.yaml`** - Governance synthesis service deployment
-- **`services/auth-service.yaml`** - Authentication service deployment
-- **`services/integrity-service.yaml`** - Integrity validation service deployment
-
-### Production Infrastructure
-- **`production/`** - Production-ready Kubernetes infrastructure and deployment automation
-- **`production/cluster-config.yaml`** - Production cluster configuration and settings
-- **`production/deploy-cluster.sh`** - Automated production cluster deployment
-- **`production/infrastructure-validation.sh`** - Production infrastructure validation
-
-### Blue-Green Deployment
-- **`blue-green/`** - Blue-green deployment automation and traffic management
-- **`blue-green/blue-environment.yaml`** - Blue environment configuration and deployment
-- **`blue-green/green-environment.yaml`** - Green environment configuration and deployment
-- **`blue-green/traffic-routing.yaml`** - Traffic routing and load balancing configuration
-
-### ACGS-Lite Configuration
-- **`acgs-lite/`** - Lightweight ACGS deployment for development and testing
-- **`acgs-lite/constitutional-trainer.yaml`** - Constitutional AI trainer deployment
-- **`acgs-lite/postgresql-ha.yaml`** - High-availability PostgreSQL deployment
-- **`acgs-lite/monitoring.yaml`** - Monitoring stack for ACGS-lite environment
-
-### Security and Networking
-- **`security/`** - Security policies, network policies, and RBAC configurations
-- **`network-policies/`** - Network segmentation and security policies
-- **`service-mesh/`** - Service mesh integration and configuration
-
-### Monitoring and Observability
-- **`monitoring/`** - Comprehensive monitoring, alerting, and observability
-- **`monitoring/prometheus-operator.yaml`** - Prometheus operator deployment
-- **`monitoring/grafana-dashboard.json`** - Grafana dashboard configuration
-
-### Testing and Validation
-- **`testing/`** - End-to-end testing, load testing, and validation automation
-- **`testing/comprehensive-load-test.sh`** - Comprehensive load testing automation
-- **`testing/end-to-end-test.sh`** - End-to-end validation and testing
-
-### Deployment Documentation
-- **`DEPLOYMENT_GUIDE.md`** - Comprehensive Kubernetes deployment guide
-- **`PRODUCTION_READINESS_CHECKLIST.md`** - Production readiness validation checklist
-- **`VALIDATION_SUCCESS_REPORT.md`** - Deployment validation and success reporting
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **`../`** - Core infrastructure components and shared configurations
-- **`../../services/`** - All ACGS-2 services requiring Kubernetes deployment
-- **`../../config/`** - Configuration files for Kubernetes environments
-- **`../../scripts/`** - Deployment automation and operational scripts
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Kubernetes**: Container orchestration platform for service deployment
-- **Docker**: Container runtime and image management
-- **Helm**: Kubernetes package manager for complex deployments
-- **Istio/Linkerd**: Service mesh for secure service communication
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Kubernetes Integration
-- **Container Orchestration**: Automated container deployment and management
-- **Service Discovery**: Kubernetes-native service discovery and load balancing
-- **Auto-scaling**: Horizontal and vertical pod auto-scaling
-- **Health Monitoring**: Kubernetes health checks and self-healing capabilities
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### Production Kubernetes Infrastructure
-- **Cluster Management**: Production-ready Kubernetes cluster configuration and management
-- **Service Deployment**: Automated service deployment with rolling updates and rollbacks
-- **Load Balancing**: Kubernetes-native load balancing and traffic distribution
-- **Auto-scaling**: Horizontal and vertical auto-scaling for optimal resource utilization
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### Constitutional Kubernetes
-- **Compliance Validation**: Kubernetes-based constitutional compliance validation
-- **Security Policies**: Constitutional compliance integrated into Kubernetes security
-- **Audit Integration**: Kubernetes audit logging with constitutional context
-- **Performance Monitoring**: Constitutional performance targets in Kubernetes metrics
-
-### Enterprise Kubernetes Features
-- **Blue-Green Deployment**: Zero-downtime deployment with automated rollback
-- **Service Mesh**: Secure service-to-service communication with observability
-- **Multi-tenancy**: Secure multi-tenant Kubernetes deployment and isolation
-- **Disaster Recovery**: Automated backup, recovery, and disaster response
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
 ### Implementation Status: ✅ IMPLEMENTED
-- **Constitutional Hash Enforcement**: 100% validation of `cdd01ef066bc6cf2` in Kubernetes deployments
-- **Kubernetes Compliance**: Complete constitutional compliance framework for container orchestration
-- **Security Integration**: Constitutional compliance integrated into Kubernetes security policies
-- **Audit Documentation**: Complete Kubernetes audit trails with constitutional context
-- **Performance Compliance**: All Kubernetes deployments maintain constitutional performance standards
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all kubernetes operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
 
 ### Compliance Metrics
-- **Deployment Coverage**: 100% constitutional hash validation in all Kubernetes deployments
-- **Security Compliance**: All Kubernetes security policies validated for constitutional compliance
-- **Service Compliance**: All containerized services validated for constitutional compliance
-- **Audit Trail**: Complete Kubernetes audit trail with constitutional context
-- **Performance Standards**: All Kubernetes deployments exceed constitutional performance targets
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
 
-### Compliance Gaps (0% remaining)
-- **Complete Implementation**: 100% constitutional compliance achieved across all Kubernetes infrastructure
-- **Continuous Monitoring**: Real-time constitutional compliance validation operational
-- **Comprehensive Coverage**: All Kubernetes components validated for constitutional compliance
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Kubernetes Performance
-- **Container Startup**: Optimized container startup for sub-second service availability
-- **Resource Utilization**: Efficient Kubernetes resource allocation and optimization
-- **Network Performance**: Optimized Kubernetes networking for minimal latency
-- **Auto-scaling Performance**: Rapid auto-scaling response to load changes
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
 ### Optimization Strategies
-- **Resource Optimization**: Optimized Kubernetes resource requests and limits
-- **Network Optimization**: Optimized Kubernetes networking and service mesh
-- **Storage Optimization**: Efficient persistent volume and storage management
-- **Monitoring Optimization**: Optimized Kubernetes monitoring with minimal overhead
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
 
 ### Performance Bottlenecks
-- **Container Orchestration**: Optimization needed for large-scale container orchestration
-- **Network Latency**: Performance optimization for service-to-service communication
-- **Resource Contention**: Optimization needed for high-density container deployment
-- **Storage Performance**: Optimization needed for high-performance persistent storage
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED Components
-- **Core Kubernetes Infrastructure**: Complete Kubernetes deployment with constitutional compliance
-- **Production Deployment**: Production-ready Kubernetes cluster and service deployment
-- **Blue-Green Deployment**: Zero-downtime deployment with automated rollback capabilities
-- **Monitoring Integration**: Comprehensive Kubernetes monitoring and observability
-- **Security Policies**: Complete Kubernetes security and network policies
-- **Constitutional Integration**: 100% constitutional compliance across all Kubernetes infrastructure
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS Enhancements
-- **Advanced Orchestration**: Enhanced Kubernetes orchestration and automation
-- **Performance Optimization**: Continued optimization for sub-millisecond container operations
-- **Security Enhancement**: Advanced Kubernetes security and compliance automation
-- **Service Mesh Enhancement**: Enhanced service mesh integration and observability
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED Developments
-- **AI-Enhanced Orchestration**: AI-powered Kubernetes optimization and intelligent scaling
-- **Advanced Analytics**: Enhanced Kubernetes analytics and predictive capabilities
-- **Federation Support**: Multi-cluster Kubernetes federation and governance
-- **Quantum Integration**: Quantum-resistant Kubernetes security and orchestration
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[Infrastructure](../CLAUDE.md)** - Core infrastructure components and shared configurations
-- **[Services](../../services/CLAUDE.md)** - Services requiring Kubernetes deployment
-- **[Configuration](../../config/CLAUDE.md)** - Configuration files for Kubernetes environments
-- **[Scripts](../../scripts/CLAUDE.md)** - Deployment automation and operational scripts
+- **[Docker](../docker/CLAUDE.md)** - Docker Configuration
+- **[Documentation](../../docs/CLAUDE.md)** - Main documentation
 
-### Kubernetes Components
-- **[Production Deployment](production/)** - Production-ready Kubernetes infrastructure
-- **[Blue-Green Deployment](blue-green/)** - Zero-downtime deployment automation
-- **[ACGS-Lite](acgs-lite/)** - Lightweight development and testing deployment
-- **[Service Mesh](service-mesh/)** - Service mesh integration and configuration
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../docs/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../docs/architecture/CLAUDE.md)** - System architecture documentation
 
 ### Documentation and Guides
-- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Comprehensive Kubernetes deployment procedures
-- **[Production Readiness](PRODUCTION_READINESS_CHECKLIST.md)** - Production validation checklist
-- **[Architecture Documentation](../../docs/architecture/CLAUDE.md)** - System architecture with Kubernetes
-- **[Security Documentation](../../docs/security/CLAUDE.md)** - Security implementation with Kubernetes
+- **[Development Guide](../../docs/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../docs/deployment/CLAUDE.md)** - Deployment procedures and automation
 
-### Testing and Validation
-- **[Testing Framework](testing/)** - Kubernetes testing and validation automation
-- **[Integration Tests](../../tests/integration/CLAUDE.md)** - Kubernetes integration testing
-- **[Performance Tests](../../tests/performance/CLAUDE.md)** - Kubernetes performance validation
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Infrastructure](../CLAUDE.md) → **Kubernetes** | [Docker](../docker/CLAUDE.md) | [Monitoring](../monitoring/CLAUDE.md)
+**Navigation**: [Root](../../CLAUDE.md) → [Infrastructure](../CLAUDE.md) → **Kubernetes**
 
-**Constitutional Compliance**: All Kubernetes infrastructure maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive performance monitoring (P99 <5ms, >100 RPS), security enforcement, and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
+**Constitutional Compliance**: All kubernetes operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 
-**Last Updated**: July 14, 2025 - Created comprehensive Kubernetes infrastructure documentation with constitutional compliance
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

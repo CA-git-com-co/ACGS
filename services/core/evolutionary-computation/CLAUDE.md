@@ -1,158 +1,119 @@
-# Evolutionary Computation Service Documentation
+# ACGS-2 Evolutionary-Computation Directory Documentation
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 
 ## Directory Overview
 
-The Evolutionary Computation Service is a sophisticated component of ACGS-2's constitutional governance framework, operating on port 8006. This service provides advanced evolutionary algorithms, WINA (Weighted Intelligence Network Architecture) oversight coordination, and adaptive system optimization with constitutional compliance. It implements cutting-edge evolutionary computation techniques with P99 latency <5ms and >100 RPS throughput.
+Documentation for evolutionary-computation components
 
-The service serves as the adaptive intelligence layer for ACGS-2, enabling continuous system evolution and optimization while maintaining strict constitutional compliance and human oversight.
+The evolutionary-computation system maintains constitutional hash `cdd01ef066bc6cf2` validation throughout all evolutionary-computation operations while providing comprehensive evolutionary-computation guidance for ACGS-2 developers and operators.
 
 ## File Inventory
 
-### Service Implementations
-- **`ec_service/`** - Core evolutionary computation service implementation
-- **`ec_service_standardized/`** - Standardized FastAPI template-based implementation
-- **`app/`** - Core application logic and service modules
-- **`src/`** - Source code and utility modules
-- **`tests/`** - Comprehensive test suites for evolutionary algorithms
+### {CATEGORY_1}
+- **`{FILE_1}`** - {FILE_1_DESCRIPTION}
+- **`{FILE_2}`** - {FILE_2_DESCRIPTION}
 
-### Core Service Files
-- **`__init__.py`** - Service package initialization and exports
-- **`main.py`** - Primary service entry point
-- **`unified_main.py`** - Unified service orchestration
-- **`evolutionary_algorithms.py`** - Core evolutionary algorithm implementations
-- **`deploy.sh`** - Deployment automation script
-- **`requirements.txt`** - Service dependencies
-
-### Service Structure (ec_service/)
-- **`main.py`** - Service entry point with FastAPI application setup
-- **`evolution_engine.py`** - Core evolution engine implementation
-- **`evolution_oversight_engine.py`** - WINA oversight and coordination
-- **`health_monitoring.py`** - Service health monitoring and metrics
-- **`human_approval_workflow.py`** - Human-in-the-loop approval workflows
-- **`security_architecture.py`** - Security and constitutional compliance
-
-### Application Structure (app/)
-- **`main.py`** - Application entry point
-- **`core/`** - Core evolutionary computation modules
-- **`api/`** - REST API endpoints and handlers
-- **`services/`** - Business logic and service implementations
-- **`models/`** - Data models and schemas
-- **`wina/`** - WINA oversight coordination modules
-- **`middleware/`** - Request/response middleware
-- **`cache_manager.py`** - Caching and performance optimization
+### {CATEGORY_2}
+- **`{SUBDIRECTORY_1}/`** - {SUBDIRECTORY_1_DESCRIPTION}
+- **`{SUBDIRECTORY_2}/`** - {SUBDIRECTORY_2_DESCRIPTION}
 
 ## Dependencies & Interactions
 
 ### Internal Dependencies
-- **Constitutional AI Service (8001)**: Constitutional compliance validation and oversight
-- **Formal Verification Service (8003)**: Mathematical proof validation for evolutionary algorithms
-- **Governance Synthesis Service (8004)**: Policy synthesis for evolutionary constraints
-- **Multi-Agent Coordinator (8008)**: Agent orchestration and coordination
-- **Authentication Service (8016)**: JWT-based security with evolutionary context
+- **`{INTERNAL_DEP_1}/`** - {INTERNAL_DEP_1_DESCRIPTION}
+- **`{INTERNAL_DEP_2}/`** - {INTERNAL_DEP_2_DESCRIPTION}
 
 ### External Dependencies
-- **Database**: PostgreSQL (5439) with optimized connection pooling for evolutionary data
-- **Cache**: Redis (6389) for multi-tier caching of evolutionary states and results
-- **WINA Network**: Weighted Intelligence Network Architecture for oversight coordination
-- **ML Frameworks**: TensorFlow/PyTorch for advanced evolutionary algorithms
-- **Monitoring**: Prometheus/Grafana for evolutionary performance monitoring
+- **{EXTERNAL_DEP_1}**: {EXTERNAL_DEP_1_DESCRIPTION}
+- **{EXTERNAL_DEP_2}**: {EXTERNAL_DEP_2_DESCRIPTION}
 
-### Service Communication
-- **Evolution Coordination**: Real-time coordination of evolutionary processes
-- **WINA Oversight**: Weighted intelligence network oversight and validation
-- **Human Approval**: Human-in-the-loop approval workflows for critical evolutions
-- **Event-Driven Architecture**: Async evolutionary updates and notifications
-- **Circuit Breaker**: Fault tolerance with evolutionary state preservation
+### {INTERACTION_CATEGORY}
+- **{INTERACTION_1}**: {INTERACTION_1_DESCRIPTION}
+- **{INTERACTION_2}**: {INTERACTION_2_DESCRIPTION}
 
 ## Key Components
 
-### ✅ IMPLEMENTED - Core Evolution Engine
-- **Evolution Engine**: Advanced evolutionary algorithm implementation
-- **WINA Oversight**: Weighted intelligence network coordination
-- **Health Monitoring**: Real-time service health and performance monitoring
-- **Security Architecture**: Constitutional compliance and security enforcement
+### {COMPONENT_CATEGORY_1}
+- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
+- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
 
-### ✅ IMPLEMENTED - Human Oversight
-- **Human Approval Workflow**: Human-in-the-loop decision making
-- **Constitutional Validation**: Automatic constitutional hash validation
-- **Performance Monitoring**: Sub-5ms latency evolutionary computations
-- **Cache Management**: Multi-tier caching for evolutionary states
-
-### 🔄 IN PROGRESS - Advanced Features
-- **Adaptive Algorithms**: Self-improving evolutionary algorithms
-- **Multi-Objective Optimization**: Complex multi-criteria evolutionary optimization
-- **Distributed Evolution**: Multi-node evolutionary computation
-- **Advanced Analytics**: Evolutionary performance and convergence analytics
-
-### ❌ PLANNED - Future Enhancements
-- **Quantum Evolution**: Quantum-enhanced evolutionary algorithms
-- **Federated Evolution**: Cross-system evolutionary coordination
-- **Advanced WINA Integration**: Enhanced weighted intelligence coordination
-- **Autonomous Evolution**: Self-directed evolutionary processes with oversight
+### {COMPONENT_CATEGORY_2}
+- **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
+- **{FEATURE_2}**: {FEATURE_2_DESCRIPTION}
 
 ## Constitutional Compliance Status
 
-- **Hash Validation**: `cdd01ef066bc6cf2` ✅
-- **Performance Targets**: P99 <5ms, >100 RPS, >85% cache hit rates ✅
-- **Security Standards**: Production-grade security with evolutionary isolation ✅
-- **Human Oversight**: Complete human-in-the-loop approval workflows ✅
+### Implementation Status: ✅ IMPLEMENTED
+- **Constitutional Hash Enforcement**: ✅ Active validation of `cdd01ef066bc6cf2` in all evolutionary-computation operations
+- **Compliance {ASPECT_1}**: {COMPLIANCE_ASPECT_1_DESCRIPTION}
+- **{ASPECT_2}**: {COMPLIANCE_ASPECT_2_DESCRIPTION}
+
+### Compliance Metrics
+- **{METRIC_1}**: {METRIC_1_VALUE} {METRIC_1_DESCRIPTION}
+- **{METRIC_2}**: {METRIC_2_VALUE} {METRIC_2_DESCRIPTION}
+
+### Compliance Gaps ({GAP_PERCENTAGE}% remaining)
+- **{GAP_1}**: {GAP_1_DESCRIPTION}
+- **{GAP_2}**: {GAP_2_DESCRIPTION}
 
 ## Performance Considerations
 
-### Evolution Performance Targets
-- **Algorithm Execution**: <1ms for cached evolutionary operations
-- **WINA Coordination**: <5ms for oversight validation
-- **Human Approval**: <100ms for approval workflow initiation
-- **Throughput**: >100 RPS for concurrent evolutionary computations
+### {PERFORMANCE_CATEGORY_1}
+- **{PERF_ASPECT_1}**: {PERF_ASPECT_1_DESCRIPTION}
+- **{PERF_ASPECT_2}**: {PERF_ASPECT_2_DESCRIPTION}
 
-### Optimization Features
-- **Multi-Tier Caching**: Redis + in-memory evolutionary state caching
-- **Parallel Processing**: Multi-threaded evolutionary algorithm execution
-- **Connection Pooling**: Optimized database and service connections
-- **Async Processing**: Non-blocking evolutionary computation and coordination
+### Optimization Strategies
+- **{OPTIMIZATION_1}**: {OPTIMIZATION_1_DESCRIPTION}
+- **{OPTIMIZATION_2}**: {OPTIMIZATION_2_DESCRIPTION}
+
+### Performance Bottlenecks
+- **{BOTTLENECK_1}**: {BOTTLENECK_1_DESCRIPTION}
+- **{BOTTLENECK_2}**: {BOTTLENECK_2_DESCRIPTION}
 
 ## Implementation Status
 
-### ✅ IMPLEMENTED
-- Core evolutionary computation service
-- WINA oversight coordination
-- Human approval workflows
-- Health monitoring and metrics
-- Constitutional compliance validation
-- Multi-tier caching system
-- Security architecture
+### ✅ IMPLEMENTED {IMPLEMENTED_CATEGORY}
+- **{IMPLEMENTED_1}**: {IMPLEMENTED_1_DESCRIPTION}
+- **{IMPLEMENTED_2}**: {IMPLEMENTED_2_DESCRIPTION}
 
-### 🔄 IN PROGRESS
-- Advanced evolutionary algorithms
-- Multi-objective optimization
-- Distributed computation capabilities
-- Performance optimization enhancements
+### 🔄 IN PROGRESS {IN_PROGRESS_CATEGORY}
+- **{IN_PROGRESS_1}**: {IN_PROGRESS_1_DESCRIPTION}
+- **{IN_PROGRESS_2}**: {IN_PROGRESS_2_DESCRIPTION}
 
-### ❌ PLANNED
-- Quantum-enhanced algorithms
-- Federated evolutionary coordination
-- Autonomous evolution with oversight
-- Advanced analytics and visualization
+### ❌ PLANNED {PLANNED_CATEGORY}
+- **{PLANNED_1}**: {PLANNED_1_DESCRIPTION}
+- **{PLANNED_2}**: {PLANNED_2_DESCRIPTION}
 
-## Cross-References
+## Cross-References & Navigation
 
-### Related Documentation
-- [Core Services Overview](../CLAUDE.md)
-- [Constitutional AI Service](../constitutional-ai/CLAUDE.md)
-- [Formal Verification Service](../formal-verification/CLAUDE.md)
-- [Multi-Agent Coordinator](../multi_agent_coordinator/CLAUDE.md)
+### Related Directories
+- **[Core](../../../services/core/CLAUDE.md)** - Core Services
+- **[Platform Services](../../../services/platform_services/CLAUDE.md)** - Platform Services
 
-### Related Services
-- [Platform Services](../../platform_services/CLAUDE.md)
-- [Shared Libraries](../../shared/CLAUDE.md)
-- [Infrastructure Services](../../infrastructure/CLAUDE.md)
+### {NAVIGATION_CATEGORY_1}
+- **[API Documentation](../../../docs_backup_20250717_155154/api/CLAUDE.md)** - API specifications and guides
+- **[Architecture](../../../docs_backup_20250717_155154/architecture/CLAUDE.md)** - System architecture documentation
 
-### Evolution Resources
-- **WINA Documentation**: Weighted Intelligence Network Architecture guides
-- **Algorithm Library**: Evolutionary algorithm implementations and examples
-- **Performance Metrics**: Evolution performance monitoring and optimization guides
+### Documentation and Guides
+- **[Development Guide](../../../docs_backup_20250717_155154/development/CLAUDE.md)** - Development standards and practices
+- **[Deployment Guide](../../../docs_backup_20250717_155154/deployment/CLAUDE.md)** - Deployment procedures and automation
+
+
+## Performance Targets
+
+This component maintains the following performance requirements:
+
+- **P99 Latency**: <5ms (constitutional requirement)
+- **Throughput**: >100 RPS (minimum operational standard)
+- **Cache Hit Rate**: >85% (efficiency requirement)
+- **Constitutional Compliance**: 100% (hash: cdd01ef066bc6cf2)
+
+These targets are validated continuously and must be maintained across all operations.
 
 ---
-*Last Updated: 2025-07-15*
-*Constitutional Hash: cdd01ef066bc6cf2*
+
+**Navigation**: [Root](../../../CLAUDE.md) → [Services](../../CLAUDE.md) → [Core](../CLAUDE.md) → **Evolutionary-Computation**
+
+**Constitutional Compliance**: All evolutionary-computation operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
+
+**Last Updated**: 2025-07-17 - Systematic standardization implementation

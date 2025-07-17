@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 export const foo: string = "42"
 export const bar: number = 123
 

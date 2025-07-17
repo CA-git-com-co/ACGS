@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import "zod-openapi/extend"
 import yargs from "yargs"
 import { hideBin } from "yargs/helpers"

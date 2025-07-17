@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 // Utility function to escape Unicode characters
 export function escapeUnicode(obj: unknown): string {
   return JSON.stringify(

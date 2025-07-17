@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export function useDraggablePane(initialHeight: number) {

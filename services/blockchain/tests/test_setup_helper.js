@@ -1,3 +1,5 @@
+// Constitutional Hash: cdd01ef066bc6cf2
+
 'use strict';
 // ACGS-1 Test Infrastructure Helper
 // Implements governance specialist protocol v2.0 requirements
