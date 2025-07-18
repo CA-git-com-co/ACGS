@@ -8,15 +8,15 @@ pydantic==2.10.3
 pydantic-settings==2.6.1
 
 # Machine Learning and Recommendations - Updated for 2025
-scikit-learn==1.5.1
+scikit-learn==1.6.1
 pandas==2.2.2
 numpy==1.26.4
 scipy==1.13.1
 
 # Deep Learning for embeddings - Latest transformers
-torch==2.3.1
+torch==2.7.1
 sentence-transformers==3.0.1
-transformers==4.42.0
+transformers==4.52.1
 
 # Advanced recommendation frameworks
 tensorflow-recommenders==0.7.3
