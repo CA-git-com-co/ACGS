@@ -1,7 +1,7 @@
 # Performance Testing Requirements
 # Constitutional Hash: cdd01ef066bc6cf2
 
-aiohttp==3.9.1
+aiohttp==3.12.14
 asyncio-mqtt==0.13.0
 pytest==7.4.3
 pytest-asyncio==0.21.1
