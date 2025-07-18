@@ -95,7 +95,7 @@ for port in 8000 8001 8002 8003 8004 8005 8006; do
 done
 
 # Constitutional compliance verification
-curl -s http://localhost:8001/api/v1/compliance/status | jq '.data.constitutional_hash'
+curl -s http://localhost:8002/api/v1/compliance/status | jq '.data.constitutional_hash'
 # Expected: "cdd01ef066bc6cf2"
 ```
 
@@ -288,7 +288,7 @@ tar -xzf /backups/config_20240101_120000.tar.gz -C /
 #### Constitutional Compliance
 ```bash
 # Verify constitutional hash
-curl -s http://localhost:8001/api/v1/compliance/status | jq '.data.constitutional_hash'
+curl -s http://localhost:8002/api/v1/compliance/status | jq '.data.constitutional_hash'
 
 # Expected: "cdd01ef066bc6cf2"
 # If mismatch detected, investigate immediately

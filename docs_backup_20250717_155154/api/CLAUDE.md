@@ -100,7 +100,7 @@ The api system maintains constitutional hash `cdd01ef066bc6cf2` validation throu
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Api**
+**Navigation**: [Root](CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Api**
 
 **Constitutional Compliance**: All api operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

@@ -364,9 +364,9 @@ python scripts/emergency_rollback.py --version [stable-version]
 - [Blockchain API](https://docs.acgs.ai/blockchain/)
 
 ### Operational Guides
-- [Deployment Guide](./DEPLOYMENT_GUIDE.md)
-- [Monitoring Setup](./MONITORING_SETUP.md)
-- [Security Guidelines](./SECURITY_GUIDELINES.md)
+- [Deployment Guide](../../infrastructure/kubernetes/DEPLOYMENT_GUIDE.md.backup)
+- [Monitoring Setup](../../infrastructure/load-balancer/MONITORING_INTEGRATION.md)
+- [Security Guidelines](../../infrastructure/monitoring/SECURITY_GUIDE.md)
 
 ## 🔄 Migration Timeline
 

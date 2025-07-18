@@ -12,13 +12,13 @@ This checklist ensures the ACGS-PGP system meets all production requirements bef
 
 - [ ] **7-Service Architecture**: All services deployed on correct ports
   - [ ] auth-service:8000
-  - [ ] constitutional-ai-service:8001 (ac-service)
+  - [ ] constitutional-ai-service:8002 (ac-service)
   - [ ] integrity-service:8002
-  - [ ] formal-verification-service:8003 (fv-service)
+  - [ ] formal-verification-service:8004 (fv-service)
   - [ ] governance-synthesis-service:8004 (gs-service)
-  - [ ] policy-governance-service:8005 (pgc-service)
+  - [ ] policy-governance-service:8006 (pgc-service)
   - [ ] evolutionary-computation-service:8006 (ec-service)
-  - [ ] model-orchestrator-service:8007
+  - [ ] model-orchestrator-service:8008
 
 ### ✅ Constitutional AI Compliance
 

@@ -107,19 +107,19 @@ python tools/validation/service_config_alignment_validator.py [--repo-root PATH]
    services:
      service1:
        ports:
-         - "8001:8001"
+         - "8001:8002"
      service2:
        ports:
-         - "8001:8001"  # CONFLICT!
+         - "8001:8002"  # CONFLICT!
    
    # After (fixed)
    services:
      service1:
        ports:
-         - "8001:8001"
+         - "8001:8002"
      service2:
        ports:
-         - "8002:8001"  # Unique external port
+         - "8002:8002"  # Unique external port
    ```
 
 2. **Update Kubernetes Service manifests**:
@@ -684,5 +684,5 @@ fi
 **Constitutional Hash**: `cdd01ef066bc6cf2` ✅
 
 For additional information, see:
-- [ACGS Validation Tools Cheat Sheet](../training/validation_tools_cheatsheet.md)
-- [ACGS Documentation Index](../ACGS_docs/DOCUMENTATION_INDEX.md)
+- [ACGS Validation Tools Cheat Sheet](../training/validation_tools_cheatsheet.md.backup)
+- [ACGS Documentation Index](../DOCUMENTATION_INDEX.md.backup)

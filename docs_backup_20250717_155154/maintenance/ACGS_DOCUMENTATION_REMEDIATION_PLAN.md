@@ -75,17 +75,17 @@ Create missing critical documentation files and fix top-priority broken links.
 The `services` directory contains all ACGS-2 service implementations...
 
 ### Core Services
-- **[Constitutional AI](core/constitutional-ai/claude.md)** - Constitutional compliance validation
-- **[Authentication](platform_services/authentication/claude.md)** - JWT authentication service
-- **[Integrity](platform_services/integrity/claude.md)** - Cryptographic verification
+- **[Constitutional AI](../../.claude/commands/load.md)** - Constitutional compliance validation
+- **[Authentication](../../.claude/commands/load.md)** - JWT authentication service
+- **[Integrity](../../.claude/commands/load.md)** - Cryptographic verification
 
 ### Platform Services  
-- **[API Gateway](platform_services/api_gateway/claude.md)** - Service mesh gateway
-- **[Blackboard](platform_services/blackboard/claude.md)** - Shared knowledge system
+- **[API Gateway](../../.claude/commands/load.md)** - Service mesh gateway
+- **[Blackboard](../../.claude/commands/load.md)** - Shared knowledge system
 
 ### Infrastructure Services
-- **[Monitoring](infrastructure/monitoring/claude.md)** - System monitoring
-- **[Security](infrastructure/security/claude.md)** - Security infrastructure
+- **[Monitoring](../../.claude/commands/load.md)** - System monitoring
+- **[Security](../../.claude/commands/load.md)** - Security infrastructure
 ```
 
 **Create `docs/api/claude.md`**:
@@ -97,9 +97,9 @@ The `services` directory contains all ACGS-2 service implementations...
 Complete API specifications and integration guides for ACGS-2 services...
 
 ### API Specifications
-- **[Constitutional AI API](constitutional-ai.md)** - Constitutional compliance endpoints
-- **[Authentication API](authentication.md)** - JWT and OAuth endpoints
-- **[Governance API](governance_synthesis.md)** - Policy governance endpoints
+- **[Constitutional AI API](../api/constitutional-ai.md)** - Constitutional compliance endpoints
+- **[Authentication API](../api/authentication.md)** - JWT and OAuth endpoints
+- **[Governance API](../api/governance_synthesis.md)** - Policy governance endpoints
 ```
 
 #### 2.2 Fix Top 20 Broken Links (6 hours)

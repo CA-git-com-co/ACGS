@@ -68,7 +68,7 @@ This component maintains strict adherence to ACGS-2 performance standards:
 docker-compose up -d
 
 # Verify constitutional compliance
-curl http://localhost:8001/health/constitutional
+curl http://localhost:8002/health/constitutional
 
 # Check performance metrics
 curl http://localhost:9090/metrics | grep constitutional
@@ -91,7 +91,7 @@ services:
 import requests
 
 # Constitutional compliance check
-response = requests.get('http://localhost:8001/health/constitutional')
+response = requests.get('http://localhost:8002/health/constitutional')
 assert response.json()['constitutional_hash'] == 'cdd01ef066bc6cf2'
 
 # Performance metrics validation
@@ -139,7 +139,7 @@ assert 'p99_latency' in metrics
 ### Monitoring & Debugging
 ```bash
 # Check service health
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 
 # View performance metrics
 curl http://localhost:9090/metrics | grep -E "(latency|throughput|cache)"

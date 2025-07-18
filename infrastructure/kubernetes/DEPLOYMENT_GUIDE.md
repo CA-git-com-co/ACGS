@@ -17,7 +17,7 @@ This guide provides step-by-step instructions for deploying the ACGS-PGP system 
 
 The deployment includes:
 
-- **7 Core Services**: auth:8000, ac:8001, integrity:8002, fv:8003, gs:8004, pgc:8005, ec:8006
+- **7 Core Services**: auth:8000, ac:8002, integrity:8002, fv:8004, gs:8004, pgc:8006, ec:8006
 - **Constitutional Hash**: `cdd01ef066bc6cf2`
 - **Resource Limits**: 200m/500m CPU, 512Mi/1Gi memory per service
 - **Performance Targets**: ≤2s response time, >95% constitutional compliance

@@ -12,7 +12,7 @@ The Formal Verification (FV) Service is a critical component of the ACGS-1 syste
 **Service Port**: 8003
 **Service Version**: 3.0.0
 **Constitutional Hash**: `cdd01ef066bc6cf2`
-**Health Check**: http://localhost:8003/health
+**Health Check**: http://localhost:8004/health
 
 ## Core Features
 
@@ -89,7 +89,7 @@ REDIS_URL=redis://localhost:6379/3
 # Service Configuration
 SERVICE_NAME=formal-verification-service
 SERVICE_VERSION=3.0.0
-SERVICE_PORT=8003
+SERVICE_PORT=8004
 APP_ENV=production
 LOG_LEVEL=INFO
 
@@ -101,7 +101,7 @@ Z3_PROOF_GENERATION=true
 
 # Constitutional Governance
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-AC_SERVICE_URL=http://localhost:8001
+AC_SERVICE_URL=http://localhost:8002
 INTEGRITY_SERVICE_URL=http://localhost:8002
 
 # Cryptographic Configuration
@@ -169,7 +169,7 @@ cp config/environments/developmentconfig/environments/example.env config/environ
 # Edit config/environments/development.env with your configuration
 
 # 5. Start service
-uv run uvicorn main:app --reload --port 8003
+uv run uvicorn main:app --reload --port 8004
 ```
 
 ### Production Deployment
@@ -177,13 +177,13 @@ uv run uvicorn main:app --reload --port 8003
 ```bash
 # Using Docker
 docker build -t acgs-fv-service .
-docker run -p 8003:8003 --env-file config/environments/development.env acgs-fv-service
+docker run -p 8003:8004 --env-file config/environments/development.env acgs-fv-service
 
 # Using Docker Compose
 docker-compose up -d fv-service
 
 # Health check
-curl http://localhost:8003/health
+curl http://localhost:8004/health
 ```
 
 ### Kubernetes Deployment
@@ -230,7 +230,7 @@ import httpx
 async def verify_policy():
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            "http://localhost:8003/api/v1/verify/formal",
+            "http://localhost:8004/api/v1/verify/formal",
             json={
                 "policy_content": "All governance decisions must be constitutional",
                 "constitutional_properties": [
@@ -248,7 +248,7 @@ async def verify_policy():
 
 ```bash
 # Check constitutional compliance
-curl -X POST http://localhost:8003/api/v1/constitutional/validate \
+curl -X POST http://localhost:8004/api/v1/constitutional/validate \
   -H "Content-Type: application/json" \
   -d '{
     "policy_text": "New governance policy",
@@ -268,7 +268,7 @@ proof_request = {
 }
 
 response = await client.post(
-    "http://localhost:8003/api/v1/verify/generate-proof",
+    "http://localhost:8004/api/v1/verify/generate-proof",
     json=proof_request
 )
 ```
@@ -279,13 +279,13 @@ response = await client.post(
 
 ```bash
 # Basic health check
-curl http://localhost:8003/health
+curl http://localhost:8004/health
 
 # Detailed status
-curl http://localhost:8003/api/v1/status
+curl http://localhost:8004/api/v1/status
 
 # Performance metrics
-curl http://localhost:8003/api/v1/performance
+curl http://localhost:8004/api/v1/performance
 ```
 
 ### Prometheus Metrics
@@ -332,7 +332,7 @@ infrastructure/monitoring/grafana/dashboards/services/fv-service-dashboard.json
 
 ```bash
 # Check Z3 configuration
-curl http://localhost:8003/api/v1/status | jq '.z3_config'
+curl http://localhost:8004/api/v1/status | jq '.z3_config'
 
 # Increase timeout
 export Z3_TIMEOUT_MS=60000
@@ -345,7 +345,7 @@ sudo systemctl restart fv-service
 
 ```bash
 # Check memory usage
-curl http://localhost:8003/metrics | grep memory
+curl http://localhost:8004/metrics | grep memory
 
 # Reduce Z3 memory limit
 export Z3_MAX_MEMORY_MB=1024
@@ -358,7 +358,7 @@ export PYTHON_GC_ENABLED=true
 
 ```bash
 # Verify constitutional hash
-curl http://localhost:8003/api/v1/constitutional/validate | jq '.constitutional_hash'
+curl http://localhost:8004/api/v1/constitutional/validate | jq '.constitutional_hash'
 
 # Expected: "cdd01ef066bc6cf2"
 # Reset if corrupted
@@ -372,7 +372,7 @@ python scripts/reset_constitutional_state.py --service fv
 python -c "import asyncpg; print('DB OK')"
 
 # Check connection pool
-curl http://localhost:8003/api/v1/status | jq '.database'
+curl http://localhost:8004/api/v1/status | jq '.database'
 
 # Restart with fresh connections
 sudo systemctl restart fv-service
@@ -384,11 +384,11 @@ sudo systemctl restart fv-service
 
 ```bash
 # Immediate shutdown (< 30min RTO)
-curl -X POST http://localhost:8003/api/v1/constitutional/emergency-shutdown \
+curl -X POST http://localhost:8004/api/v1/constitutional/emergency-shutdown \
   -H "Authorization: Bearer $ADMIN_TOKEN"
 
 # Verify shutdown
-curl http://localhost:8003/health
+curl http://localhost:8004/health
 ```
 
 #### Rollback Procedure
@@ -463,9 +463,9 @@ python tests/performance/stress_test.py --concurrent=50
 
 ## Support
 
-- **Documentation**: [FV Service API](../../../docs/api/formal_verification_service_api.md)
-- **Health Check**: http://localhost:8003/health
-- **Interactive API Docs**: http://localhost:8003/docs
+- **Documentation**: [FV Service API](app/services/formal_verification_service.py)
+- **Health Check**: http://localhost:8004/health
+- **Interactive API Docs**: http://localhost:8004/docs
 - **Logs**: `/logs/fv_service.log`
 - **Configuration**: `services/core/formal-verification/fv_service/config/environments/development.env`
 

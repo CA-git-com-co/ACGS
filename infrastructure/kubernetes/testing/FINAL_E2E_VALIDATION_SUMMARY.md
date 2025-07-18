@@ -70,13 +70,13 @@
 ```
 Service Port Configuration: ✅ PASS
 - auth-service: port 8000 ✅
-- constitutional-ai-service: port 8001 ✅
+- constitutional-ai-service: port 8002 ✅
 - integrity-service: port 8002 ✅
-- formal-verification-service: port 8003 ✅
+- formal-verification-service: port 8004 ✅
 - governance-synthesis-service: port 8004 ✅
-- policy-governance-service: port 8005 ✅
+- policy-governance-service: port 8006 ✅
 - evolutionary-computation-service: port 8006 ✅
-- model-orchestrator-service: port 8007 ✅
+- model-orchestrator-service: port 8008 ✅
 
 Constitutional Hash Validation: ✅ PASS
 - Hash instances found: 9/9 ✅

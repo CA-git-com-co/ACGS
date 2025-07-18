@@ -49,7 +49,7 @@
 **Impact**: Constitutional AI compliance
 
 **Current State**: Constitutional hash present but service on wrong port  
-**Required**: Hash `cdd01ef066bc6cf2` on service port 8001
+**Required**: Hash `cdd01ef066bc6cf2` on service port 8002
 
 ### ⚠️ **Issue 4: Security Configuration Gaps**
 
@@ -119,7 +119,7 @@ env:
 
 ### Phase 1: Critical Fixes (Immediate)
 
-1. **Fix Service Ports** - Update constitutional-ai-service to port 8001
+1. **Fix Service Ports** - Update constitutional-ai-service to port 8002
 2. **Add Resource Limits** - Add required CPU/memory limits to all services
 3. **Validate Constitutional Hash** - Ensure hash is on correct service port
 4. **Update Service Names** - Align with ACGS-PGP naming conventions

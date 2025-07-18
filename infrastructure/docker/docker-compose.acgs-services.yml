@@ -1,0 +1,237 @@
+# ACGS-2 Core Services Configuration
+# Use with base infrastructure: docker-compose -f docker-compose.base-infrastructure.yml -f docker-compose.acgs-services.yml
+
+version: '3.8'
+
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+  networks:
+    - acgs-network
+
+x-service-healthcheck: &service-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 30s
+
+x-service-environment: &service-environment
+  CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+  DATABASE_URL: "postgresql+asyncpg://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_secure_password}@postgres:5432/${POSTGRES_DB:-acgs}"
+  REDIS_URL: "redis://:${REDIS_PASSWORD:-acgs_redis_secure_password}@redis:6379"
+  JWT_SECRET_KEY: ${JWT_SECRET_KEY:-acgs-development-secret-key-2024}
+  SECRET_KEY: ${AUTH_SECRET_KEY:-acgs-development-secret-key-2024}
+  ENVIRONMENT: ${ENVIRONMENT:-development}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+
+x-service-labels: &service-labels
+  com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+  com.acgs.component: "core-service"
+  com.acgs.managed-by: "docker-compose"
+
+services:
+  # Authentication Service
+  auth_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/platform_services/authentication/auth_service
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-auth-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "auth_service"
+      SERVICE_PORT: "8000"
+      REDIS_DB: "0"
+    ports:
+      - "${AUTH_SERVICE_PORT:-8000}:8000"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "authentication"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # Constitutional AI Service
+  ac_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/core/constitutional-ai/ac_service
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-ac-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "ac_service"
+      SERVICE_PORT: "8001"
+      REDIS_DB: "1"
+      AUTH_SERVICE_URL: "http://auth_service:8000"
+    ports:
+      - "${AC_SERVICE_PORT:-8001}:8001"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "constitutional-ai"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+
+  # Integrity Service
+  integrity_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/platform_services/integrity/integrity_service
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-integrity-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "integrity_service"
+      SERVICE_PORT: "8002"
+      REDIS_DB: "2"
+      AUTH_SERVICE_URL: "http://auth_service:8000"
+    ports:
+      - "${INTEGRITY_SERVICE_PORT:-8002}:8002"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "integrity"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+
+  # Formal Verification Service
+  fv_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/core/formal-verification/fv_service
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-fv-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "fv_service"
+      SERVICE_PORT: "8003"
+      REDIS_DB: "3"
+      AUTH_SERVICE_URL: "http://auth_service:8000"
+      AC_SERVICE_URL: "http://ac_service:8001"
+      INTEGRITY_SERVICE_URL: "http://integrity_service:8002"
+    ports:
+      - "${FV_SERVICE_PORT:-8003}:8003"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "formal-verification"
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      integrity_service:
+        condition: service_healthy
+
+  # Governance Synthesis Service
+  gs_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/core/governance-synthesis/gs_service
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-gs-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "gs_service"
+      SERVICE_PORT: "8004"
+      REDIS_DB: "4"
+      AUTH_SERVICE_URL: "http://auth_service:8000"
+      AC_SERVICE_URL: "http://ac_service:8001"
+      INTEGRITY_SERVICE_URL: "http://integrity_service:8002"
+      FV_SERVICE_URL: "http://fv_service:8003"
+      # AI Provider Keys (optional)
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+    ports:
+      - "${GS_SERVICE_PORT:-8004}:8004"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "governance-synthesis"
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      fv_service:
+        condition: service_healthy
+
+  # Policy Governance Controller Service
+  pgc_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/core/policy-governance/pgc_service
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-pgc-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "pgc_service"
+      SERVICE_PORT: "8005"
+      REDIS_DB: "5"
+      AUTH_SERVICE_URL: "http://auth_service:8000"
+      AC_SERVICE_URL: "http://ac_service:8001"
+      GS_SERVICE_URL: "http://gs_service:8004"
+    ports:
+      - "${PGC_SERVICE_PORT:-8005}:8005"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8005/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "policy-governance"
+    depends_on:
+      ac_service:
+        condition: service_healthy
+      gs_service:
+        condition: service_healthy
+
+  # Evolutionary Computation Service
+  ec_service:
+    <<: *service-defaults
+    build:
+      context: ../../services/core/evolutionary-computation/ec_service_standardized
+      dockerfile: Dockerfile
+      target: ${BUILD_TARGET:-production}
+    container_name: acgs-ec-service
+    environment:
+      <<: *service-environment
+      SERVICE_NAME: "ec_service"
+      SERVICE_PORT: "8006"
+      REDIS_DB: "6"
+      AUTH_SERVICE_URL: "http://auth_service:8000"
+    ports:
+      - "${EC_SERVICE_PORT:-8006}:8006"
+    healthcheck:
+      <<: *service-healthcheck
+      test: ["CMD", "curl", "-f", "http://localhost:8006/health"]
+    labels:
+      <<: *service-labels
+      com.acgs.service: "evolutionary-computation"
+    depends_on:
+      auth_service:
+        condition: service_healthy
+
+# Networks are defined in base infrastructure file

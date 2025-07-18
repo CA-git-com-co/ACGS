@@ -1,0 +1,108 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: acgs-fast-ssd
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-ssd
+  replication-type: regional-pd
+  zones: us-central1-a,us-central1-b,us-central1-c
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: acgs-standard
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+provisioner: kubernetes.io/gce-pd
+parameters:
+  type: pd-standard
+  replication-type: regional-pd
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Retain
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-data-pvc
+  namespace: acgs-system
+  labels:
+    app: postgres
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: acgs-fast-ssd
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis-data-pvc
+  namespace: acgs-system
+  labels:
+    app: redis
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: acgs-fast-ssd
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: monitoring-data-pvc
+  namespace: acgs-system
+  labels:
+    app: monitoring
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: acgs-fast-ssd
+  resources:
+    requests:
+      storage: 100Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backup-storage-pvc
+  namespace: acgs-system
+  labels:
+    app: backup
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: acgs-standard
+  resources:
+    requests:
+      storage: 500Gi
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: logs-storage-pvc
+  namespace: acgs-system
+  labels:
+    app: logging
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: acgs-standard
+  resources:
+    requests:
+      storage: 200Gi

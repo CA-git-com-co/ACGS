@@ -12,7 +12,7 @@ The Policy Governance Compiler (PGC) Service is an enterprise-grade policy enfor
 **Service Port**: 8005
 **Service Version**: 3.0.0 (Phase 3 Production)
 **Constitutional Hash**: `cdd01ef066bc6cf2`
-**Health Check**: http://localhost:8005/health
+**Health Check**: http://localhost:8006/health
 
 ## Core Features
 
@@ -120,7 +120,7 @@ REDIS_URL=redis://localhost:6379/5
 # Service Configuration
 SERVICE_NAME=pgc-service
 SERVICE_VERSION=3.0.0
-SERVICE_PORT=8005
+SERVICE_PORT=8006
 APP_ENV=production
 LOG_LEVEL=INFO
 
@@ -151,8 +151,8 @@ MAX_CONCURRENT_EVALUATIONS=100
 ENFORCEMENT_TIMEOUT_MS=200
 
 # Service Integration
-AC_SERVICE_URL=http://localhost:8001
-FV_SERVICE_URL=http://localhost:8003
+AC_SERVICE_URL=http://localhost:8002
+FV_SERVICE_URL=http://localhost:8004
 INTEGRITY_SERVICE_URL=http://localhost:8002
 AUTH_SERVICE_URL=http://localhost:8000
 
@@ -221,7 +221,7 @@ cp config/environments/developmentconfig/environments/example.env config/environ
 # Edit config/environments/development.env with your configuration
 
 # 5. Start service
-uv run uvicorn app.main:app --reload --port 8005
+uv run uvicorn app.main:app --reload --port 8006
 ```
 
 ### Production Deployment
@@ -229,7 +229,7 @@ uv run uvicorn app.main:app --reload --port 8005
 ```bash
 # Using Docker
 docker build -t acgs-pgc-service .
-docker run -p 8005:8005 --env-file config/environments/development.env acgs-pgc-service
+docker run -p 8005:8006 --env-file config/environments/development.env acgs-pgc-service
 
 # Using systemd
 sudo cp pgc-service.service /etc/systemd/system/
@@ -289,7 +289,7 @@ async def evaluate_policy():
     async with httpx.AsyncClient() as client:
         # Evaluate policy query against active policies
         response = await client.post(
-            "http://localhost:8005/api/v1/enforcement/evaluate",
+            "http://localhost:8006/api/v1/enforcement/evaluate",
             json={
                 "query": "data.acgs.authz.allow",
                 "input_data": {
@@ -319,7 +319,7 @@ async def realtime_compliance_check():
     async with httpx.AsyncClient() as client:
         # Ultra-fast compliance validation (<200ms)
         response = await client.post(
-            "http://localhost:8005/api/v1/enforcement/realtime-compliance",
+            "http://localhost:8006/api/v1/enforcement/realtime-compliance",
             json={
                 "action_type": "policy_creation",
                 "user_id": "user123",
@@ -353,7 +353,7 @@ async def intercept_governance_action():
     async with httpx.AsyncClient() as client:
         # Intercept and validate governance action
         response = await client.post(
-            "http://localhost:8005/api/v1/enforcement/intercept-action",
+            "http://localhost:8006/api/v1/enforcement/intercept-action",
             json={
                 "action_type": "constitutional_amendment",
                 "user_id": "council_member_123",
@@ -384,7 +384,7 @@ async def manage_policy_lifecycle():
     async with httpx.AsyncClient() as client:
         # Create new policy in lifecycle
         create_response = await client.post(
-            "http://localhost:8005/api/v1/lifecycle/create",
+            "http://localhost:8006/api/v1/lifecycle/create",
             json={
                 "policy_content": "New environmental protection policy",
                 "policy_type": "environmental",
@@ -399,7 +399,7 @@ async def manage_policy_lifecycle():
 
         # Submit for review
         review_response = await client.post(
-            "http://localhost:8005/api/v1/lifecycle/review",
+            "http://localhost:8006/api/v1/lifecycle/review",
             json={
                 "policy_id": policy_id,
                 "reviewers": ["legal_team", "environmental_experts"],
@@ -422,7 +422,7 @@ async def ultra_low_latency_evaluation():
     async with httpx.AsyncClient() as client:
         # Optimized policy evaluation targeting <25ms
         response = await client.post(
-            "http://localhost:8005/api/v1/ultra-low-latency/evaluate",
+            "http://localhost:8006/api/v1/ultra-low-latency/evaluate",
             json={
                 "query": "data.acgs.authz.allow",
                 "input_data": {
@@ -519,7 +519,7 @@ def validate_constitutional_enforcement(enforcement_result):
 
 ```bash
 # Service health with component status
-curl http://localhost:8005/health
+curl http://localhost:8006/health
 
 # Expected response includes OPA status
 {
@@ -542,26 +542,26 @@ curl http://localhost:8005/health
 
 ```bash
 # Get enforcement performance metrics
-curl http://localhost:8005/api/v1/enforcement/compliance-metrics
+curl http://localhost:8006/api/v1/enforcement/compliance-metrics
 
 # Ultra-low latency metrics
-curl http://localhost:8005/api/v1/ultra-low-latency/metrics
+curl http://localhost:8006/api/v1/ultra-low-latency/metrics
 
 # Incremental compilation metrics
-curl http://localhost:8005/api/v1/incremental/metrics
+curl http://localhost:8006/api/v1/incremental/metrics
 ```
 
 ### Real-time Monitoring
 
 ```bash
 # Monitor enforcement operations
-curl http://localhost:8005/api/v1/monitoring/enforcement
+curl http://localhost:8006/api/v1/monitoring/enforcement
 
 # OPA server status
 curl http://localhost:8181/health
 
 # Constitutional compliance status
-curl http://localhost:8005/api/v1/constitutional/status
+curl http://localhost:8006/api/v1/constitutional/status
 ```
 
 ## Troubleshooting
@@ -578,14 +578,14 @@ curl http://localhost:8181/health
 opa run --server --addr localhost:8181 &
 
 # Verify OPA connectivity from PGC service
-curl http://localhost:8005/health | jq '.components.opa_server'
+curl http://localhost:8006/health | jq '.components.opa_server'
 ```
 
 #### High Enforcement Latency
 
 ```bash
 # Check current latency metrics
-curl http://localhost:8005/api/v1/enforcement/compliance-metrics | jq '.performance_metrics'
+curl http://localhost:8006/api/v1/enforcement/compliance-metrics | jq '.performance_metrics'
 
 # Enable ultra-low latency mode
 export ULTRA_LOW_LATENCY_TARGET_MS=15
@@ -598,7 +598,7 @@ opa fmt --diff policies/
 
 ```bash
 # Verify constitutional hash
-curl http://localhost:8005/api/v1/constitutional/status | jq '.constitutional_hash'
+curl http://localhost:8006/api/v1/constitutional/status | jq '.constitutional_hash'
 
 # Expected: "cdd01ef066bc6cf2"
 # Reset if corrupted
@@ -609,13 +609,13 @@ python scripts/reset_constitutional_state.py --service pgc
 
 ```bash
 # Check compilation status
-curl http://localhost:8005/api/v1/incremental/status
+curl http://localhost:8006/api/v1/incremental/status
 
 # View compilation logs
 tail -f /logs/pgc_service.log | grep "compilation"
 
 # Rollback to previous version if needed
-curl -X POST http://localhost:8005/api/v1/incremental/rollback \
+curl -X POST http://localhost:8006/api/v1/incremental/rollback \
   -H "Content-Type: application/json" \
   -d '{"version": "previous"}'
 ```
@@ -624,10 +624,10 @@ curl -X POST http://localhost:8005/api/v1/incremental/rollback \
 
 ```bash
 # Check circuit breaker status
-curl http://localhost:8005/api/v1/monitoring/circuit-breaker
+curl http://localhost:8006/api/v1/monitoring/circuit-breaker
 
 # Reset circuit breaker if needed
-curl -X POST http://localhost:8005/api/v1/monitoring/circuit-breaker/reset
+curl -X POST http://localhost:8006/api/v1/monitoring/circuit-breaker/reset
 
 # Adjust circuit breaker threshold
 export CIRCUIT_BREAKER_THRESHOLD=10
@@ -702,9 +702,9 @@ redis-cli config set maxmemory-policy allkeys-lru
 
 ## Support
 
-- **Documentation**: [Policy Governance API](../../../docs/api/policy_governance_service_api.md)
-- **Health Check**: http://localhost:8005/health
-- **Interactive API Docs**: http://localhost:8005/docs
+- **Documentation**: [Policy Governance API](../../../../infrastructure/kubernetes/services/policy-governance-service.yaml)
+- **Health Check**: http://localhost:8006/health
+- **Interactive API Docs**: http://localhost:8006/docs
 - **Logs**: `/logs/pgc_service.log`
 - **Configuration**: `services/core/policy-governance/pgc_service/config/environments/development.env`
 - **OPA Documentation**: [Open Policy Agent](https://www.openpolicyagent.org/docs/latest/)
@@ -717,10 +717,10 @@ redis-cli config set maxmemory-policy allkeys-lru
 
 ```bash
 # Using UV (recommended)
-uv run uvicorn main:app --reload --port 8005
+uv run uvicorn main:app --reload --port 8006
 
 # Alternative: Traditional
-uvicorn main:app --reload --port 8005
+uvicorn main:app --reload --port 8006
 ```
 
 ### Running Tests

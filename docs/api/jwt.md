@@ -40,7 +40,7 @@ All JWTs issued and validated within the ACGS platform must adhere to the consti
 ## 5. Related Information
 
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md)
 - [Authentication Service API](authentication.md)
 ## Implementation Status
 

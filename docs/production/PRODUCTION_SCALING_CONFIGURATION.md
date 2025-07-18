@@ -36,9 +36,9 @@ Based on comprehensive scaling validation, ACGS-2 demonstrates **exceptional thr
 # Production Load Balancer (nginx/HAProxy)
 upstream constitutional_ai_cluster {
     least_conn;
-    server constitutional_ai_1:8001 max_fails=3 fail_timeout=30s;
-    server constitutional_ai_2:8001 max_fails=3 fail_timeout=30s;
-    server constitutional_ai_3:8001 max_fails=3 fail_timeout=30s;
+    server constitutional_ai_1:8002 max_fails=3 fail_timeout=30s;
+    server constitutional_ai_2:8002 max_fails=3 fail_timeout=30s;
+    server constitutional_ai_3:8002 max_fails=3 fail_timeout=30s;
 }
 
 upstream auth_service_cluster {
@@ -395,7 +395,7 @@ services:
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
       - REDIS_CLUSTER_NODES=redis-1:6389,redis-2:6389,redis-3:6389
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
       interval: 30s
       timeout: 10s
       retries: 3

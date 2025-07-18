@@ -25,7 +25,7 @@ Enhance the ACGS Consensus Engine with a new real-time constitutional compliance
 The current consensus engine lacks real-time constitutional validation, which means consensus decisions could theoretically violate constitutional principles. This enhancement ensures that all multi-agent consensus decisions are constitutionally compliant before being applied, maintaining the integrity of the ACGS governance framework.
 
 **ACGS Integration Points:**
-- **Constitutional AI Service** (port 8001): Real-time validation of consensus decisions against constitutional framework
+- **Constitutional AI Service** (port 8002): Real-time validation of consensus decisions against constitutional framework
 - **Multi-Agent Coordinator** (port 8008): Enhanced coordination with constitutional validation in consensus loops
 - **Blackboard Service** (port 8010): Constitutional compliance status propagation across all participating agents
 - **Integrity Service** (port 8002): Audit trail for all constitutional consensus validations and any violations
@@ -210,7 +210,7 @@ class ConstitutionalConsensusResult(BaseModel):
 graph TD
     A[Multi-Agent Coordinator] --> B{Enhanced Consensus Engine}
     B --> C[Constitutional Validation Service]
-    C --> D[Constitutional AI Service :8001]
+    C --> D[Constitutional AI Service :8002]
     B --> E[Consensus Algorithm Selector]
     E --> F[Majority Vote Consensus]
     E --> G[Constitutional Priority Consensus]

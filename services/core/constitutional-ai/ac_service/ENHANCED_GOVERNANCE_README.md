@@ -220,7 +220,7 @@ print(f"Compliance Score: {result['overall_compliance_score']}")
 
 ```bash
 # Evaluate governance via API
-curl -X POST "http://localhost:8001/api/v1/enhanced-governance/evaluate" \
+curl -X POST "http://localhost:8002/api/v1/enhanced-governance/evaluate" \
   -H "Content-Type: application/json" \
   -d '{
     "query": "Should we implement new privacy policy?",
@@ -230,10 +230,10 @@ curl -X POST "http://localhost:8001/api/v1/enhanced-governance/evaluate" \
   }'
 
 # Check health status
-curl "http://localhost:8001/api/v1/enhanced-governance/health"
+curl "http://localhost:8002/api/v1/enhanced-governance/health"
 
 # Get performance metrics
-curl "http://localhost:8001/api/v1/enhanced-governance/metrics"
+curl "http://localhost:8002/api/v1/enhanced-governance/metrics"
 ```
 
 ## Constitutional Compliance

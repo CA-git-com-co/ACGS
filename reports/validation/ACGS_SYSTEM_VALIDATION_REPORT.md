@@ -154,13 +154,13 @@ The system is ready for continued development and demonstrates practical feasibi
 
 ```bash
 # Service health checks
-curl -s http://localhost:8001/health  # Constitutional AI
+curl -s http://localhost:8002/health  # Constitutional AI
 curl -s http://localhost:8002/health  # Integrity
-curl -s http://localhost:8003/health  # Formal Verification
+curl -s http://localhost:8004/health  # Formal Verification
 curl -s http://localhost:8004/health  # Governance Synthesis
-curl -s http://localhost:8005/health  # Policy Governance
+curl -s http://localhost:8006/health  # Policy Governance
 curl -s http://localhost:8006/health  # Evolutionary Computation
-curl -s http://localhost:8007/health  # Code Analysis
+curl -s http://localhost:8008/health  # Code Analysis
 curl -s http://localhost:8012/health  # Context Service
 curl -s http://localhost:8016/health  # Authentication
 

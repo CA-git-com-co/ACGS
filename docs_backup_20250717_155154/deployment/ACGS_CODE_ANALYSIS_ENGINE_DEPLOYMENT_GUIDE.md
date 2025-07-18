@@ -73,7 +73,7 @@ cat > config/config/environments/development.env << 'EOF'
 # Service Configuration
 ENVIRONMENT=production
 ACGS_CODE_ANALYSIS_HOST=0.0.0.0
-ACGS_CODE_ANALYSIS_PORT=8007
+ACGS_CODE_ANALYSIS_PORT=8008
 ACGS_CODE_ANALYSIS_WORKERS=4
 
 # Database Configuration (ACGS PostgreSQL)
@@ -95,7 +95,7 @@ REDIS_POOL_SIZE=20
 # Service Integration
 AUTH_SERVICE_URL=http://localhost:8016
 CONTEXT_SERVICE_URL=http://localhost:8012
-SERVICE_REGISTRY_URL=http://localhost:8001/registry
+SERVICE_REGISTRY_URL=http://localhost:8002/registry
 
 # Constitutional Compliance
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
@@ -137,7 +137,7 @@ services:
     container_name: acgs-code-analysis-engine
     restart: unless-stopped
     ports:
-      - "8007:8007"
+      - "8007:8008"
       - "9091:9091"  # Prometheus metrics
     environment:
       - ENV_FILE=/app/config/config/environments/development.env
@@ -154,7 +154,7 @@ services:
       - postgresql
       - redis
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8007/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8008/health"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -225,7 +225,7 @@ docker-compose ps
 docker-compose logs acgs-code-analysis
 
 # Check health
-curl http://localhost:8007/health
+curl http://localhost:8008/health
 ```
 
 ### Method 2: Kubernetes Deployment
@@ -291,7 +291,7 @@ data:
   config/environments/development.env: |
     ENVIRONMENT=production
     ACGS_CODE_ANALYSIS_HOST=0.0.0.0
-    ACGS_CODE_ANALYSIS_PORT=8007
+    ACGS_CODE_ANALYSIS_PORT=8008
     ACGS_CODE_ANALYSIS_WORKERS=4
 
     POSTGRESQL_HOST=acgs-postgresql
@@ -535,8 +535,8 @@ kubectl get services -n acgs-code-analysis
 kubectl logs -n acgs-code-analysis deployment/acgs-code-analysis-engine
 
 # Check health
-kubectl port-forward -n acgs-code-analysis service/acgs-code-analysis-service 8007:8007
-curl http://localhost:8007/health
+kubectl port-forward -n acgs-code-analysis service/acgs-code-analysis-service 8007:8008
+curl http://localhost:8008/health
 ```
 
 ## Database Setup
@@ -680,7 +680,7 @@ scrape_configs:
 **Resolution Steps**:
 ```bash
 # Check service health
-curl http://localhost:8007/health
+curl http://localhost:8008/health
 
 # Check cache status
 redis-cli -h localhost -p 6389 -a $REDIS_PASSWORD info stats
@@ -754,7 +754,7 @@ docker stats acgs-code-analysis-engine
 kubectl top pods -n acgs-code-analysis
 
 # Force garbage collection (if using Python debug endpoint)
-curl -X POST http://localhost:8007/debug/gc
+curl -X POST http://localhost:8008/debug/gc
 
 # Restart service to clear memory
 docker-compose restart acgs-code-analysis
@@ -799,7 +799,7 @@ kubectl patch deployment acgs-code-analysis-engine -n acgs-code-analysis -p '
 docker-compose logs acgs-code-analysis | grep "file_watcher"
 
 # Trigger manual re-index
-curl -X POST http://localhost:8007/api/v1/analysis/trigger \
+curl -X POST http://localhost:8008/api/v1/analysis/trigger \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -808,7 +808,7 @@ curl -X POST http://localhost:8007/api/v1/analysis/trigger \
   }'
 
 # Check analysis job status
-curl http://localhost:8007/api/v1/analysis/jobs \
+curl http://localhost:8008/api/v1/analysis/jobs \
   -H "Authorization: Bearer $AUTH_TOKEN"
 
 # Restart file watcher
@@ -938,7 +938,7 @@ server {
     ssl_prefer_server_ciphers off;
 
     location /code-analysis/ {
-        proxy_pass http://localhost:8007/;
+        proxy_pass http://localhost:8008/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -964,13 +964,13 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
 # Allow specific services
-sudo ufw allow from 10.0.0.0/8 to any port 8007  # Internal network only
+sudo ufw allow from 10.0.0.0/8 to any port 8008  # Internal network only
 sudo ufw allow from 10.0.0.0/8 to any port 5439  # PostgreSQL
 sudo ufw allow from 10.0.0.0/8 to any port 6389  # Redis
 
 # Monitor connections
-sudo netstat -tulpn | grep :8007
-sudo ss -tulpn | grep :8007
+sudo netstat -tulpn | grep :8008
+sudo ss -tulpn | grep :8008
 ```
 
 ## Backup and Recovery
@@ -1032,7 +1032,7 @@ docker-compose up -d
 sleep 30
 
 # Verify health
-curl -f http://localhost:8007/health || exit 1
+curl -f http://localhost:8008/health || exit 1
 
 echo "Recovery completed successfully"
 EOF
@@ -1100,7 +1100,7 @@ docker-compose up -d --no-deps acgs-code-analysis
 
 # Verify health
 sleep 30
-curl -f http://localhost:8007/health || {
+curl -f http://localhost:8008/health || {
     echo "Health check failed, rolling back..."
     cp docker-compose.yml.backup docker-compose.yml
     docker-compose up -d --no-deps acgs-code-analysis
@@ -1117,36 +1117,36 @@ chmod +x /opt/acgs/scripts/update-service.sh
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
-- [ACGS GitOps Task Completion Report](../architecture/ACGS_GITOPS_TASK_COMPLETION_REPORT.md)
-- [ACGS GitOps Comprehensive Validation Report](../architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md)
-- [ACGS-PGP Setup Scripts Architecture Analysis Report](../architecture/ACGS_PGP_SETUP_SCRIPTS_ANALYSIS_REPORT.md)
-- [ACGS Documentation Quality Metrics and Continuous Improvement](../DOCUMENTATION_QUALITY_METRICS.md)
-- [Quarterly Documentation Audit Procedures](../QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md)
-- [ACGE Security Assessment and Compliance Validation](../security/ACGE_SECURITY_ASSESSMENT_COMPLIANCE.md)
-- [ACGE Phase 3: Edge Infrastructure & Deployment](../architecture/ACGE_PHASE3_EDGE_INFRASTRUCTURE.md)
-- [ACGE Phase 4: Cross-Domain Modules & Production Validation](../architecture/ACGE_PHASE4_CROSS_DOMAIN_PRODUCTION.md)
-- [ACGS Next Phase Development Roadmap](../architecture/NEXT_PHASE_DEVELOPMENT_ROADMAP.md)
-- [ACGS Remaining Tasks Completion Summary](../REMAINING_TASKS_COMPLETION_SUMMARY.md)
-- [GitHub Actions Systematic Fixes - Final Report](../workflow_systematic_fixes_final_report.md)
-- [GitHub Actions Workflow Systematic Fixes Summary](../workflow_fixes_summary.md)
-- [Security Input Validation Integration - Completion Report](../security_validation_completion_report.md)
-- [Phase 2: Enhanced Production Readiness - COMPLETION REPORT](../phase2_completion_report.md)
-- [Phase 1: Critical Path to Basic Production Readiness - COMPLETION REPORT](../phase1_completion_report.md)
-- [Free Model Usage Guide for ACGS OpenRouter Integration](../free_model_usage.md)
-- [Migration Guide: Gemini CLI to OpenCode Adapter](../deployment/MIGRATION_GUIDE_OPENCODE.md)
-- [Branch Protection Guide](BRANCH_PROTECTION_GUIDE.md)
-- [Workflow Transition & Deprecation Guide](WORKFLOW_TRANSITION_GUIDE.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs_consolidated_archive_20250710_120000/deployment/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md.backup)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md.backup)
+- [ACGE Cost Analysis and ROI Projections](../../docs_consolidated_archive_20250710_120000/deployment/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md.backup)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md.backup)
+- [ACGS Implementation Guide](ACGS_IMPLEMENTATION_GUIDE.md.backup)
+- [ACGS-PGP Operational Deployment Guide](ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md.backup)
+- [ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md.backup)
+- [ACGS-PGP Setup Guide](ACGS_PGP_SETUP_GUIDE.md.backup)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md.backup)
+- [ACGS Configuration Guide](../../README.md)
+- [ACGS-2 Technical Specifications - 2025 Edition](../../docs_consolidated_archive_20250710_120000/deployment/TECHNICAL_SPECIFICATIONS_2025.md)
+- [ACGS GitOps Task Completion Report](../architecture/ACGS_GITOPS_TASK_COMPLETION_REPORT.md.backup)
+- [ACGS GitOps Comprehensive Validation Report](../architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md.backup)
+- [ACGS-PGP Setup Scripts Architecture Analysis Report](../architecture/ACGS_PGP_SETUP_SCRIPTS_ANALYSIS_REPORT.md.backup)
+- [ACGS Documentation Quality Metrics and Continuous Improvement](../../docs_consolidated_archive_20250710_120000/deployment/DOCUMENTATION_QUALITY_METRICS.md)
+- [Quarterly Documentation Audit Procedures](../QUARTERLY_DOCUMENTATION_AUDIT_PROCEDURES.md.backup)
+- [ACGE Security Assessment and Compliance Validation](../security/ACGE_SECURITY_ASSESSMENT_COMPLIANCE.md.backup)
+- [ACGE Phase 3: Edge Infrastructure & Deployment](../architecture/ACGE_PHASE3_EDGE_INFRASTRUCTURE.md.backup)
+- [ACGE Phase 4: Cross-Domain Modules & Production Validation](../architecture/ACGE_PHASE4_CROSS_DOMAIN_PRODUCTION.md.backup)
+- [ACGS Next Phase Development Roadmap](../architecture/NEXT_PHASE_DEVELOPMENT_ROADMAP.md.backup)
+- [ACGS Remaining Tasks Completion Summary](../../docs_consolidated_archive_20250710_120000/deployment/REMAINING_TASKS_COMPLETION_SUMMARY.md)
+- [GitHub Actions Systematic Fixes - Final Report](../../docs_consolidated_archive_20250710_120000/deployment/workflow_systematic_fixes_final_report.md)
+- [GitHub Actions Workflow Systematic Fixes Summary](../../docs_consolidated_archive_20250710_120000/deployment/workflow_fixes_summary.md)
+- [Security Input Validation Integration - Completion Report](../security_validation_completion_report.md.backup)
+- [Phase 2: Enhanced Production Readiness - COMPLETION REPORT](../../docs_consolidated_archive_20250710_120000/deployment/phase2_completion_report.md)
+- [Phase 1: Critical Path to Basic Production Readiness - COMPLETION REPORT](../phase1_completion_report.md.backup)
+- [Free Model Usage Guide for ACGS OpenRouter Integration](../../docs_consolidated_archive_20250710_120000/deployment/free_model_usage.md)
+- [Migration Guide: Gemini CLI to OpenCode Adapter](MIGRATION_GUIDE_OPENCODE.md.backup)
+- [Branch Protection Guide](BRANCH_PROTECTION_GUIDE.md.backup)
+- [Workflow Transition & Deprecation Guide](WORKFLOW_TRANSITION_GUIDE.md.backup)

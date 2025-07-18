@@ -1,3 +1,4 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 cluster.name: acgs-security-cluster
 node.name: acgs-security-node
 network.host: 0.0.0.0
@@ -46,9 +47,17 @@ xpack.graph.enabled: true
 constitutional_hash: cdd01ef066bc6cf2
 
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
+
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+**Constitutional Hash**: `cdd01ef066bc6cf2`
 # Constitutional Compliance: cdd01ef066bc6cf2
 # Implementation Status: 🔄 IN PROGRESS
 
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
 # Constitutional Compliance: cdd01ef066bc6cf2
 # Implementation Status: 🔄 IN PROGRESS
+
+---
+
+**Constitutional Compliance**: All operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).

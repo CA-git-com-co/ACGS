@@ -50,14 +50,14 @@ The ACGS Documentation Implementation Plan has been **successfully deployed** an
 
 | Service                      | Port | Documentation                                                                                                 | Status       |
 | ---------------------------- | ---- | ------------------------------------------------------------------------------------------------------------- | ------------ |
-| **Authentication**           | 8016 | [authentication.md](docs/api/authentication.md)                                                               | ✅ Available |
-| **Constitutional AI**        | 8001 | [constitutional-ai.md](docs/api/constitutional-ai.md)                                                         | ✅ Available |
-| **Integrity Service**        | 8002 | [integrity.md](docs/api/integrity.md)                                                                         | ✅ Available |
-| **Formal Verification**      | 8003 | [formal-verification.md](docs/api/formal-verification.md)                                                     | ✅ Available |
-| **Governance Synthesis**     | 8004 | [governance_synthesis.md](docs/api/governance_synthesis.md)                                                   | ✅ Available |
-| **Policy Governance**        | 8005 | [policy-governance.md](docs/api/policy-governance.md)                                                         | ✅ Available |
-| **Evolutionary Computation** | 8006 | [evolutionary-computation.md](docs/api/evolutionary-computation.md)                                           | ✅ Available |
-| **Code Analysis Engine**     | 8007 | [ACGS_CODE_ANALYSIS_ENGINE_API_SPECIFICATION.yaml](docs/api/ACGS_CODE_ANALYSIS_ENGINE_API_SPECIFICATION.yaml) | ✅ Available |
+| **Authentication**           | 8016 | [authentication.md](../../docs_consolidated_archive_20250710_120000/api/authentication.md)                                                               | ✅ Available |
+| **Constitutional AI**        | 8001 | [constitutional-ai.md](../../docs_consolidated_archive_20250710_120000/api/constitutional-ai.md)                                                         | ✅ Available |
+| **Integrity Service**        | 8002 | [integrity.md](../../docs_consolidated_archive_20250710_120000/api/integrity.md)                                                                         | ✅ Available |
+| **Formal Verification**      | 8003 | [formal-verification.md](../../docs_consolidated_archive_20250710_120000/api/formal-verification.md)                                                     | ✅ Available |
+| **Governance Synthesis**     | 8004 | [governance_synthesis.md](../../docs_consolidated_archive_20250710_120000/api/governance_synthesis.md)                                                   | ✅ Available |
+| **Policy Governance**        | 8005 | [policy-governance.md](../../docs_consolidated_archive_20250710_120000/api/policy-governance.md)                                                         | ✅ Available |
+| **Evolutionary Computation** | 8006 | [evolutionary-computation.md](../../docs_consolidated_archive_20250710_120000/api/evolutionary-computation.md)                                           | ✅ Available |
+| **Code Analysis Engine**     | 8007 | [ACGS_CODE_ANALYSIS_ENGINE_API_SPECIFICATION.yaml](../../docs/api/ACGS_CODE_ANALYSIS_ENGINE_API_SPECIFICATION.yaml) | ✅ Available |
 
 ### 4. GitHub Actions Workflow Activation ✅
 
@@ -106,9 +106,9 @@ The ACGS Documentation Implementation Plan has been **successfully deployed** an
 
 ### Immediate Access Points
 
-1. **Main Documentation**: [docs/README.md](docs/README.md)
-2. **API Documentation**: [docs/api/index.md](docs/api/index.md)
-3. **Training Materials**: [docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md](docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
+1. **Main Documentation**: [docs/README.md](../../README.md)
+2. **API Documentation**: [docs/api/index.md](../../docs_consolidated_archive_20250710_120000/api/index.md)
+3. **Training Materials**: [docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md](../../docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
 4. **Validation Tools**: [tools/validation/](tools/validation/)
 
 ### Daily Operations
@@ -171,8 +171,8 @@ All team members now have access to:
 
 ### For Team Members
 
-1. Review the [Training Guide](docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
-2. Bookmark the [API Documentation](docs/api/index.md)
+1. Review the [Training Guide](../../docs/training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
+2. Bookmark the [API Documentation](../../docs_consolidated_archive_20250710_120000/api/index.md)
 3. Use the [Validation Tools](tools/validation/) for contributions
 
 ### For Administrators
@@ -181,7 +181,7 @@ All team members now have access to:
 2. Review quarterly audit reports
 3. Ensure constitutional compliance in all new documentation
 
-**Support**: Refer to [Service Issue Resolution Guide](docs/operations/SERVICE_ISSUE_RESOLUTION_GUIDE.md)
+**Support**: Refer to [Service Issue Resolution Guide](../../docs_consolidated_archive_20250710_120000/operations/SERVICE_ISSUE_RESOLUTION_GUIDE.md)
 
 
 ## Implementation Status

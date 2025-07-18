@@ -222,11 +222,11 @@ http://localhost:{port}/metrics
 ### Service Ports
 
 - Auth Service: `http://localhost:8000/metrics`
-- Constitutional AI: `http://localhost:8001/metrics`
+- Constitutional AI: `http://localhost:8002/metrics`
 - Integrity Service: `http://localhost:8002/metrics`
-- Formal Verification: `http://localhost:8003/metrics`
+- Formal Verification: `http://localhost:8004/metrics`
 - Governance Synthesis: `http://localhost:8004/metrics`
-- Policy Governance Control: `http://localhost:8005/metrics`
+- Policy Governance Control: `http://localhost:8006/metrics`
 - Evolutionary Computation: `http://localhost:8006/metrics`
 
 ## Testing and Validation

@@ -489,11 +489,11 @@ REDIS_URL=redis://localhost:6389/0
 
 # Service URLs
 AUTH_SERVICE_URL=http://localhost:8016
-AC_SERVICE_URL=http://localhost:8001
+AC_SERVICE_URL=http://localhost:8002
 INTEGRITY_SERVICE_URL=http://localhost:8002
-FV_SERVICE_URL=http://localhost:8003
+FV_SERVICE_URL=http://localhost:8004
 GS_SERVICE_URL=http://localhost:8004
-PGC_SERVICE_URL=http://localhost:8005
+PGC_SERVICE_URL=http://localhost:8006
 EC_SERVICE_URL=http://localhost:8006
 
 # Constitutional Compliance
@@ -1066,7 +1066,7 @@ make test-coverage
    ```bash
    # Check all services
    curl http://localhost:8016/health  # Auth
-   curl http://localhost:8001/health  # Constitutional AI
+   curl http://localhost:8002/health  # Constitutional AI
    curl http://localhost:8002/health  # Integrity
    ```
 
@@ -1092,8 +1092,8 @@ grep -r "cdd01ef066bc6cf2" config/
 ## 📚 Additional Resources
 
 - **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
-- [API Documentation](../api/README.md)
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md) file.
+- [API Documentation](README.md)
 - [Deployment Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
 - [Architecture Overview](../architecture/)
 - [Security Documentation](../security/SECURITY.md)
@@ -1102,10 +1102,10 @@ grep -r "cdd01ef066bc6cf2" config/
 
 For a broader understanding of the ACGS platform and its operational aspects, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 
 
 ## Implementation Status

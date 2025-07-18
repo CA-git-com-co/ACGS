@@ -169,11 +169,11 @@ python3 /home/dislove/ACGS-1/scripts/simple_backup_recovery.py backup
 
 ```bash
 # Verify constitutional compliance
-curl -f http://localhost:8005/api/v1/governance/compliance/status
+curl -f http://localhost:8006/api/v1/governance/compliance/status
 
 # Check constitutional hash
 EXPECTED_HASH="cdd01ef066bc6cf2"
-CURRENT_HASH=$(curl -s http://localhost:8005/api/v1/constitution/hash | jq -r '.hash')
+CURRENT_HASH=$(curl -s http://localhost:8006/api/v1/constitution/hash | jq -r '.hash')
 [ "$CURRENT_HASH" = "$EXPECTED_HASH" ] || echo "Constitutional hash mismatch!"
 ```
 
@@ -199,7 +199,7 @@ CURRENT_HASH=$(curl -s http://localhost:8005/api/v1/constitution/hash | jq -r '.
 watch -n 30 'python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py health'
 
 # Monitor constitutional compliance
-watch -n 60 'curl -s http://localhost:8005/api/v1/governance/compliance/status | jq .compliance_rate'
+watch -n 60 'curl -s http://localhost:8006/api/v1/governance/compliance/status | jq .compliance_rate'
 
 # Monitor service performance
 watch -n 30 'for port in {8000..8006}; do echo -n "Port $port: "; time curl -s http://localhost:$port/health >/dev/null; done'
@@ -224,7 +224,7 @@ python3 /home/dislove/ACGS-1/scripts/comprehensive_health_check.py
 
 ```bash
 # Validate constitutional compliance
-curl -X POST http://localhost:8005/api/v1/governance/compliance/validate-all
+curl -X POST http://localhost:8006/api/v1/governance/compliance/validate-all
 
 # Test governance workflows
 python3 /home/dislove/ACGS-1/scripts/test_governance_workflows.py
@@ -308,7 +308,7 @@ curl -f http://localhost:8000/api/v1/auth/health
 ./scripts/notify_amendment_stakeholders.py --change-id {change_id}
 
 # Constitutional compliance check
-curl -f http://localhost:8001/api/v1/amendments/compliance-check
+curl -f http://localhost:8002/api/v1/amendments/compliance-check
 
 # Amendment workflow testing
 ./scripts/test_amendment_workflows.py
@@ -318,10 +318,10 @@ curl -f http://localhost:8001/api/v1/amendments/compliance-check
 
 ```bash
 # Critical constitutional compliance validation
-curl -f http://localhost:8005/api/v1/governance/compliance/pre-change-check
+curl -f http://localhost:8006/api/v1/governance/compliance/pre-change-check
 
 # Blockchain connectivity verification
-curl -f http://localhost:8005/api/v1/blockchain/health
+curl -f http://localhost:8006/api/v1/blockchain/health
 
 # Governance workflow validation
 ./scripts/test_governance_compliance.py

@@ -1,0 +1,520 @@
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: acgs-metrics
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  metrics:
+  - providers:
+    - name: prometheus
+  - overrides:
+    - match:
+        metric: ALL_METRICS
+      tags:
+        constitutional_hash:
+          value: "cdd01ef066bc6cf2"
+        environment:
+          value: "production"
+        version:
+          value: "v1.0.0"
+  - providers:
+    - name: stackdriver
+  - overrides:
+    - match:
+        metric: REQUEST_COUNT
+      tags:
+        constitutional_compliance:
+          value: |
+            has(request.headers['constitutional-hash']) && 
+            request.headers['constitutional-hash'] == 'cdd01ef066bc6cf2' ? 'compliant' : 'non-compliant'
+        performance_tier:
+          value: |
+            response.duration > 5000 ? 'slow' : 'fast'
+        service_tier:
+          value: |
+            source.labels['component'] | 'unknown'
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: acgs-tracing
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  tracing:
+  - providers:
+    - name: jaeger
+  - customTags:
+      constitutional_hash:
+        literal:
+          value: "cdd01ef066bc6cf2"
+      environment:
+        literal:
+          value: "production"
+      service_version:
+        literal:
+          value: "v1.0.0"
+      constitutional_compliance:
+        header:
+          name: "constitutional-hash"
+          defaultValue: "unknown"
+      user_id:
+        header:
+          name: "x-user-id"
+          defaultValue: "anonymous"
+      request_id:
+        header:
+          name: "x-request-id"
+          defaultValue: "unknown"
+      performance_tier:
+        operation: CUSTOM
+        name: "performance-tier"
+  - randomSamplingPercentage: 100.0
+---
+apiVersion: telemetry.istio.io/v1alpha1
+kind: Telemetry
+metadata:
+  name: acgs-access-logging
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  accessLogging:
+  - providers:
+    - name: otel
+  - format: |
+      [%START_TIME%] CONSTITUTIONAL_HASH:cdd01ef066bc6cf2 "%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%"
+      %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)%
+      "%REQ(X-FORWARDED-FOR)%" "%REQ(USER-AGENT)%" "%REQ(X-REQUEST-ID)%" "%REQ(:AUTHORITY)%" "%UPSTREAM_HOST%"
+      outbound|%UPSTREAM_CLUSTER%|%UPSTREAM_LOCAL_ADDRESS%|%DOWNSTREAM_LOCAL_ADDRESS%|%DOWNSTREAM_REMOTE_ADDRESS%
+      CONSTITUTIONAL_HASH:%REQ(CONSTITUTIONAL-HASH)% PERFORMANCE:%DURATION%ms COMPLIANCE:%RESP(X-CONSTITUTIONAL-COMPLIANCE)%
+---
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  name: acgs-observability
+  namespace: istio-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  meshConfig:
+    defaultProviders:
+      metrics:
+      - prometheus
+      tracing:
+      - jaeger
+      accessLogging:
+      - otel
+    extensionProviders:
+    - name: prometheus
+      prometheus:
+        configOverride:
+          metric_relabeling_configs:
+          - source_labels: [__name__]
+            regex: '.*'
+            target_label: constitutional_hash
+            replacement: 'cdd01ef066bc6cf2'
+          - source_labels: [__name__]
+            regex: '.*'
+            target_label: environment
+            replacement: 'production'
+    - name: jaeger
+      envoyOtelAls:
+        service: jaeger-collector.istio-system.svc.cluster.local
+        port: 14268
+    - name: otel
+      envoyOtelAls:
+        service: opentelemetry-collector.istio-system.svc.cluster.local
+        port: 4317
+        resource_detectors:
+          environment: {}
+          gcp: {}
+          k8s: {}
+---
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: acgs-istio-proxy
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: istioproxy
+  endpoints:
+  - port: http-monitoring
+    interval: 30s
+    path: /metrics
+    params:
+      constitutional_hash: ["cdd01ef066bc6cf2"]
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: '.*'
+      targetLabel: constitutional_hash
+      replacement: 'cdd01ef066bc6cf2'
+    - sourceLabels: [__name__]
+      regex: '.*'
+      targetLabel: environment
+      replacement: 'production'
+  - port: http-monitoring
+    interval: 30s
+    path: /stats/prometheus
+    params:
+      constitutional_hash: ["cdd01ef066bc6cf2"]
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: '^istio_.*'
+      targetLabel: constitutional_hash
+      replacement: 'cdd01ef066bc6cf2'
+---
+apiVersion: v1
+kind: ServiceMonitor
+metadata:
+  name: acgs-istio-mesh
+  namespace: istio-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: istiod
+  endpoints:
+  - port: http-monitoring
+    interval: 30s
+    path: /metrics
+    params:
+      constitutional_hash: ["cdd01ef066bc6cf2"]
+    metricRelabelings:
+    - sourceLabels: [__name__]
+      regex: '.*'
+      targetLabel: constitutional_hash
+      replacement: 'cdd01ef066bc6cf2'
+    - sourceLabels: [__name__]
+      regex: '.*'
+      targetLabel: environment
+      replacement: 'production'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-jaeger-config
+  namespace: istio-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  jaeger-config.yaml: |
+    # ACGS-2 Jaeger Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+      zpages:
+        endpoint: 0.0.0.0:55679
+        
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+      jaeger:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:14250
+          thrift_http:
+            endpoint: 0.0.0.0:14268
+          thrift_compact:
+            endpoint: 0.0.0.0:6831
+          thrift_binary:
+            endpoint: 0.0.0.0:6832
+            
+    processors:
+      batch:
+        timeout: 1s
+        send_batch_size: 1024
+        send_batch_max_size: 2048
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 512
+      resource:
+        attributes:
+        - key: constitutional_hash
+          value: "cdd01ef066bc6cf2"
+          action: insert
+        - key: environment
+          value: "production"
+          action: insert
+        - key: service.version
+          value: "v1.0.0"
+          action: insert
+          
+    exporters:
+      jaeger:
+        endpoint: jaeger-collector:14250
+        tls:
+          insecure: true
+      logging:
+        loglevel: debug
+        
+    service:
+      extensions: [health_check, zpages]
+      pipelines:
+        traces:
+          receivers: [otlp, jaeger]
+          processors: [memory_limiter, resource, batch]
+          exporters: [jaeger, logging]
+      telemetry:
+        logs:
+          level: "debug"
+        metrics:
+          level: "detailed"
+          address: "0.0.0.0:8888"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-kiali-config
+  namespace: istio-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  kiali-config.yaml: |
+    # ACGS-2 Kiali Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    server:
+      port: 20001
+      metrics_enabled: true
+      metrics_port: 9090
+      web_root: /kiali
+      
+    auth:
+      strategy: anonymous
+      
+    external_services:
+      custom_dashboards:
+        enabled: true
+      prometheus:
+        url: "http://prometheus.acgs-system:9090"
+        custom_headers:
+          constitutional-hash: "cdd01ef066bc6cf2"
+      grafana:
+        enabled: true
+        url: "http://grafana.acgs-system:3000"
+        custom_headers:
+          constitutional-hash: "cdd01ef066bc6cf2"
+      jaeger:
+        enabled: true
+        url: "http://jaeger-query.istio-system:16686"
+        custom_headers:
+          constitutional-hash: "cdd01ef066bc6cf2"
+      istio:
+        config_map_name: "istio"
+        istio_sidecar_annotation: "sidecar.istio.io/status"
+        
+    deployment:
+      accessible_namespaces: ["acgs-system", "istio-system"]
+      cluster_wide_access: false
+      
+    api:
+      namespaces:
+        exclude: ["kube-system", "kube-public"]
+        include: ["acgs-system", "istio-system"]
+        
+    installation_tag: "ACGS-2 v1.0.0"
+    
+    identity:
+      cert_file: ""
+      private_key_file: ""
+      
+    login_token:
+      signing_key: "acgs_kiali_signing_key_2024"
+      expiration_seconds: 86400
+      
+    custom_headers:
+      constitutional-hash: "cdd01ef066bc6cf2"
+      environment: "production"
+      version: "v1.0.0"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acgs-otel-collector
+  namespace: istio-system
+  labels:
+    app: acgs-otel-collector
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: acgs-otel-collector
+  template:
+    metadata:
+      labels:
+        app: acgs-otel-collector
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      containers:
+      - name: otel-collector
+        image: otel/opentelemetry-collector-contrib:latest
+        ports:
+        - containerPort: 4317
+          name: otlp-grpc
+        - containerPort: 4318
+          name: otlp-http
+        - containerPort: 8888
+          name: metrics
+        - containerPort: 13133
+          name: health-check
+        env:
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        volumeMounts:
+        - name: otel-config
+          mountPath: /etc/otel-collector-config.yaml
+          subPath: otel-collector-config.yaml
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 13133
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 13133
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: otel-config
+        configMap:
+          name: acgs-otel-collector-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: acgs-otel-collector
+  namespace: istio-system
+  labels:
+    app: acgs-otel-collector
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 4317
+    targetPort: 4317
+    name: otlp-grpc
+  - port: 4318
+    targetPort: 4318
+    name: otlp-http
+  - port: 8888
+    targetPort: 8888
+    name: metrics
+  - port: 13133
+    targetPort: 13133
+    name: health-check
+  selector:
+    app: acgs-otel-collector
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-otel-collector-config
+  namespace: istio-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  otel-collector-config.yaml: |
+    # ACGS-2 OpenTelemetry Collector Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+      zpages:
+        endpoint: 0.0.0.0:55679
+        
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+            
+    processors:
+      batch:
+        timeout: 1s
+        send_batch_size: 1024
+        send_batch_max_size: 2048
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 512
+      resource:
+        attributes:
+        - key: constitutional_hash
+          value: "cdd01ef066bc6cf2"
+          action: insert
+        - key: environment
+          value: "production"
+          action: insert
+        - key: service.version
+          value: "v1.0.0"
+          action: insert
+        - key: k8s.cluster.name
+          value: "acgs-cluster"
+          action: insert
+      attributes:
+        actions:
+        - key: constitutional_compliance
+          value: "monitored"
+          action: insert
+          
+    exporters:
+      prometheus:
+        endpoint: "0.0.0.0:8888"
+        const_labels:
+          constitutional_hash: "cdd01ef066bc6cf2"
+          environment: "production"
+      jaeger:
+        endpoint: jaeger-collector:14250
+        tls:
+          insecure: true
+      logging:
+        loglevel: debug
+        
+    service:
+      extensions: [health_check, zpages]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, resource, attributes, batch]
+          exporters: [jaeger, logging]
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, resource, attributes, batch]
+          exporters: [prometheus, logging]
+        logs:
+          receivers: [otlp]
+          processors: [memory_limiter, resource, attributes, batch]
+          exporters: [logging]
+      telemetry:
+        logs:
+          level: "debug"
+        metrics:
+          level: "detailed"
+          address: "0.0.0.0:8888"

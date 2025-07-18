@@ -37,7 +37,6 @@ setuptools>=80.9.0
 
 # Development and testing
 pytest>=8.3.4
-pytest>=8.3.4
 
 # Optional: ML/AI dependencies (for advanced evolution)
 # torch>=2.7.3  # Uncomment if needed for ML features

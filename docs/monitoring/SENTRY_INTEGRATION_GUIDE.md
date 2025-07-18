@@ -343,7 +343,7 @@ print('Test event sent')
 python scripts/monitoring/validate_sentry_integration.py
 
 # Check service health with Sentry context
-curl -H "Constitutional-Hash: cdd01ef066bc6cf2" http://localhost:8001/health
+curl -H "Constitutional-Hash: cdd01ef066bc6cf2" http://localhost:8002/health
 ```
 
 ---
@@ -443,8 +443,8 @@ sentry-cli releases set-commits acgs-2.1.0 --auto
 
 ### Documentation
 - [Sentry Official Docs](https://docs.sentry.io/)
-- [ACGS-2 Architecture Guide](../architecture/README.md)
-- [Constitutional Framework Guide](../constitutional/README.md)
+- [ACGS-2 Architecture Guide](../README.md)
+- [Constitutional Framework Guide](../README.md)
 
 ### Community
 - **GitHub Issues**: Report Sentry integration issues

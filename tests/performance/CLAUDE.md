@@ -112,7 +112,7 @@ These targets are validated continuously and must be maintained across all opera
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Tests](../CLAUDE.md) → **Performance**
+**Navigation**: [Root](CLAUDE.md) → [Tests](../CLAUDE.md) → **Performance**
 
 **Constitutional Compliance**: All performance operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

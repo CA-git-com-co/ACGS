@@ -566,9 +566,9 @@ gantt
 ## Appendices
 
 ### A. Technical Architecture Details
-- [Production System Prompts](./ACGS_PRODUCTION_SYSTEM_PROMPTS.md)
-- [Scaling Validation Report](./ACGS_SCALING_TEST_ANALYSIS.md)
-- [Performance Benchmarks](./reports/performance_validation_report.md)
+- [Production System Prompts](production/ACGS_PRODUCTION_SYSTEM_PROMPTS.md)
+- [Scaling Validation Report](../reports/validation/ACGS_SCALING_TEST_ANALYSIS.md)
+- [Performance Benchmarks](../reports/performance/performance_validation_report.md)
 
 ### B. Financial Models
 - Detailed P&L projections

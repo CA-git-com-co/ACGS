@@ -130,7 +130,7 @@ For a broader understanding of the ACGS platform and its components, refer to:
 - **JWT Token Reference**: For detailed information on the structure and claims of the JWT tokens used in the ACGS platform, see the [JWT Token Reference](jwt.md).
 - **Role-Based Access Control (RBAC)**: For information on the roles and permissions used to control access to resources, see the [RBAC Design](rbac.md).
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md)
 
 
 ## Implementation Status

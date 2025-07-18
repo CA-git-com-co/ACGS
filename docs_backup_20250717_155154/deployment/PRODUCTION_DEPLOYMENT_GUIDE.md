@@ -108,7 +108,7 @@ curl -f http://localhost:3000/api/health            # Grafana
 ### 3.1 Service Integration Testing
 ```bash
 # Test constitutional compliance end-to-end
-curl -X POST http://localhost:8001/constitutional/validate \
+curl -X POST http://localhost:8002/constitutional/validate \
   -H "Content-Type: application/json" \
   -d '{
     "action_data": {"operation": "test_deployment"},

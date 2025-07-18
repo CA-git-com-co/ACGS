@@ -35,10 +35,10 @@ curl -X POST http://localhost:9093/api/v1/alerts \
 
 ```bash
 # Check PGC service status
-curl -f http://localhost:8005/health
+curl -f http://localhost:8006/health
 
 # Check service metrics
-curl -s http://localhost:8005/metrics | grep pgc_validation_latency
+curl -s http://localhost:8006/metrics | grep pgc_validation_latency
 ```
 
 ### 3. Review Current Latency
@@ -58,7 +58,7 @@ top -p $(pgrep -f pgc-service)
 iostat -x 1 5
 
 # Check network connections
-netstat -an | grep :8005
+netstat -an | grep :8006
 ```
 
 ## Diagnostic Procedures
@@ -79,10 +79,10 @@ journalctl -u acgs-pgc-service -n 1000 | grep -i "error\|timeout\|slow"
 
 ```bash
 # Check validation operation metrics
-curl -s http://localhost:8005/metrics | grep -E "(validation_operations|compliance_checks)"
+curl -s http://localhost:8006/metrics | grep -E "(validation_operations|compliance_checks)"
 
 # Check database query performance
-curl -s http://localhost:8005/metrics | grep database_query_duration
+curl -s http://localhost:8006/metrics | grep database_query_duration
 ```
 
 ### 2. Infrastructure-Level Diagnostics
@@ -158,7 +158,7 @@ redis-cli FLUSHALL
 systemctl restart redis
 
 # Warm up cache with common queries
-curl -X POST http://localhost:8005/admin/cache/warmup
+curl -X POST http://localhost:8006/admin/cache/warmup
 ```
 
 ### 3. Resource Exhaustion
@@ -216,7 +216,7 @@ systemctl restart networking
 systemctl restart acgs-pgc-service
 
 # Verify service health
-curl -f http://localhost:8005/health
+curl -f http://localhost:8006/health
 
 # Check latency improvement
 curl -s "http://localhost:9090/api/v1/query?query=histogram_quantile(0.95,%20rate(acgs_pgc_validation_latency_seconds_bucket{service=\"pgc\"}[5m]))"
@@ -265,8 +265,8 @@ done
 
 ```bash
 # Verify all health checks pass
-curl -f http://localhost:8005/health
-curl -f http://localhost:8005/ready
+curl -f http://localhost:8006/health
+curl -f http://localhost:8006/ready
 
 # Check error rates
 curl -s http://localhost:9090/api/v1/query?query=rate(acgs_errors_total{service=\"pgc\"}[5m])

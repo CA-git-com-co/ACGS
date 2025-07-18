@@ -11,9 +11,9 @@ Before initiating rollback, determine the specific issue:
 
 ```bash
 # Check service health
-curl -f http://localhost:8001/health
 curl -f http://localhost:8002/health
-curl -f http://localhost:8005/health
+curl -f http://localhost:8002/health
+curl -f http://localhost:8006/health
 
 # Check constitutional compliance metrics
 curl http://localhost:9090/api/v1/query?query=acgs_constitutional_compliance_failures_total
@@ -156,7 +156,7 @@ docker-compose logs --tail=50 coordination-service
 ### 1. Immediate Validation
 ```bash
 # Test constitutional hash validation
-curl -X POST http://localhost:8001/test \
+curl -X POST http://localhost:8002/test \
   -H "Content-Type: application/json" \
   -H "X-Constitutional-Hash: cdd01ef066bc6cf2" \
   -d '{"constitutional_hash": "cdd01ef066bc6cf2", "test": "data"}'
@@ -268,9 +268,9 @@ echo "Monitor rollback at: http://localhost:3000/d/constitutional-middleware"
 ### 1. Functional Testing
 ```bash
 # Test all critical endpoints
-curl -f http://localhost:8001/health
 curl -f http://localhost:8002/health
-curl -f http://localhost:8005/health
+curl -f http://localhost:8002/health
+curl -f http://localhost:8006/health
 curl -f http://localhost:8008/health
 curl -f http://localhost:8016/health
 

@@ -194,7 +194,7 @@ sentry_sdk.capture_message('ACGS-2 Test', tags={'constitutional_hash': 'cdd01ef0
 "
 
 # Check service health
-curl -H "Constitutional-Hash: cdd01ef066bc6cf2" http://localhost:8001/health
+curl -H "Constitutional-Hash: cdd01ef066bc6cf2" http://localhost:8002/health
 ```
 
 

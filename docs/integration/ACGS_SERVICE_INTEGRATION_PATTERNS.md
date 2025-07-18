@@ -116,7 +116,7 @@ class ConstitutionalAIClient(ACGSServiceClient):
     
     def __init__(self):
         super().__init__(
-            base_url="http://constitutional-ai:8001",
+            base_url="http://constitutional-ai:8002",
             service_name="constitutional-ai"
         )
     
@@ -410,7 +410,7 @@ class ServiceHealthMonitor:
     
     def __init__(self):
         self.services = {
-            "constitutional-ai": "http://constitutional-ai:8001",
+            "constitutional-ai": "http://constitutional-ai:8002",
             "auth-service": "http://auth-service:8016",
             "integrity-service": "http://integrity-service:8002"
         }
@@ -569,4 +569,4 @@ This component adheres to ACGS-2 constitutional performance requirements:
 For a broader understanding of the ACGS platform and its components, refer to:
 
 - **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md) file.

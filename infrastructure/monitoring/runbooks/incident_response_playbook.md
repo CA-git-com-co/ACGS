@@ -83,7 +83,7 @@ for port in {8000..8006}; do
 done
 
 # Check constitutional compliance
-curl -f http://localhost:8005/api/v1/governance/compliance/status
+curl -f http://localhost:8006/api/v1/governance/compliance/status
 ```
 
 #### 3. Severity Classification
@@ -126,7 +126,7 @@ python3 /home/dislove/ACGS-1/scripts/emergency_rollback_procedures.py isolate --
 ./scripts/security_containment.sh
 
 # For constitutional compliance issues
-curl -X POST http://localhost:8005/api/v1/governance/emergency-halt
+curl -X POST http://localhost:8006/api/v1/governance/emergency-halt
 ```
 
 ### Phase 3: Resolution and Recovery (30 minutes - 4 hours)
@@ -254,26 +254,26 @@ nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 &
 
 ```bash
 # Check amendment processing status
-curl -f http://localhost:8001/api/v1/amendments/status
+curl -f http://localhost:8002/api/v1/amendments/status
 
 # Verify stakeholder notifications
-curl -f http://localhost:8001/api/v1/notifications/status
+curl -f http://localhost:8002/api/v1/notifications/status
 
 # Check amendment integrity
-curl -f http://localhost:8001/api/v1/amendments/integrity-check
+curl -f http://localhost:8002/api/v1/amendments/integrity-check
 ```
 
 ### Policy Governance Compliance (PGC) Service (Port 8005) Incidents
 
 ```bash
 # Check constitutional compliance
-curl -f http://localhost:8005/api/v1/governance/compliance/status
+curl -f http://localhost:8006/api/v1/governance/compliance/status
 
 # Verify blockchain connectivity
-curl -f http://localhost:8005/api/v1/blockchain/health
+curl -f http://localhost:8006/api/v1/blockchain/health
 
 # Emergency governance halt (if needed)
-curl -X POST http://localhost:8005/api/v1/governance/emergency-halt
+curl -X POST http://localhost:8006/api/v1/governance/emergency-halt
 ```
 
 ## Security Incident Response
@@ -307,10 +307,10 @@ curl -X POST http://localhost:8005/api/v1/governance/emergency-halt
 
 ```bash
 # Constitutional compliance emergency
-curl -X POST http://localhost:8005/api/v1/governance/emergency-procedures/activate
+curl -X POST http://localhost:8006/api/v1/governance/emergency-procedures/activate
 
 # Stakeholder emergency notification
-curl -X POST http://localhost:8001/api/v1/notifications/emergency \
+curl -X POST http://localhost:8002/api/v1/notifications/emergency \
   -H "Content-Type: application/json" \
   -d '{"type": "constitutional_emergency", "message": "Emergency governance procedures activated"}'
 

@@ -202,7 +202,7 @@ Prometheus metrics for constitutional compliance monitoring.
 # Service Configuration
 SERVICE_NAME=ac_service
 SERVICE_VERSION=3.0.0
-SERVICE_PORT=8001
+SERVICE_PORT=8002
 HOST=127.0.0.1  # Secure default
 
 # Constitutional Framework
@@ -220,7 +220,7 @@ DATABASE_URL=postgresql://user:password@localhost:5432/acgs_constitutional
 REDIS_URL=redis://localhost:6379/1
 
 # Service Dependencies
-FV_SERVICE_URL=http://localhost:8003
+FV_SERVICE_URL=http://localhost:8004
 AUTH_SERVICE_URL=http://localhost:8000
 
 # Performance Configuration
@@ -312,7 +312,7 @@ docker build -t acgs-ac-service:latest .
 # Run container
 docker run -d \
   --name acgs-ac-service \
-  -p 8001:8001 \
+  -p 8001:8002 \
   -e CONSTITUTIONAL_HASH=cdd01ef066bc6cf2 \
   -e GEMINI_API_KEY=${GEMINI_API_KEY} \
   -e DATABASE_URL=postgresql://user:pass@host:5432/db \
@@ -407,7 +407,7 @@ spec:
 
    ```bash
    # Verify constitutional hash
-   curl -s http://localhost:8001/api/v1/constitutional/validate | jq '.constitutional_hash'
+   curl -s http://localhost:8002/api/v1/constitutional/validate | jq '.constitutional_hash'
    # Should return: "cdd01ef066bc6cf2"
    ```
 
@@ -415,13 +415,13 @@ spec:
 
    ```bash
    # Check AI model connectivity
-   curl -s http://localhost:8001/health | jq '.ai_models'
+   curl -s http://localhost:8002/health | jq '.ai_models'
    ```
 
 3. **Formal Verification Failures**
    ```bash
    # Check FV service connectivity
-   curl -s http://localhost:8003/health
+   curl -s http://localhost:8004/health
    ```
 
 ### Emergency Procedures

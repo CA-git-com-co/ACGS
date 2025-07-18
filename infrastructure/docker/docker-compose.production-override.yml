@@ -1,0 +1,201 @@
+# ACGS-2 Production Environment Override
+# Use with: docker-compose -f docker-compose.base-infrastructure.yml -f docker-compose.acgs-services.yml -f docker-compose.production-override.yml
+
+version: '3.8'
+
+# Production-specific resource limits
+x-production-resources: &production-resources
+  deploy:
+    resources:
+      limits:
+        cpus: '2.0'
+        memory: 2G
+      reservations:
+        cpus: '0.5'
+        memory: 512M
+
+services:
+  # Infrastructure overrides for production
+  postgres:
+    <<: *production-resources
+    environment:
+      POSTGRES_DB: acgs_production
+      POSTGRES_USER: acgs_prod
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Production password required}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    ports:
+      - "5439:5432"  # Production port
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+      - ./backup:/backup
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c maintenance_work_mem=128MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c min_wal_size=1GB
+      -c max_wal_size=4GB
+
+  redis:
+    <<: *production-resources
+    ports:
+      - "6389:6379"  # Production port
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:?Production password required}
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --appendonly yes
+      --appendfsync everysec
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    volumes:
+      - redis_prod_data:/data
+
+  # Service overrides for production
+  auth_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 4
+      DATABASE_POOL_SIZE: 20
+      DATABASE_MAX_OVERFLOW: 40
+
+  ac_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 4
+
+  integrity_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 4
+
+  fv_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 2
+
+  gs_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 2
+
+  pgc_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 2
+
+  ec_service:
+    <<: *production-resources
+    environment:
+      ENVIRONMENT: production
+      LOG_LEVEL: WARNING
+      DEBUG: "false"
+      RELOAD: "false"
+      WORKERS: 2
+
+  # Production monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: acgs-prometheus-prod
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus-prod.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_prod_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - acgs-network
+    labels:
+      com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+      com.acgs.environment: "production"
+      com.acgs.component: "monitoring"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: acgs-grafana-prod
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:?Grafana admin password required}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - grafana_prod_data:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+    networks:
+      - acgs-network
+    depends_on:
+      - prometheus
+    labels:
+      com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+      com.acgs.environment: "production"
+      com.acgs.component: "monitoring"
+
+volumes:
+  postgres_prod_data:
+    driver: local
+    labels:
+      com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+      com.acgs.environment: "production"
+      com.acgs.volume: "postgres-data"
+  
+  redis_prod_data:
+    driver: local
+    labels:
+      com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+      com.acgs.environment: "production"
+      com.acgs.volume: "redis-data"
+  
+  prometheus_prod_data:
+    driver: local
+    labels:
+      com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+      com.acgs.environment: "production"
+      com.acgs.volume: "prometheus-data"
+  
+  grafana_prod_data:
+    driver: local
+    labels:
+      com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+      com.acgs.environment: "production"
+      com.acgs.volume: "grafana-data"

@@ -35,7 +35,7 @@ The ACGS-2 system implements a microservices architecture with the following cor
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Port Mapping Legend**: External→Internal (e.g., 8013→8000 means external port 8013 maps to internal port 8000)
+**Port Mapping Legend**: External→Internal (e.g., 8013→8000 means external port 8014 maps to internal port 8000)
 
 #### Infrastructure Components
 
@@ -317,18 +317,18 @@ The ACGS-2 system maintains **100% constitutional compliance** and system reliab
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](./ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](../deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
+- [ACGS Service Architecture Overview](ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS-Claudia Integration Architecture Plan](architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
+- [ACGS Implementation Guide](deployment/ACGS_IMPLEMENTATION_GUIDE.md)
+- [ACGS-PGP Operational Deployment Guide](deployment/ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
+- [ACGS-PGP Troubleshooting Guide](deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
+- [ACGS-PGP Setup Guide](deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [Service Status Dashboard](operations/SERVICE_STATUS.md)
 
 
 ## Implementation Status

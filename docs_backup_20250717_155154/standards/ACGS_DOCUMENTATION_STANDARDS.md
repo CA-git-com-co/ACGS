@@ -255,8 +255,8 @@ async def create_resource(
 
 ### Related Documents
 
-- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **Developer Onboarding Guide**: For a step-by-step guide on how to get started with ACGS development, see the [ACGS Developer Onboarding Guide](../development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md).
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md.backup).
+- **Developer Onboarding Guide**: For a step-by-step guide on how to get started with ACGS development, see the [ACGS Developer Onboarding Guide](../development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md.backup).
 
 ### How to Contribute to Documentation
 

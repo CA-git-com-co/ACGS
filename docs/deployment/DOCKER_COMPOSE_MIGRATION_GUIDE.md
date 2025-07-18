@@ -133,7 +133,7 @@ services:
     environment:
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/health/constitutional"]
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health/constitutional"]
       interval: 30s
       timeout: 10s
       retries: 3

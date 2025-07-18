@@ -1,0 +1,405 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-global-config
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  constitutional_hash: "cdd01ef066bc6cf2"
+  environment: "production"
+  log_level: "INFO"
+  performance_target_p99_ms: "5"
+  performance_target_rps: "100"
+  availability_target_percent: "99.9"
+  postgres_host: "postgres"
+  postgres_port: "5432"
+  postgres_database: "acgs_db"
+  redis_host: "redis"
+  redis_port: "6379"
+  monitoring_enabled: "true"
+  audit_enabled: "true"
+  constitutional_validation_enabled: "true"
+  constitutional_validation_strict: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: acgs-system
+  labels:
+    app: postgres
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  postgresql.conf: |
+    # ACGS-2 PostgreSQL Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    # Connection Settings
+    max_connections = 200
+    shared_buffers = 256MB
+    effective_cache_size = 1GB
+    maintenance_work_mem = 64MB
+    checkpoint_completion_target = 0.9
+    wal_buffers = 16MB
+    default_statistics_target = 100
+    random_page_cost = 1.1
+    effective_io_concurrency = 200
+    
+    # Logging
+    log_statement = 'all'
+    log_checkpoints = on
+    log_connections = on
+    log_disconnections = on
+    log_lock_waits = on
+    log_min_duration_statement = 1000
+    
+    # Constitutional Compliance
+    log_line_prefix = 'CONSTITUTIONAL_HASH:cdd01ef066bc6cf2 %t [%p]: [%l-1] user=%u,db=%d,app=%a,client=%h '
+    
+    # Performance
+    shared_preload_libraries = 'pg_stat_statements'
+    
+  pg_hba.conf: |
+    # ACGS-2 PostgreSQL Client Authentication
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    # TYPE  DATABASE        USER            ADDRESS                 METHOD
+    local   all             all                                     trust
+    host    all             all             127.0.0.1/32            md5
+    host    all             all             ::1/128                 md5
+    host    all             all             10.0.0.0/8              md5
+    host    all             all             172.16.0.0/12           md5
+    host    all             all             192.168.0.0/16          md5
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+  namespace: acgs-system
+  labels:
+    app: redis
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  redis.conf: |
+    # ACGS-2 Redis Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    # Network
+    bind 0.0.0.0
+    port 6379
+    tcp-backlog 511
+    tcp-keepalive 300
+    
+    # General
+    timeout 0
+    databases 16
+    
+    # Snapshotting
+    save 900 1
+    save 300 10
+    save 60 10000
+    stop-writes-on-bgsave-error yes
+    rdbcompression yes
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir /data
+    
+    # Replication
+    replica-serve-stale-data yes
+    replica-read-only yes
+    repl-diskless-sync no
+    repl-diskless-sync-delay 5
+    
+    # Security
+    requirepass acgs_redis_password
+    
+    # Limits
+    maxmemory 1gb
+    maxmemory-policy allkeys-lru
+    maxclients 10000
+    
+    # Slow log
+    slowlog-log-slower-than 10000
+    slowlog-max-len 128
+    
+    # Logging
+    loglevel notice
+    logfile /var/log/redis/redis-server.log
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: acgs-system
+  labels:
+    app: nginx
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  nginx.conf: |
+    # ACGS-2 Nginx Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    worker_processes auto;
+    worker_rlimit_nofile 65535;
+    
+    events {
+        worker_connections 4096;
+        use epoll;
+        multi_accept on;
+    }
+    
+    http {
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+        
+        # Logging
+        log_format main 'CONSTITUTIONAL_HASH:cdd01ef066bc6cf2 $remote_addr - $remote_user [$time_local] "$request" '
+                       '$status $body_bytes_sent "$http_referer" '
+                       '"$http_user_agent" "$http_x_forwarded_for"';
+        
+        access_log /var/log/nginx/access.log main;
+        error_log /var/log/nginx/error.log warn;
+        
+        # Performance
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+        server_tokens off;
+        
+        # Gzip
+        gzip on;
+        gzip_vary on;
+        gzip_proxied any;
+        gzip_comp_level 6;
+        gzip_types text/plain text/css text/xml text/javascript application/javascript application/xml+rss application/json;
+        
+        # Security Headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
+        add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+        add_header Constitutional-Hash "cdd01ef066bc6cf2" always;
+        
+        # Rate Limiting
+        limit_req_zone $binary_remote_addr zone=api:10m rate=100r/s;
+        limit_req_zone $binary_remote_addr zone=auth:10m rate=10r/s;
+        
+        # Upstream servers
+        upstream constitutional_core {
+            server constitutional-core:8001 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+        
+        upstream auth_service {
+            server auth-service:8013 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+        
+        upstream api_gateway {
+            server api-gateway:8080 max_fails=3 fail_timeout=30s;
+            keepalive 32;
+        }
+        
+        # Main server block
+        server {
+            listen 80;
+            server_name _;
+            
+            # Health check
+            location /health {
+                access_log off;
+                add_header Content-Type text/plain;
+                add_header Constitutional-Hash "cdd01ef066bc6cf2";
+                return 200 "healthy\n";
+            }
+            
+            # API Gateway
+            location /api/ {
+                limit_req zone=api burst=200 nodelay;
+                proxy_pass http://api_gateway;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header Constitutional-Hash "cdd01ef066bc6cf2";
+            }
+            
+            # Authentication
+            location /auth/ {
+                limit_req zone=auth burst=50 nodelay;
+                proxy_pass http://auth_service;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header Constitutional-Hash "cdd01ef066bc6cf2";
+            }
+            
+            # Constitutional Core
+            location /constitutional/ {
+                limit_req zone=api burst=100 nodelay;
+                proxy_pass http://constitutional_core;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+                proxy_set_header Constitutional-Hash "cdd01ef066bc6cf2";
+            }
+            
+            # Default location
+            location / {
+                add_header Content-Type text/plain;
+                add_header Constitutional-Hash "cdd01ef066bc6cf2";
+                return 200 "ACGS-2 Constitutional Governance System\nConstitutional Hash: cdd01ef066bc6cf2\n";
+            }
+        }
+    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: acgs-system
+  labels:
+    app: prometheus
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  prometheus.yml: |
+    # ACGS-2 Prometheus Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+      external_labels:
+        constitutional_hash: 'cdd01ef066bc6cf2'
+        environment: 'production'
+    
+    rule_files:
+      - "acgs_rules.yml"
+    
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
+    
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+        metrics_path: /metrics
+        scrape_interval: 15s
+        params:
+          constitutional_hash: ['cdd01ef066bc6cf2']
+      
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            action: keep
+            regex: default;kubernetes;https
+      
+      - job_name: 'kubernetes-nodes'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [__meta_kubernetes_node_name]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+      
+      - job_name: 'acgs-services'
+        kubernetes_sd_configs:
+          - role: endpoints
+            namespaces:
+              names:
+                - acgs-system
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_service_annotation_constitutional_hash]
+            action: keep
+            regex: cdd01ef066bc6cf2
+          - source_labels: [__meta_kubernetes_service_name]
+            target_label: service
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_namespace]
+            target_label: namespace
+  
+  acgs_rules.yml: |
+    # ACGS-2 Prometheus Rules
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    groups:
+      - name: acgs_constitutional_compliance
+        rules:
+          - alert: ConstitutionalHashMismatch
+            expr: acgs_constitutional_hash != 1
+            for: 1m
+            labels:
+              severity: critical
+              constitutional_hash: cdd01ef066bc6cf2
+            annotations:
+              summary: "Constitutional hash mismatch detected"
+              description: "Service {{ $labels.service }} has constitutional hash mismatch"
+      
+      - name: acgs_performance
+        rules:
+          - alert: HighLatency
+            expr: acgs_response_time_p99_seconds > 0.005
+            for: 2m
+            labels:
+              severity: warning
+              constitutional_hash: cdd01ef066bc6cf2
+            annotations:
+              summary: "High latency detected"
+              description: "Service {{ $labels.service }} P99 latency is {{ $value }}s, above 5ms threshold"
+          
+          - alert: LowThroughput
+            expr: rate(acgs_requests_total[5m]) < 100
+            for: 5m
+            labels:
+              severity: warning
+              constitutional_hash: cdd01ef066bc6cf2
+            annotations:
+              summary: "Low throughput detected"
+              description: "Service {{ $labels.service }} throughput is {{ $value }} RPS, below 100 RPS threshold"
+      
+      - name: acgs_availability
+        rules:
+          - alert: ServiceDown
+            expr: up{job="acgs-services"} == 0
+            for: 1m
+            labels:
+              severity: critical
+              constitutional_hash: cdd01ef066bc6cf2
+            annotations:
+              summary: "Service is down"
+              description: "Service {{ $labels.service }} is down"
+          
+          - alert: HighErrorRate
+            expr: rate(acgs_requests_total{status=~"5.."}[5m]) / rate(acgs_requests_total[5m]) > 0.01
+            for: 2m
+            labels:
+              severity: warning
+              constitutional_hash: cdd01ef066bc6cf2
+            annotations:
+              summary: "High error rate detected"
+              description: "Service {{ $labels.service }} error rate is {{ $value | humanizePercentage }}"

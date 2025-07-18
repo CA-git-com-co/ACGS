@@ -53,7 +53,7 @@ Create a `config/environments/development.env` file:
 SERVICE_NAME=your-service-name
 SERVICE_VERSION=1.0.0
 SERVICE_DESCRIPTION=Your ACGS service description
-SERVICE_PORT=8005
+SERVICE_PORT=8006
 
 # Environment
 ENVIRONMENT=development
@@ -102,7 +102,7 @@ pip install -e .[api,database,cache,auth]
 
 ```bash
 # Development mode with auto-reload
-uvicorn main:app --host 0.0.0.0 --port 8005 --reload
+uvicorn main:app --host 0.0.0.0 --port 8006 --reload
 
 # Or using the built-in server
 python main.py
@@ -360,12 +360,12 @@ your_service:
   container_name: acgs_your_service_dev
   environment:
     - SERVICE_NAME=your-service-name
-    - SERVICE_PORT=8005
+    - SERVICE_PORT=8006
     - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
   working_dir: /app/services/core/your-service-name
   command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8005", "--reload"]
   ports:
-    - "8005:8005"
+    - "8005:8006"
 ```
 
 ### Production Configuration

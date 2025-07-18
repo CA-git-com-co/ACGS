@@ -45,7 +45,7 @@ The RBAC system is tightly integrated with the Authentication Service and the Co
 ## 5. Related Information
 
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md)
 - [Authentication Service API](authentication.md)
 ## API Endpoints
 
@@ -55,7 +55,7 @@ All API endpoints require JWT authentication with constitutional context.
 ```bash
 curl -H "Authorization: Bearer <jwt_token>" \
      -H "X-Constitutional-Hash: cdd01ef066bc6cf2" \
-     http://localhost:8001/api/v1/endpoint
+     http://localhost:8002/api/v1/endpoint
 ```
 
 ### Core Endpoints

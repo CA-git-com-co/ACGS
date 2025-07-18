@@ -247,16 +247,16 @@ scrape_configs:
 
 5. ACGS Constitutional AI Framework. Internal Technical Specification, 2024.
 
-6. **[Integration Summary](</home/dislove/ACGS-2/docs/integration/INTEGRATION_SUMMARY.md>)**: A high-level overview of the Claude-MCP-ACGS integration.
+6. **[Integration Summary](../docs_consolidated_archive_20250710_120000/deployment/INTEGRATION_SUMMARY.md)**: A high-level overview of the Claude-MCP-ACGS integration.
 
-7. **[ACGS Integration Documentation](</home/dislove/ACGS-2/docs/integration/CLAUDE_MCP_ACGS_INTEGRATION.md>)**: Comprehensive details on the integration architecture, communication protocols, and monitoring.
+7. **[ACGS Integration Documentation](../docs_consolidated_archive_20250710_120000/deployment/CLAUDE_MCP_ACGS_INTEGRATION.md)**: Comprehensive details on the integration architecture, communication protocols, and monitoring.
 
-8. **[Production-Ready Docker Compose Stack](</home/dislove/ACGS-2/docker-compose.yml>)**: The complete Docker Compose file for deploying the MCP server stack.
+8. **[Production-Ready Docker Compose Stack](../monitoring/docker-compose.yml)**: The complete Docker Compose file for deploying the MCP server stack.
 
-9. **[Environment Configuration](</home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env>)**: The template for configuring the environment variables for the MCP server stack.
+9. **[Environment Configuration](../config/environments/template.env)**: The template for configuring the environment variables for the MCP server stack.
 
-10. **[Operational Runbook](</home/dislove/ACGS-2/DEPLOYMENT.md>)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
+10. **[Operational Runbook](../docs_consolidated_archive_20250710_120000/deployment/DEPLOYMENT.md)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
 
-11. **[Integration Validation Script](</home/dislove/ACGS-2/scripts/validate_claude_mcp_integration.sh>)**: The script for automated health checks, performance testing, and constitutional compliance validation.
+11. **[Integration Validation Script](../scripts/monitoring/validate_claude_mcp_integration.sh)**: The script for automated health checks, performance testing, and constitutional compliance validation.
 
-12. **[CLAUDE.md](</home/dislove/ACGS-2/CLAUDE.md>)**: Guidance for Claude when working with code in this repository.
+12. **[CLAUDE.md](../CLAUDE.md)**: Guidance for Claude when working with code in this repository.

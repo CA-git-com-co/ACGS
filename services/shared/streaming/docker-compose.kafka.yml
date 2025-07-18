@@ -1,3 +1,4 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 version: '3.8'
 services:
   zookeeper:
@@ -415,6 +416,10 @@ networks:
     name: acgs-streaming-network
 # constitutional_hash: cdd01ef066bc6cf2
 
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
 # Constitutional Compliance: cdd01ef066bc6cf2
 # Implementation Status: 🔄 IN PROGRESS
@@ -422,3 +427,7 @@ networks:
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
 # Constitutional Compliance: cdd01ef066bc6cf2
 # Implementation Status: 🔄 IN PROGRESS
+
+---
+
+**Constitutional Compliance**: All operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).

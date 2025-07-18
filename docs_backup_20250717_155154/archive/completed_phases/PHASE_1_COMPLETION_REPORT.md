@@ -22,11 +22,11 @@ Phase 1 of the ACGS development roadmap has been **successfully completed** with
 
 **Services Successfully Started:**
 1. **Auth Service** (port 8000) - Previously operational ✅
-2. **Constitutional AI** (port 8001) - Previously operational ✅
+2. **Constitutional AI** (port 8002) - Previously operational ✅
 3. **Integrity Service** (port 8002) - ✨ **NEWLY DEPLOYED** ✅
-4. **Formal Verification** (port 8003) - ✨ **NEWLY DEPLOYED** ✅
+4. **Formal Verification** (port 8004) - ✨ **NEWLY DEPLOYED** ✅
 5. **Governance Synthesis** (port 8004) - ✨ **NEWLY DEPLOYED** ✅
-6. **Policy Governance** (port 8005) - ✨ **NEWLY DEPLOYED** ✅
+6. **Policy Governance** (port 8006) - ✨ **NEWLY DEPLOYED** ✅
 7. **Evolutionary Computation** (port 8006) - Previously operational ✅
 8. **ACGS-PGP-v8** (port 8010) - ✨ **NEWLY DEPLOYED** ✅
 

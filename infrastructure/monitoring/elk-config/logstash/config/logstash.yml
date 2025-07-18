@@ -1,3 +1,4 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 node.name: acgs-logstash-security
 path.data: /usr/share/logstash/data
 path.logs: /usr/share/logstash/logs
@@ -58,9 +59,17 @@ slowlog.threshold.trace: 100ms
 constitutional_hash: cdd01ef066bc6cf2
 
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
+
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+**Constitutional Hash**: `cdd01ef066bc6cf2`
 # Constitutional Compliance: cdd01ef066bc6cf2
 # Implementation Status: 🔄 IN PROGRESS
 
 # Performance Targets: P99 <5ms, >100 RPS, >85% cache hit rates
 # Constitutional Compliance: cdd01ef066bc6cf2
 # Implementation Status: 🔄 IN PROGRESS
+
+---
+
+**Constitutional Compliance**: All operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).

@@ -112,7 +112,7 @@ These targets are validated continuously and must be maintained across all opera
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Services](../CLAUDE.md) → **Blockchain**
+**Navigation**: [Root](CLAUDE.md) → [Services](../CLAUDE.md) → **Blockchain**
 
 **Constitutional Compliance**: All blockchain operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

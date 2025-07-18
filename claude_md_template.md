@@ -34,8 +34,8 @@ The {DIRECTORY_NAME_LOWER} system maintains constitutional hash `cdd01ef066bc6cf
 ## Key Components
 
 ### {COMPONENT_CATEGORY_1}
-- **{COMPONENT_1}**: {COMPONENT_1_DESCRIPTION}
-- **{COMPONENT_2}**: {COMPONENT_2_DESCRIPTION}
+- **Constitutional AI**: {COMPONENT_1_DESCRIPTION}
+- **Governance Synthesis**: {COMPONENT_2_DESCRIPTION}
 
 ### {COMPONENT_CATEGORY_2}
 - **{FEATURE_1}**: {FEATURE_1_DESCRIPTION}
@@ -87,16 +87,16 @@ The {DIRECTORY_NAME_LOWER} system maintains constitutional hash `cdd01ef066bc6cf
 ## Cross-References & Navigation
 
 ### Related Directories
-- **[{RELATED_DIR_1}](../{RELATED_DIR_1_PATH}/claude.md)** - {RELATED_DIR_1_DESCRIPTION}
-- **[{RELATED_DIR_2}](../{RELATED_DIR_2_PATH}/claude.md)** - {RELATED_DIR_2_DESCRIPTION}
+- **[services](.claude/commands/load.md)** - {RELATED_DIR_1_DESCRIPTION}
+- **[docs](.claude/commands/load.md)** - {RELATED_DIR_2_DESCRIPTION}
 
 ### {NAVIGATION_CATEGORY_1}
-- **[{NAV_ITEM_1}]({NAV_ITEM_1_PATH}/claude.md)** - {NAV_ITEM_1_DESCRIPTION}
-- **[{NAV_ITEM_2}]({NAV_ITEM_2_PATH}/claude.md)** - {NAV_ITEM_2_DESCRIPTION}
+- **[Documentation](.claude/commands/load.md)** - {NAV_ITEM_1_DESCRIPTION}
+- **[Services](.claude/commands/load.md)** - {NAV_ITEM_2_DESCRIPTION}
 
 ### Documentation and Guides
-- **[{DOC_GUIDE_1}](../docs/{DOC_GUIDE_1_PATH}/claude.md)** - {DOC_GUIDE_1_DESCRIPTION}
-- **[{DOC_GUIDE_2}](../docs/{DOC_GUIDE_2_PATH}/claude.md)** - {DOC_GUIDE_2_DESCRIPTION}
+- **[Architecture Guide](.claude/commands/load.md)** - {DOC_GUIDE_1_DESCRIPTION}
+- **[API Reference](.claude/commands/load.md)** - {DOC_GUIDE_2_DESCRIPTION}
 
 
 ## Performance Targets
@@ -112,7 +112,7 @@ These targets are validated continuously and must be maintained across all opera
 
 ---
 
-**Navigation**: [Root](../claude.md) → **{DIRECTORY_NAME}** | [{BREADCRUMB_1}](../{BREADCRUMB_1_PATH}/claude.md) | [{BREADCRUMB_2}](../{BREADCRUMB_2_PATH}/claude.md) | [{BREADCRUMB_3}](../{BREADCRUMB_3_PATH}/claude.md)
+**Navigation**: [Root](.claude/commands/load.md) → **{DIRECTORY_NAME}** | [Home](.claude/commands/load.md) | [Documentation](.claude/commands/load.md) | [{BREADCRUMB_3}](.claude/commands/load.md)
 
 **Constitutional Compliance**: {COMPLIANCE_STATEMENT}
 

@@ -33,17 +33,17 @@ curl -X POST http://localhost:8080/alerts/{alert_id}/acknowledge \
 
 ```bash
 # Check current constitutional compliance status
-curl -f http://localhost:8005/api/v1/governance/compliance/status
+curl -f http://localhost:8006/api/v1/governance/compliance/status
 
 # Verify constitutional hash
-curl -f http://localhost:8005/api/v1/constitution/hash
+curl -f http://localhost:8006/api/v1/constitution/hash
 ```
 
 ### 3. Halt Non-Critical Governance Operations
 
 ```bash
 # Temporarily suspend new governance actions (if compliance <90%)
-curl -X POST http://localhost:8005/api/v1/governance/emergency-halt \
+curl -X POST http://localhost:8006/api/v1/governance/emergency-halt \
   -H "Content-Type: application/json" \
   -d '{"reason": "constitutional_compliance_failure", "halt_level": "non_critical"}'
 ```
@@ -55,7 +55,7 @@ curl -X POST http://localhost:8005/api/v1/governance/emergency-halt \
 ```bash
 # Verify constitutional hash integrity
 EXPECTED_HASH="cdd01ef066bc6cf2"
-CURRENT_HASH=$(curl -s http://localhost:8005/api/v1/constitution/hash | jq -r '.hash')
+CURRENT_HASH=$(curl -s http://localhost:8006/api/v1/constitution/hash | jq -r '.hash')
 
 if [ "$CURRENT_HASH" != "$EXPECTED_HASH" ]; then
   echo "CRITICAL: Constitutional hash mismatch!"
@@ -70,33 +70,33 @@ fi
 
 ```bash
 # Check recent compliance validations
-curl -s http://localhost:8005/api/v1/governance/compliance/recent | jq '.validations[] | {id, result, confidence, timestamp}'
+curl -s http://localhost:8006/api/v1/governance/compliance/recent | jq '.validations[] | {id, result, confidence, timestamp}'
 
 # Check failed validations
-curl -s http://localhost:8005/api/v1/governance/compliance/failures | jq '.failures[] | {policy_id, violation_type, severity}'
+curl -s http://localhost:8006/api/v1/governance/compliance/failures | jq '.failures[] | {policy_id, violation_type, severity}'
 
 # Check compliance metrics
-curl -s http://localhost:8005/metrics | grep constitutional_compliance
+curl -s http://localhost:8006/metrics | grep constitutional_compliance
 ```
 
 ### 6. Blockchain Connectivity Check
 
 ```bash
 # Verify Solana devnet connectivity
-curl -f http://localhost:8005/api/v1/blockchain/health
+curl -f http://localhost:8006/api/v1/blockchain/health
 
 # Check program deployment status
-curl -s http://localhost:8005/api/v1/blockchain/programs | jq '.programs[] | {name, address, status}'
+curl -s http://localhost:8006/api/v1/blockchain/programs | jq '.programs[] | {name, address, status}'
 
 # Verify program accounts
-curl -s http://localhost:8005/api/v1/blockchain/accounts/constitution
+curl -s http://localhost:8006/api/v1/blockchain/accounts/constitution
 ```
 
 ### 7. Service Dependencies Check
 
 ```bash
 # Check PGC service health
-curl -f http://localhost:8005/health
+curl -f http://localhost:8006/health
 
 # Check dependent services
 for port in 8000 8001 8004; do
@@ -135,7 +135,7 @@ anchor deploy --provider.cluster devnet
 
 # Update constitutional hash in services
 CORRECT_HASH="cdd01ef066bc6cf2"
-curl -X POST http://localhost:8005/api/v1/constitution/update-hash \
+curl -X POST http://localhost:8006/api/v1/constitution/update-hash \
   -H "Content-Type: application/json" \
   -d "{\"hash\": \"$CORRECT_HASH\"}"
 ```
@@ -163,13 +163,13 @@ cd /home/dislove/ACGS-1/services/core/policy-governance/pgc_service
 
 # Start with constitutional compliance verification
 CONSTITUTIONAL_HASH="cdd01ef066bc6cf2" \
-nohup uvicorn app.main:app --host 0.0.0.0 --port 8005 > /home/dislove/ACGS-1/logs/pgc_service.log 2>&1 &
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8006 > /home/dislove/ACGS-1/logs/pgc_service.log 2>&1 &
 
 # Wait for service startup
 sleep 10
 
 # Verify constitutional compliance is restored
-curl -f http://localhost:8005/api/v1/governance/compliance/status
+curl -f http://localhost:8006/api/v1/governance/compliance/status
 ```
 
 #### Compliance Cache Refresh
@@ -180,7 +180,7 @@ redis-cli DEL "compliance:*"
 redis-cli DEL "constitutional:*"
 
 # Trigger compliance recalculation
-curl -X POST http://localhost:8005/api/v1/governance/compliance/refresh \
+curl -X POST http://localhost:8006/api/v1/governance/compliance/refresh \
   -H "Content-Type: application/json" \
   -d '{"force_recalculation": true}'
 ```
@@ -191,25 +191,25 @@ curl -X POST http://localhost:8005/api/v1/governance/compliance/refresh \
 
 ```bash
 # Check all governance policies for constitutional compliance
-curl -s http://localhost:8005/api/v1/governance/policies/validate-all | jq '.validation_results[] | select(.compliant == false)'
+curl -s http://localhost:8006/api/v1/governance/policies/validate-all | jq '.validation_results[] | select(.compliant == false)'
 
 # Check specific policy compliance
 POLICY_ID="POL-001"
-curl -s http://localhost:8005/api/v1/governance/policies/$POLICY_ID/compliance | jq '.compliance_result'
+curl -s http://localhost:8006/api/v1/governance/policies/$POLICY_ID/compliance | jq '.compliance_result'
 ```
 
 #### Policy Remediation
 
 ```bash
 # Suspend non-compliant policies
-curl -X POST http://localhost:8005/api/v1/governance/policies/suspend-non-compliant \
+curl -X POST http://localhost:8006/api/v1/governance/policies/suspend-non-compliant \
   -H "Content-Type: application/json" \
   -d '{"reason": "constitutional_compliance_failure"}'
 
 # Re-validate core policies
 for policy in "POL-001" "POL-002" "POL-003"; do
   echo "Validating policy: $policy"
-  curl -X POST http://localhost:8005/api/v1/governance/policies/$policy/validate
+  curl -X POST http://localhost:8006/api/v1/governance/policies/$policy/validate
 done
 ```
 
@@ -233,12 +233,12 @@ solana account $GOVERNANCE_PROGRAM --url devnet
 
 ```bash
 # Verify constitution data on-chain
-curl -X POST http://localhost:8005/api/v1/blockchain/constitution/verify \
+curl -X POST http://localhost:8006/api/v1/blockchain/constitution/verify \
   -H "Content-Type: application/json" \
   -d '{"expected_hash": "cdd01ef066bc6cf2"}'
 
 # Restore constitution data if corrupted
-curl -X POST http://localhost:8005/api/v1/blockchain/constitution/restore \
+curl -X POST http://localhost:8006/api/v1/blockchain/constitution/restore \
   -H "Content-Type: application/json" \
   -d '{"source": "backup", "hash": "cdd01ef066bc6cf2"}'
 ```
@@ -249,11 +249,11 @@ curl -X POST http://localhost:8005/api/v1/blockchain/constitution/restore \
 
 ```bash
 # Check recent governance transactions
-curl -s http://localhost:8005/api/v1/blockchain/transactions/recent | jq '.transactions[] | {signature, status, constitutional_compliance}'
+curl -s http://localhost:8006/api/v1/blockchain/transactions/recent | jq '.transactions[] | {signature, status, constitutional_compliance}'
 
 # Verify transaction constitutional compliance
 TRANSACTION_SIG="<recent_transaction_signature>"
-curl -s http://localhost:8005/api/v1/blockchain/transactions/$TRANSACTION_SIG/compliance
+curl -s http://localhost:8006/api/v1/blockchain/transactions/$TRANSACTION_SIG/compliance
 ```
 
 ## Compliance Monitoring Enhancement
@@ -262,12 +262,12 @@ curl -s http://localhost:8005/api/v1/blockchain/transactions/$TRANSACTION_SIG/co
 
 ```bash
 # Enable enhanced compliance monitoring
-curl -X POST http://localhost:8005/api/v1/governance/compliance/monitoring/enable \
+curl -X POST http://localhost:8006/api/v1/governance/compliance/monitoring/enable \
   -H "Content-Type: application/json" \
   -d '{"level": "enhanced", "real_time": true}'
 
 # Set up compliance alerts
-curl -X POST http://localhost:8005/api/v1/governance/compliance/alerts/configure \
+curl -X POST http://localhost:8006/api/v1/governance/compliance/alerts/configure \
   -H "Content-Type: application/json" \
   -d '{
     "thresholds": {
@@ -288,7 +288,7 @@ python3 /home/dislove/ACGS-1/scripts/test_constitutional_compliance.py --compreh
 python3 /home/dislove/ACGS-1/scripts/test_governance_workflows.py --compliance-focus
 
 # Validate constitutional principles
-curl -X POST http://localhost:8005/api/v1/governance/compliance/test-principles \
+curl -X POST http://localhost:8006/api/v1/governance/compliance/test-principles \
   -H "Content-Type: application/json" \
   -d '{"principles": ["democratic_participation", "transparency", "accountability"]}'
 ```
@@ -319,7 +319,7 @@ curl -X POST http://localhost:8005/api/v1/governance/compliance/test-principles 
 
 ```bash
 # Generate comprehensive compliance report
-curl -X POST http://localhost:8005/api/v1/governance/compliance/audit \
+curl -X POST http://localhost:8006/api/v1/governance/compliance/audit \
   -H "Content-Type: application/json" \
   -d '{"period": "incident", "detailed": true}' > compliance_incident_audit.json
 
@@ -368,7 +368,7 @@ python3 /home/dislove/ACGS-1/scripts/analyze_compliance_patterns.py --input comp
 # Verify each principle
 for principle in democratic_participation transparency accountability rule_of_law separation_of_powers; do
   echo "Checking principle: $principle"
-  curl -s http://localhost:8005/api/v1/governance/principles/$principle/verify
+  curl -s http://localhost:8006/api/v1/governance/principles/$principle/verify
 done
 ```
 
@@ -382,9 +382,9 @@ done
 ## Related Runbooks
 
 - [Service Down Runbook](service_down_runbook.md)
-- [Blockchain Issues Runbook](blockchain_issues_runbook.md)
-- [Governance Workflow Runbook](governance_workflow_runbook.md)
-- [Emergency Procedures Runbook](emergency_procedures_runbook.md)
+- [Blockchain Issues Runbook](database_issues_runbook.md)
+- [Governance Workflow Runbook](../rules/governance_workflow_rules.yml)
+- [Emergency Procedures Runbook](../../../docs/emergency_rollback_procedures.md)
 
 
 ## Implementation Status

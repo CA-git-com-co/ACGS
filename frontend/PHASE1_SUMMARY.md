@@ -286,7 +286,7 @@ governance: {
 ## 📚 Documentation
 
 ### Available Documentation
-- **[README.md](README.md)** - Complete setup and usage guide
+- **[README.md](../README.md)** - Complete setup and usage guide
 - **[PHASE1_SUMMARY.md](PHASE1_SUMMARY.md)** - This summary document
 - **Component Documentation** - Individual component documentation
 - **Type Definitions** - Comprehensive TypeScript interfaces

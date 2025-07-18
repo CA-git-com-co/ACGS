@@ -37,7 +37,7 @@ This comprehensive documentation audit examined all internal references, links, 
 **Issues Found**:
 
 - Some docs reference port 8010 for Formal Verification (should be 8003)
-- Some docs reference port 8011 for Audit Integrity (should be 8002)
+- Some docs reference port 8012 for Audit Integrity (should be 8002)
 - Inconsistent service port mappings across deployment guides
 
 **Standard Port Assignments**:

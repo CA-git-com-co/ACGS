@@ -514,7 +514,7 @@ These targets are validated continuously and must be maintained across all opera
 
 **Additional Resources**:
 
-- [Production Deployment Guide](PRODUCTION_DEPLOYMENT_GUIDE.md)
+- [Production Deployment Guide](PRODUCTION_DEPLOYMENT_GUIDE.md.backup)
 - [Operational Runbooks](OPERATIONAL_RUNBOOKS.md)
 - [Security Configuration Guide](SECURITY_GUIDE.md)
 - [Performance Validation Guide](PERFORMANCE_VALIDATION_GUIDE.md)

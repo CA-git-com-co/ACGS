@@ -87,7 +87,7 @@ LOG_LEVEL=INFO
 
 # Constitutional Governance
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-AC_SERVICE_URL=http://localhost:8001
+AC_SERVICE_URL=http://localhost:8002
 ```
 
 ### Resource Limits
@@ -361,7 +361,7 @@ redis-cli keys "session:*" | wc -l
 
 ## Support
 
-- **Documentation**: [Auth Service API](../../../docs/api/auth_service_api.md)
+- **Documentation**: [Auth Service API](../../../../pids/auth_service.pid)
 - **Health Check**: http://localhost:8000/health
 - **Interactive API Docs**: http://localhost:8000/docs
 - **Logs**: `/logs/auth_service.log`

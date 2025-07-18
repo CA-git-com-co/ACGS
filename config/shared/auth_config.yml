@@ -1,0 +1,217 @@
+# ACGS-2 Shared Authentication Configuration
+# This file consolidates authentication settings used across all services
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Global Authentication Settings
+authentication:
+  enabled: true
+  jwt_validation: true
+  service_auth: true
+  token_expiration: 3600  # 1 hour in seconds
+  refresh_token_expiration: 604800  # 7 days in seconds
+  
+  # JWT Configuration
+  jwt:
+    algorithm: "HS256"
+    issuer: "acgs-2"
+    audience: "acgs-services"
+    leeway: 10  # seconds
+    
+  # Session Configuration
+  session:
+    timeout: 1800  # 30 minutes
+    max_concurrent_sessions: 5
+    require_reauth_for_sensitive: true
+
+# Authorization Settings
+authorization:
+  permission_checking: true
+  rbac_enabled: true
+  role_validation: true
+  
+  # Default roles
+  default_roles:
+    - authenticated_user
+    - service_user
+    
+  # Permission hierarchy
+  permissions:
+    read: ["view", "list"]
+    write: ["create", "update", "delete"]
+    admin: ["manage", "configure", "audit"]
+
+# Security Settings
+security:
+  audit_logging: true
+  rate_limiting: true
+  threat_detection: true
+  
+  # Rate limiting
+  rate_limits:
+    login_attempts: 5  # per 15 minutes
+    api_calls: 1000   # per minute
+    password_reset: 3  # per hour
+    
+  # Security headers
+  headers:
+    x_frame_options: "DENY"
+    x_content_type_options: "nosniff"
+    x_xss_protection: "1; mode=block"
+    strict_transport_security: "max-age=31536000; includeSubDomains"
+    
+  # Password policy
+  password_policy:
+    min_length: 8
+    require_uppercase: true
+    require_lowercase: true
+    require_numbers: true
+    require_special_chars: true
+    max_age_days: 90
+    history_check: 5
+
+# Service-specific configurations
+services:
+  # Authentication Service
+  auth_service:
+    public_endpoints:
+      - /health
+      - /api/v1/auth/login
+      - /api/v1/auth/register
+      - /api/v1/auth/refresh
+      - /api/v1/auth/forgot-password
+      - /api/v1/auth/reset-password
+    
+    special_permissions:
+      - user_management
+      - token_management
+      - audit_access
+      
+  # Constitutional AI Service
+  constitutional_ai:
+    public_endpoints:
+      - /health
+      - /api/v1/constitution/public
+      - /api/v1/constitution/version
+      
+    required_permissions:
+      - constitutional_read
+      - constitutional_write
+      - constitutional_admin
+      
+  # Governance Synthesis Service
+  governance_synthesis:
+    public_endpoints:
+      - /health
+      - /api/v1/governance/public
+      
+    required_permissions:
+      - governance_read
+      - governance_write
+      - governance_admin
+      
+  # Policy Governance Service
+  policy_governance:
+    public_endpoints:
+      - /health
+      - /api/v1/policies/public
+      
+    required_permissions:
+      - policy_read
+      - policy_write
+      - policy_admin
+      
+  # Formal Verification Service
+  formal_verification:
+    public_endpoints:
+      - /health
+      
+    required_permissions:
+      - verification_read
+      - verification_execute
+      - verification_admin
+      
+  # Evolutionary Computation Service
+  evolutionary_computation:
+    public_endpoints:
+      - /health
+      
+    required_permissions:
+      - computation_read
+      - computation_execute
+      - computation_admin
+      
+  # Integrity Service
+  integrity_service:
+    public_endpoints:
+      - /health
+      
+    required_permissions:
+      - integrity_read
+      - integrity_write
+      - integrity_admin
+
+# Environment overrides
+environments:
+  development:
+    authentication:
+      token_expiration: 7200  # 2 hours for development
+    security:
+      rate_limits:
+        login_attempts: 10
+        api_calls: 10000
+      password_policy:
+        min_length: 4
+        require_uppercase: false
+        require_lowercase: false
+        require_numbers: false
+        require_special_chars: false
+        
+  staging:
+    authentication:
+      token_expiration: 3600
+    security:
+      rate_limits:
+        login_attempts: 7
+        api_calls: 5000
+        
+  production:
+    authentication:
+      token_expiration: 1800  # 30 minutes for production
+    security:
+      rate_limits:
+        login_attempts: 3
+        api_calls: 500
+      password_policy:
+        min_length: 12
+        max_age_days: 60
+        history_check: 10
+
+# Constitutional compliance
+constitutional_hash: "cdd01ef066bc6cf2"
+compliance:
+  validation_required: true
+  audit_trail: true
+  performance_targets:
+    p99_latency: "5ms"
+    throughput: "100 RPS"
+    cache_hit_rate: "85%"
+    
+# Monitoring and observability
+monitoring:
+  auth_events: true
+  performance_metrics: true
+  security_alerts: true
+  
+  metrics:
+    - login_attempts
+    - token_validations
+    - permission_checks
+    - rate_limit_violations
+    - security_incidents
+    
+  alerts:
+    - multiple_failed_logins
+    - suspicious_token_usage
+    - permission_escalation_attempts
+    - rate_limit_breaches
+    - configuration_changes

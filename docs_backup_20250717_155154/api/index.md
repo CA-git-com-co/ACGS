@@ -1425,11 +1425,11 @@ To perform health checks on all services:
 
 ```bash
 curl http://localhost:8016/health  # Auth
-curl http://localhost:8001/health  # Constitutional AI
+curl http://localhost:8002/health  # Constitutional AI
 curl http://localhost:8002/health  # Integrity
-curl http://localhost:8003/health  # Formal Verification
+curl http://localhost:8004/health  # Formal Verification
 curl http://localhost:8004/health  # Governance Synthesis
-curl http://localhost:8005/health  # Policy Governance
+curl http://localhost:8006/health  # Policy Governance
 curl http://localhost:8006/health  # Evolutionary Computation
 ```
 
@@ -1816,14 +1816,14 @@ These targets are validated continuously and must be maintained across all opera
 
 ## 7. Additional Resources
 
-- [Configuration Guide](../configuration/README.md)
+- [Configuration Guide](../README.md)
 - [Deployment Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
 - [Service Status](../operations/SERVICE_STATUS.md)
-- [Architecture Documentation](../architecture/README.md)
+- [Architecture Documentation](../README.md)
 
 ## 8. Related Information
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md)

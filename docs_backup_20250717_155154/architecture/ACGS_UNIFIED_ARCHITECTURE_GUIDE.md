@@ -516,7 +516,7 @@ async def call_constitutional_ai_service(data: dict, tenant_id: str) -> dict:
     
     async with httpx.AsyncClient() as client:
         response = await client.post(
-            "http://constitutional-ai:8001/api/v1/validate",
+            "http://constitutional-ai:8002/api/v1/validate",
             json=data,
             headers=headers
         )
@@ -612,7 +612,7 @@ services:
   constitutional-ai:
     build: ./services/core/constitutional-ai
     ports:
-      - "8001:8001"
+      - "8001:8002"
     environment:
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
       - DATABASE_URL=postgresql+asyncpg://acgs:acgs@postgres:5432/acgs
@@ -931,8 +931,8 @@ spec:
 
 For more detailed information on specific aspects of the ACGS ecosystem, please refer to the following documents:
 
-- **Developer Onboarding**: For a step-by-step guide on how to get started with ACGS development, see the [ACGS Developer Onboarding Guide](../development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md).
+- **Developer Onboarding**: For a step-by-step guide on how to get started with ACGS development, see the [ACGS Developer Onboarding Guide](../development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md.backup).
 - **Documentation Standards**: For information on the standards and best practices for creating and maintaining ACGS documentation, see the [ACGS Documentation Standards](../standards/ACGS_DOCUMENTATION_STANDARDS.md).
-- **Service Overview**: For a high-level overview of all ACGS services, see the [ACGS Service Overview](../../ACGS_SERVICE_OVERVIEW.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- **Service Overview**: For a high-level overview of all ACGS services, see the [ACGS Service Overview](../ACGS_SERVICE_OVERVIEW.md.backup).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md.backup) file.
 

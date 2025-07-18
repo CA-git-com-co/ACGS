@@ -13,47 +13,47 @@ This index provides comprehensive navigation to all documentation in the ACGS-2 
 ## Primary Navigation
 
 ### 🏠 Root Documentation
-- **[Main Project Overview](claude.md)** - Central project documentation and navigation hub
+- **[Main Project Overview](../.claude/commands/load.md)** - Central project documentation and navigation hub
 
 ### 🔧 Services Documentation
-- **[Services Overview](services/claude.md)** - Complete services directory documentation
-- **[Core Services](services/core/claude.md)** - Core ACGS-2 services documentation
-  - **[Constitutional AI](services/core/constitutional-ai/claude.md)** - Constitutional AI service implementation
-  - **[Formal Verification](services/core/formal-verification/claude.md)** - Formal verification service
-- **[Platform Services](services/platform_services/claude.md)** - Platform services overview
-- **[Blockchain Services](services/blockchain/claude.md)** - Blockchain infrastructure and expert systems
+- **[Services Overview](../.claude/commands/load.md)** - Complete services directory documentation
+- **[Core Services](../.claude/commands/load.md)** - Core ACGS-2 services documentation
+  - **[Constitutional AI](../.claude/commands/load.md)** - Constitutional AI service implementation
+  - **[Formal Verification](../.claude/commands/load.md)** - Formal verification service
+- **[Platform Services](../.claude/commands/load.md)** - Platform services overview
+- **[Blockchain Services](../.claude/commands/load.md)** - Blockchain infrastructure and expert systems
 
 ### 📚 Documentation System
-- **[Documentation Overview](docs/claude.md)** - Documentation system and standards
-- **[API Documentation](docs/api/claude.md)** - Complete API documentation directory
-- **[Architecture Documentation](docs/architecture/claude.md)** - System architecture and design
-- **[Deployment Documentation](docs/deployment/claude.md)** - Production deployment procedures
-- **[Research Documentation](docs/research/claude.md)** - Research papers and academic documentation
-- **[Security Documentation](docs/security/claude.md)** - Security implementation and compliance
-- **[Training Documentation](docs/training/claude.md)** - Training programs and certification
+- **[Documentation Overview](../.claude/commands/load.md)** - Documentation system and standards
+- **[API Documentation](../.claude/commands/load.md)** - Complete API documentation directory
+- **[Architecture Documentation](../.claude/commands/load.md)** - System architecture and design
+- **[Deployment Documentation](../.claude/commands/load.md)** - Production deployment procedures
+- **[Research Documentation](../.claude/commands/load.md)** - Research papers and academic documentation
+- **[Security Documentation](../.claude/commands/load.md)** - Security implementation and compliance
+- **[Training Documentation](../.claude/commands/load.md)** - Training programs and certification
 
 ### 🏗️ Infrastructure Documentation
-- **[Infrastructure Overview](infrastructure/claude.md)** - Infrastructure components and deployment
-- **[Kubernetes Infrastructure](infrastructure/kubernetes/claude.md)** - Container orchestration and deployment
+- **[Infrastructure Overview](../.claude/commands/load.md)** - Infrastructure components and deployment
+- **[Kubernetes Infrastructure](../.claude/commands/load.md)** - Container orchestration and deployment
 
 ### ⚙️ Configuration and Database
-- **[Configuration Management](config/claude.md)** - Configuration files and environment settings
-- **[Database Systems](database/claude.md)** - Database architecture and management
+- **[Configuration Management](../.claude/commands/load.md)** - Configuration files and environment settings
+- **[Database Systems](../.claude/commands/load.md)** - Database architecture and management
 
 ### 🔍 Monitoring and Operations
-- **[Monitoring Systems](monitoring/claude.md)** - Monitoring, alerting, and observability
+- **[Monitoring Systems](../.claude/commands/load.md)** - Monitoring, alerting, and observability
 
 ### 🛠️ Development Tools
-- **[Scripts and Automation](scripts/claude.md)** - Automation scripts and operational tools
-- **[Development Tools](tools/claude.md)** - Development utilities and frameworks
+- **[Scripts and Automation](../.claude/commands/load.md)** - Automation scripts and operational tools
+- **[Development Tools](../.claude/commands/load.md)** - Development utilities and frameworks
 
 ### 🧪 Testing Framework
-- **[Testing Overview](tests/claude.md)** - Testing strategies and frameworks
-- **[Integration Testing](tests/integration/claude.md)** - End-to-end and integration testing
+- **[Testing Overview](../.claude/commands/load.md)** - Testing strategies and frameworks
+- **[Integration Testing](../.claude/commands/load.md)** - End-to-end and integration testing
 
 ### 📊 Reports and Validation
-- **[Reports Directory](reports/claude.md)** - System reports and analytics
-- **[Validation Results](validation_results/claude.md)** - Validation and compliance results
+- **[Reports Directory](../.claude/commands/load.md)** - System reports and analytics
+- **[Validation Results](../.claude/commands/load.md)** - Validation and compliance results
 
 ## Documentation Standards
 
@@ -103,22 +103,22 @@ All claude.md files follow the standardized 8-section structure:
 ## Quick Access Links
 
 ### Most Frequently Accessed
-- **[Services Overview](services/claude.md)** - Service architecture and implementation
-- **[API Documentation](docs/api/claude.md)** - API specifications and usage
-- **[Deployment Guide](docs/deployment/claude.md)** - Production deployment procedures
-- **[Architecture Overview](docs/architecture/claude.md)** - System design and architecture
+- **[Services Overview](../.claude/commands/load.md)** - Service architecture and implementation
+- **[API Documentation](../.claude/commands/load.md)** - API specifications and usage
+- **[Deployment Guide](../.claude/commands/load.md)** - Production deployment procedures
+- **[Architecture Overview](../.claude/commands/load.md)** - System design and architecture
 
 ### Development Resources
-- **[Testing Framework](tests/claude.md)** - Testing strategies and procedures
-- **[Scripts Directory](scripts/claude.md)** - Automation and operational scripts
-- **[Development Tools](tools/claude.md)** - Development utilities and frameworks
-- **[Configuration Management](config/claude.md)** - Configuration and environment setup
+- **[Testing Framework](../.claude/commands/load.md)** - Testing strategies and procedures
+- **[Scripts Directory](../.claude/commands/load.md)** - Automation and operational scripts
+- **[Development Tools](../.claude/commands/load.md)** - Development utilities and frameworks
+- **[Configuration Management](../.claude/commands/load.md)** - Configuration and environment setup
 
 ### Operations and Monitoring
-- **[Infrastructure](infrastructure/claude.md)** - Infrastructure deployment and management
-- **[Kubernetes](infrastructure/kubernetes/claude.md)** - Container orchestration
-- **[Monitoring](monitoring/claude.md)** - System monitoring and observability
-- **[Database](database/claude.md)** - Database architecture and operations
+- **[Infrastructure](../.claude/commands/load.md)** - Infrastructure deployment and management
+- **[Kubernetes](../.claude/commands/load.md)** - Container orchestration
+- **[Monitoring](../.claude/commands/load.md)** - System monitoring and observability
+- **[Database](../.claude/commands/load.md)** - Database architecture and operations
 
 ## Documentation Improvement Roadmap
 
@@ -156,7 +156,7 @@ All claude.md files follow the standardized 8-section structure:
 
 ---
 
-**Navigation**: [Root](claude.md) → **Documentation Index**
+**Navigation**: [Root](../.claude/commands/load.md) → **Documentation Index**
 
 **Constitutional Compliance**: This documentation index maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive documentation quality monitoring and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
 

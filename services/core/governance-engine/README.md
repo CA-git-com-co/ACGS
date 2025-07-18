@@ -8,7 +8,7 @@
 
 The Unified Governance Engine combines the functionality of:
 - **Governance Synthesis Service** (formerly gs_service, port 8004)
-- **Policy Governance & Compliance Service** (formerly pgc_service, port 8005)
+- **Policy Governance & Compliance Service** (formerly pgc_service, port 8006)
 
 This consolidation reduces service sprawl while maintaining all core functionality.
 
@@ -59,7 +59,7 @@ governance-engine/
 
 This service replaces:
 - `services/core/governance-synthesis/` (port 8004)
-- `services/core/policy-governance/` (port 8005)
+- `services/core/policy-governance/` (port 8006)
 
 All existing APIs are preserved with backward compatibility.
 

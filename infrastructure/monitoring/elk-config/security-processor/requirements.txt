@@ -42,9 +42,7 @@ marshmallow==3.20.1
 
 # Testing (for development)
 pytest>=8.3.4
-pytest>=8.3.4
 
-python-jose>=3.5.1
 
 python-multipart>=0.0.20
 

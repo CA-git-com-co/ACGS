@@ -175,33 +175,33 @@ python download_arxiv_papers.py
 The research directly supports and is integrated with the following ACGS core services:
 
 - **Constitutional AI Service** (Port 8001): Focuses on constitutional frameworks and governance, ensuring all AI operations adhere to defined principles.
-  - [Service Directory](../../services/core/constitutional-ai/ac_service/)
+  - [Service Directory](../../services/core/constitutional-ai/CLAUDE.md)
 - **Integrity Service** (Port 8002): Provides database audit trails with cryptographic hash chaining, crucial for verifying the integrity of research outcomes and compliance.
-  - [Service Directory](../../services/platform_services/integrity/integrity_service/)
+  - [Service Directory](../../services/platform_services/integrity/CLAUDE.md)
 - **API Gateway Service** (Port 8010): Handles production routing, rate limiting, and security middleware for all service interactions, including research-related API calls.
-  - [Service Directory](../../services/platform_services/api_gateway/gateway_service/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Code Analysis Service** (Port 8007): Performs static analysis with tenant routing, which can be used to analyze research code for quality and compliance.
-  - [Service Directory](../../services/core/code-analysis/code_analysis_service/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Context Service** (Port 8012): Integrates governance workflows and provides contextual information for research tasks.
-  - [Service Directory](../../services/core/context/context_service/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Consensus Engine** (Port 8003): Enables agreement between different AI agents, vital for resolving conflicts in multi-agent research simulations.
-  - [Service Directory](../../services/core/consensus_engine/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Governance Synthesis** (Port 8004): Synthesizes governance rules from various sources, directly applying research on policy generation and optimization.
-  - [Service Directory](../../services/core/governance-synthesis/gs_service/)
+  - [Service Directory](../../services/core/governance-synthesis/CLAUDE.md)
 - **Multi-Agent Coordinator** (Port 8008): Orchestrates the actions of multiple AI agents, facilitating complex research experiments involving agent collaboration.
-  - [Service Directory](../../services/core/multi_agent_coordinator/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Worker Agents** (Port 8009): Perform various tasks as directed by the coordinator, executing research-specific computations and data processing.
-  - [Service Directory](../../services/core/worker_agents/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Formal Verification Service** (Port 8011): Integrates Z3 SMT solver for formal verification, crucial for mathematically proving the correctness and safety of research algorithms.
-  - [Service Directory](../../services/core/formal-verification/fv_service/)
+  - [Service Directory](../../services/core/formal-verification/CLAUDE.md)
 - **Policy Governance Service** (Port 8014): Manages multi-framework compliance, applying research on policy enforcement and evaluation.
-  - [Service Directory](../../services/core/policy-governance/pgc_service/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Evolutionary Computation Service** (Port 8013): Tracks constitutional evolution, directly implementing research on adaptive governance and AI system evolution.
-  - [Service Directory](../../services/core/evolutionary-computation/ec_service/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Authentication Service** (Port 8016): Provides JWT multi-tenant authentication, securing access to research data and services.
-  - [Service Directory](../../services/platform_services/authentication/auth_service/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 - **Blackboard Service** (Shared Service): Redis-based shared knowledge, used for inter-agent communication and data sharing in research simulations.
-  - [Service Directory](../../services/shared/blackboard/)
+  - [Service Directory](../../services/core/CLAUDE.md)
 
 ### 🎯 **Performance Targets**
 
@@ -273,9 +273,9 @@ All research activities maintain constitutional compliance:
 ## Resources
 
 ### 📚 **Documentation**
-- [LaTeX Setup Guide](README_LATEX_SETUP.md)
-- [Paper Download Summary](DOWNLOAD_SUMMARY.md)
-- [Paper Index](papers/README.md)
+- [LaTeX Setup Guide](README_LATEX_SETUP.md.backup)
+- [Paper Download Summary](DOWNLOAD_SUMMARY.md.backup)
+- [Paper Index](../../README.md)
 
 ### 🔗 **External Resources**
 - [arXiv.org](https://arxiv.org/) - Research paper repository
@@ -291,32 +291,32 @@ All research activities maintain constitutional compliance:
 
 This section provides direct links to relevant code and configuration files within the ACGS repository that are pertinent to the research topics discussed.
 
-- **Constitutional AI Service Implementation**: [services/core/constitutional-ai/ac_service/app/main.py](../../services/core/constitutional-ai/ac_service/app/main.py)
-- **Integrity Service Implementation**: [services/platform_services/integrity/integrity_service/app/main.py](../../services/platform_services/integrity/integrity_service/app/main.py)
+- **Constitutional AI Service Implementation**: [services/core/constitutional-ai/ac_service/app/main.py](../../tools/federated-evaluation/coordinator/main.py)
+- **Integrity Service Implementation**: [services/platform_services/integrity/integrity_service/app/main.py](../../tools/federated-evaluation/coordinator/main.py)
 - **API Gateway Service Configuration**: [infrastructure/docker/docker-compose.acgs.yml](../../infrastructure/docker/docker-compose.acgs.yml) (See `api-gateway-service` section)
-- **Code Analysis Service Settings**: [services/core/code-analysis/code_analysis_service/config/settings.py](../../services/core/code-analysis/code_analysis_service/config/settings.py)
-- **Context Service Models**: [services/core/context/context_service/app/models/__init__.py](../../services/core/context/context_service/app/models/__init__.py)
+- **Code Analysis Service Settings**: [services/core/code-analysis/code_analysis_service/config/settings.py](../../services/shared/configuration/settings.py)
+- **Context Service Models**: [services/core/context/context_service/app/models/__init__.py](arxiv_submission_package/tests/unit/__init__.py)
 - **Consensus Engine Mechanisms**: [services/core/consensus_engine/consensus_mechanisms.py](../../services/core/consensus_engine/consensus_mechanisms.py)
 - **Governance Synthesis OPA Engine**: [services/core/governance-synthesis/advanced_opa_engine.py](../../services/core/governance-synthesis/advanced_opa_engine.py)
 - **Multi-Agent Coordinator Agent**: [services/core/multi_agent_coordinator/coordinator_agent.py](../../services/core/multi_agent_coordinator/coordinator_agent.py)
-- **Worker Agents Ethics Agent**: [services/core/worker_agents/ethics/ethics_agent.py](../../services/core/worker_agents/ethics/ethics_agent.py)
-- **Formal Verification Service Main**: [services/core/formal-verification/fv_service/main.py](../../services/core/formal-verification/fv_service/main.py)
-- **Policy Governance Service Performance Optimizer**: [services/core/policy-governance/pgc_service/app/performance_optimizer.py](../../services/core/policy-governance/pgc_service/app/performance_optimizer.py)
+- **Worker Agents Ethics Agent**: [services/core/worker_agents/ethics/ethics_agent.py](../../services/core/worker_agents/ethics_agent.py)
+- **Formal Verification Service Main**: [services/core/formal-verification/fv_service/main.py](../../tools/federated-evaluation/coordinator/main.py)
+- **Policy Governance Service Performance Optimizer**: [services/core/policy-governance/pgc_service/app/performance_optimizer.py](../../services/shared/performance_optimizer.py)
 - **Evolutionary Computation Service Evolution Engine**: [services/core/evolutionary-computation/ec_service/evolution_engine.py](../../services/core/evolutionary-computation/ec_service/evolution_engine.py)
-- **Authentication Service Main**: [services/platform_services/authentication/auth_service/app/main.py](../../services/platform_services/authentication/auth_service/app/main.py)
+- **Authentication Service Main**: [services/platform_services/authentication/auth_service/app/main.py](../../tools/federated-evaluation/coordinator/main.py)
 - **Blackboard Service Core**: [services/shared/blackboard/core_service.py](../../services/shared/blackboard/core_service.py)
 
 ## References
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
-- [Constitutional Compliance Validation Framework](../../docs/constitutional_compliance_validation_framework.md)
-- [ACGS Code Analysis Engine Architecture](../../docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md)
-- [ACGS Code Analysis Engine Deployment Guide](../../docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
-- [ACGS Code Analysis Engine Integration Guide](../../docs/integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
-- [ACGS Configuration Guide](../../docs/configuration/README.md)
-- [ACGS-PGP Setup Guide](../../docs/deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [ACGS Service Status Dashboard](../../docs/operations/SERVICE_STATUS.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md.backup)
+- [Constitutional Compliance Validation Framework](../compliance/constitutional_compliance_validation_framework.md.backup)
+- [ACGS Code Analysis Engine Architecture](../architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md.backup)
+- [ACGS Code Analysis Engine Deployment Guide](../deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md.backup)
+- [ACGS Code Analysis Engine Integration Guide](../integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md.backup)
+- [ACGS Configuration Guide](../../README.md)
+- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md.backup)
+- [ACGS Service Status Dashboard](../operations/SERVICE_STATUS.md.backup)
 
 
 ## Implementation Status

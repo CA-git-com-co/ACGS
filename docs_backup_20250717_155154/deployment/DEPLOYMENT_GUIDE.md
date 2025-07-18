@@ -176,7 +176,7 @@ kubectl get pods -l app=evolutionary-computation-service
 
 # Check service health endpoints (replace with actual service IPs/ports)
 curl http://<auth-service-ip>:8000/health
-curl http://<constitutional-ai-service-ip>:8001/health
+curl http://<constitutional-ai-service-ip>:8002/health
 curl http://<integrity-service-ip>:8002/health
 # ... and so on for all services
 ```
@@ -205,8 +205,8 @@ Refer to `PRODUCTION_READINESS_CHECKLIST.md` for detailed rollback criteria and 
 
 ## 6. Troubleshooting Guidance
 
-- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md.backup).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md.backup) file.
 
 - **Pod stuck in Pending**: Check `kubectl describe pod <pod-name>` for events related to scheduling, resource limits, or persistent volume claims.
 - **Pod in CrashLoopBackOff**: Check `kubectl logs <pod-name>` for application errors.

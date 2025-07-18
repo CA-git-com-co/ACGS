@@ -138,7 +138,7 @@ metadata:
 
 ```bash
 # Constitutional AI Service
-kubectl port-forward svc/constitutional-ai-service 8001:8001 -n acgs-staging
+kubectl port-forward svc/constitutional-ai-service 8001:8002 -n acgs-staging
 
 # Grafana Dashboard
 kubectl port-forward svc/grafana 3000:3000 -n acgs-staging
@@ -173,7 +173,7 @@ kubectl logs -l app=constitutional-ai-service -n acgs-staging
 ./infrastructure/kubernetes/operations/health-monitor.sh check
 
 # Test constitutional compliance
-curl -X POST http://localhost:8001/validate \
+curl -X POST http://localhost:8002/validate \
   -H "Content-Type: application/json" \
   -d '{"query": "staging test", "context": "validation"}'
 ```

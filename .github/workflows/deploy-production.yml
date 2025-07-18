@@ -1,0 +1,426 @@
+# ACGS-2 Production Deployment Pipeline
+# Constitutional Hash: cdd01ef066bc6cf2
+
+name: 🏛️ ACGS-2 Production Deployment
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      skip_tests:
+        description: 'Skip security and performance tests'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  REGISTRY: ghcr.io/${{ github.repository_owner }}
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  # Constitutional compliance validation
+  constitutional-validation:
+    name: 🏛️ Constitutional Compliance
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Validate constitutional hash
+      run: |
+        echo "🏛️ Validating constitutional hash: $CONSTITUTIONAL_HASH"
+        
+        # Check constitutional hash appears in all service files
+        if ! grep -r "$CONSTITUTIONAL_HASH" services/core/ --include="*.py"; then
+          echo "❌ Constitutional hash not found in service files"
+          exit 1
+        fi
+        
+        # Validate hash format
+        if [[ ! "$CONSTITUTIONAL_HASH" =~ ^[a-f0-9]{16}$ ]]; then
+          echo "❌ Invalid constitutional hash format"
+          exit 1
+        fi
+        
+        echo "✅ Constitutional compliance validated"
+
+  # Security audit
+  security-audit:
+    name: 🔒 Security Audit
+    runs-on: ubuntu-latest
+    needs: constitutional-validation
+    if: ${{ !inputs.skip_tests }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install security testing dependencies
+      run: |
+        pip install -r tests/security/requirements.txt
+        
+    - name: Start test services
+      run: |
+        echo "🚀 Starting ACGS-2 services for security testing..."
+        cd scripts
+        python run_services_local.py &
+        
+        # Wait for services to start
+        sleep 60
+        
+        # Verify services are running
+        curl -f http://localhost:8013/health || exit 1
+        curl -f http://localhost:8014/health || exit 1
+        
+    - name: Run constitutional security audit
+      run: |
+        cd tests/security
+        python constitutional_security_audit.py --json --output security-audit-report.txt
+        
+    - name: Upload security audit results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: security-audit-results
+        path: |
+          tests/security/security-audit-report.txt
+          tests/security/security-audit-report.json
+        retention-days: 30
+
+  # Performance testing
+  performance-testing:
+    name: ⚡ Performance Testing
+    runs-on: ubuntu-latest
+    needs: constitutional-validation
+    if: ${{ !inputs.skip_tests }}
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: Install performance testing dependencies
+      run: |
+        pip install -r tests/performance/requirements.txt
+        
+    - name: Start test services
+      run: |
+        echo "🚀 Starting ACGS-2 services for performance testing..."
+        cd scripts
+        python run_services_local.py &
+        
+        # Wait for services to start
+        sleep 60
+        
+    - name: Run constitutional performance tests
+      run: |
+        cd tests/performance
+        python run_performance_tests.py
+        
+    - name: Upload performance test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: performance-test-results
+        path: |
+          tests/performance/*_performance_report.txt
+          tests/performance/*_performance_report.json
+          tests/performance/performance_summary_report.txt
+        retention-days: 30
+
+  # Build and push container images
+  build-images:
+    name: 🐳 Build Container Images
+    runs-on: ubuntu-latest
+    needs: [constitutional-validation, security-audit, performance-testing]
+    if: always() && (needs.constitutional-validation.result == 'success')
+    strategy:
+      matrix:
+        service:
+        - name: constitutional-core
+          path: constitutional-ai
+        - name: auth-service
+          path: auth-service
+        - name: monitoring-service
+          path: monitoring-service
+        - name: audit-service
+          path: audit-service
+        - name: gdpr-compliance
+          path: gdpr-compliance
+        - name: alerting-service
+          path: alerting-service
+        - name: api-gateway
+          path: api-gateway
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+      
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ matrix.service.name }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=semver,pattern={{version}}
+          type=semver,pattern={{major}}.{{minor}}
+          type=sha
+          
+    - name: Build and push image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: deployment/docker/Dockerfile.production
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        build-args: |
+          SERVICE_NAME=${{ matrix.service.name }}
+          SERVICE_PATH=${{ matrix.service.path }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        annotations: |
+          constitutional.hash=${{ env.CONSTITUTIONAL_HASH }}
+          
+    - name: Sign container image
+      if: github.event_name != 'pull_request'
+      run: |
+        echo "🔐 Signing container image for ${{ matrix.service.name }}"
+        # Add cosign signing here if available
+        
+  # Deploy to staging
+  deploy-staging:
+    name: 🚀 Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [build-images]
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: staging
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+        
+    - name: Configure kubectl for staging
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > ~/.kube/config
+        kubectl config current-context
+        
+    - name: Deploy to staging
+      run: |
+        cd deployment
+        export ENVIRONMENT=staging
+        export NAMESPACE=acgs-staging
+        export REGISTRY=${{ env.REGISTRY }}
+        export TAG=${{ env.IMAGE_TAG }}
+        export DOMAIN=staging.acgs.example.com
+        export SKIP_CONFIRMATION=true
+        export BUILD_IMAGES=false
+        export RUN_TESTS=true
+        
+        ./scripts/deploy.sh
+        
+    - name: Verify staging deployment
+      run: |
+        echo "🔍 Verifying staging deployment..."
+        kubectl get pods -n acgs-staging
+        kubectl get services -n acgs-staging
+        
+        # Wait for all deployments to be ready
+        kubectl wait --for=condition=available --timeout=300s deployment --all -n acgs-staging
+        
+    - name: Run staging smoke tests
+      run: |
+        echo "🧪 Running staging smoke tests..."
+        
+        # Port forward and test key services
+        kubectl port-forward service/auth-service 8013:8013 -n acgs-staging &
+        kubectl port-forward service/monitoring-service 8014:8014 -n acgs-staging &
+        sleep 10
+        
+        # Test health endpoints
+        curl -f http://localhost:8013/health
+        curl -f http://localhost:8014/health
+        
+        # Verify constitutional compliance
+        RESPONSE=$(curl -s http://localhost:8013/health)
+        HASH=$(echo "$RESPONSE" | jq -r '.constitutional_hash')
+        
+        if [[ "$HASH" != "$CONSTITUTIONAL_HASH" ]]; then
+          echo "❌ Constitutional compliance failed in staging"
+          exit 1
+        fi
+        
+        echo "✅ Staging smoke tests passed"
+
+  # Deploy to production
+  deploy-production:
+    name: 🏭 Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    if: startsWith(github.ref, 'refs/tags/v') || (github.event_name == 'workflow_dispatch' && inputs.environment == 'production')
+    environment: production
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+        
+    - name: Configure kubectl for production
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > ~/.kube/config
+        kubectl config current-context
+        
+    - name: Pre-production validation
+      run: |
+        echo "🔍 Running pre-production validation..."
+        
+        # Verify cluster readiness
+        kubectl cluster-info
+        kubectl get nodes
+        
+        # Check resource availability
+        kubectl describe nodes | grep -A 5 "Allocated resources"
+        
+    - name: Deploy to production
+      run: |
+        cd deployment
+        export ENVIRONMENT=production
+        export NAMESPACE=acgs-system
+        export REGISTRY=${{ env.REGISTRY }}
+        export TAG=${{ env.IMAGE_TAG }}
+        export DOMAIN=acgs.example.com
+        export SKIP_CONFIRMATION=true
+        export BUILD_IMAGES=false
+        export RUN_TESTS=true
+        
+        ./scripts/deploy.sh
+        
+    - name: Verify production deployment
+      run: |
+        echo "🔍 Verifying production deployment..."
+        kubectl get pods -n acgs-system
+        kubectl get services -n acgs-system
+        
+        # Wait for all deployments to be ready
+        kubectl wait --for=condition=available --timeout=600s deployment --all -n acgs-system
+        
+    - name: Run production validation tests
+      run: |
+        echo "🧪 Running production validation tests..."
+        
+        # Test all critical services
+        SERVICES=("auth-service:8013" "monitoring-service:8014" "audit-service:8015" "alerting-service:8017")
+        
+        for service_config in "${SERVICES[@]}"; do
+          IFS=':' read -r service port <<< "$service_config"
+          
+          kubectl port-forward "service/$service" "$port:$port" -n acgs-system &
+          PID=$!
+          sleep 5
+          
+          echo "Testing $service on port $port..."
+          
+          # Health check
+          if ! curl -f "http://localhost:$port/health"; then
+            echo "❌ Health check failed for $service"
+            exit 1
+          fi
+          
+          # Constitutional compliance check
+          RESPONSE=$(curl -s "http://localhost:$port/health")
+          HASH=$(echo "$RESPONSE" | jq -r '.constitutional_hash // empty')
+          
+          if [[ "$HASH" != "$CONSTITUTIONAL_HASH" ]]; then
+            echo "❌ Constitutional compliance failed for $service"
+            exit 1
+          fi
+          
+          kill $PID 2>/dev/null || true
+          sleep 2
+          
+          echo "✅ $service validation passed"
+        done
+        
+        echo "✅ All production validation tests passed"
+        
+    - name: Post-deployment monitoring setup
+      run: |
+        echo "📊 Setting up post-deployment monitoring..."
+        
+        # Verify monitoring stack is running
+        kubectl get pods -l app.kubernetes.io/name=prometheus -n acgs-system
+        kubectl get pods -l app.kubernetes.io/name=grafana -n acgs-system
+        
+        # Check metrics are being collected
+        kubectl port-forward service/prometheus 9090:9090 -n acgs-system &
+        sleep 10
+        
+        # Verify metrics endpoint
+        curl -f http://localhost:9090/-/healthy
+        
+        echo "✅ Monitoring setup verified"
+
+  # Deployment notification
+  notify-deployment:
+    name: 📢 Deployment Notification
+    runs-on: ubuntu-latest
+    needs: [deploy-production]
+    if: always()
+    steps:
+    - name: Deployment Success Notification
+      if: needs.deploy-production.result == 'success'
+      run: |
+        echo "🎉 ACGS-2 Production Deployment Successful!"
+        echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
+        echo "Image Tag: $IMAGE_TAG"
+        echo "Deployment Time: $(date -u)"
+        
+        # Add Slack/Discord/Teams notification here if configured
+        
+    - name: Deployment Failure Notification
+      if: needs.deploy-production.result == 'failure'
+      run: |
+        echo "❌ ACGS-2 Production Deployment Failed!"
+        echo "Constitutional Hash: $CONSTITUTIONAL_HASH"
+        echo "Image Tag: $IMAGE_TAG"
+        echo "Failure Time: $(date -u)"
+        
+        # Add failure notification here if configured

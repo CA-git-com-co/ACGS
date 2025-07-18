@@ -407,7 +407,7 @@ ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;"
 - [Service Down Runbook](service_down_runbook.md)
 - [High Response Time Runbook](high_response_time_runbook.md)
 - [Backup and Recovery Runbook](backup_recovery_runbook.md)
-- [Performance Issues Runbook](performance_issues_runbook.md)
+- [Performance Issues Runbook](database_issues_runbook.md)
 
 
 

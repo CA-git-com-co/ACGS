@@ -48,11 +48,11 @@ This report documents the comprehensive verification and correction of ACGS-2 do
 
 **Corrections Made:**
 ```diff
-- Authentication Service: http://localhost:8013 (External) → Internal 8000
+- Authentication Service: http://localhost:8014 (External) → Internal 8000
 - PostgreSQL Database: localhost:5441 → Internal 5432
 - Redis Cache: localhost:6391 → Internal 6379
 
-+ Constitutional AI Service: http://localhost:8001 ✅ IMPLEMENTED
++ Constitutional AI Service: http://localhost:8002 ✅ IMPLEMENTED
 + Integrity Service: http://localhost:8002 ✅ IMPLEMENTED
 + [... complete service list with correct ports ...]
 + Authentication Service: http://localhost:8016 ✅ IMPLEMENTED
@@ -104,11 +104,11 @@ python3 scripts/development/validate_constitutional_compliance.py
 
 **Corrections Made:**
 ```diff
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGE Strategic Implementation Plan](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGS Service Architecture Overview](../docs/ACGS_SERVICE_OVERVIEW.md)
+- [ACGE Strategic Implementation Plan](../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
 
-+ [ACGS Service Architecture Overview](./ACGS_SERVICE_OVERVIEW.md)
-+ [ACGE Strategic Implementation Plan](./ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
++ [ACGS Service Architecture Overview](../docs/ACGS_SERVICE_OVERVIEW.md)
++ [ACGE Strategic Implementation Plan](../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
 ```
 
 ### 6. Implementation Status Indicators ✅ UPDATED

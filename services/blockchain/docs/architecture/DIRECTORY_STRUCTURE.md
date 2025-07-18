@@ -174,9 +174,9 @@ blockchain/
 ## 🚀 Getting Started
 
 ### Quick Navigation
-- **Start here**: [README.md](../../README.md)
+- **Start here**: [README.md](../../../../README.md)
 - **Build instructions**: [docs/deployment/](../deployment/)
-- **Testing guide**: [tests/README.md](../../tests/README.md)
+- **Testing guide**: [tests/README.md](../../../../README.md)
 - **API documentation**: [Generated from code]
 
 ### Common Tasks

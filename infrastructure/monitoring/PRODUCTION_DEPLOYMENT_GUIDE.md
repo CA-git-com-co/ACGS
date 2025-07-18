@@ -263,7 +263,7 @@ scrape_configs:
 
   - job_name: 'acgs-ac-service'
     static_configs:
-      - targets: ['localhost:8001']
+      - targets: ['localhost:8002']
     metrics_path: '/metrics'
     scrape_interval: 15s
 
@@ -275,7 +275,7 @@ scrape_configs:
 
   - job_name: 'acgs-fv-service'
     static_configs:
-      - targets: ['localhost:8003']
+      - targets: ['localhost:8004']
     metrics_path: '/metrics'
     scrape_interval: 15s
 
@@ -287,7 +287,7 @@ scrape_configs:
 
   - job_name: 'acgs-pgc-service'
     static_configs:
-      - targets: ['localhost:8005']
+      - targets: ['localhost:8006']
     metrics_path: '/metrics'
     scrape_interval: 15s
 

@@ -1,0 +1,170 @@
+version: '3.9'
+
+# ACGS-2 Local Development Docker Compose
+# Constitutional Hash: cdd01ef066bc6cf2
+
+networks:
+  acgs_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+
+services:
+  # Database Services
+  postgres:
+    image: postgres:15-alpine
+    container_name: acgs_postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_password}
+      POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5439:5432"
+    networks:
+      - acgs_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: acgs_redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6389:6379"
+    networks:
+      - acgs_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Constitutional Core Service
+  constitutional_core:
+    build:
+      context: ./services/core/constitutional-ai
+      dockerfile: ../../../infrastructure/docker/Dockerfile.local
+    container_name: acgs_constitutional_core
+    environment:
+      - SERVICE_NAME=constitutional-core
+      - PORT=8001
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_password}@postgres:5432/${POSTGRES_DB:-acgs_db}
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8001:8001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - acgs_network
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]
+
+  # GroqCloud Policy Integration Service
+  groqcloud_policy:
+    build:
+      context: ./services/core/groqcloud-policy-integration
+      dockerfile: ../../../infrastructure/docker/Dockerfile.local
+    container_name: acgs_groqcloud_policy
+    environment:
+      - SERVICE_NAME=groqcloud-policy
+      - PORT=8023
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+      - GROQ_API_KEY=${GROQ_API_KEY:-mock_key}
+      - USE_GROQ=${USE_GROQ:-false}
+      - KIMI_K2_ENABLED=true
+      - PREMIUM_MODEL_NAME=moonshotai/kimi-k2-instruct
+    ports:
+      - "8023:8023"
+    depends_on:
+      - redis
+    networks:
+      - acgs_network
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8023"]
+
+  # MCP Aggregator Service
+  mcp_aggregator:
+    build:
+      context: ./services/mcp/aggregator
+      dockerfile: ../../../infrastructure/docker/Dockerfile.local
+    container_name: acgs_mcp_aggregator
+    environment:
+      - SERVICE_NAME=mcp-aggregator
+      - PORT=3000
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    networks:
+      - acgs_network
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "3000"]
+
+  # A2A Policy Integration Service
+  a2a_policy:
+    build:
+      context: ./services/core/a2a-policy-integration
+      dockerfile: ../../../infrastructure/docker/Dockerfile.local
+    container_name: acgs_a2a_policy
+    environment:
+      - SERVICE_NAME=a2a-policy
+      - PORT=8020
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+      - JWT_SECRET=${JWT_SECRET:-acgs_jwt_secret}
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8020:8020"
+    depends_on:
+      - redis
+    networks:
+      - acgs_network
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8020"]
+
+  # Security Validation Service
+  security_validation:
+    build:
+      context: ./services/core/security-validation
+      dockerfile: ../../../infrastructure/docker/Dockerfile.local
+    container_name: acgs_security_validation
+    environment:
+      - SERVICE_NAME=security-validation
+      - PORT=8021
+      - CONSTITUTIONAL_HASH=${CONSTITUTIONAL_HASH:-cdd01ef066bc6cf2}
+      - ML_MODELS_PATH=/app/models
+      - REDIS_URL=redis://redis:6379/0
+    ports:
+      - "8021:8021"
+    depends_on:
+      - redis
+    networks:
+      - acgs_network
+    command: ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8021"]
+
+  # Add remaining MCP services with similar pattern...
+  
+# Health check endpoint aggregator (optional)
+  health_monitor:
+    image: curlimages/curl:latest
+    container_name: acgs_health_monitor
+    networks:
+      - acgs_network
+    command: >
+      sh -c "while true; do
+        echo '=== ACGS-2 Health Check ===' &&
+        curl -s http://constitutional_core:8001/health | grep 'healthy' &&
+        echo 'Constitutional Core: OK' || echo 'Constitutional Core: FAIL' &&
+        sleep 30;
+      done"
+    depends_on:
+      - constitutional_core

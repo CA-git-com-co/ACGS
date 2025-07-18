@@ -310,7 +310,7 @@ docker-compose ps
 ```bash
 # Check if ACGS services are available
 curl -f http://localhost:8016/health || echo "ACGS Auth Service not available"
-curl -f http://localhost:8001/health || echo "ACGS Constitutional AI not available"
+curl -f http://localhost:8002/health || echo "ACGS Constitutional AI not available"
 curl -f http://localhost:8008/health || echo "ACGS Multi-Agent Coordinator not available"
 curl -f http://localhost:8010/health || echo "ACGS Blackboard Service not available"
 
@@ -402,7 +402,7 @@ docker-compose exec mcp_browser env | grep CONSTITUTIONAL_HASH
 ```bash
 # Test ACGS service connectivity from MCP aggregator
 docker-compose exec mcp_aggregator curl -f http://host.docker.internal:8016/health
-docker-compose exec mcp_aggregator curl -f http://host.docker.internal:8001/health
+docker-compose exec mcp_aggregator curl -f http://host.docker.internal:8002/health
 docker-compose exec mcp_aggregator curl -f http://host.docker.internal:8008/health
 
 # Test coordination workflow

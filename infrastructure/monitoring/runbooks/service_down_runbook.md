@@ -160,7 +160,7 @@ curl -f http://localhost:800{X}/health
 curl http://localhost:800{X}/metrics
 
 # Verify constitutional compliance (for governance services)
-curl http://localhost:8005/api/v1/governance/health
+curl http://localhost:8006/api/v1/governance/health
 ```
 
 ### 12. End-to-End Testing
@@ -292,7 +292,7 @@ python3 scripts/emergency_rollback_procedures.py incident \
 - [High Response Time Runbook](high_response_time_runbook.md)
 - [Database Issues Runbook](database_issues_runbook.md)
 - [Constitutional Compliance Failure Runbook](constitutional_compliance_runbook.md)
-- [Emergency Rollback Procedures](emergency_rollback_runbook.md)
+- [Emergency Rollback Procedures](../../../docs/emergency_rollback_procedures.md)
 
 
 

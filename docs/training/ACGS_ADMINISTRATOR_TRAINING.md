@@ -60,7 +60,7 @@ docker compose logs auth-service | head -20
 curl http://localhost:8016/health
 
 # Check constitutional compliance
-curl http://localhost:8001/health/compliance
+curl http://localhost:8002/health/compliance
 grep -r "cdd01ef066bc6cf2" services/
 ```
 
@@ -399,10 +399,10 @@ tar -czf "/var/backups/acgs/config_${TIMESTAMP}.tar.gz" \
 ## Resources and References
 
 ### Documentation
-- [ACGS Production User Guide](../production/ACGS_PRODUCTION_USER_GUIDE.md)
-- [ACGS Technical Specifications](../TECHNICAL_SPECIFICATIONS_2025.md)
-- [Security Best Practices](../security/README.md)
-- [API Documentation](../api/README.md)
+- [ACGS Production User Guide](../production/ACGS_PRODUCTION_USER_GUIDE.md.backup)
+- [ACGS Technical Specifications](../api/TECHNICAL_SPECIFICATIONS_2025.md.backup)
+- [Security Best Practices](../../README.md)
+- [API Documentation](../../README.md)
 
 ### Tools and Scripts
 - Production deployment scripts: `scripts/scripts/deployment/deploy_production.sh`
@@ -419,12 +419,12 @@ tar -czf "/var/backups/acgs/config_${TIMESTAMP}.tar.gz" \
 ## Resources and References
 
 ### Documentation
-- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
-- [ACGS Production User Guide](../production/ACGS_PRODUCTION_USER_GUIDE.md)
-- [ACGS Technical Specifications](../TECHNICAL_SPECIFICATIONS_2025.md)
-- [Security Best Practices](../security/README.md)
-- [API Documentation](../api/README.md)
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md.backup).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md.backup) file.
+- [ACGS Production User Guide](../production/ACGS_PRODUCTION_USER_GUIDE.md.backup)
+- [ACGS Technical Specifications](../api/TECHNICAL_SPECIFICATIONS_2025.md.backup)
+- [Security Best Practices](../../README.md)
+- [API Documentation](../../README.md)
 
 ### Tools and Scripts
 - Production deployment scripts: `scripts/scripts/deployment/deploy_production.sh`

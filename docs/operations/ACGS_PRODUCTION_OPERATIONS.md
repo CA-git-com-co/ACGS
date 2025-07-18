@@ -41,7 +41,7 @@ curl -f http://localhost:3001/api/health || echo "Grafana unhealthy"
 
 # ACGS services health
 curl -f http://localhost:8016/health || echo "Auth service unhealthy"
-curl -f http://localhost:8001/health || echo "Constitutional AI unhealthy"
+curl -f http://localhost:8002/health || echo "Constitutional AI unhealthy"
 curl -f http://localhost:8008/health || echo "Coordinator unhealthy"
 curl -f http://localhost:8010/health || echo "Blackboard unhealthy"
 ```
@@ -91,7 +91,7 @@ check_service "Redis" "http://localhost:6390"
 check_service "Prometheus" "http://localhost:9091/-/healthy"
 check_service "Grafana" "http://localhost:3001/api/health"
 check_service "Auth Service" "http://localhost:8016/health"
-check_service "Constitutional AI" "http://localhost:8001/health"
+check_service "Constitutional AI" "http://localhost:8002/health"
 check_service "Coordinator" "http://localhost:8008/health"
 check_service "Blackboard" "http://localhost:8010/health"
 ```
@@ -542,5 +542,5 @@ tar -xzf acgs_config_20250107.tar.gz
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md.backup).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md.backup) file.

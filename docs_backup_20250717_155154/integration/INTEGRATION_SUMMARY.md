@@ -50,7 +50,7 @@ The Claude-MCP-ACGS integration creates a comprehensive multi-agent coordination
 │  └── Browser MCP :3003                                        │
 │       ↓                                                        │
 │  ACGS Constitutional Governance                                │
-│  ├── Constitutional AI :8001                                  │
+│  ├── Constitutional AI :8002                                  │
 │  ├── Multi-Agent Coordinator :8008                            │
 │  ├── Blackboard Service :8010                                 │
 │  └── Integrity Service :8002                                  │
@@ -571,14 +571,14 @@ docker-compose exec mcp_aggregator ping host.docker.internal
 
 ## 📚 **References**
 
-- **[Enhanced System Prompt](</home/dislove/ACGS-2/enhanced_system_prompt.md>)**: The core reasoning protocol and sprintlet templates for multi-agent coordination.
-- **[Multi-Agent Coordination Policy Blueprint](</home/dislove/ACGS-2/docs/coordination-policy.md>)**: Detailed specifications for state, action, and reward schemas, RPC protocols, and fault tolerance.
-- **[Production-Ready Docker Compose Stack](</home/dislove/ACGS-2/docker-compose.yml>)**: The complete Docker Compose file for deploying the MCP server stack.
-- **[Environment Configuration](</home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env>)**: The template for configuring the environment variables for the MCP server stack.
-- **[Operational Runbook](</home/dislove/ACGS-2/DEPLOYMENT.md>)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
-- **[ACGS Integration Documentation](</home/dislove/ACGS-2/docs/integration/CLAUDE_MCP_ACGS_INTEGRATION.md>)**: Comprehensive details on the integration architecture, communication protocols, and monitoring.
-- **[Integration Validation Script](</home/dislove/ACGS-2/scripts/validate_claude_mcp_integration.sh>)**: The script for automated health checks, performance testing, and constitutional compliance validation.
-- **[CLAUDE.md](</home/dislove/ACGS-2/CLAUDE.md>)**: Guidance for Claude when working with code in this repository.
+- **[Enhanced System Prompt](../../docs_consolidated_archive_20250710_120000/development/enhanced_system_prompt.md)**: The core reasoning protocol and sprintlet templates for multi-agent coordination.
+- **[Multi-Agent Coordination Policy Blueprint](../../docs/coordination-policy.md)**: Detailed specifications for state, action, and reward schemas, RPC protocols, and fault tolerance.
+- **[Production-Ready Docker Compose Stack](../../monitoring/docker-compose.yml)**: The complete Docker Compose file for deploying the MCP server stack.
+- **[Environment Configuration](../../config/environments/template.env)**: The template for configuring the environment variables for the MCP server stack.
+- **[Operational Runbook](../../docs_consolidated_archive_20250710_120000/deployment/DEPLOYMENT.md)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
+- **[ACGS Integration Documentation](../../docs_consolidated_archive_20250710_120000/deployment/CLAUDE_MCP_ACGS_INTEGRATION.md)**: Comprehensive details on the integration architecture, communication protocols, and monitoring.
+- **[Integration Validation Script](../../scripts/monitoring/validate_claude_mcp_integration.sh)**: The script for automated health checks, performance testing, and constitutional compliance validation.
+- **[CLAUDE.md](../../CLAUDE.md)**: Guidance for Claude when working with code in this repository.
 
 
 ## Implementation Status

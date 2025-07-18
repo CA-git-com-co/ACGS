@@ -45,7 +45,7 @@ The RBAC system is tightly integrated with the Authentication Service and the Co
 ## 5. Related Information
 
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md)
 - [Authentication Service API](authentication.md)
 ## Implementation Status
 

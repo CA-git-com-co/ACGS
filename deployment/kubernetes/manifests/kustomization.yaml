@@ -1,0 +1,215 @@
+# ACGS-2 Kubernetes Manifests Kustomization
+# Constitutional Hash: cdd01ef066bc6cf2
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: acgs-system-manifests
+  annotations:
+    constitutional-hash: cdd01ef066bc6cf2
+    config.kubernetes.io/local-config: "true"
+
+# Namespace
+namespace: acgs-system
+
+# Resources in dependency order
+resources:
+  # 1. Namespace and basic configuration
+  - namespace.yaml
+  - storage.yaml
+  - rbac.yaml
+  - secrets.yaml
+  - configmaps.yaml
+  - security.yaml
+  
+  # 2. Infrastructure services
+  - infrastructure.yaml
+  
+  # 3. Monitoring stack
+  - monitoring.yaml
+
+# Common labels applied to all resources
+commonLabels:
+  constitutional-hash: cdd01ef066bc6cf2
+  app.kubernetes.io/part-of: acgs-system
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/version: v1.0.0
+
+# Common annotations applied to all resources
+commonAnnotations:
+  constitutional-compliance: "validated"
+  performance-target: "p99-5ms-100rps"
+  deployment-method: "kustomize"
+  security-level: "high"
+
+# Name prefix for all resources
+namePrefix: ""
+
+# Name suffix for all resources
+nameSuffix: ""
+
+# Patches to apply
+patches:
+  # Patch to ensure all deployments have constitutional hash
+  - patch: |-
+      - op: add
+        path: /spec/template/metadata/annotations/constitutional-hash
+        value: cdd01ef066bc6cf2
+    target:
+      kind: Deployment
+      
+  # Patch to ensure all services have constitutional hash
+  - patch: |-
+      - op: add
+        path: /metadata/annotations/constitutional-hash
+        value: cdd01ef066bc6cf2
+    target:
+      kind: Service
+
+# Replica overrides for production
+replicas:
+  - name: postgres
+    count: 1
+  - name: redis
+    count: 1
+  - name: nginx-ingress
+    count: 2
+  - name: prometheus
+    count: 1
+  - name: grafana
+    count: 1
+  - name: alertmanager
+    count: 1
+
+# Images to use
+images:
+  - name: postgres
+    newTag: "15-alpine"
+  - name: redis
+    newTag: "7-alpine"
+  - name: nginx
+    newTag: "1.25-alpine"
+  - name: prom/prometheus
+    newTag: "v2.45.0"
+  - name: grafana/grafana
+    newTag: "10.0.0"
+  - name: prom/alertmanager
+    newTag: "v0.25.0"
+  - name: aquasec/trivy
+    newTag: "latest"
+  - name: python
+    newTag: "3.11-slim"
+
+# ConfigMap generators
+configMapGenerator:
+  - name: acgs-deployment-metadata
+    literals:
+      - constitutional_hash=cdd01ef066bc6cf2
+      - deployment_date=$(date --iso-8601=seconds)
+      - deployment_method=kustomize
+      - environment=production
+      - version=v1.0.0
+
+# Secret generators
+secretGenerator:
+  - name: acgs-deployment-secrets
+    literals:
+      - deployment_key=acgs_deployment_key_2024
+    type: Opaque
+
+# Transformers
+transformers:
+  # Add constitutional hash to all resources
+  - |-
+    apiVersion: builtin
+    kind: AnnotationsTransformer
+    metadata:
+      name: constitutional-hash-transformer
+    annotations:
+      constitutional-hash: cdd01ef066bc6cf2
+      constitutional-compliance: validated
+    fieldSpecs:
+      - path: metadata/annotations
+        create: true
+
+# Generators
+generators:
+  # Generate network policies for each service
+  - |-
+    apiVersion: builtin
+    kind: NetworkPolicyGenerator
+    metadata:
+      name: acgs-network-policies
+    spec:
+      selector:
+        matchLabels:
+          constitutional-hash: cdd01ef066bc6cf2
+      policyTypes:
+        - Ingress
+        - Egress
+
+# Validations
+validations:
+  # Validate constitutional hash is present
+  - |-
+    apiVersion: kustomize.config.k8s.io/v1beta1
+    kind: Validation
+    metadata:
+      name: constitutional-hash-validation
+    spec:
+      openAPISchema:
+        properties:
+          metadata:
+            properties:
+              labels:
+                properties:
+                  constitutional-hash:
+                    type: string
+                    pattern: "^cdd01ef066bc6cf2$"
+                required:
+                  - constitutional-hash
+              annotations:
+                properties:
+                  constitutional-compliance:
+                    type: string
+                    enum: ["validated", "pending", "failed"]
+                required:
+                  - constitutional-compliance
+
+# Build metadata
+buildMetadata:
+  - originAnnotations
+  - transformerAnnotations
+  - managedByLabel
+
+# Configurations
+configurations:
+  # Name reference configuration
+  - |-
+    nameReference:
+    - kind: ConfigMap
+      version: v1
+      fieldSpecs:
+      - path: spec/volumes/configMap/name
+        kind: Pod
+      - path: spec/containers/envFrom/configMapRef/name
+        kind: Pod
+      - path: spec/containers/env/valueFrom/configMapKeyRef/name
+        kind: Pod
+    - kind: Secret
+      version: v1
+      fieldSpecs:
+      - path: spec/volumes/secret/secretName
+        kind: Pod
+      - path: spec/containers/envFrom/secretRef/name
+        kind: Pod
+      - path: spec/containers/env/valueFrom/secretKeyRef/name
+        kind: Pod
+
+# Inventory
+inventory:
+  type: ConfigMap
+  configMap:
+    name: acgs-inventory
+    namespace: acgs-system

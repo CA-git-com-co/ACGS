@@ -18,7 +18,7 @@ This comprehensive 24-month strategic implementation plan outlines the integrati
 
 ### ACGS-PGP Production Architecture
 
-- **7 Microservices**: auth:8000, ac:8001, integrity:8002, fv:8003, gs:8004, pgc:8005, ec:8006
+- **7 Microservices**: auth:8000, ac:8002, integrity:8002, fv:8004, gs:8004, pgc:8006, ec:8006
 - <!-- Constitutional Hash: cdd01ef066bc6cf2 --> (validated across all services)
 - **Resource Limits**: 200m/500m CPU, 512Mi/1Gi memory per service
 - **Performance Targets**: ≤2s response time, >95% constitutional compliance
@@ -804,7 +804,7 @@ validate_acge_readiness() {
     log_info "Validating ACGE system readiness..."
 
     # Check all 7 ACGS-PGP services are healthy
-    local services=("auth-service:8000" "ac-service:8001" "integrity-service:8002" "fv-service:8003" "gs-service:8004" "pgc-service:8005" "ec-service:8006")
+    local services=("auth-service:8000" "ac-service:8002" "integrity-service:8002" "fv-service:8004" "gs-service:8004" "pgc-service:8006" "ec-service:8006")
 
     for service in "${services[@]}"; do
         local service_name=$(echo $service | cut -d: -f1)

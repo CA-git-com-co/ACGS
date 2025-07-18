@@ -72,7 +72,7 @@ Priority: HIGH - Deployment blocker
    docker restart acgs_opa
    
    # Verify health endpoints
-   curl http://localhost:8001/health  # Constitutional Core
+   curl http://localhost:8002/health  # Constitutional Core
    curl http://localhost:8080/health  # API Gateway
    curl http://localhost:8181/health  # OPA
    ```
@@ -201,7 +201,7 @@ git checkout HEAD~1
 docker compose -f infrastructure/docker/docker-compose.acgs.yml up -d
 
 # Validate rollback success
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 ```
 
 ### **Rollback Validation Checklist**

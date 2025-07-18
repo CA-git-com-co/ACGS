@@ -187,17 +187,17 @@ CREATE TABLE governance_events (
 {
   "services": {
     "auth": "http://localhost:8016",
-    "constitutional_ai": "http://localhost:8001",
+    "constitutional_ai": "http://localhost:8002",
     "integrity": "http://localhost:8002",
-    "formal_verification": "http://localhost:8003",
+    "formal_verification": "http://localhost:8004",
     "governance_synthesis": "http://localhost:8004",
-    "policy_governance": "http://localhost:8005",
+    "policy_governance": "http://localhost:8006",
     "evolutionary_computation": "http://localhost:8006",
-    "consensus_engine": "http://localhost:8007",
+    "consensus_engine": "http://localhost:8008",
     "multi_agent_coordinator": "http://localhost:8008",
-    "worker_agents": "http://localhost:8009",
+    "worker_agents": "http://localhost:8010",
     "blackboard_service": "http://localhost:8010",
-    "code_analysis_service": "http://localhost:8011",
+    "code_analysis_service": "http://localhost:8012",
     "context_service": "http://localhost:8012"
   },
   "constitutional": {
@@ -339,13 +339,13 @@ bun run tauri dev
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](ACGS_UNIFIED_ARCHITECTURE_GUIDE.md.backup).
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md.backup) file.
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md.backup)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md.backup)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md.backup)
+- [ACGE Cost Analysis and ROI Projections](../ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 
 ## Conclusion
 

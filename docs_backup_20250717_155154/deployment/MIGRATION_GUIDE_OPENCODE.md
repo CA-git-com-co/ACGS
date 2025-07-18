@@ -117,7 +117,7 @@ acgs:
 ```bash
 # config/environments/development.env file
 ACGS_AUTH_SERVICE_URL=http://localhost:8016
-ACGS_POLICY_SERVICE_URL=http://localhost:8005
+ACGS_POLICY_SERVICE_URL=http://localhost:8006
 ACGS_AUDIT_SERVICE_URL=http://localhost:8002
 ACGS_HITL_SERVICE_URL=http://localhost:8008
 ACGS_AGENT_ID=opencode-adapter
@@ -324,12 +324,12 @@ Recommended migration timeline:
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs_consolidated_archive_20250710_120000/deployment/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md.backup)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md.backup)
+- [ACGE Cost Analysis and ROI Projections](../../docs_consolidated_archive_20250710_120000/deployment/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md.backup)
 
 ## Final Checklist
 

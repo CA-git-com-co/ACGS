@@ -126,10 +126,10 @@ The Autonomous Coding Governance System (ACGS-2) is a comprehensive, production-
 
 ```bash
 # Health check
-GET http://localhost:8001/health
+GET http://localhost:8002/health
 
 # Constitutional compliance validation
-POST http://localhost:8001/api/v1/constitutional/validate
+POST http://localhost:8002/api/v1/constitutional/validate
 Headers: X-Constitutional-Hash: cdd01ef066bc6cf2
 Content-Type: application/json
 {
@@ -138,7 +138,7 @@ Content-Type: application/json
 }
 
 # Policy synthesis
-POST http://localhost:8001/api/v1/policy/synthesize
+POST http://localhost:8002/api/v1/policy/synthesize
 Headers: X-Constitutional-Hash: cdd01ef066bc6cf2
 Content-Type: application/json
 {
@@ -230,9 +230,9 @@ Headers: Authorization: Bearer <jwt-token>
 
    ```bash
    # Check service health
-   curl http://localhost:8001/health  # Constitutional AI
+   curl http://localhost:8002/health  # Constitutional AI
    curl http://localhost:8002/health  # Integrity Service
-   curl http://localhost:8003/health  # Formal Verification
+   curl http://localhost:8004/health  # Formal Verification
    curl http://localhost:8016/health  # Authentication
    curl http://localhost:8080/health  # API Gateway
 
@@ -418,7 +418,7 @@ echo "cdd01ef066bc6cf2" | sha256sum # pragma: allowlist secret
 
 # Check policy compliance
 curl -H "X-Constitutional-Hash: cdd01ef066bc6cf2" \
-     http://localhost:8001/api/v1/constitutional/validate
+     http://localhost:8002/api/v1/constitutional/validate
 ```
 
 #### Performance Issues
@@ -428,7 +428,7 @@ curl -H "X-Constitutional-Hash: cdd01ef066bc6cf2" \
 docker stats
 
 # Check service metrics
-curl http://localhost:8001/metrics
+curl http://localhost:8002/metrics
 curl http://localhost:8080/metrics
 
 # Review performance logs

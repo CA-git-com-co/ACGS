@@ -77,8 +77,6 @@ semgrep>=1.45.0,<2.0.0
 
 # Testing security
 pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
 
 # Type checking and quality
 mypy>=1.13.0
@@ -123,7 +121,6 @@ jsonschema>=4.19.0,<5.0.0  # Schema validation for constitutional compliance
 # Prevent vulnerable transitive dependencies
 setuptools>=80.9.0
 wheel>=0.42.0
-pip>=23.3.0
 
 # Networking stack security
 idna>=3.7

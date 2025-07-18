@@ -295,33 +295,33 @@ The comprehensive 3-phase ACGS Documentation Implementation and Maintenance Plan
 
 ## References
 
-- [Quarterly Audit Report Q3 2025](../../audit_reports/quarterly_audit_Q3_2025_20250705.md)
-- [Latest Metrics Report](../../metrics/latest_metrics.json)
-- [Daily Metrics Report (2025-07-06)](../../metrics/daily_metrics_2025-07-06.json)
-- [ACGS Documentation Team Training Guide](training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
-- [Constitutional Hash Reference](training/constitutional_hash_reference.md)
-- [Validation Tools Cheat Sheet](training/validation_tools_cheatsheet.md)
-- [Deployment Validation Workflow](../../.github/workflows/deployment-validation.yml)
-- [PR Documentation Validation Workflow](../../.github/workflows/pr-documentation-validation.yml)
-- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
-- [Constitutional Compliance Validation Framework](../constitutional_compliance_validation_framework.md)
-- [ACGS Code Analysis Engine Architecture](../architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md)
-- [ACGS Code Analysis Engine Deployment Guide](../deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
-- [ACGS Code Analysis Engine Integration Guide](../integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
-- [ACGS Configuration Guide](../configuration/README.md)
-- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [ACGS Service Status Dashboard](../operations/SERVICE_STATUS.md)
+- [Quarterly Audit Report Q3 2025](../../../tools/audit/quarterly_audit.sh)
+- [Latest Metrics Report](../../../infrastructure/monitoring/grafana/dashboards/blockchain_metrics.json)
+- [Daily Metrics Report (2025-07-06)](../../../monitoring/metrics/grafana_metrics_20250707_092759.json)
+- [ACGS Documentation Team Training Guide](../../training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md)
+- [Constitutional Hash Reference](../../training/constitutional_hash_reference.md)
+- [Validation Tools Cheat Sheet](../../training/validation_tools_cheatsheet.md)
+- [Deployment Validation Workflow](../../../tools/deployment/deployment_validator.py)
+- [PR Documentation Validation Workflow](../../../archive/workflows/enhanced-documentation-validation.yml.backup)
+- [ACGS Service Architecture Overview](../../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS System Overview](../../architecture/SYSTEM_OVERVIEW.md)
+- [Constitutional Compliance Validation Framework](../../constitutional_compliance_validation_framework.md)
+- [ACGS Code Analysis Engine Architecture](../../architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md)
+- [ACGS Code Analysis Engine Deployment Guide](../../deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
+- [ACGS Code Analysis Engine Integration Guide](../../integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
+- [ACGS Configuration Guide](../../README.md)
+- [ACGS-PGP Setup Guide](../../deployment/ACGS_PGP_SETUP_GUIDE.md)
+- [ACGS Service Status Dashboard](../../operations/SERVICE_STATUS.md)
 
 
 ## Related Information
 
 For more detailed information on the various aspects covered in this report, please refer to the following documents:
 
-- **Documentation Audit Reports**: For detailed findings from the quarterly audits, see [Quarterly Audit Report Q3 2025](../../audit_reports/quarterly_audit_Q3_2025_20250705.md).
-- **Training Materials**: Access the full [ACGS Documentation Team Training Guide](training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md), [Constitutional Hash Reference](training/constitutional_hash_reference.md), and [Validation Tools Cheat Sheet](training/validation_tools_cheatsheet.md).
-- **Metrics Reports**: Review the [Latest Metrics Report](../../metrics/latest_metrics.json) and [Daily Metrics Report (2025-07-06)](../../metrics/daily_metrics_2025-07-06.json) for detailed quality and compliance data.
-- **CI/CD Workflows**: Examine the [Deployment Validation Workflow](../../.github/workflows/deployment-validation.yml) and [PR Documentation Validation Workflow](../../.github/workflows/pr-documentation-validation.yml) for automation details.
+- **Documentation Audit Reports**: For detailed findings from the quarterly audits, see [Quarterly Audit Report Q3 2025](../../../tools/audit/quarterly_audit.sh).
+- **Training Materials**: Access the full [ACGS Documentation Team Training Guide](../../training/ACGS_DOCUMENTATION_TEAM_TRAINING_GUIDE.md), [Constitutional Hash Reference](../../training/constitutional_hash_reference.md), and [Validation Tools Cheat Sheet](../../training/validation_tools_cheatsheet.md).
+- **Metrics Reports**: Review the [Latest Metrics Report](../../../infrastructure/monitoring/grafana/dashboards/blockchain_metrics.json) and [Daily Metrics Report (2025-07-06)](../../../monitoring/metrics/grafana_metrics_20250707_092759.json) for detailed quality and compliance data.
+- **CI/CD Workflows**: Examine the [Deployment Validation Workflow](../../../tools/deployment/deployment_validator.py) and [PR Documentation Validation Workflow](../../../archive/workflows/enhanced-documentation-validation.yml.backup) for automation details.
 
 ## Conclusion
 

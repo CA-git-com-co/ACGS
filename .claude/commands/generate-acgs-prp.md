@@ -40,7 +40,7 @@ This command will:
 ### Multi-Agent Coordination Research
 - Analyze blackboard service integration patterns (port 8010)
 - Review multi-agent coordinator service patterns (port 8008)
-- Study worker agent communication protocols (port 8009)
+- Study worker agent communication protocols (port 8010)
 - Understand consensus engine coordination requirements
 
 ### ACGS Infrastructure Research
@@ -61,7 +61,7 @@ I will thoroughly analyze the ACGS codebase to understand:
 ### Step 2: Constitutional Framework Analysis
 I will review the constitutional framework to understand:
 - Constitutional hash validation requirements across all services
-- Constitutional AI service integration at port 8001
+- Constitutional AI service integration at port 8002
 - Constitutional policy library in governance synthesis service
 - Audit logging requirements for constitutional compliance
 
@@ -75,10 +75,10 @@ I will analyze performance requirements including:
 ### Step 4: Integration Point Analysis
 I will identify integration requirements with:
 - **API Gateway** (port 8010): Request routing and security
-- **Constitutional AI** (port 8001): Constitutional compliance validation
+- **Constitutional AI** (port 8002): Constitutional compliance validation
 - **Integrity Service** (port 8002): Audit trail and cryptographic validation
 - **Multi-Agent Coordinator** (port 8008): Agent orchestration
-- **Worker Agents** (port 8009): Specialized domain agents
+- **Worker Agents** (port 8010): Specialized domain agents
 - **Blackboard Service** (port 8010): Shared knowledge coordination
 - **Context Service** (port 8012): Governance workflow integration
 - **Authentication** (port 8016): Multi-tenant JWT authentication

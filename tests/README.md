@@ -93,13 +93,13 @@ pytest tests/integration/test_service_integration.py::TestHealthAndConstitutiona
 
 ### Service Endpoints
 Tests connect to services running on localhost:
-- Constitutional Core: `http://localhost:8001`
+- Constitutional Core: `http://localhost:8002`
 - Integrity Service: `http://localhost:8002`
 - Governance Engine: `http://localhost:8004`
 - Multi-Agent Coordinator: `http://localhost:8008`
-- Worker Agents: `http://localhost:8009`
+- Worker Agents: `http://localhost:8010`
 - Blackboard Service: `http://localhost:8010`
-- GroqCloud Policy: `http://localhost:8015`
+- GroqCloud Policy: `http://localhost:8016`
 - A2A Policy: `http://localhost:8020`
 - Security Validation: `http://localhost:8021`
 - MCP Aggregator: `http://localhost:3000`

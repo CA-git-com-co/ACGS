@@ -100,7 +100,7 @@ The quality system maintains constitutional hash `cdd01ef066bc6cf2` validation t
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Quality**
+**Navigation**: [Root](CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Quality**
 
 **Constitutional Compliance**: All quality operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

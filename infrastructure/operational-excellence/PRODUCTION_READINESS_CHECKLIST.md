@@ -195,7 +195,7 @@ python3 infrastructure/operational-excellence/scripts/enterprise_monitoring_syst
 ./scripts/run_performance_validation.py
 
 # Verify constitutional compliance
-curl -s http://localhost:8001/api/v1/compliance/status | jq '.data.constitutional_hash'
+curl -s http://localhost:8002/api/v1/compliance/status | jq '.data.constitutional_hash'
 
 # Check operational excellence score
 python3 infrastructure/operational-excellence/scripts/operational_excellence_validator.py

@@ -508,6 +508,6 @@ Comprehensive demonstration scripts are included to showcase all features:
 ## 🔗 Links
 
 - [Groq Console](https://console.groq.com/keys) - Get your API key
-- [ACGS-2 Documentation](../README.md) - Main project docs
+- [ACGS-2 Documentation](README.md.backup) - Main project docs
 - [Rust Performance Guide](https://nnethercote.github.io/perf-book/) - Optimization tips
 - [Solana Devnet](https://explorer.solana.com/?cluster=devnet) - Blockchain explorer

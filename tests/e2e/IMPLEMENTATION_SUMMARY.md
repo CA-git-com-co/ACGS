@@ -94,8 +94,8 @@ All established performance targets are validated:
 
 ### Service Coverage
 - **Auth Service** (port 8016): Authentication and authorization testing
-- **Constitutional AI** (port 8001): Policy validation and compliance testing
-- **Policy Governance** (port 8005): WINA optimization and cache performance
+- **Constitutional AI** (port 8002): Policy validation and compliance testing
+- **Policy Governance** (port 8006): WINA optimization and cache performance
 - **Governance Synthesis** (port 8004): Multi-agent coordination testing
 - **Infrastructure**: PostgreSQL (5439), Redis (6389) validation
 
@@ -171,8 +171,8 @@ REDIS_PORT=6389
 
 ### Service Endpoints
 - Auth Service: `http://localhost:8016`
-- Constitutional AI: `http://localhost:8001`
-- Policy Governance: `http://localhost:8005`
+- Constitutional AI: `http://localhost:8002`
+- Policy Governance: `http://localhost:8006`
 - Governance Synthesis: `http://localhost:8004`
 
 ## 🛡️ Security & Compliance

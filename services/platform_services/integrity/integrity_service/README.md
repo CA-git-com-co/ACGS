@@ -123,7 +123,7 @@ INTEGRITY_CHECK_INTERVAL=3600  # 1 hour
 
 # Service Integration
 AUTH_SERVICE_URL=http://localhost:8000
-AC_SERVICE_URL=http://localhost:8001
+AC_SERVICE_URL=http://localhost:8002
 
 # Security Configuration
 ENABLE_AUDIT_LOGGING=true

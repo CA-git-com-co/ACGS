@@ -15,7 +15,7 @@ This document provides comprehensive configuration guidance for the GroqCloud Po
 # GroqCloud API Configuration
 GROQ_API_KEY=your_groq_api_key_here
 GROQ_BASE_URL=https://api.groq.com/openai/v1
-GROQ_POLICY_INTEGRATION_PORT=8015
+GROQ_POLICY_INTEGRATION_PORT=8016
 
 # Model Configuration
 GROQ_DEFAULT_MODEL=qwen/qwen3-32b
@@ -308,11 +308,11 @@ services:
       context: .
       dockerfile: services/core/governance-synthesis/Dockerfile
     ports:
-      - "8015:8015"
+      - "8015:8016"
     environment:
       - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
       - GROQ_API_KEY=${GROQ_API_KEY}
-      - GROQ_POLICY_INTEGRATION_PORT=8015
+      - GROQ_POLICY_INTEGRATION_PORT=8016
       - WASM_POLICY_ENGINE_ENABLED=true
       - OPA_WASM_ENABLED=true
       - REDIS_HOST=redis
@@ -355,7 +355,7 @@ networks:
 # Prometheus scrape configuration
 - job_name: 'groq-policy-integration'
   static_configs:
-    - targets: ['groq-policy-integration:8015']
+    - targets: ['groq-policy-integration:8016']
   metrics_path: '/metrics'
   scrape_interval: 15s
   scrape_timeout: 10s
@@ -640,10 +640,10 @@ if __name__ == "__main__":
 3. **High Latency Issues**
    ```bash
    # Check circuit breaker status
-   curl http://localhost:8015/health | jq '.circuit_breaker'
+   curl http://localhost:8016/health | jq '.circuit_breaker'
    
    # Monitor cache hit rates
-   curl http://localhost:8015/metrics | grep cache_hit_rate
+   curl http://localhost:8016/metrics | grep cache_hit_rate
    ```
 
 #### Performance Tuning

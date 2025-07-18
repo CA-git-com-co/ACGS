@@ -149,10 +149,10 @@ The API standardization provides a solid foundation for the final Testing Strate
 
 ## 📚 Documentation References
 
-- **Complete API Standardization Summary**: [`API_STANDARDIZATION_SUMMARY.md`](API_STANDARDIZATION_SUMMARY.md)
-- **Project Status Tracker**: [`ACGS_PROJECT_STATUS_TRACKER.md`](ACGS_PROJECT_STATUS_TRACKER.md)
+- **Complete API Standardization Summary**: [`API_STANDARDIZATION_SUMMARY.md`](../../reports/API_STANDARDIZATION_SUMMARY.md)
+- **Project Status Tracker**: [`ACGS_PROJECT_STATUS_TRACKER.md`](../deployment/ACGS_PROJECT_STATUS_TRACKER.md)
 - **FastAPI Service Template**: [`services/shared/templates/fastapi_service_template/`](services/shared/templates/fastapi_service_template/)
-- **Template Documentation**: [`services/shared/templates/fastapi_service_template/README.md`](services/shared/templates/fastapi_service_template/README.md)
+- **Template Documentation**: [`services/shared/templates/fastapi_service_template/README.md`](../README.md)
 
 
 

@@ -243,11 +243,11 @@ When contributing:
 
 ## Code of Conduct
 
-This project adheres to the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
+This project adheres to the [Contributor Covenant Code of Conduct](../../tools/mcp-inspector/CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ## License
 
-By contributing to ACGS-2, you agree that your contributions will be licensed under the project's [Apache 2.0 License](LICENSE).
+By contributing to ACGS-2, you agree that your contributions will be licensed under the project's [Apache 2.0 License](../../LICENSE).
 
 
 

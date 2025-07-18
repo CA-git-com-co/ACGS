@@ -639,11 +639,11 @@ class AdvancedAIService:
 
 ### Documentation
 - **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md) file.
 - [ACGS Production User Guide](../production/ACGS_PRODUCTION_USER_GUIDE.md)
-- [ACGS Technical Specifications](../TECHNICAL_SPECIFICATIONS_2025.md)
-- [Security Best Practices](../security/README.md)
-- [API Documentation](../api/README.md)
+- [ACGS Technical Specifications](../api/TECHNICAL_SPECIFICATIONS_2025.md)
+- [Security Best Practices](../README.md)
+- [API Documentation](../README.md)
 
 ### Tools and Scripts
 - Production deployment scripts: `scripts/scripts/deployment/deploy_production.sh`

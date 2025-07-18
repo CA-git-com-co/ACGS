@@ -166,10 +166,10 @@ The enhanced API Gateway now handles authentication AND routing:
 - `/auth/*` → Handled directly by integrated auth module
 
 ### Service Routes
-- `/api/constitutional-ai/*` → `http://ac_service:8001`
+- `/api/constitutional-ai/*` → `http://ac_service:8002`
 - `/api/governance-engine/*` → `http://governance_engine:8004`
 - `/api/integrity/*` → `http://integrity_service:8002`
-- `/api/formal-verification/*` → `http://fv_service:8003`
+- `/api/formal-verification/*` → `http://fv_service:8004`
 
 ## Configuration
 
@@ -187,10 +187,10 @@ ENABLE_DOCS=true
 
 #### Service URLs
 ```bash
-CONSTITUTIONAL_AI_URL=http://ac_service:8001
+CONSTITUTIONAL_AI_URL=http://ac_service:8002
 GOVERNANCE_ENGINE_URL=http://governance_engine:8004
 INTEGRITY_SERVICE_URL=http://integrity_service:8002
-FORMAL_VERIFICATION_URL=http://fv_service:8003
+FORMAL_VERIFICATION_URL=http://fv_service:8004
 ```
 
 ### Docker Profiles

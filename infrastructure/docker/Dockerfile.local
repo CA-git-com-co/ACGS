@@ -1,0 +1,33 @@
+# ACGS-2 Local Development Dockerfile
+# Uses Python base image to avoid Docker Hub authentication issues
+# Constitutional Hash: cdd01ef066bc6cf2
+
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+# Copy requirements first for better caching
+COPY requirements.txt /app/
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . /app/
+
+# Create non-root user
+RUN useradd -m -u 1000 acgs && chown -R acgs:acgs /app
+USER acgs
+
+# Default command (override in docker-compose)
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]

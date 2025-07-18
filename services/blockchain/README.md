@@ -204,10 +204,10 @@ python tools/benchmarks/performance_comparison.py
 
 ## 📚 Documentation
 
-- **Architecture**: [docs/architecture/](docs/architecture/)
+- **Architecture**: [docs/architecture/](../../docs/architecture/CLAUDE.md)
 - **API Documentation**: [Generated from code annotations]
-- **Deployment Guide**: [docs/deployment/](docs/deployment/)
-- **Test Reports**: [docs/reports/](docs/reports/)
+- **Deployment Guide**: [docs/deployment/](../../docs/architecture/CLAUDE.md)
+- **Test Reports**: [docs/reports/](../../docs/architecture/CLAUDE.md)
 
 ## 🤝 Contributing
 
@@ -220,11 +220,11 @@ python tools/benchmarks/performance_comparison.py
 
 ## 📄 License
 
-MIT License - see [LICENSE](../../LICENSE) file for details.
+MIT License - see [LICENSE](../platform_services/formal_verification/venv/lib/python3.12/site-packages/uvicorn-0.35.0.dist-info/licenses/LICENSE.md) file for details.
 
 ## 🔗 Related Services
 
-- **Constitutional AI Service** (port 8001): Core constitutional compliance
+- **Constitutional AI Service** (port 8002): Core constitutional compliance
 - **Integrity Service** (port 8002): Audit logging and trails
 - **Multi-Agent Coordinator** (port 8008): Agent orchestration
 - **API Gateway** (port 8010): Service routing and authentication

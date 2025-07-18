@@ -100,7 +100,7 @@ The training system maintains constitutional hash `cdd01ef066bc6cf2` validation 
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Training**
+**Navigation**: [Root](CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Training**
 
 **Constitutional Compliance**: All training operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

@@ -122,9 +122,9 @@ CONSENSUS_THRESHOLD=0.8
 
 # Constitutional Governance
 CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-AC_SERVICE_URL=http://localhost:8001
-FV_SERVICE_URL=http://localhost:8003
-PGC_SERVICE_URL=http://localhost:8005
+AC_SERVICE_URL=http://localhost:8002
+FV_SERVICE_URL=http://localhost:8004
+PGC_SERVICE_URL=http://localhost:8006
 
 # Policy Synthesis Configuration
 MAX_POLICY_LENGTH=10000
@@ -492,7 +492,7 @@ python tests/performance/stress_test_consensus.py --models=3 --concurrent=10
 
 ## Support
 
-- **Documentation**: [GS Service API](../../../docs/api/governance_synthesis_service_api.md)
+- **Documentation**: [GS Service API](../../../../infrastructure/kubernetes/services/governance-synthesis-service.yaml)
 - **Health Check**: http://localhost:8004/health
 - **Interactive API Docs**: http://localhost:8004/docs
 - **Logs**: `/logs/gs_service.log`

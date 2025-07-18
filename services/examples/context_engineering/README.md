@@ -51,7 +51,7 @@ Examples showcase maintaining ACGS performance targets:
 Demonstrate integration with ACGS multi-agent infrastructure:
 - Blackboard Service (port 8010)
 - Multi-Agent Coordinator (port 8008)
-- Worker Agents (port 8009)
+- Worker Agents (port 8010)
 
 ### 4. Context Engineering Patterns
 Follow Context Engineering principles:

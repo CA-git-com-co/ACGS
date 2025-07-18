@@ -317,7 +317,7 @@ MULTI_AGENT_CONTEXT = {
 # Example constitutional validation context
 CONSTITUTIONAL_CONTEXT = {
     "hash": "cdd01ef066bc6cf2",
-    "validation_service": "http://localhost:8001",
+    "validation_service": "http://localhost:8002",
     "audit_service": "http://localhost:8002",
     "compliance_threshold": 0.95,
     "required_validations": [

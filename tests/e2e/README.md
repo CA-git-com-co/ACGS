@@ -163,8 +163,8 @@ REDIS_PORT=6389
 
 # Service endpoints
 AUTH_SERVICE_URL=http://localhost:8016
-CONSTITUTIONAL_AI_URL=http://localhost:8001
-POLICY_GOVERNANCE_URL=http://localhost:8005
+CONSTITUTIONAL_AI_URL=http://localhost:8002
+POLICY_GOVERNANCE_URL=http://localhost:8006
 GOVERNANCE_SYNTHESIS_URL=http://localhost:8004
 ```
 
@@ -185,10 +185,10 @@ services:
     url: http://localhost:8016
     enabled: true
   constitutional_ai:
-    url: http://localhost:8001
+    url: http://localhost:8002
     enabled: true
   policy_governance:
-    url: http://localhost:8005
+    url: http://localhost:8006
     enabled: true
 ```
 

@@ -86,7 +86,7 @@ markdownlint docs/README.md docs/TECHNICAL_SPECIFICATIONS_2025.md docs/integrati
 ```bash
 # Capture current system performance
 curl -s http://localhost:8014/health > "performance_baseline_$(date +%Y%m%d_%H%M%S).json"
-curl -s http://localhost:8015/health >> "performance_baseline_$(date +%Y%m%d_%H%M%S).json"
+curl -s http://localhost:8016/health >> "performance_baseline_$(date +%Y%m%d_%H%M%S).json"
 curl -s http://localhost:8017/health >> "performance_baseline_$(date +%Y%m%d_%H%M%S).json"
 ```
 

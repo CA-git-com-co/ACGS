@@ -152,7 +152,7 @@ The documentation framework provides a solid foundation for the ACGS-2 constitut
 
 ---
 
-**Navigation**: [Root](claude.md) → **Documentation Validation Report**
+**Navigation**: [Root](../../.claude/commands/load.md) → **Documentation Validation Report**
 
 **Constitutional Compliance**: This validation report maintains constitutional hash `cdd01ef066bc6cf2` validation with comprehensive documentation quality monitoring and operational excellence for production-ready ACGS-2 constitutional AI governance platform.
 

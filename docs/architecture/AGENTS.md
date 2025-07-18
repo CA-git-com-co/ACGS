@@ -70,7 +70,7 @@ isort services/ scripts/ tests/
 ### Constitutional Framework Services
 ```bash
 # Core constitutional services
-curl http://localhost:8001/health/constitutional  # Constitutional AI
+curl http://localhost:8002/health/constitutional  # Constitutional AI
 curl http://localhost:8002/health                 # Integrity Service
 curl http://localhost:8010/health                 # API Gateway
 ```
@@ -79,7 +79,7 @@ curl http://localhost:8010/health                 # API Gateway
 ```bash
 # Multi-agent coordination
 curl http://localhost:8008/health  # Multi-Agent Coordinator
-curl http://localhost:8009/health  # Worker Agents
+curl http://localhost:8010/health  # Worker Agents
 curl http://localhost:8010/health  # Blackboard Service
 ```
 
@@ -120,9 +120,9 @@ open http://localhost:3000         # Grafana Dashboard
 ```mermaid
 graph TD
     A[Agent Request] --> B{Constitutional Validation}
-    B --> C[Constitutional AI :8001]
+    B --> C[Constitutional AI :8002]
     C --> D[Multi-Agent Coordinator :8008]
-    D --> E[Specialized Agents :8009]
+    D --> E[Specialized Agents :8010]
     E --> F[Blackboard :8010]
     F --> G[Audit Trail :8002]
 ```

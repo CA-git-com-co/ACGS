@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: acgs-system
+  labels:
+    name: acgs-system
+    constitutional-hash: cdd01ef066bc6cf2
+    environment: production
+    version: v1.0.0
+  annotations:
+    constitutional-compliance: "validated"
+    performance-target: "p99-5ms-100rps"
+    created-by: "acgs-deployment-system"
+    description: "ACGS-2 Constitutional Governance System Namespace"
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: acgs-system-quota
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hard:
+    requests.cpu: "10"
+    requests.memory: 20Gi
+    limits.cpu: "20"
+    limits.memory: 40Gi
+    persistentvolumeclaims: "10"
+    pods: "50"
+    services: "20"
+    secrets: "20"
+    configmaps: "20"
+---
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: acgs-system-limits
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  limits:
+  - default:
+      cpu: "1000m"
+      memory: "1Gi"
+    defaultRequest:
+      cpu: "100m"
+      memory: "128Mi"
+    max:
+      cpu: "2000m"
+      memory: "4Gi"
+    min:
+      cpu: "50m"
+      memory: "64Mi"
+    type: Container
+  - default:
+      storage: "10Gi"
+    max:
+      storage: "100Gi"
+    min:
+      storage: "1Gi"
+    type: PersistentVolumeClaim

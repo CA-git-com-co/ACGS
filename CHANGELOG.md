@@ -173,7 +173,7 @@ Each release includes:
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute to this changelog and the project.
+See [CONTRIBUTING.md](docs/CONTRIBUTING.md) for information on how to contribute to this changelog and the project.
 
 ## Support
 

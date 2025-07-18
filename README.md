@@ -1,7 +1,8 @@
 # 🏛️ ACGS-2 - Autonomous Constitutional Governance System
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/acgs/acgs-2/actions)
-[![Constitutional Compliance](https://img.shields.io/badge/constitutional--compliance-100%25-green.svg)](https://github.com/acgs/acgs-2/blob/main/docs/constitutional-framework.md)
+[![Constitutional Compliance](https://img.shields.io/badge/Constitutional%20Compliance-78.2%25-yellow?style=flat-square&logo=shield)](https://github.com/acgs/acgs-2/actions/workflows/constitutional-compliance.yml)
+[![Compliance Monitoring](https://img.shields.io/badge/Automated%20Monitoring-Active-brightgreen?style=flat-square&logo=github-actions)](https://github.com/acgs/acgs-2/actions/workflows/constitutional-compliance.yml)
 [![Performance](https://img.shields.io/badge/P99%20latency-<5ms%20achieved-brightgreen.svg)](https://github.com/acgs/acgs-2/blob/main/docs/performance-metrics.md)
 [![Coverage](https://img.shields.io/badge/coverage->90%25-brightgreen.svg)](https://github.com/acgs/acgs-2/blob/main/docs/testing.md)
 [![Security Grade](https://img.shields.io/badge/security-enterprise%20grade-brightgreen.svg)](https://github.com/acgs/acgs-2/blob/main/docs/security.md)
@@ -113,7 +114,7 @@ cd services/shared && alembic upgrade head
 docker compose -f infrastructure/docker/docker-compose.acgs.yml up -d --scale api_gateway=1
 
 # Verify service health
-curl http://localhost:8001/health  # Constitutional Core
+curl http://localhost:8002/health  # Constitutional Core
 curl http://localhost:8016/health  # Authentication Service
 curl http://localhost:8008/health  # Multi-Agent Coordinator
 ```
@@ -146,7 +147,7 @@ python3 scripts/testing/service_discovery.py --constitutional-hash cdd01ef066bc6
 ### **5. Access Services**
 - **🎨 Frontend Dashboard**: http://localhost:3000 (Resend-inspired design ✅)
 - **API Gateway**: http://localhost:8080 (API endpoints)
-- **Constitutional Core**: http://localhost:8001 (Governance API)
+- **Constitutional Core**: http://localhost:8002 (Governance API)
 - **Grafana Dashboard**: http://localhost:3001 (admin/admin123)
 - **Prometheus Metrics**: http://localhost:9091
 - **Interactive API Docs**: http://localhost:8080/docs
@@ -196,7 +197,7 @@ graph TB
     end
     
     subgraph "Constitutional Layer"
-        CC[Constitutional Core :8001]
+        CC[Constitutional Core :8002]
         IS[Integrity Service :8002]
         MAC[Multi-Agent Coordinator :8008]
     end
@@ -204,7 +205,7 @@ graph TB
     subgraph "Core Services"
         AS[Auth Service :8016]
         GS[Governance Synthesis :8004]
-        FV[Formal Verification :8011]
+        FV[Formal Verification :8012]
         PG[Policy Governance :8014]
     end
     
@@ -473,7 +474,7 @@ headers = {
 
 # Constitutional governance query
 response = requests.post(
-    "http://localhost:8001/v1/governance/validate",
+    "http://localhost:8002/v1/governance/validate",
     headers=headers,
     json={
         "action": "policy_decision",
@@ -484,7 +485,7 @@ response = requests.post(
 
 # Constitutional compliance check
 compliance = requests.get(
-    "http://localhost:8001/v1/constitutional/compliance",
+    "http://localhost:8002/v1/constitutional/compliance",
     headers=headers
 )
 ```
@@ -570,7 +571,7 @@ export ENVIRONMENT=development
 docker compose -f infrastructure/docker/docker-compose.acgs.yml up -d
 
 # 3. Verify Deployment
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 curl http://localhost:8016/health
 curl http://localhost:8008/health
 ```
@@ -926,8 +927,8 @@ echo $CONSTITUTIONAL_HASH
 echo $POSTGRES_HOST
 
 # Check port conflicts
-netstat -tulpn | grep :8001
-lsof -i :8001
+netstat -tulpn | grep :8002
+lsof -i :8002
 
 # Solution: Restart with correct configuration
 docker compose -f infrastructure/docker/docker-compose.acgs.yml restart
@@ -1021,7 +1022,7 @@ docker inspect acgs_default
 docker ps --format "table {{.Names}}\t{{.Ports}}"
 
 # Test service connectivity
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 curl http://localhost:8080/health
 
 # Solution: Recreate network
@@ -1064,7 +1065,7 @@ docker compose logs -f | grep -E "(ERROR|DEBUG|CONSTITUTIONAL)"
 
 ### **Getting Help**
 
-1. **Check Documentation**: [docs/](docs/)
+1. **Check Documentation**: [docs/](docs/architecture/CLAUDE.md)
 2. **Review Issues**: Search existing GitHub issues
 3. **Discord Community**: Join our Discord server
 4. **Professional Support**: Contact enterprise support team
@@ -1345,10 +1346,10 @@ We welcome contributions to ACGS-2! Please follow our comprehensive contribution
 
 ### **Development Resources**
 
-- **Contributing Guide**: [docs/development/CONTRIBUTING.md](docs/development/CONTRIBUTING.md)
-- **Code Style Guide**: [docs/development/CODE_STYLE.md](docs/development/CODE_STYLE.md)
-- **Architecture Guide**: [docs/architecture/](docs/architecture/)
-- **API Guidelines**: [docs/api/API_GUIDELINES.md](docs/api/API_GUIDELINES.md)
+- **Contributing Guide**: [docs/development/CONTRIBUTING.md](tools/mcp-inspector/CONTRIBUTING.md)
+- **Code Style Guide**: [docs/development/CODE_STYLE.md](docs_backup_20250717_155154/development/CODE_STYLE.md)
+- **Architecture Guide**: [docs/architecture/](docs/architecture/CLAUDE.md)
+- **API Guidelines**: [docs/api/API_GUIDELINES.md](docs_backup_20250717_155154/api/API_GUIDELINES.md)
 
 ### **Community**
 

@@ -46,7 +46,7 @@ These targets are validated continuously and must be maintained across all opera
 gs_service:
   ports: ["8004:8004"]
 pgc_service:
-  ports: ["8005:8005"]
+  ports: ["8005:8006"]
 ```
 
 **After:**
@@ -59,7 +59,7 @@ governance_engine:
 
 **Old:**
 - `GS_SERVICE_URL=http://gs_service:8004`
-- `PGC_SERVICE_URL=http://pgc_service:8005`
+- `PGC_SERVICE_URL=http://pgc_service:8006`
 
 **New:**
 - `GOVERNANCE_ENGINE_URL=http://governance_engine:8004`
@@ -71,7 +71,7 @@ governance_engine:
 - **New:** `http://governance_engine:8004/api/v1/synthesis/synthesize`
 
 ### Policy Enforcement APIs (formerly pgc_service)
-- **Old:** `http://pgc_service:8005/api/v1/enforce`
+- **Old:** `http://pgc_service:8006/api/v1/enforce`
 - **New:** `http://governance_engine:8004/api/v1/enforcement/enforce`
 
 ### New Unified APIs

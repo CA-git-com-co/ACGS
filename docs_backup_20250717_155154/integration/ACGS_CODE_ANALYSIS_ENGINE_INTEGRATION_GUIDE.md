@@ -10,7 +10,7 @@ This guide provides comprehensive examples and patterns for integrating the ACGS
 
 ```mermaid
 graph TD
-    A[Client Application] --> B[ACGS Code Analysis Engine :8007]
+    A[Client Application] --> B[ACGS Code Analysis Engine :8008]
     B --> C[Auth Service :8016]
     B --> D[Context Service :8012]
     B --> E[PostgreSQL :5439]

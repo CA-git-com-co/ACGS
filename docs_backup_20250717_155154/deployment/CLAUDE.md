@@ -100,7 +100,7 @@ The deployment system maintains constitutional hash `cdd01ef066bc6cf2` validatio
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Deployment**
+**Navigation**: [Root](CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Deployment**
 
 **Constitutional Compliance**: All deployment operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

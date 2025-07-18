@@ -3,12 +3,6 @@
 
 # Core testing framework
 pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
 
 # Async testing support
 asyncio-mqtt>=0.13.0
@@ -30,8 +24,6 @@ pydantic>=2.10.5
 marshmallow>=3.20.0
 
 # Database testing
-pytest>=8.3.4
-pytest>=8.3.4
 sqlalchemy>=2.0.23
 asyncpg>=0.29.0
 

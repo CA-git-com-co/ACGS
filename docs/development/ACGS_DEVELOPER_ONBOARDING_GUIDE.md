@@ -74,7 +74,7 @@ cd services/core/my-service
 python main.py
 
 # Test the health endpoint
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 
 # Expected response:
 {
@@ -210,7 +210,7 @@ async def create_resource(
 SERVICE_NAME=your-service-name
 SERVICE_VERSION=1.0.0
 SERVICE_DESCRIPTION=Your service description
-SERVICE_PORT=8001
+SERVICE_PORT=8002
 
 # Database configuration
 DATABASE_URL=postgresql+asyncpg://acgs:acgs@localhost:5439/acgs
@@ -387,13 +387,13 @@ async def test_service_integration():
 python main.py
 
 # Service will be available at:
-# http://localhost:8001 (or your configured port)
+# http://localhost:8002 (or your configured port)
 
 # Health check
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 
 # API documentation
-open http://localhost:8001/docs
+open http://localhost:8002/docs
 ```
 
 ### Docker Deployment
@@ -432,9 +432,9 @@ Your service must meet these ACGS performance requirements:
 
 Before diving deep into service development, it's important to understand the core architectural principles that govern the ACGS ecosystem. These concepts are crucial for building compliant, secure, and performant services.
 
-- **Constitutional Compliance**: The entire system operates under a set of constitutional principles, enforced by the constitutional hash (`cdd01ef066bc6cf2`). All services must adhere to these principles. For more details, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md#constitutional-compliance-first).
-- **Multi-Tenancy**: The system is designed to support multiple tenants, with strict data isolation enforced at the database and application levels. For more information on how multi-tenancy is implemented, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md#multi-tenant-architecture).
-- **API Standardization**: All services follow a standardized API design, based on the FastAPI service template. This ensures consistency and predictability across the entire ecosystem. For more details, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md#api-standardization).
+- **Constitutional Compliance**: The entire system operates under a set of constitutional principles, enforced by the constitutional hash (`cdd01ef066bc6cf2`). All services must adhere to these principles. For more details, see the [ACGS Unified Architecture Guide](../../docs_consolidated_archive_20250710_120000/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **Multi-Tenancy**: The system is designed to support multiple tenants, with strict data isolation enforced at the database and application levels. For more information on how multi-tenancy is implemented, see the [ACGS Unified Architecture Guide](../../docs_consolidated_archive_20250710_120000/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
+- **API Standardization**: All services follow a standardized API design, based on the FastAPI service template. This ensures consistency and predictability across the entire ecosystem. For more details, see the [ACGS Unified Architecture Guide](../../docs_consolidated_archive_20250710_120000/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
 
 
 

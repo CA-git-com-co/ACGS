@@ -48,10 +48,10 @@ Following the successful completion of the initial ACGS-PGP production deploymen
 
 For more detailed information regarding the achievements and underlying frameworks, please refer to the following documents:
 
-- **ACGS Service Architecture Overview**: For a comprehensive understanding of the services mentioned, see [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md).
-- **Academic Paper Enhancement Guide**: For details on the performance standards and quality criteria applied, refer to the [ACGS-2 Academic Paper Enhancement Guide](../../docs/ACADEMIC_PAPER_ENHANCEMENT_GUIDE.md).
-- **Testing and Validation Framework**: For information on the testing methodologies and validation processes, see the [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md).
-- **Documentation Implementation Report**: For a detailed report on the documentation expansion efforts, refer to the [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md).
+- **ACGS Service Architecture Overview**: For a comprehensive understanding of the services mentioned, see [ACGS Service Architecture Overview](../../ACGS_SERVICE_OVERVIEW.md).
+- **Academic Paper Enhancement Guide**: For details on the performance standards and quality criteria applied, refer to the [ACGS-2 Academic Paper Enhancement Guide](../../research/ACADEMIC_PAPER_ENHANCEMENT_GUIDE.md).
+- **Testing and Validation Framework**: For information on the testing methodologies and validation processes, see the [ACGE Testing and Validation Framework](../../compliance/ACGE_TESTING_VALIDATION_FRAMEWORK.md).
+- **Documentation Implementation Report**: For a detailed report on the documentation expansion efforts, refer to the [ACGS Documentation Implementation and Maintenance Plan - Completion Report](ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md).
 
 [Rest of the content remains the same but with "8 services" instead of "7 services" throughout the document]
 

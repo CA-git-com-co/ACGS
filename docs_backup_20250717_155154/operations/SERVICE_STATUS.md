@@ -659,7 +659,7 @@ docker restart acgs_integrity_service
 curl http://localhost:8002/health -v
 ```
 
-**📋 Detailed Resolution**: See [Service Issue Resolution Guide](SERVICE_ISSUE_RESOLUTION_GUIDE.md#issue-1-integrity-service-http-500-errors)
+**📋 Detailed Resolution**: See [Service Issue Resolution Guide](../../docs_consolidated_archive_20250710_120000/operations/SERVICE_ISSUE_RESOLUTION_GUIDE.md)
 
 ### Critical Issue 2: Evolutionary Computation Service (Connection Failed)
 
@@ -1325,10 +1325,10 @@ pg_isready -h localhost -p 5439 -U acgs_user
 redis-cli -h localhost -p 6389 ping
 
 # Check constitutional compliance
-curl http://localhost:8001/constitutional/compliance
+curl http://localhost:8002/constitutional/compliance
 
 # Check service integration
-curl http://localhost:8001/api/v1/performance/metrics
+curl http://localhost:8002/api/v1/performance/metrics
 ```
 
 ## 🛠️ Recovery Procedures
@@ -1391,7 +1391,7 @@ cd services/shared && alembic upgrade head
 
 Access metrics at:
 - Auth Service: http://localhost:8016/metrics
-- Constitutional AI: http://localhost:8001/metrics
+- Constitutional AI: http://localhost:8002/metrics
 - All other services: http://localhost:<port>/metrics
 
 ### Grafana Dashboard
@@ -1448,9 +1448,9 @@ Current alerts configured for:
 
 For a broader understanding of the ACGS platform and its operational aspects, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md)
 - [Service Issue Resolution Guide](SERVICE_ISSUE_RESOLUTION_GUIDE.md)
 
 

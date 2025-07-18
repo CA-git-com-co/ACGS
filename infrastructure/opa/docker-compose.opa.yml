@@ -1,3 +1,4 @@
+<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 version: '3.8'
 services:
   opa:
@@ -68,6 +69,10 @@ networks:
     name: acgs-opa-network
 # constitutional_hash: cdd01ef066bc6cf2
 
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
+**Constitutional Hash**: `cdd01ef066bc6cf2`
+
 
 
 ## Implementation Status
@@ -113,3 +118,7 @@ networks:
 - Constitutional validation caching for sub-millisecond response
 
 These targets are validated continuously and must be maintained across all operations.
+
+---
+
+**Constitutional Compliance**: All operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).

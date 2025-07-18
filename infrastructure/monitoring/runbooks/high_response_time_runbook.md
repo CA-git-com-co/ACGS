@@ -181,10 +181,10 @@ curl http://localhost:8004/api/v1/models/status
 
 ```bash
 # Check Solana RPC response times
-curl http://localhost:8005/metrics | grep solana_rpc_time
+curl http://localhost:8006/metrics | grep solana_rpc_time
 
 # Verify blockchain connectivity
-curl http://localhost:8005/api/v1/blockchain/health
+curl http://localhost:8006/api/v1/blockchain/health
 ```
 
 ### 10. Load Balancing and Scaling
@@ -334,8 +334,8 @@ python3 /home/dislove/ACGS-1/scripts/performance_analysis.py \
 
 - [Service Down Runbook](service_down_runbook.md)
 - [Database Issues Runbook](database_issues_runbook.md)
-- [Memory Issues Runbook](memory_issues_runbook.md)
-- [Load Balancing Runbook](load_balancing_runbook.md)
+- [Memory Issues Runbook](database_issues_runbook.md)
+- [Load Balancing Runbook](../grafana/dashboards/infrastructure/load-balancing-dashboard.json)
 
 
 

@@ -1,0 +1,538 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: acgs-gateway
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "acgs.local"
+    - "api.acgs.local"
+    - "monitoring.acgs.local"
+  - port:
+      number: 443
+      name: https
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      credentialName: acgs-tls-secret
+    hosts:
+    - "acgs.local"
+    - "api.acgs.local"
+    - "monitoring.acgs.local"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acgs-constitutional-core
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - "acgs.local"
+  - "constitutional-core"
+  gateways:
+  - acgs-gateway
+  - mesh
+  http:
+  - match:
+    - uri:
+        prefix: /constitutional/
+    route:
+    - destination:
+        host: constitutional-core
+        port:
+          number: 8001
+    timeout: 5s
+    retries:
+      attempts: 3
+      perTryTimeout: 2s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+          x-forwarded-proto: https
+  - match:
+    - uri:
+        prefix: /health
+    route:
+    - destination:
+        host: constitutional-core
+        port:
+          number: 8001
+    timeout: 2s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acgs-api-gateway
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - "api.acgs.local"
+  - "api-gateway"
+  gateways:
+  - acgs-gateway
+  - mesh
+  http:
+  - match:
+    - uri:
+        prefix: /api/
+    route:
+    - destination:
+        host: api-gateway
+        port:
+          number: 8080
+    timeout: 10s
+    retries:
+      attempts: 3
+      perTryTimeout: 3s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+          x-forwarded-proto: https
+  - match:
+    - uri:
+        prefix: /auth/
+    route:
+    - destination:
+        host: auth-service
+        port:
+          number: 8013
+    timeout: 5s
+    retries:
+      attempts: 2
+      perTryTimeout: 2s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acgs-monitoring
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - "monitoring.acgs.local"
+  gateways:
+  - acgs-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /prometheus/
+    route:
+    - destination:
+        host: prometheus
+        port:
+          number: 9090
+    timeout: 10s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+  - match:
+    - uri:
+        prefix: /grafana/
+    route:
+    - destination:
+        host: grafana
+        port:
+          number: 3000
+    timeout: 10s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+  - match:
+    - uri:
+        prefix: /kiali/
+    route:
+    - destination:
+        host: kiali
+        port:
+          number: 20001
+      weight: 100
+    timeout: 10s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+  - match:
+    - uri:
+        prefix: /jaeger/
+    route:
+    - destination:
+        host: jaeger-query
+        port:
+          number: 16686
+    timeout: 10s
+    headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: acgs-constitutional-core
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  host: constitutional-core
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 10s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+      http:
+        http1MaxPendingRequests: 50
+        http2MaxRequests: 100
+        maxRequestsPerConnection: 10
+        maxRetries: 3
+        consecutiveGatewayErrors: 5
+        h2UpgradePolicy: UPGRADE
+    loadBalancer:
+      simple: LEAST_CONN
+    outlierDetection:
+      consecutiveGatewayErrors: 5
+      consecutive5xxErrors: 5
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+      minHealthPercent: 50
+  portLevelSettings:
+  - port:
+      number: 8001
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        maxRequestsPerConnection: 5
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: acgs-database-services
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  host: postgres
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      tcp:
+        maxConnections: 50
+        connectTimeout: 5s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+    loadBalancer:
+      simple: ROUND_ROBIN
+    outlierDetection:
+      consecutiveGatewayErrors: 3
+      consecutive5xxErrors: 3
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 25
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: acgs-cache-services
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  host: redis
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      tcp:
+        maxConnections: 100
+        connectTimeout: 2s
+        tcpKeepalive:
+          time: 7200s
+          interval: 75s
+    loadBalancer:
+      simple: ROUND_ROBIN
+    outlierDetection:
+      consecutiveGatewayErrors: 3
+      consecutive5xxErrors: 3
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 25
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: acgs-agent-services
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  host: "*.acgs-system.svc.cluster.local"
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      tcp:
+        maxConnections: 50
+        connectTimeout: 5s
+      http:
+        http1MaxPendingRequests: 25
+        http2MaxRequests: 50
+        maxRequestsPerConnection: 5
+        maxRetries: 3
+        consecutiveGatewayErrors: 3
+        h2UpgradePolicy: UPGRADE
+    loadBalancer:
+      simple: LEAST_CONN
+    outlierDetection:
+      consecutiveGatewayErrors: 3
+      consecutive5xxErrors: 3
+      interval: 30s
+      baseEjectionTime: 30s
+      maxEjectionPercent: 50
+  exportTo:
+  - "*"
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: acgs-external-groq
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - api.groq.com
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: acgs-external-openai
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - api.openai.com
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: acgs-constitutional-header
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.lua
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.lua.v3.Lua
+          inline_code: |
+            function envoy_on_request(request_handle)
+              -- Add constitutional hash header
+              request_handle:headers():add("constitutional-hash", "cdd01ef066bc6cf2")
+              
+              -- Add timestamp header
+              request_handle:headers():add("x-request-timestamp", os.time())
+              
+              -- Add trace ID for constitutional compliance
+              local trace_id = request_handle:headers():get("x-trace-id")
+              if trace_id then
+                request_handle:headers():add("x-constitutional-trace", trace_id)
+              end
+            end
+            
+            function envoy_on_response(response_handle)
+              -- Validate constitutional hash in response
+              local response_hash = response_handle:headers():get("constitutional-hash")
+              if response_hash ~= "cdd01ef066bc6cf2" then
+                response_handle:logWarn("Constitutional hash mismatch in response")
+                response_handle:headers():add("x-constitutional-warning", "hash-mismatch")
+              end
+              
+              -- Add constitutional compliance header
+              response_handle:headers():add("x-constitutional-compliance", "validated")
+            end
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: acgs-performance-monitoring
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.filters.network.http_connection_manager"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: envoy.filters.http.wasm
+        typed_config:
+          "@type": type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+          config:
+            name: "acgs_performance_monitor"
+            root_id: "acgs_performance_monitor"
+            vm_config:
+              vm_id: "acgs_performance_monitor"
+              runtime: "envoy.wasm.runtime.v8"
+              code:
+                local:
+                  inline_string: |
+                    class ACGSPerformanceMonitor {
+                      constructor(rootContext) {
+                        this.rootContext = rootContext;
+                        this.startTime = 0;
+                      }
+                      
+                      onRequestHeaders() {
+                        this.startTime = Date.now();
+                        return FilterHeadersStatus.Continue;
+                      }
+                      
+                      onResponseHeaders() {
+                        const duration = Date.now() - this.startTime;
+                        
+                        // Check P99 latency requirement (5ms)
+                        if (duration > 5) {
+                          this.addResponseHeader("x-performance-warning", "latency-exceeded");
+                          this.addResponseHeader("x-latency-ms", duration.toString());
+                        }
+                        
+                        // Add performance metrics
+                        this.addResponseHeader("x-response-time-ms", duration.toString());
+                        this.addResponseHeader("x-constitutional-performance", "monitored");
+                        
+                        return FilterHeadersStatus.Continue;
+                      }
+                    }
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-traffic-config
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  traffic-policy.yaml: |
+    # ACGS-2 Traffic Management Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    global:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      performance_targets:
+        p99_latency_ms: 5
+        throughput_rps: 100
+        availability_percent: 99.9
+      
+    services:
+      constitutional-core:
+        max_connections: 100
+        timeout_seconds: 5
+        retries: 3
+        circuit_breaker:
+          consecutive_errors: 5
+          interval_seconds: 30
+          
+      groqcloud-policy:
+        max_connections: 50
+        timeout_seconds: 10
+        retries: 2
+        circuit_breaker:
+          consecutive_errors: 3
+          interval_seconds: 30
+          
+      auth-service:
+        max_connections: 75
+        timeout_seconds: 3
+        retries: 2
+        circuit_breaker:
+          consecutive_errors: 3
+          interval_seconds: 30
+          
+      api-gateway:
+        max_connections: 200
+        timeout_seconds: 10
+        retries: 3
+        circuit_breaker:
+          consecutive_errors: 5
+          interval_seconds: 30
+          
+    load_balancing:
+      algorithm: "LEAST_CONN"
+      health_check:
+        path: "/health"
+        interval_seconds: 10
+        timeout_seconds: 3
+        
+    security:
+      mutual_tls: true
+      constitutional_validation: true
+      header_validation: true
+      
+    monitoring:
+      tracing_enabled: true
+      metrics_enabled: true
+      sampling_rate: 1.0

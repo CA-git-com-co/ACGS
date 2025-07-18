@@ -1,0 +1,74 @@
+# ACGS-2 Production Dockerfile Template
+# Constitutional Hash: cdd01ef066bc6cf2
+# Multi-stage build for optimized production images
+
+ARG PYTHON_VERSION=3.11
+ARG SERVICE_NAME
+ARG SERVICE_PATH
+
+# Build stage
+FROM python:${PYTHON_VERSION}-slim as builder
+
+# Set constitutional hash
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy requirements and install dependencies
+COPY services/core/${SERVICE_PATH}/requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Production stage
+FROM python:${PYTHON_VERSION}-slim as production
+
+# Set constitutional hash and service metadata
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+ENV SERVICE_NAME=${SERVICE_NAME}
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
+
+# Create non-root user for security
+RUN groupadd -r acgs && useradd -r -g acgs -u 1001 acgs
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    ca-certificates \
+    curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
+
+# Copy virtual environment from builder
+COPY --from=builder /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Create application directory
+WORKDIR /app
+
+# Copy service code
+COPY services/core/${SERVICE_PATH}/ .
+
+# Set ownership to non-root user
+RUN chown -R acgs:acgs /app
+
+# Switch to non-root user
+USER acgs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+    CMD curl -f http://localhost:${PORT:-8000}/health || exit 1
+
+# Expose port
+EXPOSE ${PORT:-8000}
+
+# Run application
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}", "--workers", "1"]

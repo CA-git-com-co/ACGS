@@ -70,7 +70,7 @@ and enables explicitly sending `null`, `false`, `''`, or `0` on optional paramet
 Any field not specified is not sent.
 
 To construct fields with values, use the helpers `String()`, `Int()`, `Float()`, or most commonly, the generic `F[T]()`.
-To send a null, use `Null[T]()`, and to send a nonconforming value, use `Raw[T](any)`. For example:
+To send a null, use `Null[T]()`, and to send a nonconforming value, use `Raw[T](../../../platform_services/formal_verification/venv/lib/python3.12/site-packages/httpcore/_backends/anyio.py)`. For example:
 
 ```go
 params := FooParams{
@@ -85,7 +85,7 @@ params := FooParams{
 
 		// In cases where the API specifies a given type,
 		// but you want to send something else, use `Raw`:
-		Z: opencode.Raw[int64](0.01), // sends a float
+		Z: opencode.Raw[int64](../../../blockchain/.anchor/test-ledger/rocksdb/000061.sst), // sends a float
 	}),
 }
 ```
@@ -353,7 +353,7 @@ We are keen for your feedback; please open an [issue](https://www.github.com/sst
 
 ## Contributing
 
-See [the contributing documentation](./CONTRIBUTING.md).
+See [the contributing documentation](CONTRIBUTING.md).
 
 ## Implementation Status
 

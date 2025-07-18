@@ -294,10 +294,10 @@ async def test_extreme_content_detection(validation_service):
 
 ## 🔗 Related Documentation
 
-- [Constitutional AI Implementation Guide](./constitutional-ai-guide.md)
-- [Performance Optimization Guidelines](./performance-guide.md)
-- [CI/CD Pipeline Configuration](./cicd-guide.md)
-- [Security Testing Procedures](./security-testing.md)
+- [Constitutional AI Implementation Guide](../../docs_consolidated_archive_20250710_120000/api/constitutional-ai.md)
+- [Performance Optimization Guidelines](../../infrastructure/monitoring/rules/performance_rules.yml)
+- [CI/CD Pipeline Configuration](../../tools/CTMguide.md)
+- [Security Testing Procedures](../../archive/workflows/security-scanning.yml.backup)
 
 
 ## Implementation Status

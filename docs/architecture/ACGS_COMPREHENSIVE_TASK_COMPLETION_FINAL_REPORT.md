@@ -270,11 +270,11 @@ These targets are validated continuously and must be maintained across all opera
 
 For a deeper dive into the various aspects and related initiatives mentioned in this report, please refer to the following documents:
 
-- **ACGS Service Architecture Overview**: For a comprehensive understanding of the ACGS platform and its services, see [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md).
+- **ACGS Service Architecture Overview**: For a comprehensive understanding of the ACGS platform and its services, see [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md).
 - **ACGS R Markdown Analysis Audit Report**: For detailed findings of the R Markdown code quality audit, refer to [ACGS R Markdown Analysis Audit Report](ACGS_R_MARKDOWN_ANALYSIS_AUDIT_REPORT.md).
-- **ACGE Strategic Implementation Plan**: For the overarching strategic context and roadmap, see [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md).
-- **ACGE Testing and Validation Framework**: For details on the testing methodologies and validation processes, refer to the [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md).
-- **ACGE Cost Analysis and ROI Projections**: For information on the financial impact and benefits of these enhancements, see [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md).
+- **ACGE Strategic Implementation Plan**: For the overarching strategic context and roadmap, see [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md).
+- **ACGE Testing and Validation Framework**: For details on the testing methodologies and validation processes, refer to the [ACGE Testing and Validation Framework](../compliance/ACGE_TESTING_VALIDATION_FRAMEWORK.md).
+- **ACGE Cost Analysis and ROI Projections**: For information on the financial impact and benefits of these enhancements, see [ACGE Cost Analysis and ROI Projections](../ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md).
 - **CI/CD Workflows**: For details on the automated deployment and validation processes, refer to the workflows in the [.github/workflows/](../../.github/workflows/) directory.
 
 ## 📊 Final Metrics

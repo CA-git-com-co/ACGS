@@ -114,7 +114,7 @@ Standard HTTP status codes are used. All error responses include a constitutiona
 ## 5. Related Information
 
 - [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md)
 - [Constitutional AI Service API](constitutional-ai.md)
 ## Implementation Status
 

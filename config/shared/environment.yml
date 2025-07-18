@@ -1,0 +1,248 @@
+# ACGS-2 Shared Environment Configuration
+# This file consolidates environment-specific settings used across all services
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Common environment variables
+common:
+  constitutional_hash: "cdd01ef066bc6cf2"
+  
+  # Database configuration
+  database:
+    driver: "postgresql+asyncpg"
+    host: "postgres"
+    port: 5432
+    pool_size: 10
+    max_overflow: 20
+    pool_timeout: 30
+    pool_recycle: 3600
+    
+  # Redis configuration
+  redis:
+    host: "redis"
+    port: 6379
+    decode_responses: true
+    socket_timeout: 5
+    socket_connect_timeout: 5
+    max_connections: 100
+    
+  # Service discovery
+  services:
+    auth_service:
+      host: "auth_service"
+      port: 8000
+      path: "/api/v1"
+      
+    ac_service:
+      host: "ac_service"
+      port: 8001
+      path: "/api/v1"
+      
+    integrity_service:
+      host: "integrity_service"
+      port: 8002
+      path: "/api/v1"
+      
+    fv_service:
+      host: "fv_service"
+      port: 8003
+      path: "/api/v1"
+      
+    gs_service:
+      host: "gs_service"
+      port: 8004
+      path: "/api/v1"
+      
+    pgc_service:
+      host: "pgc_service"
+      port: 8005
+      path: "/api/v1"
+      
+    ec_service:
+      host: "ec_service"
+      port: 8006
+      path: "/api/v1"
+      
+  # Logging configuration
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    max_file_size: "10MB"
+    backup_count: 5
+    
+  # HTTP client configuration
+  http:
+    timeout: 30
+    max_retries: 3
+    retry_delay: 1
+    
+  # Monitoring configuration
+  monitoring:
+    prometheus:
+      enabled: true
+      port: 9090
+      path: "/metrics"
+    
+    health_check:
+      enabled: true
+      path: "/health"
+      interval: 30
+
+# Environment-specific overrides
+environments:
+  development:
+    database:
+      name: "acgs_development"
+      user: "acgs_dev"
+      password: "dev_password"
+      host: "localhost"
+      port: 5433
+      
+    redis:
+      password: "dev_password"
+      host: "localhost"
+      port: 6380
+      
+    logging:
+      level: "DEBUG"
+      
+    services:
+      auth_service:
+        host: "localhost"
+      ac_service:
+        host: "localhost"
+      integrity_service:
+        host: "localhost"
+      fv_service:
+        host: "localhost"
+      gs_service:
+        host: "localhost"
+      pgc_service:
+        host: "localhost"
+      ec_service:
+        host: "localhost"
+        
+  staging:
+    database:
+      name: "acgs_staging"
+      user: "acgs_staging"
+      password: "${POSTGRES_PASSWORD}"
+      port: 5434
+      pool_size: 15
+      
+    redis:
+      password: "${REDIS_PASSWORD}"
+      port: 6381
+      
+    logging:
+      level: "INFO"
+      
+  production:
+    database:
+      name: "acgs_production"
+      user: "acgs_prod"
+      password: "${POSTGRES_PASSWORD}"
+      port: 5439
+      pool_size: 20
+      max_overflow: 40
+      
+    redis:
+      password: "${REDIS_PASSWORD}"
+      port: 6389
+      max_connections: 200
+      
+    logging:
+      level: "WARNING"
+      
+    monitoring:
+      prometheus:
+        enabled: true
+        scrape_interval: "15s"
+        retention: "30d"
+
+# Service-specific environment configurations
+service_defaults:
+  # FastAPI defaults
+  fastapi:
+    workers: 1
+    reload: false
+    debug: false
+    access_log: true
+    
+  # Uvicorn defaults
+  uvicorn:
+    host: "0.0.0.0"
+    port: 8000
+    loop: "uvloop"
+    http: "httptools"
+    
+  # Security defaults
+  security:
+    cors_origins: ["*"]
+    cors_methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    cors_headers: ["*"]
+    
+# Resource limits by environment
+resources:
+  development:
+    memory_limit: "512MB"
+    cpu_limit: "0.5"
+    
+  staging:
+    memory_limit: "1GB"
+    cpu_limit: "1.0"
+    
+  production:
+    memory_limit: "2GB"
+    cpu_limit: "2.0"
+    memory_reservation: "512MB"
+    cpu_reservation: "0.5"
+
+# External service configurations
+external_services:
+  # AI Providers
+  openai:
+    base_url: "https://api.openai.com/v1"
+    timeout: 30
+    max_retries: 3
+    
+  groq:
+    base_url: "https://api.groq.com/openai/v1"
+    timeout: 30
+    max_retries: 3
+    
+  gemini:
+    base_url: "https://generativelanguage.googleapis.com/v1beta"
+    timeout: 30
+    max_retries: 3
+    
+  # Monitoring services
+  sentry:
+    enabled: false
+    traces_sample_rate: 0.1
+    
+  jaeger:
+    enabled: false
+    agent_host: "jaeger-agent"
+    agent_port: 6831
+
+# Performance and scaling
+performance:
+  # Connection pools
+  database_pool:
+    min_size: 5
+    max_size: 20
+    
+  redis_pool:
+    min_size: 10
+    max_size: 100
+    
+  # Caching
+  cache:
+    default_ttl: 3600
+    max_size: 1000
+    
+  # Rate limiting
+  rate_limiting:
+    enabled: true
+    default_limit: 1000
+    window: 60

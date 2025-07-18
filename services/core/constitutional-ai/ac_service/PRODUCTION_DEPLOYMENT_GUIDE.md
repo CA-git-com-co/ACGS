@@ -20,7 +20,7 @@ docker build -f Dockerfile.production -t acgs-governance:latest .
 # 运行容器
 docker run -d \
   --name governance-framework \
-  -p 8001:8001 -p 8000:8000 \
+  -p 8001:8002 -p 8000:8000 \
   -e CONSTITUTIONAL_HASH=cdd01ef066bc6cf2 \
   acgs-governance:latest
 ```
@@ -220,7 +220,7 @@ docker build -f Dockerfile.production -t acgs-governance:v1.0.0 .
 docker run -d \
   --name governance-framework \
   --restart unless-stopped \
-  -p 8001:8001 \
+  -p 8001:8002 \
   -p 8000:8000 \
   --env-file config/environments/development.env \
   --memory 2g \
@@ -228,7 +228,7 @@ docker run -d \
   acgs-governance:v1.0.0
 
 # 健康检查
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 curl http://localhost:8000/metrics  # Prometheus指标
 ```
 
@@ -299,13 +299,13 @@ kubectl apply -f monitoring/prometheus-alerts.yml
 
 ```bash
 # 基础健康检查
-curl http://localhost:8001/api/v1/enhanced-governance/health
+curl http://localhost:8002/api/v1/enhanced-governance/health
 
 # 性能指标检查
 curl http://localhost:8000/metrics | grep governance
 
 # 域特定测试
-curl -X POST http://localhost:8001/api/v1/enhanced-governance/evaluate \
+curl -X POST http://localhost:8002/api/v1/enhanced-governance/evaluate \
   -H "Content-Type: application/json" \
   -d '{
     "query": "Should we implement new patient data policy?",
@@ -324,7 +324,7 @@ docker logs governance-framework --tail 100 -f
 curl http://localhost:8000/metrics | grep -E "(latency|error|compliance)"
 
 # 验证宪法合规
-curl http://localhost:8001/api/v1/enhanced-governance/domains
+curl http://localhost:8002/api/v1/enhanced-governance/domains
 ```
 
 ### 性能调优

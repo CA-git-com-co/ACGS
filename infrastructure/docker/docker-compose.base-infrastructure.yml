@@ -1,0 +1,196 @@
+# ACGS-2 Base Infrastructure Services
+# This file consolidates common infrastructure services used across all environments
+# Use with environment-specific override files for complete configuration
+
+version: '3.8'
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-healthcheck-defaults: &healthcheck-defaults
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+x-constitutional-labels: &constitutional-labels
+  com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+  com.acgs.component: "infrastructure"
+  com.acgs.managed-by: "docker-compose"
+
+services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:16-alpine
+    container_name: acgs-postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-acgs}
+      POSTGRES_USER: ${POSTGRES_USER:-acgs_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acgs_secure_password}
+      POSTGRES_HOST_AUTH_METHOD: ${POSTGRES_HOST_AUTH_METHOD:-scram-sha-256}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts/postgres:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acgs_user} -d ${POSTGRES_DB:-acgs}"]
+    logging: *default-logging
+    labels:
+      <<: *constitutional-labels
+      com.acgs.service: "postgres"
+    networks:
+      - acgs-network
+
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: acgs-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:-acgs_redis_secure_password}
+      --maxmemory ${REDIS_MAX_MEMORY:-256mb}
+      --maxmemory-policy ${REDIS_POLICY:-allkeys-lru}
+      --appendonly ${REDIS_PERSISTENCE:-yes}
+      --appendfsync ${REDIS_FSYNC:-everysec}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-acgs_redis_secure_password}", "ping"]
+    logging: *default-logging
+    labels:
+      <<: *constitutional-labels
+      com.acgs.service: "redis"
+    networks:
+      - acgs-network
+
+  # NATS Messaging Service
+  nats:
+    image: nats:2.10-alpine
+    container_name: acgs-nats
+    restart: unless-stopped
+    ports:
+      - "${NATS_PORT:-4222}:4222"
+      - "${NATS_MONITORING_PORT:-8222}:8222"
+    command: >
+      -js
+      -m 8222
+      --store_dir /data
+      --max_payload ${NATS_MAX_PAYLOAD:-1MB}
+    volumes:
+      - nats_data:/data
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8222/healthz"]
+    logging: *default-logging
+    labels:
+      <<: *constitutional-labels
+      com.acgs.service: "nats"
+    networks:
+      - acgs-network
+
+  # Open Policy Agent (OPA)
+  opa:
+    image: openpolicyagent/opa:0.60.0-envoy
+    container_name: acgs-opa
+    restart: unless-stopped
+    ports:
+      - "${OPA_PORT:-8181}:8181"
+      - "${OPA_DIAG_PORT:-8282}:8282"
+    command: >
+      run
+      --server
+      --addr=:8181
+      --diagnostic-addr=:8282
+      --set=plugins.envoy_ext_authz_grpc.addr=:9191
+      --set=decision_logs.console=true
+      --set=status.console=true
+      /policies
+    volumes:
+      - ./policies:/policies:ro
+      - opa_data:/data
+    environment:
+      CONSTITUTIONAL_HASH: "cdd01ef066bc6cf2"
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "curl", "-f", "http://localhost:8181/health"]
+    logging: *default-logging
+    labels:
+      <<: *constitutional-labels
+      com.acgs.service: "opa"
+    networks:
+      - acgs-network
+
+  # HAProxy Load Balancer
+  haproxy:
+    image: haproxy:2.9-alpine
+    container_name: acgs-haproxy
+    restart: unless-stopped
+    ports:
+      - "${HAPROXY_HTTP_PORT:-80}:80"
+      - "${HAPROXY_HTTPS_PORT:-443}:443"
+      - "${HAPROXY_STATS_PORT:-8404}:8404"
+    volumes:
+      - ./config/haproxy:/usr/local/etc/haproxy:ro
+      - haproxy_certs:/certs:ro
+    healthcheck:
+      <<: *healthcheck-defaults
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8404/stats"]
+    logging: *default-logging
+    labels:
+      <<: *constitutional-labels
+      com.acgs.service: "haproxy"
+    networks:
+      - acgs-network
+    depends_on:
+      - postgres
+      - redis
+
+volumes:
+  postgres_data:
+    driver: local
+    labels:
+      <<: *constitutional-labels
+      com.acgs.volume: "postgres-data"
+  
+  redis_data:
+    driver: local
+    labels:
+      <<: *constitutional-labels
+      com.acgs.volume: "redis-data"
+  
+  nats_data:
+    driver: local
+    labels:
+      <<: *constitutional-labels
+      com.acgs.volume: "nats-data"
+  
+  opa_data:
+    driver: local
+    labels:
+      <<: *constitutional-labels
+      com.acgs.volume: "opa-data"
+  
+  haproxy_certs:
+    driver: local
+    labels:
+      <<: *constitutional-labels
+      com.acgs.volume: "haproxy-certs"
+
+networks:
+  acgs-network:
+    name: acgs-network
+    driver: bridge
+    labels:
+      <<: *constitutional-labels
+      com.acgs.network: "infrastructure"

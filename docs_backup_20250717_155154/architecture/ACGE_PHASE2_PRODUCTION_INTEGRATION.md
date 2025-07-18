@@ -192,11 +192,11 @@ class ProductionMigrationValidator:
 
         service_endpoints = {
             "auth": "http://localhost:8000/api/v1/auth/acge/validate",
-            "ac": "http://localhost:8001/api/v1/constitutional/acge/analyze",
+            "ac": "http://localhost:8002/api/v1/constitutional/acge/analyze",
             "integrity": "http://localhost:8002/api/v1/integrity/acge/audit",
-            "fv": "http://localhost:8003/api/v1/verification/acge/prove",
+            "fv": "http://localhost:8004/api/v1/verification/acge/prove",
             "gs": "http://localhost:8004/api/v1/governance/acge/synthesize",
-            "pgc": "http://localhost:8005/api/v1/policy/acge/compile",
+            "pgc": "http://localhost:8006/api/v1/policy/acge/compile",
             "ec": "http://localhost:8006/api/v1/evolution/acge/optimize"
         }
 
@@ -671,13 +671,13 @@ Phase 3 will extend this production-ready foundation to distributed edge deploym
 
 For a deeper dive into the various aspects and related initiatives mentioned in this report, please refer to the following documents:
 
-- **ACGS Service Architecture Overview**: For a comprehensive understanding of the ACGS platform and its services, see [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md).
-- **ACGE Strategic Implementation Plan**: For the overarching strategic context and roadmap, see [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md).
-- **ACGE Testing and Validation Framework**: For details on the testing methodologies and validation processes, refer to the [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md).
-- **ACGE Cost Analysis and ROI Projections**: For information on the financial impact and benefits of these enhancements, see [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md).
+- **ACGS Service Architecture Overview**: For a comprehensive understanding of the ACGS platform and its services, see [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md).
+- **ACGE Strategic Implementation Plan**: For the overarching strategic context and roadmap, see [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md).
+- **ACGE Testing and Validation Framework**: For details on the testing methodologies and validation processes, refer to the [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md).
+- **ACGE Cost Analysis and ROI Projections**: For information on the financial impact and benefits of these enhancements, see [ACGE Cost Analysis and ROI Projections](../ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md).
 - **ACGS Comprehensive Task Completion - Final Report**: For an overview of all completed tasks, see [ACGS Comprehensive Task Completion - Final Report](ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md).
-- **ACGS Platform Analytical Enhancements - Phase 1 Completion Report**: For details on the initial analytical enhancements, see [ACGS Platform Analytical Enhancements - Phase 1 Completion Report](ACGS_ANALYTICAL_ENHANCEMENTS_PHASE1_COMPLETION_REPORT.md).
-- **ACGS Platform Analytical Enhancements - Phase 2 Completion Report**: For details on the event-driven architecture enhancements, see [ACGS Platform Analytical Enhancements - Phase 2 Completion Report](ACGS_ANALYTICAL_ENHANCEMENTS_PHASE2_COMPLETION_REPORT.md).
+- **ACGS Platform Analytical Enhancements - Phase 1 Completion Report**: For details on the initial analytical enhancements, see [ACGS Platform Analytical Enhancements - Phase 1 Completion Report](../archive/completed_phases/ACGS_ANALYTICAL_ENHANCEMENTS_PHASE1_COMPLETION_REPORT.md).
+- **ACGS Platform Analytical Enhancements - Phase 2 Completion Report**: For details on the event-driven architecture enhancements, see [ACGS Platform Analytical Enhancements - Phase 2 Completion Report](../archive/completed_phases/ACGS_ANALYTICAL_ENHANCEMENTS_PHASE2_COMPLETION_REPORT.md).
 
 
 ## Implementation Status

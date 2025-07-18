@@ -452,8 +452,8 @@ This index provides comprehensive access to all ACGS documentation, organized by
 -----|
 | [**Documentation Standards**](standards/ACGS_DOCUMENTATION_STANDARDS.md) | Unified documentation patterns and requirements | ✅ Complete |
 | [**Developer Onboarding Guide**](development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md) | Comprehensive developer setup with FastAPI template | ✅ Complete |
-| [**FastAPI Service Template**](../services/shared/templates/fastapi_service_template/README.md) | Production-ready service template with constitutional compliance | ✅ Complete |
-| [**API Standardization Summary**](../API_STANDARDIZATION_SUMMARY.md) | Complete API standardization documentation | ✅ Complete |
+| [**FastAPI Service Template**](README.md) | Production-ready service template with constitutional compliance | ✅ Complete |
+| [**API Standardization Summary**](../reports/API_STANDARDIZATION_SUMMARY.md) | Complete API standardization documentation | ✅ Complete |
 
 ### 3. 🧪 Testing & Quality
 
@@ -880,7 +880,7 @@ This index provides comprehensive access to all ACGS documentation, organized by
 **Overall Status**: 🔄 IN PROGRESS - Systematic enhancement toward 95% compliance target
 
 -----|
-| [**Production Deployment Guide**](deployment/PRODUCTION_DEPLOYMENT_GUIDE.md) | Production deployment procedures | ✅ Complete |
+| [**Production Deployment Guide**](PRODUCTION_DEPLOYMENT_GUIDE.md) | Production deployment procedures | ✅ Complete |
 | [**Deployment Guide**](deployment/DEPLOYMENT_GUIDE.md) | General deployment procedures | ✅ Complete |
 | [**Production Operations**](operations/ACGS_PRODUCTION_OPERATIONS.md) | Production operations and maintenance | ✅ Complete |
 | [**Security Hardening Plan**](security/ACGS_SECURITY_HARDENING_PLAN.md) | Security procedures and compliance | ✅ Complete |
@@ -1366,7 +1366,7 @@ The completed Documentation Consolidation provides the foundation for the final 
 
 ### For New Developers
 1. Start with [**Developer Onboarding Guide**](development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md)
-2. Review [**FastAPI Service Template**](../services/shared/templates/fastapi_service_template/README.md)
+2. Review [**FastAPI Service Template**](README.md)
 3. Follow [**Documentation Standards**](standards/ACGS_DOCUMENTATION_STANDARDS.md)
 4. Reference [**API Documentation**](api/ACGS_API_REFERENCE.md)
 5. Study [**AI Governance Glossary**](reference/AI_GOVERNANCE_GLOSSARY.md) for terminology
@@ -1374,19 +1374,19 @@ The completed Documentation Consolidation provides the foundation for the final 
 ### For System Architects
 1. Review [**Unified Architecture Guide**](architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md)
 2. Study [**Service Integration Patterns**](integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md)
-3. Understand [**Multi-Tenant Architecture**](architecture/ACGS_MULTI_TENANT_ARCHITECTURE.md)
-4. Examine [**Constitutional AI Framework**](architecture/ACGS_CONSTITUTIONAL_AI_FRAMEWORK.md)
+3. Understand [**Multi-Tenant Architecture**](../docs_consolidated_archive_20250710_120000/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md)
+4. Examine [**Constitutional AI Framework**](../services/shared/middleware/FAST_CONSTITUTIONAL_VALIDATOR_SUMMARY.md)
 
 ### For DevOps Engineers
-1. Follow [**Deployment Guide**](deployment/ACGS_DEPLOYMENT_GUIDE.md)
-2. Configure [**Kubernetes Setup**](deployment/ACGS_KUBERNETES_GUIDE.md)
-3. Implement [**Monitoring & Observability**](operations/ACGS_MONITORING_GUIDE.md)
-4. Establish [**Security Operations**](security/ACGS_SECURITY_OPERATIONS.md)
+1. Follow [**Deployment Guide**](../docs/deployment/DEPLOYMENT_GUIDE.md)
+2. Configure [**Kubernetes Setup**](../docs/ACGS_UNIFIED_TOOLS_GUIDE.md)
+3. Implement [**Monitoring & Observability**](../infrastructure/monitoring/SECURITY_MONITORING_GUIDE.md)
+4. Establish [**Security Operations**](../docs_consolidated_archive_20250710_120000/operations/ACGS_PRODUCTION_OPERATIONS.md)
 
 ### For QA Engineers
 1. Study [**Testing Strategy Foundation**](testing/ACGS_TESTING_STRATEGY_FOUNDATION.md)
-2. Implement [**Constitutional Compliance Testing**](testing/ACGS_CONSTITUTIONAL_COMPLIANCE_TESTING.md)
-3. Execute [**Performance Testing**](testing/ACGS_PERFORMANCE_TESTING_GUIDE.md)
+2. Implement [**Constitutional Compliance Testing**](../docs/compliance/ACGS_CONSTITUTIONAL_COMPLIANCE_ENHANCEMENT_REPORT.md)
+3. Execute [**Performance Testing**](../infrastructure/monitoring/PERFORMANCE_VALIDATION_GUIDE.md)
 4. Validate [**Multi-Tenant Testing**](testing/ACGS_MULTI_TENANT_TESTING.md)
 
 ## 🔄 Documentation Maintenance

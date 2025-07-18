@@ -122,7 +122,7 @@ Welcome to the Autonomous Coding Governance System (ACGS) production environment
 2. **Constitutional Compliance Monitoring**
    ```bash
    # Check compliance status
-   curl http://localhost:8001/health/compliance
+   curl http://localhost:8002/health/compliance
    
    # View compliance metrics
    curl http://localhost:9090/api/v1/query?query=acgs_constitutional_compliance_rate
@@ -232,14 +232,14 @@ Welcome to the Autonomous Coding Governance System (ACGS) production environment
 2. **Use Access Token**
    ```bash
    curl -H "Authorization: Bearer YOUR_TOKEN" \
-     http://localhost:8001/api/v1/constitutional/validate
+     http://localhost:8002/api/v1/constitutional/validate
    ```
 
 ### Constitutional AI Service
 
 1. **Validate Code Compliance**
    ```bash
-   curl -X POST http://localhost:8001/api/v1/constitutional/validate \
+   curl -X POST http://localhost:8002/api/v1/constitutional/validate \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"code": "your_code_here", "policy": "governance_policy"}'
@@ -247,7 +247,7 @@ Welcome to the Autonomous Coding Governance System (ACGS) production environment
 
 2. **Submit Governance Proposal**
    ```bash
-   curl -X POST http://localhost:8001/api/v1/governance/propose \
+   curl -X POST http://localhost:8002/api/v1/governance/propose \
      -H "Authorization: Bearer YOUR_TOKEN" \
      -H "Content-Type: application/json" \
      -d '{"title": "New Policy", "description": "Policy description", "content": "Policy content"}'
@@ -360,10 +360,10 @@ Welcome to the Autonomous Coding Governance System (ACGS) production environment
 ## Support and Resources
 
 ### Documentation
-- [ACGS Technical Specifications](../TECHNICAL_SPECIFICATIONS_2025.md)
-- [API Documentation](../api/README.md)
-- [Deployment Guide](../deployment/README.md)
-- [Security Guide](../security/README.md)
+- [ACGS Technical Specifications](../api/TECHNICAL_SPECIFICATIONS_2025.md)
+- [API Documentation](../README.md)
+- [Deployment Guide](../README.md)
+- [Security Guide](../README.md)
 
 ### Training Resources
 - ACGS Administrator Certification Course

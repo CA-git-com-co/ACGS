@@ -599,9 +599,9 @@ async def performance_monitoring_middleware(request: Request, call_next):
 For a broader understanding of the ACGS platform and its components, refer to:
 
 - **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Code Analysis Engine Implementation Plan](../../docs/implementation/ACGS_CODE_ANALYSIS_ENGINE_IMPLEMENTATION_PLAN.md)
-- [ACGS Code Analysis Engine Deployment Guide](../../docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
-- [ACGS Code Analysis Engine Integration Guide](../../docs/integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md) file.
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Code Analysis Engine Implementation Plan](../implementation/ACGS_CODE_ANALYSIS_ENGINE_IMPLEMENTATION_PLAN.md)
+- [ACGS Code Analysis Engine Deployment Guide](../deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
+- [ACGS Code Analysis Engine Integration Guide](../integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
+- [ACGS System Overview](SYSTEM_OVERVIEW.md)

@@ -118,9 +118,9 @@ performance:
 The system detects various types of cross-references:
 
 ### 1. Markdown Links
-- `[text](path/to/file.md)` - Standard markdown links
+- `[text](../../../services/cli/opencode/src/cli/cmd/debug/file.ts)` - Standard markdown links
 - `[text]: path/to/file.md` - Reference-style links
-- `![alt](path/to/image.png)` - Image references
+- `![alt](../../../services/cli/tui/internal/image/images.go)` - Image references
 
 ### 2. Code References
 - `import "path/to/module"` - Import statements

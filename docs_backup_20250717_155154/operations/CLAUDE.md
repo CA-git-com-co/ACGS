@@ -100,7 +100,7 @@ The operations system maintains constitutional hash `cdd01ef066bc6cf2` validatio
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Operations**
+**Navigation**: [Root](CLAUDE.md) → [Docs_Backup_20250717_155154](../CLAUDE.md) → **Operations**
 
 **Constitutional Compliance**: All operations operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

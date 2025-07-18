@@ -112,7 +112,7 @@ These targets are validated continuously and must be maintained across all opera
 
 ---
 
-**Navigation**: [Root](../../CLAUDE.md) → [Web](../CLAUDE.md) → **Templates**
+**Navigation**: [Root](CLAUDE.md) → [Web](../CLAUDE.md) → **Templates**
 
 **Constitutional Compliance**: All templates operations maintain constitutional hash `cdd01ef066bc6cf2` validation and performance targets (P99 <5ms, >100 RPS, >85% cache hit rates).
 

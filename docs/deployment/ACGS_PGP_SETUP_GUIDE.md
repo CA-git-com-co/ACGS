@@ -291,7 +291,7 @@ docker-compose -f infrastructure/docker/docker-compose.acgs.yml up -d
 
 # Or start services individually
 cd services/platform/authentication/auth_service && uvicorn app.main:app --host 0.0.0.0 --port 8000
-cd services/core/constitutional-ai/ac_service && uvicorn app.main:app --host 0.0.0.0 --port 8001
+cd services/core/constitutional-ai/ac_service && uvicorn app.main:app --host 0.0.0.0 --port 8002
 # ... continue for all services
 ```
 
@@ -371,7 +371,7 @@ grep -r "cdd01ef066bc6cf2" config/
 curl http://localhost:8181/v1/policies
 
 # Validate AI model integrations
-curl http://localhost:8001/constitutional/compliance
+curl http://localhost:8002/constitutional/compliance
 ```
 
 #### 3. Performance Issues
@@ -424,7 +424,7 @@ for port in {8000..8006}; do
 done
 
 # Or use individual service shutdown
-curl -X POST http://localhost:8001/emergency/shutdown
+curl -X POST http://localhost:8002/emergency/shutdown
 ```
 
 #### Rollback Procedures
@@ -526,32 +526,32 @@ For technical support and questions:
 
 ## Additional Resources
 
-- **[ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md)**: Detailed troubleshooting procedures
-- **[Service-Specific Documentation](services/)**: Individual service READMEs and API documentation
-- **[Test Suite Documentation](scripts/test_setup_scripts_comprehensive.sh)**: Comprehensive testing procedures
-- **[AI Model Integration Guide](config/ai-models/)**: AI model configuration and troubleshooting
+- **[ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md.backup)**: Detailed troubleshooting procedures
+- **[Service-Specific Documentation](../../services/core/CLAUDE.md)**: Individual service READMEs and API documentation
+- **[Test Suite Documentation](../../scripts/development/test_setup_scripts_comprehensive.sh.backup)**: Comprehensive testing procedures
+- **[AI Model Integration Guide](../../config/CLAUDE.md)**: AI model configuration and troubleshooting
 
 ## Additional Resources
 
-- **[ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md)**: Detailed troubleshooting procedures
-- **[Service-Specific Documentation](services/)**: Individual service READMEs and API documentation
-- **[Test Suite Documentation](scripts/test_setup_scripts_comprehensive.sh)**: Comprehensive testing procedures
-- **[AI Model Integration Guide](config/ai-models/)**: AI model configuration and troubleshooting
+- **[ACGS-PGP Troubleshooting Guide](ACGS_PGP_TROUBLESHOOTING_GUIDE.md.backup)**: Detailed troubleshooting procedures
+- **[Service-Specific Documentation](../../services/core/CLAUDE.md)**: Individual service READMEs and API documentation
+- **[Test Suite Documentation](../../scripts/development/test_setup_scripts_comprehensive.sh.backup)**: Comprehensive testing procedures
+- **[AI Model Integration Guide](../../config/CLAUDE.md)**: AI model configuration and troubleshooting
 
 ## Related Information
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
-- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
-- [ACGS Implementation Guide](ACGS_IMPLEMENTATION_GUIDE.md)
-- [ACGS-PGP Operational Deployment Guide](ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md)
-- [Service Status Dashboard](../operations/SERVICE_STATUS.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs_consolidated_archive_20250710_120000/deployment/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md.backup)
+- [ACGE Testing and Validation Framework](../compliance/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../../docs_consolidated_archive_20250710_120000/deployment/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md.backup)
+- [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md.backup)
+- [ACGS Implementation Guide](ACGS_IMPLEMENTATION_GUIDE.md.backup)
+- [ACGS-PGP Operational Deployment Guide](ACGS_PGP_OPERATIONAL_DEPLOYMENT_GUIDE.md.backup)
+- [Service Status Dashboard](../operations/SERVICE_STATUS.md.backup)
 
 
 ## Implementation Status

@@ -21,7 +21,7 @@ PocketFlow-Rust bridges the gap between AI decision-making and blockchain govern
 ```mermaid
 graph TD
     A[AI Agent] --> B[PocketFlow-Rust]
-    B --> C[Constitutional AI Service :8001]
+    B --> C[Constitutional AI Service :8002]
     B --> D[QuantumAGI Programs]
     B --> E[Integrity Service :8002]
     C --> F[Constitutional Validation]
@@ -194,7 +194,7 @@ shared.insert("compliant".to_string(), Box::new(true));
 use pocketflow_rust::nodes::ConstitutionalValidatorNode;
 
 let validator = ConstitutionalValidatorNode::new(
-    "http://localhost:8001".to_string(), // Constitutional AI Service
+    "http://localhost:8002".to_string(), // Constitutional AI Service
     |shared| shared.get("proposal").unwrap().downcast_ref::<String>().unwrap().clone(),
     |shared, is_compliant| {
         if is_compliant {
@@ -312,7 +312,7 @@ CMD ["pocketflow-rust"]
 ```bash
 # Production environment variables
 export SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
-export CONSTITUTIONAL_AI_SERVICE="https://acgs.example.com:8001"
+export CONSTITUTIONAL_AI_SERVICE="https://acgs.example.com:8002"
 export INTEGRITY_SERVICE="https://acgs.example.com:8002"
 export OPENAI_API_KEY="prod_key"
 export LOG_LEVEL="info"
@@ -331,10 +331,10 @@ export LOG_LEVEL="info"
 
 PocketFlow-Rust integrates seamlessly with ACGS-2's service architecture:
 
-- **Constitutional AI Service** (port 8001): Validation and compliance
+- **Constitutional AI Service** (port 8002): Validation and compliance
 - **Integrity Service** (port 8002): Audit logging and trails
 - **Multi-Agent Coordinator** (port 8008): Agent orchestration
-- **Worker Agents** (port 8009): Specialized AI analysis
+- **Worker Agents** (port 8010): Specialized AI analysis
 - **API Gateway** (port 8010): Service routing and auth
 
 ## Roadmap
@@ -348,7 +348,7 @@ PocketFlow-Rust integrates seamlessly with ACGS-2's service architecture:
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](../../../LICENSE) file for details.
 
 ## Support
 

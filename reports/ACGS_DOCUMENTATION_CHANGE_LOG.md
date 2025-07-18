@@ -19,10 +19,10 @@ This change log documents all modifications made to ACGS-2 documentation files t
 ```markdown
 ### Service Endpoints
 
-- Authentication: http://localhost:8013 (External) → Internal 8000
+- Authentication: http://localhost:8014 (External) → Internal 8000
 - Constitutional AI: http://localhost:8014 (External) → Internal 8001
 - XAI Integration: http://localhost:8014 (Production)
-- Integrity: http://localhost:8015 (External) → Internal 8002
+- Integrity: http://localhost:8016 (External) → Internal 8002
 - Formal Verification: http://localhost:8017 (External) → Internal 8003
 - Governance Synthesis: http://localhost:8018 (External) → Internal 8004
 - Policy Governance: http://localhost:8019 (External) → Internal 8005
@@ -34,9 +34,9 @@ This change log documents all modifications made to ACGS-2 documentation files t
 ```markdown
 ### Service Endpoints
 
-- Authentication Service: http://localhost:8013 (External) → Internal 8000 ✅ IMPLEMENTED
+- Authentication Service: http://localhost:8014 (External) → Internal 8000 ✅ IMPLEMENTED
 - Constitutional AI Service: http://localhost:8014 (External) → Internal 8001 ✅ IMPLEMENTED  
-- Integrity Service: http://localhost:8015 (External) → Internal 8002 ✅ IMPLEMENTED
+- Integrity Service: http://localhost:8016 (External) → Internal 8002 ✅ IMPLEMENTED
 - Formal Verification Service: http://localhost:8017 (External) → Internal 8003 ✅ IMPLEMENTED
 - Governance Synthesis Service: http://localhost:8018 (External) → Internal 8004 ✅ IMPLEMENTED
 - Policy Governance Service: http://localhost:8019 (External) → Internal 8005 ✅ IMPLEMENTED
@@ -166,7 +166,7 @@ This change log documents all modifications made to ACGS-2 documentation files t
 └─────────────────────────────────────────────────────────────┘
 ```
 
-**Port Mapping Legend**: External→Internal (e.g., 8013→8000 means external port 8013 maps to internal port 8000)
+**Port Mapping Legend**: External→Internal (e.g., 8013→8000 means external port 8014 maps to internal port 8000)
 ```
 
 **Changes Made:**

@@ -25,7 +25,7 @@ This document defines the integration architecture for coordinating Claude agent
 │  Claude Agents ←→ MCP Aggregator ←→ ACGS Services              │
 │                                                                 │
 │  MCP Layer (Ports 3000-3003)    ACGS Layer (Ports 8001-8016)  │
-│  ├── MCP Aggregator :3000       ├── Constitutional AI :8001    │
+│  ├── MCP Aggregator :3000       ├── Constitutional AI :8002    │
 │  ├── Filesystem MCP :3001       ├── Integrity Service :8002    │
 │  ├── GitHub MCP :3002           ├── Multi-Agent Coord :8008    │
 │  └── Browser MCP :3003          ├── Blackboard Service :8010   │
@@ -50,7 +50,7 @@ All components maintain constitutional compliance through:
 ```yaml
 claude_agent_request:
   entry_point: "MCP Aggregator (port 3000)"
-  validation: "Constitutional AI Service (port 8001)"
+  validation: "Constitutional AI Service (port 8002)"
   coordination: "Multi-Agent Coordinator (port 8008)"
   knowledge_sharing: "Blackboard Service (port 8010)"
   execution: "MCP Tools (ports 3001-3003)"
@@ -212,7 +212,7 @@ docker-compose -f docker-compose.yml up -d
 ```bash
 # ACGS Service URLs (existing)
 ACGS_AUTH_SERVICE_URL=http://localhost:8016
-ACGS_CONSTITUTIONAL_AI_URL=http://localhost:8001
+ACGS_CONSTITUTIONAL_AI_URL=http://localhost:8002
 ACGS_MULTI_AGENT_COORDINATOR_URL=http://localhost:8008
 ACGS_BLACKBOARD_SERVICE_URL=http://localhost:8010
 
@@ -234,7 +234,7 @@ AUDIT_ALL_OPERATIONS=true
 // Enhanced service discovery for Claude-MCP-ACGS integration
 interface ACGSServiceRegistry {
   acgs_services: {
-    constitutional_ai: "http://localhost:8001"
+    constitutional_ai: "http://localhost:8002"
     integrity: "http://localhost:8002"
     multi_agent_coordinator: "http://localhost:8008"
     blackboard: "http://localhost:8010"
@@ -310,7 +310,7 @@ scrape_configs:
     
   - job_name: 'constitutional-compliance'
     static_configs:
-      - targets: ['localhost:8001', 'localhost:8002']
+      - targets: ['localhost:8002', 'localhost:8002']
     metrics_path: '/metrics'
     scrape_interval: 10s
 ```
@@ -525,10 +525,10 @@ These targets are validated continuously and must be maintained across all opera
 
 ## 📚 **References**
 
-- **[Integration Summary](</home/dislove/ACGS-2/docs/integration/INTEGRATION_SUMMARY.md>)**: A high-level overview of the Claude-MCP-ACGS integration.
-- **[Multi-Agent Coordination Policy Blueprint](</home/dislove/ACGS-2/docs/coordination-policy.md>)**: Detailed specifications for state, action, and reward schemas, RPC protocols, and fault tolerance.
-- **[Production-Ready Docker Compose Stack](</home/dislove/ACGS-2/docker-compose.yml>)**: The complete Docker Compose file for deploying the MCP server stack.
-- **[Environment Configuration](</home/dislove/ACGS-2/config/environments/developmentconfig/environments/template.env>)**: The template for configuring the environment variables for the MCP server stack.
-- **[Operational Runbook](</home/dislove/ACGS-2/DEPLOYMENT.md>)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
-- **[Integration Validation Script](</home/dislove/ACGS-2/scripts/validate_claude_mcp_integration.sh>)**: The script for automated health checks, performance testing, and constitutional compliance validation.
-- **[CLAUDE.md](</home/dislove/ACGS-2/CLAUDE.md>)**: Guidance for Claude when working with code in this repository.
+- **[Integration Summary](../../docs_consolidated_archive_20250710_120000/deployment/INTEGRATION_SUMMARY.md)**: A high-level overview of the Claude-MCP-ACGS integration.
+- **[Multi-Agent Coordination Policy Blueprint](../coordination-policy.md)**: Detailed specifications for state, action, and reward schemas, RPC protocols, and fault tolerance.
+- **[Production-Ready Docker Compose Stack](../../monitoring/docker-compose.yml)**: The complete Docker Compose file for deploying the MCP server stack.
+- **[Environment Configuration](../../config/environments/template.env)**: The template for configuring the environment variables for the MCP server stack.
+- **[Operational Runbook](../../docs_consolidated_archive_20250710_120000/deployment/DEPLOYMENT.md)**: Step-by-step instructions for deploying, validating, and troubleshooting the integration.
+- **[Integration Validation Script](../../scripts/monitoring/validate_claude_mcp_integration.sh)**: The script for automated health checks, performance testing, and constitutional compliance validation.
+- **[CLAUDE.md](../../CLAUDE.md)**: Guidance for Claude when working with code in this repository.

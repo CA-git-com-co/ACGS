@@ -330,9 +330,9 @@ capture_groups:
 
 For a comprehensive overview of the documentation implementation and the services validated by these tools, refer to:
 
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
-- [Service Configuration Alignment Guide](../validation/SERVICE_CONFIG_ALIGNMENT.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md.backup)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [Service Configuration Alignment Guide](../validation/SERVICE_CONFIG_ALIGNMENT.md.backup)
 
 ## Emergency Procedures
 

@@ -268,23 +268,23 @@ services/core/constitutional-ai/ac_service/
 ### Health Check Endpoints
 ```bash
 # Basic health check
-curl http://localhost:8001/health
+curl http://localhost:8002/health
 
 # Detailed health with dependencies
-curl http://localhost:8001/health/detailed
+curl http://localhost:8002/health/detailed
 
 # Comprehensive health with performance metrics
-curl http://localhost:8001/health/comprehensive
+curl http://localhost:8002/health/comprehensive
 
 # Kubernetes probes
-curl http://localhost:8001/health/ready
-curl http://localhost:8001/health/live
+curl http://localhost:8002/health/ready
+curl http://localhost:8002/health/live
 ```
 
 ### Metrics Collection
 ```bash
 # Prometheus metrics endpoint
-curl http://localhost:8001/metrics
+curl http://localhost:8002/metrics
 
 # Constitutional compliance metrics
 acgs_constitutional_compliance_score{service="constitutional-ai"} 1.0

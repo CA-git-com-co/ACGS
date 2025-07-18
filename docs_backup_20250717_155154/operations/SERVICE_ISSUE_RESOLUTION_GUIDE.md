@@ -426,11 +426,11 @@ sleep 60
 # Verify all services
 echo "Verifying service health..."
 curl http://localhost:8016/health  # Auth
-curl http://localhost:8001/health  # Constitutional AI
+curl http://localhost:8002/health  # Constitutional AI
 curl http://localhost:8002/health  # Integrity
-curl http://localhost:8003/health  # Formal Verification
+curl http://localhost:8004/health  # Formal Verification
 curl http://localhost:8004/health  # Governance Synthesis
-curl http://localhost:8005/health  # Policy Governance
+curl http://localhost:8006/health  # Policy Governance
 curl http://localhost:8006/health  # Evolutionary Computation
 
 echo "Recovery complete!"
@@ -522,11 +522,11 @@ redis-cli -h localhost -p 6389 ping > /dev/null && echo "✅ Redis - Healthy" ||
 
 For a broader understanding of the ACGS platform and its components, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 - [ACGS Comprehensive Task Completion - Final Report](../architecture/ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
 - [ACGS-Claudia Integration Architecture Plan](../architecture/ACGS_CLAUDIA_INTEGRATION_ARCHITECTURE.md)
 - [ACGS Implementation Guide](../deployment/ACGS_IMPLEMENTATION_GUIDE.md)
@@ -534,7 +534,7 @@ For a broader understanding of the ACGS platform and its components, refer to:
 - [ACGS-PGP Troubleshooting Guide](../deployment/ACGS_PGP_TROUBLESHOOTING_GUIDE.md)
 - [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md)
 - [Service Status Dashboard](SERVICE_STATUS.md)
-- [ACGS Configuration Guide](../configuration/README.md)
+- [ACGS Configuration Guide](../README.md)
 - [ACGS-2 Technical Specifications - 2025 Edition](../TECHNICAL_SPECIFICATIONS_2025.md)
 - [ACGS GitOps Task Completion Report](../architecture/ACGS_GITOPS_TASK_COMPLETION_REPORT.md)
 - [ACGS GitOps Comprehensive Validation Report](../architecture/ACGS_GITOPS_COMPREHENSIVE_VALIDATION_REPORT.md)
@@ -545,7 +545,7 @@ For a broader understanding of the ACGS platform and its components, refer to:
 - [ACGE Phase 3: Edge Infrastructure & Deployment](../architecture/ACGE_PHASE3_EDGE_INFRASTRUCTURE.md)
 - [ACGE Phase 4: Cross-Domain Modules & Production Validation](../architecture/ACGE_PHASE4_CROSS_DOMAIN_PRODUCTION.md)
 - [ACGS Next Phase Development Roadmap](../architecture/NEXT_PHASE_DEVELOPMENT_ROADMAP.md)
-- [ACGS Remaining Tasks Completion Summary](../REMAINING_TASKS_COMPLETION_SUMMARY.md)
+- [ACGS Remaining Tasks Completion Summary](../archive/completed_phases/REMAINING_TASKS_COMPLETION_SUMMARY.md)
 - [GitHub Actions Systematic Fixes - Final Report](../workflow_systematic_fixes_final_report.md)
 - [GitHub Actions Workflow Systematic Fixes Summary](../workflow_fixes_summary.md)
 - [Security Input Validation Integration - Completion Report](../security_validation_completion_report.md)
@@ -585,4 +585,4 @@ For a broader understanding of the ACGS platform and its components, refer to:
 For a broader understanding of the ACGS platform and its components, refer to:
 
 - **Unified Architecture Guide**: For a comprehensive overview of the ACGS architecture, see the [ACGS Unified Architecture Guide](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md).
-- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../../GEMINI.md) file.
+- **GEMINI.md**: For a comprehensive overview of the entire ACGS project, including development environment setup, testing commands, and service architecture, see the [GEMINI.md](../development/GEMINI.md) file.

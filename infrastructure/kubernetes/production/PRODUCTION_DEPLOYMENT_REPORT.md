@@ -232,7 +232,7 @@ spec:
 
 ```bash
 # Access production services
-kubectl port-forward svc/acgs-production-router 8001:8001 -n acgs-production
+kubectl port-forward svc/acgs-production-router 8001:8002 -n acgs-production
 
 # Monitor production health
 ./infrastructure/kubernetes/operations/health-monitor.sh monitor

@@ -33,10 +33,10 @@ The ACGS (Autonomous Coding Governance System) consists of 13 core services that
 
 - **Database**: PostgreSQL (Port 5439)
   - Primary database with Row-Level Security (RLS) for data isolation and security.
-  - Configured via [Kubernetes Database YAML](../../infrastructure/kubernetes/database.yaml) and [Docker Compose PostgreSQL](../../docker-compose.postgresql.yml).
+  - Configured via [Kubernetes Database YAML](../infrastructure/kubernetes/database.yaml) and [Docker Compose PostgreSQL](../infrastructure/docker/docker-compose.postgresql.yml).
 - **Cache**: Redis (Port 6389)
   - Used for high-speed caching and session management.
-  - Configured via [Kubernetes Redis YAML](../../infrastructure/kubernetes/redis.yaml) and [Docker Compose Redis](../../docker-compose.redis.yml).
+  - Configured via [Kubernetes Redis YAML](../infrastructure/kubernetes/redis.yaml) and [Docker Compose Redis](../infrastructure/docker/docker-compose.redis.yml).
 - **Authentication**: JWT-based with RBAC
 - **Monitoring**: Prometheus metrics and health checks
 - **Documentation**: Comprehensive API documentation
@@ -63,17 +63,17 @@ Performance standards based on comprehensive testing (2025-07-10) - **Priority 3
 - **Availability**: 99.9% uptime
 - **Constitutional Compliance**: 100% validation
 
-For detailed performance metrics standardization and WINA (Weight Informed Neuron Activation) algorithm specifications, refer to the [ACGS-2 Academic Paper Enhancement Guide](ACADEMIC_PAPER_ENHANCEMENT_GUIDE.md).
+For detailed performance metrics standardization and WINA (Weight Informed Neuron Activation) algorithm specifications, refer to the [ACGS-2 Academic Paper Enhancement Guide](research/ACADEMIC_PAPER_ENHANCEMENT_GUIDE.md).
 
 ### References
 
-- [System Overview](../../SYSTEM_OVERVIEW.md)
-- [ACGE API Documentation](../../ACGE_API_DOCUMENTATION.yaml)
-- [Constitutional Compliance Validation Framework](../../docs/constitutional_compliance_validation_framework.md)
-- [Docker Infrastructure README](../../infrastructure/docker/README.md)
-- [Kubernetes Infrastructure README](../../infrastructure/kubernetes/README.md)
-- [Monitoring Stack Configuration](../../monitoring-stack.yml)
-- [Performance Metrics Results](../../performance_metrics_results.json)
+- [System Overview](architecture/SYSTEM_OVERVIEW.md)
+- [ACGE API Documentation](api/ACGE_API_DOCUMENTATION.yaml)
+- [Constitutional Compliance Validation Framework](compliance/constitutional_compliance_validation_framework.md)
+- [Docker Infrastructure README](README.md)
+- [Kubernetes Infrastructure README](README.md)
+- [Monitoring Stack Configuration](../config/monitoring-stack.yml)
+- [Performance Metrics Results](../reports/performance/performance_metrics_results.json)
 
 ### Service Dependencies
 
@@ -110,7 +110,7 @@ For more detailed specifications and implementation guidelines, refer to the [Au
 
 ### Constitutional Compliance Architecture
 
-The constitutional hash `cdd01ef066bc6cf2` is a core identifier for the ACGS platform's constitutional compliance mechanism. It ensures that all processes adhere to predefined rules and standards for security and governance. For further details on the underlying architecture, refer to the [ACGS Code Analysis Engine Architecture](docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md).
+The constitutional hash `cdd01ef066bc6cf2` is a core identifier for the ACGS platform's constitutional compliance mechanism. It ensures that all processes adhere to predefined rules and standards for security and governance. For further details on the underlying architecture, refer to the [ACGS Code Analysis Engine Architecture](architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md).
 
 ### Latest Documentation Metrics
 
@@ -122,7 +122,7 @@ Based on the latest metrics collected on 2025-07-06:
 - **Documentation Coverage Rate**: 100%
 - **Overall Quality Score**: 100% (EXCELLENT)
 
-For detailed metric reports, refer to [latest_metrics.json](../../metrics/latest_metrics.json) and [daily_metrics_2025-07-06.json](../../metrics/daily_metrics_2025-07-06.json).
+For detailed metric reports, refer to [latest_metrics.json](../infrastructure/monitoring/grafana/dashboards/blockchain_metrics.json) and [daily_metrics_2025-07-06.json](../monitoring/metrics/grafana_metrics_20250707_092759.json).
 
 ### Constitutional AI Service Details
 
@@ -186,7 +186,7 @@ All services implement constitutional compliance with hash `cdd01ef066bc6cf2`:
 - ✅ All configurations reference constitutional hash
 - ✅ 100% compliance validation in CI/CD
 
-For a detailed audit of constitutional compliance, refer to the [Quarterly Audit Report Q3 2025](../../audit_reports/quarterly_audit_Q3_2025_20250705.md).
+For a detailed audit of constitutional compliance, refer to the [Quarterly Audit Report Q3 2025](../tools/audit/quarterly_audit.sh).
 
 ### Monitoring and Observability
 

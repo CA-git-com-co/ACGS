@@ -101,12 +101,12 @@
 **Priority**: HIGH
 **Description**: Consolidate and standardize all project documentation using FastAPI template patterns
 **Deliverables Completed**:
-- **Unified Documentation Standards**: [`docs/standards/ACGS_DOCUMENTATION_STANDARDS.md`](docs/standards/ACGS_DOCUMENTATION_STANDARDS.md)
-- **Developer Onboarding Guide**: [`docs/development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md`](docs/development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md)
-- **Unified Architecture Guide**: [`docs/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md`](docs/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md)
-- **Service Integration Patterns**: [`docs/integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md`](docs/integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md)
-- **Testing Strategy Foundation**: [`docs/testing/ACGS_TESTING_STRATEGY_FOUNDATION.md`](docs/testing/ACGS_TESTING_STRATEGY_FOUNDATION.md)
-- **Documentation Index**: [`docs/ACGS_docs/DOCUMENTATION_INDEX.md`](docs/ACGS_docs/DOCUMENTATION_INDEX.md)
+- **Unified Documentation Standards**: [`docs/standards/ACGS_DOCUMENTATION_STANDARDS.md`](../standards/ACGS_DOCUMENTATION_STANDARDS.md)
+- **Developer Onboarding Guide**: [`docs/development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md`](../development/ACGS_DEVELOPER_ONBOARDING_GUIDE.md)
+- **Unified Architecture Guide**: [`docs/architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md`](../architecture/ACGS_UNIFIED_ARCHITECTURE_GUIDE.md)
+- **Service Integration Patterns**: [`docs/integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md`](../integration/ACGS_SERVICE_INTEGRATION_PATTERNS.md)
+- **Testing Strategy Foundation**: [`docs/testing/ACGS_TESTING_STRATEGY_FOUNDATION.md`](../testing/ACGS_TESTING_STRATEGY_FOUNDATION.md)
+- **Documentation Index**: [`docs/ACGS_docs/DOCUMENTATION_INDEX.md`](../DOCUMENTATION_INDEX.md)
 
 **Key Features Delivered**:
 - Template-based documentation patterns using FastAPI service template
@@ -124,14 +124,14 @@
 **Priority**: HIGH
 **Description**: Implement comprehensive testing strategy across all services to achieve 100% ACGS project completion
 **Deliverables Completed**:
-- **Unified Testing Framework**: [`services/shared/testing/constitutional_test_case.py`](services/shared/testing/constitutional_test_case.py)
-- **Constitutional Compliance Testing**: [`services/shared/testing/constitutional_compliance_validator.py`](services/shared/testing/constitutional_compliance_validator.py)
-- **Performance Test Automation**: [`services/shared/testing/performance_test_automation.py`](services/shared/testing/performance_test_automation.py)
-- **Multi-Tenant Testing Validation**: [`services/shared/testing/multi_tenant_test_validator.py`](services/shared/testing/multi_tenant_test_validator.py)
-- **CI/CD Pipeline Testing**: [`.github/workflows/acgs-comprehensive-testing.yml`](.github/workflows/acgs-comprehensive-testing.yml)
-- **Production Readiness Certification**: [`scripts/production_readiness_certification.py`](scripts/production_readiness_certification.py)
-- **Comprehensive Test Runner**: [`scripts/run_comprehensive_tests.py`](scripts/run_comprehensive_tests.py)
-- **Enhanced Pytest Configuration**: [`pytest.ini`](pytest.ini)
+- **Unified Testing Framework**: [`services/shared/testing/constitutional_test_case.py`](../../services/shared/testing/constitutional_test_case.py)
+- **Constitutional Compliance Testing**: [`services/shared/testing/constitutional_compliance_validator.py`](../../scripts/validation/constitutional_compliance_validator.py)
+- **Performance Test Automation**: [`services/shared/testing/performance_test_automation.py`](../../services/shared/testing/performance_test_automation.py)
+- **Multi-Tenant Testing Validation**: [`services/shared/testing/multi_tenant_test_validator.py`](../../services/shared/testing/multi_tenant_test_validator.py)
+- **CI/CD Pipeline Testing**: [`.github/workflows/acgs-comprehensive-testing.yml`](../../archive/workflows/acgs-comprehensive-testing.yml.backup)
+- **Production Readiness Certification**: [`scripts/production_readiness_certification.py`](../../scripts/development/production_readiness_certification.py)
+- **Comprehensive Test Runner**: [`scripts/run_comprehensive_tests.py`](../../tests/run_comprehensive_tests.py)
+- **Enhanced Pytest Configuration**: [`pytest.ini`](../../pytest.ini.backup)
 
 **Key Features Delivered**:
 - >80% test coverage target with constitutional compliance validation

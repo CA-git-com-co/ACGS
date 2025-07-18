@@ -1,0 +1,504 @@
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: acgs-mutual-tls
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: acgs-constitutional-core-tls
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: constitutional-core
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    8001:
+      mode: STRICT
+---
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: acgs-database-tls
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  mtls:
+    mode: STRICT
+  portLevelMtls:
+    5432:
+      mode: STRICT
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-constitutional-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: constitutional-core
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+    - source:
+        namespaces: ["acgs-system"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT"]
+        paths: ["/health", "/constitutional/*", "/api/*"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+  - from:
+    - source:
+        namespaces: ["istio-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-database-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  rules:
+  - from:
+    - source:
+        principals: 
+        - "cluster.local/ns/acgs-system/sa/acgs-system-sa"
+        - "cluster.local/ns/acgs-system/sa/acgs-backup-sa"
+    to:
+    - operation:
+        ports: ["5432"]
+    when:
+    - key: source.labels[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-cache-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: redis
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+    to:
+    - operation:
+        ports: ["6379"]
+    when:
+    - key: source.labels[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-agent-communication
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      component: agent
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+    - source:
+        namespaces: ["acgs-system"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT"]
+        paths: ["/health", "/api/*", "/agent/*"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready", "/metrics"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-management-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      component: management
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+    - source:
+        namespaces: ["acgs-system"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/health", "/api/*", "/auth/*", "/admin/*"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+  - from:
+    - source:
+        namespaces: ["istio-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready", "/metrics"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-monitoring-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      component: monitoring
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-monitoring-sa"]
+    - source:
+        namespaces: ["acgs-system", "istio-system"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        paths: ["/health", "/metrics", "/api/*", "/query*"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+  - from:
+    - source:
+        namespaces: ["istio-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready", "/metrics"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-ingress-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      component: ingress
+  rules:
+  - from:
+    - source: {}
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/health", "/api/*", "/constitutional/*", "/auth/*"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+  - from:
+    - source:
+        namespaces: ["istio-system"]
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-external-api-access
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: groqcloud-policy
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+    to:
+    - operation:
+        methods: ["GET", "POST"]
+        hosts: ["api.groq.com", "api.openai.com"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+    - key: request.headers[user-agent]
+      values: ["ACGS-2/*"]
+---
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: acgs-jwt-auth
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  jwtRules:
+  - issuer: "https://acgs.local/auth"
+    jwksUri: "https://acgs.local/auth/.well-known/jwks.json"
+    audiences:
+    - "acgs-api"
+    forwardOriginalToken: true
+    fromHeaders:
+    - name: "Authorization"
+      prefix: "Bearer "
+    fromParams:
+    - "token"
+---
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: acgs-constitutional-auth
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: constitutional-core
+  jwtRules:
+  - issuer: "https://acgs.local/auth"
+    jwksUri: "https://acgs.local/auth/.well-known/jwks.json"
+    audiences:
+    - "acgs-constitutional"
+    forwardOriginalToken: true
+    fromHeaders:
+    - name: "Authorization"
+      prefix: "Bearer "
+    - name: "Constitutional-Token"
+      prefix: "ACGS "
+---
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: acgs-jwt-required
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: api-gateway
+  rules:
+  - from:
+    - source:
+        requestPrincipals: ["https://acgs.local/auth/*"]
+    to:
+    - operation:
+        methods: ["GET", "POST", "PUT", "DELETE"]
+        paths: ["/api/*"]
+    when:
+    - key: request.headers[constitutional-hash]
+      values: ["cdd01ef066bc6cf2"]
+    - key: request.auth.claims[aud]
+      values: ["acgs-api"]
+  - from:
+    - source: {}
+    to:
+    - operation:
+        methods: ["GET"]
+        paths: ["/health", "/ready", "/version"]
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Sidecar
+metadata:
+  name: acgs-constitutional-sidecar
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  workloadSelector:
+    labels:
+      app: constitutional-core
+  ingress:
+  - port:
+      number: 8001
+      protocol: HTTP
+      name: http
+    defaultEndpoint: 127.0.0.1:8001
+    captureMode: IPTABLES
+  egress:
+  - port:
+      number: 5432
+      protocol: TCP
+      name: postgres
+    hosts:
+    - "./postgres"
+  - port:
+      number: 6379
+      protocol: TCP
+      name: redis
+    hosts:
+    - "./redis"
+  - port:
+      number: 443
+      protocol: HTTPS
+      name: https
+    hosts:
+    - "api.groq.com"
+    - "api.openai.com"
+  - port:
+      number: 80
+      protocol: HTTP
+      name: http-egress
+    hosts:
+    - "./*"
+  outboundTrafficPolicy:
+    mode: REGISTRY_ONLY
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Sidecar
+metadata:
+  name: acgs-database-sidecar
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  workloadSelector:
+    labels:
+      app: postgres
+  ingress:
+  - port:
+      number: 5432
+      protocol: TCP
+      name: postgres
+    defaultEndpoint: 127.0.0.1:5432
+    captureMode: IPTABLES
+  egress:
+  - port:
+      number: 9090
+      protocol: HTTP
+      name: prometheus
+    hosts:
+    - "./prometheus"
+  outboundTrafficPolicy:
+    mode: REGISTRY_ONLY
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: acgs-mesh-ca-secret
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+type: Opaque
+data:
+  # Self-signed CA certificate for mesh mTLS
+  # In production, use proper CA certificates
+  ca-cert.pem: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURHVENDQWdHZ0F3SUJBZ0lKQU9xU3l0d0pXU2pBTUEwR0NTcUdTSWIzRFFFQkJRVUFNQkV4RHpBTkJnTlYKQkFvVEJrRkRSMU10TWpBZUZ3MHlOREEzTVRrd09UUXdNREJhRncwME5EQTNOVEF3T1RRd01EQmFNQkV4RHpBTgpCZ05WQkFvVEJrRkRSMU10TWpDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTEk4ClFxRGVHK0t1Q2J5b0ZOMjNWUXFPUXJnWWNzSXVwdER3M0J6bFBhVW9oQWtTQjhUQWRMNnhjbVQ0MXVmVkZxN2sKTmRPVGlXOVZrSGd4MFhJMTFObWp4S0lCWXVwZ0JqMVlPOTJMSjdoOXYvT0tWaEJJVUgwWkZCdGhJR0cxQWRVRwpvbmtLMkN3TVVHdU9YZlFBTXY3ZEVGaTBYWVQ5WUtJdW1OT1dJUXJQNVExdERXVjV2YVNBcTJRckE0VlZ3aE5sCnF6cGNteHlGUklsWmFyVWtvWVVoSlFpekFOMlZmUnVUeDRVOVBIWE1EelBzN1RKT1VnOUNzNGpWZEtFWjkxUWsKNUdqS0ZzNjhLYVE5UWdoR2JEVGsxdjM5RU0vSGtPbkxkVTNRTnNOMmRLRTFHbVNNdWNXeHh2Y1UwZnNGRzZOVApwRFhFRWxBc0hOQWRNbmNDQXdFQUFhTlFNRTR3SFFZRFZSME9CQllFRkR2cERPNUJxdG5jNWRNNlVkQ25XREJRClpCZ1pNQjhHQTFVZEl3UVlNQmFBRkR2cERPNUJxdG5jNWRNNlVkQ25XREJRWkJnWk1Bd0dBMVVkRXdRRk1BTUEKQWYvd0FRQXdEUVlKS29aSWh2Y05BUUVGQlFBRGdnRUJBSjdQbVJOL3VWaFNzOVhqZGhtdUxEUmNZRUw5MGFoTAp5QlFSYjY1aXFHS0ZuRzBLZENGbXNjRWJsV0xRTnFoZDJOVEJjQWNLbVNhNGhUQjNGVzhjWm1HVVFOdXNEQmhsCjJOcHlwbWNzWWxrVWxiKzUzQzJQcU9zb3p6VWR5dHhVU0VldGFHQ2VLdGNkSGpXNGFkSGZYUjZLNmNDbGRWU0kKK3pQV0ZMaVpHckozQnBGOUE5ZlUzWW1FQzU5Z0JaajVCS1AwWmNPSzBHVHNDSTVwYnVlK1pGSGpLSHZNUENzOApOWXNDd0dPVEUyeEFRUGFHZjl1N0ZKL3ZxYjE5djJDSUpmdm1hd2I5WGlLTm1kT2dJTGdlT1VjdlVmeGhGQzFxClVQS0QrQkZYVVAvWGdxV0FlSEpGMjZJenk1UWJ2aGVXdGJ5VmNzTnkxTXRkWGFiWWUvaz0KLS0tLS1FTkQgQ0VSVElGSUNBVEUtLS0tLQo=
+  ca-key.pem: LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQ3lQRUtnM2h2aXJnbThxCkJUZHQxVUtqa0s0R0hMQ0xxYlE4TndjNVQybEtJUUpFZ2ZFd0hTK3NYSmsrTmJuMVJhdTVEWFRrNGx2VlpCNE0KZEZ5TmRUWm84U2lBV0xxWUFZOVdEdmRpeWU0ZmIvemllYVFTRkI5R1JRYllTQmh0UUhWQnFKNUN0Z3NERkJyagpsMzBBREwrM1JCWXRGMkUvV0NpTHBqVGxpRUt6K1VOYlExbGViMmtnS3RrS3dPRlZjSVRaYXM2WEpzY2hVU0pXCldxMUpLR0ZJU1VJc3dEZGxYMGJrOGVGUFR4MXpBOHo3TzB5VGxJUFFyT0kxWFNoR2ZkVUpPUm95aGJPdkNta1AKVUlJUm13MDVOYjkvUkRQeDVEcHkzVk4wRGJEZG5TaE5ScGtqTG5Gc2NiM0ZOSDdCUnVqVTZRMXhCSlFMQnpRSApUSjNBZ01CQUFFQ2dnRUJBSTFJRVA5UmJyNVoyQkVJUlB2UGxhNzB1WUhRNzc4RHN2ZTFXOWVhZnNiRlRKNkZyClM0S1FXbThuZk5IWDVlYW5aYjVXaXlsbXdwZGUrZVJVTzZIREcrVXVNSWVEK0NhUjVNNFdSQjRBK1JsU0d3VzMKWGlLZGZxdXk1QW1yMXlKdndnSFJHcGNDQ29BeDBoM1AzNWNzWkVBQVFJUEl0RXFBZStJb1JLcDArMzRDbDVZdwpYWHZlVk5BRlJEWUJyL1lhc0J6UjFOL0RzaGxRVGNTOVFob2tXRnNlYzAwWERhNGxZZmVOdGFvRGFIZTBqSHJjCmdON3AycXFiMlpQQ0t6dWZ6N0JlYVE2a0JnZnM4VE05aXdTRERGU29QZ2JQS0R2WTNEeU5iQW4wcWtVd2FBMWgKdXZKK1VHbEtOd3BoVnprQkdhVWJHZkh0OGRBdWRORzBJekVDZ1lFQTRyK1VmdHZEWE5mRjVrTTF2VjJkTGNJSgpYNWZYTG5KY1JXMGZGSVRrRmg0cDRvd3h2RXI4NkZzL2pLdnFOaE5zWlhOV0N6NHhOYWZzS0VlSm9uOGErUTJnCmxSM0VCZndBUDRvVFBmRzlBTnV5QjlKazNGRERJUk1pTXJNSjVmaWZHaXE0ZFdCQVhUSkZjZkFGQjBadE5ScW4KblRwSWdSMTkwYnNDZ1lFQXlGd3doQWI3c0RrR0VxN0hWUytaMk5GWkE4N1hraEhSUHN5Vkp5Q0dBWnMvWXBPVQpyVElkUDdTd0ZhZDJ4Zm1LRkFiR2VkVGsxSXJ6anljQnBoOWw0MURsN0xBUzl2QVBJSEVZSzFhSC9LbTNWQmJUCnQvRWUwNWRQWnR4NzF2RGFOaDFCbzhGQkJVNnJ2OGpBcExBU2hJRUlKejNkMzhLZmpDK2lya2NDZ1lFQTF3cCsKZjdFWGllQm9ZUFJtVkJRdGJqNHZTdXp3aE5pSkRqcXFhLzVZc0dVNFVtV0NwVXRRNVNKMUZ2ZE5hUWJiNTMxbgpCR1dTaVNKaW5QZEkxS2MyVjF4bk0wVkJPdnZ6blJwRUUxY0p2Z1JUUmJiTDNBd0RoUU5tQTFWOUdGcjN5NWp5CmdXUU5LYjU5T0hBTGN6bE5tSXlkZW1oNXVxZnF2eU5LY2xrQ2dZRUFpcHNEQkVRM1piRy9FWUl6NFlVKzgzMzIKSC9pQkFxbXNTaVVhazB0cHVhOHdYREhKUkh0dGVLZnlxNk5hZkVRT1NwQzBubXZzdUZZc0ZDM29EcUNxN1FEcApPL0NsZ1lOMnhmeEowS21aUktlcnZxLy9tRXJER1FMUnhOUUpUMzRKVEFhTHNpM1Y5M0lyV2ErUmlCTGJoMjlNCnkxRzEzWWN0VWZ0N3hjeVdOclVDZ1lFQW5OT0hJL2JXVGNBVUdHVXZLRzFQdUk2dWloaWZWbHBZbUhINW5kNmcKc0hWYVo1dkM5NkI0bTV0VVFxbVFOTFVyR1dsTGg0YXg0OXV5ZVRIYzhMZVZOMHNCOGFCWDJKZWZWL0RQd05acApKSUZCUmNBK1R1aUJXV1VxMUNEVWdqb1NzMTFVRm9YZEZMNFBtamlPUWY0eCt5Q2JrT3J1OExCRm1aRm5VWWxnCnQ5TT0KLS0tLS1FTkQgUFJJVkFURSBLRVktLS0tLQo=
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-security-config
+  namespace: acgs-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  security-policy.yaml: |
+    # ACGS-2 Service Mesh Security Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    global:
+      constitutional_hash: "cdd01ef066bc6cf2"
+      security_level: "high"
+      mutual_tls: "strict"
+      
+    authentication:
+      jwt:
+        issuer: "https://acgs.local/auth"
+        audience: "acgs-api"
+        jwks_uri: "https://acgs.local/auth/.well-known/jwks.json"
+        
+      mutual_tls:
+        mode: "strict"
+        ca_cert_path: "/etc/ssl/certs/ca-cert.pem"
+        
+    authorization:
+      default_policy: "deny"
+      
+      rules:
+        - name: "constitutional-access"
+          principals: ["cluster.local/ns/acgs-system/sa/acgs-system-sa"]
+          operations: ["GET", "POST", "PUT"]
+          resources: ["/constitutional/*", "/api/*"]
+          conditions:
+            - key: "request.headers[constitutional-hash]"
+              values: ["cdd01ef066bc6cf2"]
+              
+        - name: "health-check"
+          principals: ["*"]
+          operations: ["GET"]
+          resources: ["/health", "/ready"]
+          
+        - name: "monitoring-access"
+          principals: ["cluster.local/ns/acgs-system/sa/acgs-monitoring-sa"]
+          operations: ["GET", "POST"]
+          resources: ["/metrics", "/query*"]
+          
+    traffic_policy:
+      timeout_seconds: 30
+      retry_attempts: 3
+      circuit_breaker:
+        consecutive_errors: 5
+        interval_seconds: 30
+        
+    monitoring:
+      access_logging: true
+      metrics_collection: true
+      tracing: true
+      
+    compliance:
+      constitutional_validation: true
+      audit_logging: true
+      performance_monitoring: true

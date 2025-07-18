@@ -4,10 +4,6 @@
 
 # Core testing framework
 pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
-pytest>=8.3.4
 
 # Test utilities
 coverage>=7.2.0
@@ -16,12 +12,10 @@ faker>=19.3.0
 freezegun>=1.2.2
 
 # Performance testing
-pytest>=8.3.4
 memory-profiler>=0.61.0
 psutil>=5.9.0
 
 # Web testing (for Flask app)
-pytest>=8.3.4
 requests>=2.32.4
 
 # Code quality
@@ -31,29 +25,22 @@ isort>=5.12.0
 mypy>=1.13.0
 
 # Documentation testing
-pytest>=8.3.4
 
 # Parallel testing
-pytest>=8.3.4
 
 # HTML reporting
-pytest>=8.3.4
 
 # Mock external dependencies
 responses>=0.23.0
 httpretty>=1.1.4
 
 # Database testing (if needed)
-pytest>=8.3.4
 
 # Temporary file handling
-pytest>=8.3.4
 
 # Environment variable testing
-pytest>=8.3.4
 
 # Subprocess testing
-pytest>=8.3.4
 
 # JSON schema validation
 jsonschema>=4.19.0
@@ -68,7 +55,6 @@ filecmp2>=0.2.1
 pydantic>=2.10.5
 
 # Logging testing
-pytest>=8.3.4
 
 # Security testing
 bandit>=1.7.5

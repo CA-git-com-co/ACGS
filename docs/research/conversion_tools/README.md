@@ -315,8 +315,8 @@ grep -r "cdd01ef066bc6cf2" ../papers_markdown/ | wc -l
 
 - [Marker Documentation](https://github.com/VikParuchuri/marker)
 - [PyMuPDF Documentation](https://pymupdf.readthedocs.io/)
-- [ACGS Performance Standards](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [Constitutional Compliance Framework](../../docs/constitutional_compliance_validation_framework.md)
+- [ACGS Performance Standards](../../ACGS_SERVICE_OVERVIEW.md)
+- [Constitutional Compliance Framework](../../compliance/constitutional_compliance_validation_framework.md)
 
 ---
 

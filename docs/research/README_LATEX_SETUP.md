@@ -685,7 +685,7 @@ All LaTeX packages and Python dependencies are selected to ensure:
 ### 📚 **Documentation**
 - [LaTeX Documentation](https://www.latex-project.org/help/documentation/)
 - [TeX Live Guide](https://www.tug.org/texlive/doc.html)
-- [ACGS Research Guidelines](../README.md)
+- [ACGS Research Guidelines](../../README.md)
 
 ### 🔗 **External Resources**
 - [CTAN](https://ctan.org/) - Comprehensive TeX Archive Network
@@ -693,15 +693,15 @@ All LaTeX packages and Python dependencies are selected to ensure:
 
 ## References
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS System Overview](../../SYSTEM_OVERVIEW.md)
-- [Constitutional Compliance Validation Framework](../../docs/constitutional_compliance_validation_framework.md)
-- [ACGS Code Analysis Engine Architecture](../../docs/architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md)
-- [ACGS Code Analysis Engine Deployment Guide](../../docs/deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md)
-- [ACGS Code Analysis Engine Integration Guide](../../docs/integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md)
-- [ACGS Configuration Guide](../../docs/configuration/README.md)
-- [ACGS-PGP Setup Guide](../../docs/deployment/ACGS_PGP_SETUP_GUIDE.md)
-- [ACGS Service Status Dashboard](../../docs/operations/SERVICE_STATUS.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md.backup)
+- [ACGS System Overview](../architecture/SYSTEM_OVERVIEW.md.backup)
+- [Constitutional Compliance Validation Framework](../compliance/constitutional_compliance_validation_framework.md.backup)
+- [ACGS Code Analysis Engine Architecture](../architecture/ACGS_CODE_ANALYSIS_ENGINE_ARCHITECTURE.md.backup)
+- [ACGS Code Analysis Engine Deployment Guide](../deployment/ACGS_CODE_ANALYSIS_ENGINE_DEPLOYMENT_GUIDE.md.backup)
+- [ACGS Code Analysis Engine Integration Guide](../integration/ACGS_CODE_ANALYSIS_ENGINE_INTEGRATION_GUIDE.md.backup)
+- [ACGS Configuration Guide](../../README.md)
+- [ACGS-PGP Setup Guide](../deployment/ACGS_PGP_SETUP_GUIDE.md.backup)
+- [ACGS Service Status Dashboard](../operations/SERVICE_STATUS.md.backup)
 
 
 ## Implementation Status

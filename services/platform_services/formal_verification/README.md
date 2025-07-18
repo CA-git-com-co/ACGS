@@ -58,8 +58,8 @@ pip install -r requirements.txt
 ### Running the Service
 
 ```bash
-# Start the FastAPI service on port 8003
-uvicorn service:app --host 0.0.0.0 --port 8003 --reload
+# Start the FastAPI service on port 8004
+uvicorn service:app --host 0.0.0.0 --port 8004 --reload
 ```
 
 ### Running Demonstrations
@@ -152,7 +152,7 @@ All operations are validated against constitutional hash `cdd01ef066bc6cf2`:
 ## Documentation
 
 - [Validation Report](docs/VALIDATION_REPORT.md) - Comprehensive validation results
-- [API Documentation](http://localhost:8003/docs) - Interactive API docs (when service is running)
+- [API Documentation](http://localhost:8004/docs) - Interactive API docs (when service is running)
 
 ## License
 

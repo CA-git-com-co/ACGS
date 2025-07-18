@@ -66,8 +66,8 @@ constitutional-core/
 ## Migration
 
 This service replaces:
-- `services/core/constitutional-ai/` (port 8001)
-- `services/core/formal-verification/` (port 8003)
+- `services/core/constitutional-ai/` (port 8002)
+- `services/core/formal-verification/` (port 8004)
 
 All existing APIs are preserved with backward compatibility.
 

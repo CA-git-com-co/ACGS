@@ -1,0 +1,550 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jaeger-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    name: jaeger-system
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaeger-configuration
+  namespace: jaeger-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  jaeger-config.yaml: |
+    # ACGS-2 Jaeger Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    query:
+      base-path: /jaeger
+      log-level: info
+      additional-headers:
+        - "Constitutional-Hash: cdd01ef066bc6cf2"
+        - "X-ACGS-Version: v1.0.0"
+    
+    collector:
+      log-level: info
+      num-workers: 10
+      queue-size: 2000
+      write-buffer-size: 1000
+      
+    storage:
+      type: elasticsearch
+      options:
+        es:
+          server-urls: http://elasticsearch.jaeger-system:9200
+          index-prefix: acgs-traces
+          create-index-templates: true
+          version: 7
+          tags-as-fields:
+            all: true
+            include: constitutional_hash,environment,service.version,http.method,http.status_code
+          username: elastic
+          password: changeme
+          
+    sampling:
+      default_strategy:
+        type: probabilistic
+        param: 1.0
+      per_service_strategies:
+        - service: "constitutional-core"
+          type: probabilistic
+          param: 1.0
+          max_traces_per_second: 1000
+        - service: "groqcloud-policy"
+          type: probabilistic
+          param: 1.0
+          max_traces_per_second: 500
+        - service: "auth-service"
+          type: probabilistic
+          param: 1.0
+          max_traces_per_second: 200
+        - service: "api-gateway"
+          type: probabilistic
+          param: 1.0
+          max_traces_per_second: 1000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-collector
+  namespace: jaeger-system
+  labels:
+    app: jaeger-collector
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 14268
+    targetPort: 14268
+    name: jaeger-collector-http
+  - port: 14250
+    targetPort: 14250
+    name: jaeger-collector-grpc
+  - port: 9411
+    targetPort: 9411
+    name: jaeger-collector-zipkin
+  selector:
+    app: jaeger-collector
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-query
+  namespace: jaeger-system
+  labels:
+    app: jaeger-query
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 16686
+    targetPort: 16686
+    name: jaeger-query-http
+  - port: 16687
+    targetPort: 16687
+    name: jaeger-query-grpc
+  selector:
+    app: jaeger-query
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jaeger-agent
+  namespace: jaeger-system
+  labels:
+    app: jaeger-agent
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 6831
+    targetPort: 6831
+    name: jaeger-agent-thrift-compact
+    protocol: UDP
+  - port: 6832
+    targetPort: 6832
+    name: jaeger-agent-thrift-binary
+    protocol: UDP
+  - port: 5778
+    targetPort: 5778
+    name: jaeger-agent-http
+  - port: 14271
+    targetPort: 14271
+    name: jaeger-agent-admin
+  selector:
+    app: jaeger-agent
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-collector
+  namespace: jaeger-system
+  labels:
+    app: jaeger-collector
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jaeger-collector
+  template:
+    metadata:
+      labels:
+        app: jaeger-collector
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      containers:
+      - name: jaeger-collector
+        image: jaegertracing/jaeger-collector:1.49.0
+        ports:
+        - containerPort: 14268
+          name: jaeger-http
+        - containerPort: 14250
+          name: jaeger-grpc
+        - containerPort: 9411
+          name: zipkin
+        env:
+        - name: SPAN_STORAGE_TYPE
+          value: elasticsearch
+        - name: ES_SERVER_URLS
+          value: "http://elasticsearch.jaeger-system:9200"
+        - name: ES_INDEX_PREFIX
+          value: "acgs-traces"
+        - name: ES_TAGS_AS_FIELDS_ALL
+          value: "true"
+        - name: ES_USERNAME
+          value: "elastic"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        - name: COLLECTOR_OTLP_ENABLED
+          value: "true"
+        - name: COLLECTOR_ZIPKIN_HOST_PORT
+          value: "9411"
+        - name: COLLECTOR_QUEUE_SIZE
+          value: "2000"
+        - name: COLLECTOR_NUM_WORKERS
+          value: "10"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 14269
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 14269
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: jaeger-config
+          mountPath: /etc/jaeger
+      volumes:
+      - name: jaeger-config
+        configMap:
+          name: jaeger-configuration
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-query
+  namespace: jaeger-system
+  labels:
+    app: jaeger-query
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: jaeger-query
+  template:
+    metadata:
+      labels:
+        app: jaeger-query
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      containers:
+      - name: jaeger-query
+        image: jaegertracing/jaeger-query:1.49.0
+        ports:
+        - containerPort: 16686
+          name: jaeger-query
+        - containerPort: 16687
+          name: jaeger-grpc
+        env:
+        - name: SPAN_STORAGE_TYPE
+          value: elasticsearch
+        - name: ES_SERVER_URLS
+          value: "http://elasticsearch.jaeger-system:9200"
+        - name: ES_INDEX_PREFIX
+          value: "acgs-traces"
+        - name: ES_TAGS_AS_FIELDS_ALL
+          value: "true"
+        - name: ES_USERNAME
+          value: "elastic"
+        - name: ES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        - name: QUERY_BASE_PATH
+          value: "/jaeger"
+        - name: QUERY_LOG_LEVEL
+          value: "info"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "300m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 16686
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 16686
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        volumeMounts:
+        - name: jaeger-config
+          mountPath: /etc/jaeger
+      volumes:
+      - name: jaeger-config
+        configMap:
+          name: jaeger-configuration
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: jaeger-agent
+  namespace: jaeger-system
+  labels:
+    app: jaeger-agent
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app: jaeger-agent
+  template:
+    metadata:
+      labels:
+        app: jaeger-agent
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      containers:
+      - name: jaeger-agent
+        image: jaegertracing/jaeger-agent:1.49.0
+        ports:
+        - containerPort: 6831
+          name: thrift-compact
+          protocol: UDP
+        - containerPort: 6832
+          name: thrift-binary
+          protocol: UDP
+        - containerPort: 5778
+          name: http
+        - containerPort: 14271
+          name: admin
+        env:
+        - name: REPORTER_GRPC_HOST_PORT
+          value: "jaeger-collector.jaeger-system:14250"
+        - name: REPORTER_TYPE
+          value: "grpc"
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        - name: PROCESSOR_JAEGER_BINARY_SERVER_HOST_PORT
+          value: "0.0.0.0:6832"
+        - name: PROCESSOR_JAEGER_COMPACT_SERVER_HOST_PORT
+          value: "0.0.0.0:6831"
+        - name: PROCESSOR_ZIPKIN_COMPACT_SERVER_HOST_PORT
+          value: "0.0.0.0:5775"
+        - name: AGENT_HTTP_HOST_PORT
+          value: "0.0.0.0:5778"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 14271
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 14271
+          initialDelaySeconds: 10
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: elasticsearch
+  namespace: jaeger-system
+  labels:
+    app: elasticsearch
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  serviceName: elasticsearch
+  replicas: 3
+  selector:
+    matchLabels:
+      app: elasticsearch
+  template:
+    metadata:
+      labels:
+        app: elasticsearch
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      containers:
+      - name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.17.12
+        ports:
+        - containerPort: 9200
+          name: http
+        - containerPort: 9300
+          name: transport
+        env:
+        - name: cluster.name
+          value: "acgs-jaeger-cluster"
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: discovery.seed_hosts
+          value: "elasticsearch-0.elasticsearch,elasticsearch-1.elasticsearch,elasticsearch-2.elasticsearch"
+        - name: cluster.initial_master_nodes
+          value: "elasticsearch-0,elasticsearch-1,elasticsearch-2"
+        - name: ES_JAVA_OPTS
+          value: "-Xms1g -Xmx1g"
+        - name: xpack.security.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.enabled
+          value: "true"
+        - name: xpack.security.transport.ssl.verification_mode
+          value: "certificate"
+        - name: xpack.security.transport.ssl.keystore.path
+          value: "/usr/share/elasticsearch/config/elastic-certificates.p12"
+        - name: xpack.security.transport.ssl.truststore.path
+          value: "/usr/share/elasticsearch/config/elastic-certificates.p12"
+        - name: ELASTIC_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: elasticsearch-credentials
+              key: password
+        resources:
+          requests:
+            memory: "2Gi"
+            cpu: "500m"
+          limits:
+            memory: "4Gi"
+            cpu: "1000m"
+        volumeMounts:
+        - name: elasticsearch-data
+          mountPath: /usr/share/elasticsearch/data
+        - name: elasticsearch-certs
+          mountPath: /usr/share/elasticsearch/config/elastic-certificates.p12
+          subPath: elastic-certificates.p12
+        livenessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+            httpHeaders:
+            - name: Authorization
+              value: "Basic ZWxhc3RpYzpjaGFuZ2VtZQ=="
+          initialDelaySeconds: 60
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+            httpHeaders:
+            - name: Authorization
+              value: "Basic ZWxhc3RpYzpjaGFuZ2VtZQ=="
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: elasticsearch-certs
+        secret:
+          secretName: elasticsearch-certificates
+  volumeClaimTemplates:
+  - metadata:
+      name: elasticsearch-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticsearch
+  namespace: jaeger-system
+  labels:
+    app: elasticsearch
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9200
+    targetPort: 9200
+    name: http
+  - port: 9300
+    targetPort: 9300
+    name: transport
+  selector:
+    app: elasticsearch
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-credentials
+  namespace: jaeger-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+type: Opaque
+data:
+  password: Y2hhbmdlbWU= # base64 encoded "changeme"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: elasticsearch-certificates
+  namespace: jaeger-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+type: Opaque
+data:
+  elastic-certificates.p12: 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
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: jaeger-query-vs
+  namespace: jaeger-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - jaeger-query.jaeger-system.svc.cluster.local
+  http:
+  - headers:
+      request:
+        set:
+          constitutional-hash: cdd01ef066bc6cf2
+    route:
+    - destination:
+        host: jaeger-query.jaeger-system.svc.cluster.local
+        port:
+          number: 16686
+    timeout: 30s
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: jaeger-query-dr
+  namespace: jaeger-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  host: jaeger-query.jaeger-system.svc.cluster.local
+  trafficPolicy:
+    tls:
+      mode: ISTIO_MUTUAL
+    connectionPool:
+      tcp:
+        maxConnections: 50
+      http:
+        http1MaxPendingRequests: 25
+        maxRequestsPerConnection: 10
+    loadBalancer:
+      simple: ROUND_ROBIN

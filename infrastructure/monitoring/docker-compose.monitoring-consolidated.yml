@@ -1,0 +1,300 @@
+# ACGS-2 Consolidated Monitoring Stack
+# This file consolidates all monitoring configurations into a single, environment-agnostic stack
+# Use with environment-specific overrides for complete configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+version: '3.8'
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-monitoring-labels: &monitoring-labels
+  com.acgs.constitutional-hash: "cdd01ef066bc6cf2"
+  com.acgs.component: "monitoring"
+  com.acgs.managed-by: "docker-compose"
+
+services:
+  # Prometheus - Metrics collection
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: acgs-prometheus
+    restart: unless-stopped
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/rules:/etc/prometheus/rules:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-15d}'
+      - '--storage.tsdb.retention.size=${PROMETHEUS_RETENTION_SIZE:-10GB}'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "prometheus"
+    networks:
+      - acgs-network
+
+  # Grafana - Visualization
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: acgs-grafana
+    restart: unless-stopped
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GF_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_INSTALL_PLUGINS: ${GF_INSTALL_PLUGINS:-grafana-clock-panel,grafana-simple-json-datasource,grafana-piechart-panel}
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_DATABASE_TYPE: postgres
+      GF_DATABASE_HOST: postgres:5432
+      GF_DATABASE_NAME: ${GRAFANA_DB_NAME:-grafana}
+      GF_DATABASE_USER: ${GRAFANA_DB_USER:-grafana}
+      GF_DATABASE_PASSWORD: ${GRAFANA_DB_PASSWORD:-grafana}
+      GF_SESSION_PROVIDER: postgres
+      GF_SESSION_PROVIDER_CONFIG: "user=${GRAFANA_DB_USER:-grafana} password=${GRAFANA_DB_PASSWORD:-grafana} host=postgres port=5432 dbname=${GRAFANA_DB_NAME:-grafana} sslmode=disable"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./config/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "grafana"
+    networks:
+      - acgs-network
+    depends_on:
+      - prometheus
+
+  # Alertmanager - Alert handling
+  alertmanager:
+    image: prom/alertmanager:v0.26.0
+    container_name: acgs-alertmanager
+    restart: unless-stopped
+    ports:
+      - "${ALERTMANAGER_PORT:-9093}:9093"
+    volumes:
+      - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./config/alertmanager/templates:/etc/alertmanager/templates:ro
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+      - '--cluster.listen-address=0.0.0.0:9094'
+      - '--log.level=${ALERTMANAGER_LOG_LEVEL:-info}'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "alertmanager"
+    networks:
+      - acgs-network
+
+  # Node Exporter - Host metrics
+  node_exporter:
+    image: prom/node-exporter:v1.7.0
+    container_name: acgs-node-exporter
+    restart: unless-stopped
+    ports:
+      - "${NODE_EXPORTER_PORT:-9100}:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9100/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "node-exporter"
+    networks:
+      - acgs-network
+
+  # Postgres Exporter - Database metrics
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: acgs-postgres-exporter
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_EXPORTER_PORT:-9187}:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER:-acgs_user}:${POSTGRES_PASSWORD:-acgs_secure_password}@postgres:5432/${POSTGRES_DB:-acgs}?sslmode=disable"
+      PG_EXPORTER_EXTEND_QUERY_PATH: "/etc/postgres_exporter/queries.yaml"
+    volumes:
+      - ./config/postgres_exporter/queries.yaml:/etc/postgres_exporter/queries.yaml:ro
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9187/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "postgres-exporter"
+    networks:
+      - acgs-network
+    depends_on:
+      - postgres
+
+  # Redis Exporter - Redis metrics
+  redis_exporter:
+    image: oliver006/redis_exporter:v1.55.0
+    container_name: acgs-redis-exporter
+    restart: unless-stopped
+    ports:
+      - "${REDIS_EXPORTER_PORT:-9121}:9121"
+    environment:
+      REDIS_ADDR: "redis://redis:6379"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-acgs_redis_secure_password}"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9121/metrics"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "redis-exporter"
+    networks:
+      - acgs-network
+    depends_on:
+      - redis
+
+  # Loki - Log aggregation
+  loki:
+    image: grafana/loki:2.9.2
+    container_name: acgs-loki
+    restart: unless-stopped
+    ports:
+      - "${LOKI_PORT:-3100}:3100"
+    volumes:
+      - ./config/loki.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3100/ready"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "loki"
+    networks:
+      - acgs-network
+
+  # Promtail - Log collection
+  promtail:
+    image: grafana/promtail:2.9.2
+    container_name: acgs-promtail
+    restart: unless-stopped
+    volumes:
+      - ./config/promtail.yml:/etc/promtail/config.yml:ro
+      - /var/log:/var/log:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    command: -config.file=/etc/promtail/config.yml
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "promtail"
+    networks:
+      - acgs-network
+    depends_on:
+      - loki
+
+  # Jaeger - Distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.51
+    container_name: acgs-jaeger
+    restart: unless-stopped
+    ports:
+      - "${JAEGER_UI_PORT:-16686}:16686"
+      - "${JAEGER_COLLECTOR_PORT:-14268}:14268"
+      - "${JAEGER_AGENT_PORT:-6831}:6831/udp"
+    environment:
+      COLLECTOR_ZIPKIN_HOST_PORT: ":9411"
+      SPAN_STORAGE_TYPE: "elasticsearch"
+      ES_SERVER_URLS: "http://elasticsearch:9200"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:16686/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging: *default-logging
+    labels:
+      <<: *monitoring-labels
+      com.acgs.service: "jaeger"
+    networks:
+      - acgs-network
+
+volumes:
+  prometheus_data:
+    driver: local
+    labels:
+      <<: *monitoring-labels
+      com.acgs.volume: "prometheus-data"
+  
+  grafana_data:
+    driver: local
+    labels:
+      <<: *monitoring-labels
+      com.acgs.volume: "grafana-data"
+  
+  alertmanager_data:
+    driver: local
+    labels:
+      <<: *monitoring-labels
+      com.acgs.volume: "alertmanager-data"
+  
+  loki_data:
+    driver: local
+    labels:
+      <<: *monitoring-labels
+      com.acgs.volume: "loki-data"
+
+networks:
+  acgs-network:
+    external: true

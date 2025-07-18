@@ -387,21 +387,21 @@ Overall Score = (
 ### Quick Reference Cards
 - [Constitutional Hash Quick Reference](constitutional_hash_reference.md)
 - [Validation Tools Cheat Sheet](validation_tools_cheatsheet.md)
-- [Quality Metrics Dashboard](../training/validation_tools_cheatsheet.md)
+- [Quality Metrics Dashboard](validation_tools_cheatsheet.md)
 
 ### Tool Documentation
-- [Quick Validation Script](../validation/quick_validation.sh)
-- [Quarterly Audit Script](../audit/quarterly_audit.sh)
-- [Daily Metrics Collection](../metrics/collect_daily_metrics.sh)
-- [Quality Alert Monitor](../monitoring/quality_alert_monitor.py)
+- [Quick Validation Script](../../tools/validation/quick_validation.sh)
+- [Quarterly Audit Script](../../tools/audit/quarterly_audit.sh)
+- [Daily Metrics Collection](../../tools/metrics/collect_daily_metrics.sh)
+- [Quality Alert Monitor](../../tools/monitoring/quality_alert_monitor.py)
 
 ### Related Information
 
 For a broader understanding of the ACGS platform and its documentation ecosystem, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Testing and Validation Framework](../compliance/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
 
 ### Support Contacts
 - **Documentation Team Lead**: [Contact Information]

@@ -16,17 +16,17 @@ The ACGS (Autonomous Coding Governance System) has achieved **operational status
 
 ### Operational Services
 - **Auth Service** (port 8016): Fully operational (JWT auth)
-- **Constitutional AI** (port 8001): Excellent performance, sub-2ms latency (target: <2ms)
+- **Constitutional AI** (port 8002): Excellent performance, sub-2ms latency (target: <2ms)
 - **Integrity Service** (port 8002): Cryptographic verification
-- **Formal Verification Service** (port 8003): Formal proofs
+- **Formal Verification Service** (port 8004): Formal proofs
 - **Governance Synthesis Service** (port 8004): Policy synthesis
-- **Policy Governance Service** (port 8005): Compliance monitoring
+- **Policy Governance Service** (port 8006): Compliance monitoring
 - **Evolutionary Computation** (port 8006): WINA-optimized, AlphaEvolve integration
-- **Consensus Engine** (port 8007): Enables agreement between different AI agents
+- **Consensus Engine** (port 8008): Enables agreement between different AI agents
 - **Multi-Agent Coordinator** (port 8008): Multi-agent coordination and conflict resolution
-- **Worker Agents** (port 8009): Perform various tasks as directed by the coordinator
+- **Worker Agents** (port 8010): Perform various tasks as directed by the coordinator
 - **Blackboard Service** (port 8010): Redis-based shared knowledge system
-- **Code Analysis Service** (port 8011): Static analysis with tenant routing
+- **Code Analysis Service** (port 8012): Static analysis with tenant routing
 - **Context Service** (port 8012): Governance workflow integration
 
 ### Infrastructure Excellence
@@ -41,7 +41,7 @@ The ACGS (Autonomous Coding Governance System) has achieved **operational status
 ### Immediate Actions (Week 1)
 1. **Complete Core Services Startup**
    - Start Integrity Service (port 8016)
-   - Start Formal Verification Service (port 8011)
+   - Start Formal Verification Service (port 8012)
    - Start Governance Synthesis Service (port 8012)
    - Start Policy Governance Service (port 8014)
 
@@ -175,14 +175,14 @@ This phased approach ensures:
 
 For a broader understanding of the ACGS platform and its development, refer to:
 
-- [ACGS Service Architecture Overview](../../docs/ACGS_SERVICE_OVERVIEW.md)
-- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../../docs/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
-- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../../docs/ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
-- [ACGE Testing and Validation Framework](../../docs/ACGE_TESTING_VALIDATION_FRAMEWORK.md)
-- [ACGE Cost Analysis and ROI Projections](../../docs/ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
+- [ACGS Service Architecture Overview](../ACGS_SERVICE_OVERVIEW.md)
+- [ACGS Documentation Implementation and Maintenance Plan - Completion Report](../archive/completed_phases/ACGS_DOCUMENTATION_IMPLEMENTATION_COMPLETION_REPORT.md)
+- [ACGE Strategic Implementation Plan - 24 Month Roadmap](../ACGE_STRATEGIC_IMPLEMENTATION_PLAN_24_MONTH.md)
+- [ACGE Testing and Validation Framework](../ACGE_TESTING_VALIDATION_FRAMEWORK.md)
+- [ACGE Cost Analysis and ROI Projections](../ACGE_COST_ANALYSIS_ROI_PROJECTIONS.md)
 - [ACGS Comprehensive Task Completion - Final Report](ACGS_COMPREHENSIVE_TASK_COMPLETION_FINAL_REPORT.md)
-- [ACGS Platform Analytical Enhancements - Phase 1 Completion Report](ACGS_ANALYTICAL_ENHANCEMENTS_PHASE1_COMPLETION_REPORT.md)
-- [ACGS Platform Analytical Enhancements - Phase 2 Completion Report](ACGS_ANALYTICAL_ENHANCEMENTS_PHASE2_COMPLETION_REPORT.md)
+- [ACGS Platform Analytical Enhancements - Phase 1 Completion Report](../archive/completed_phases/ACGS_ANALYTICAL_ENHANCEMENTS_PHASE1_COMPLETION_REPORT.md)
+- [ACGS Platform Analytical Enhancements - Phase 2 Completion Report](../archive/completed_phases/ACGS_ANALYTICAL_ENHANCEMENTS_PHASE2_COMPLETION_REPORT.md)
 - [ACGE Phase 1: Architecture Design & Prototype](ACGE_PHASE1_ARCHITECTURE_PROTOTYPE.md)
 - [ACGE Phase 2: Production Integration](ACGE_PHASE2_PRODUCTION_INTEGRATION.md)
 
