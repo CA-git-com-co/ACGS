@@ -12,7 +12,7 @@ openai==1.40.1
 anthropic==0.34.0
 transformers==4.42.0
 sentence-transformers==3.0.1
-torch==2.3.1
+torch>=2.6.0
 tiktoken==0.8.0
 
 # Voice integration
@@ -28,7 +28,7 @@ langchain-openai==0.1.23
 
 # Conversation management
 redis==5.0.1
-python-multipart==0.0.6
+python-multipart>=0.0.18
 
 # Database and storage
 psycopg2-binary==2.9.9

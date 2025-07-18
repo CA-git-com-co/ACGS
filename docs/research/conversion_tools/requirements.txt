@@ -4,7 +4,7 @@
 # Primary OCR Tools (State-of-the-art)
 # OCRFlux - Advanced academic PDF to Markdown conversion
 # Note: OCRFlux requires GPU (RTX 3090+ with 12GB+ VRAM)
-# Install separately: pip install -e . --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer/
+# Install separately: pip install -e . --find-links https://flashinfer.ai/whl/cu124/torch2.6/flashinfer/
 # Repository: https://github.com/chatdoc-com/OCRFlux
 
 # Fallback OCR Tools
@@ -50,7 +50,7 @@ multiprocessing-logging==0.3.4  # Parallel processing support
 
 # OCRFlux Dependencies (GPU-based)
 torch>=2.7.1
-vllm>=0.3.0                     # VLLM for efficient inference
+vllm>=0.8.0                     # VLLM for efficient inference (security update)
 transformers>=4.52.1
 accelerate>=0.20.0              # Model acceleration
 flash-attn>=2.0.0               # Flash attention (optional)

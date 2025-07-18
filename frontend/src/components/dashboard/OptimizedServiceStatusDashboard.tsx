@@ -69,7 +69,7 @@ const ServiceStatusCard = React.memo(({ service }: { service: ServiceStatus }) =
             </Badge>
           </div>
           <div className="text-xs text-gray-500">
-            Last checked: {new Date(service.lastChecked).toLocaleTimeString()}
+            <span suppressHydrationWarning>Last checked: {new Date(service.lastChecked).toLocaleTimeString()}</span>
           </div>
         </div>
       </CardContent>
@@ -274,7 +274,7 @@ export const OptimizedServiceStatusDashboard = React.memo(() => {
             }
           </span>
           <span>
-            Last updated: {new Date().toLocaleTimeString()}
+            <span suppressHydrationWarning>Last updated: {new Date().toLocaleTimeString()}</span>
           </span>
         </div>
       </div>

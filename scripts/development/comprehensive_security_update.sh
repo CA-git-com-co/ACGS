@@ -25,7 +25,7 @@ pip install --upgrade \
     "pyjwt>=2.10.0" \
     "python-jose[cryptography]>=3.3.0" \
     "passlib[bcrypt]>=1.7.4" \
-    "python-multipart>=0.0.10" \
+    "python-multipart>=0.0.18" \
     "sqlalchemy>=2.0.36" \
     "alembic>=1.16.0" \
     "redis>=5.2.1" \

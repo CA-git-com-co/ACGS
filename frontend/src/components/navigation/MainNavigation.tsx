@@ -149,7 +149,7 @@ export function MainNavigation() {
                 </Badge>
               </div>
               <div className="mt-2">
-                <p>Last updated: {new Date().toLocaleDateString()}</p>
+                <p suppressHydrationWarning>Last updated: {new Date().toLocaleDateString()}</p>
               </div>
             </div>
           )}

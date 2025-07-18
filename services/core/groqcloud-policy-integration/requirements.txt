@@ -2,7 +2,7 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 
 # Core Framework
-fastapi==0.104.1
+fastapi>=0.115.6
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
 pydantic-settings==2.1.0
@@ -19,7 +19,7 @@ sqlalchemy[asyncio]==2.0.23
 # Security
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart>=0.0.18
 
 # Logging and Monitoring
 structlog==23.2.0

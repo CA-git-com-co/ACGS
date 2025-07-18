@@ -2,15 +2,15 @@
 # Constitutional Hash: cdd01ef066bc6cf2
 
 # Core framework
-fastapi==0.104.1
+fastapi>=0.115.6
 uvicorn[standard]==0.24.0
 pydantic==2.5.0
 
 # Security and authentication
 PyJWT==2.8.0
-cryptography==41.0.8
+cryptography>=42.0.4
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart>=0.0.18
 
 # HTTP client
 aiohttp==3.9.1

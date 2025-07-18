@@ -142,7 +142,7 @@ function ClassicDashboard({
             <ConstitutionalScoreBar score={compliance.score} />
             <div className="mt-4 text-sm text-muted-foreground">
               <p>Hash: <code className="text-xs">{compliance.hash}</code></p>
-              <p>Last Validated: {new Date(compliance.lastValidated).toLocaleString()}</p>
+              <p suppressHydrationWarning>Last Validated: {new Date(compliance.lastValidated).toLocaleString()}</p>
               <p>Violations: {compliance.violations.length}</p>
             </div>
           </div>

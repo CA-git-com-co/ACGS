@@ -317,7 +317,7 @@ export const DragDropInterface: React.FC = () => {
   }, []);
 
   // Drag handlers
-  const handleDragStart = useCallback((component: DraggableComponent, event: React.DragEvent) => {
+  const handleDragStart = useCallback((component: DraggableComponent, event: React.DragEvent<HTMLDivElement>) => {
     const startTime = performance.now();
     
     // Validate constitutional compliance
@@ -530,7 +530,7 @@ export const DragDropInterface: React.FC = () => {
                   transition={{ delay: index * 0.05 }}
                   className={`group relative p-4 rounded-xl cursor-grab transition-all duration-200 ${isDarkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-50 hover:bg-white'} hover:shadow-lg border-2 border-transparent hover:border-blue-200`}
                   draggable
-                  onDragStart={(e) => handleDragStart(component, e)}
+                  onDragStart={(e) => handleDragStart(component, e as any)}
                   onDragEnd={handleDragEnd}
                 >
                   <div className="flex items-start space-x-3">

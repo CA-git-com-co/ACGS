@@ -332,7 +332,7 @@ export function PersonalizedDashboard() {
               <div className="space-y-1 text-xs">
                 <div className="flex justify-between">
                   <span>Last Validated:</span>
-                  <span>{new Date(compliance.lastValidated).toLocaleTimeString()}</span>
+                  <span suppressHydrationWarning>{new Date(compliance.lastValidated).toLocaleTimeString()}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Violations:</span>

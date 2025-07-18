@@ -83,7 +83,7 @@ export function useConstitutionalValidation(
     queryFn: () => constitutionalClient.validateCompliance(baseContext),
     enabled,
     refetchInterval,
-    cacheTime,
+    gcTime: cacheTime,
     staleTime,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
@@ -180,7 +180,7 @@ export function useConstitutionalValidation(
     isValid,
     isLoading: isLoading || validationMutation.isPending,
     error: error || validationMutation.error,
-    result,
+    result: result || null,
     
     // Methods
     validate,

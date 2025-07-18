@@ -154,7 +154,7 @@ export const Dashboard: React.FC = () => {
           <p className="text-gray-600">
             System health and constitutional compliance monitoring
           </p>
-          <div className="mt-2 text-sm text-gray-500">
+          <div className="mt-2 text-sm text-gray-500" suppressHydrationWarning>
             Last updated: {lastUpdate.toLocaleString()}
           </div>
         </div>
@@ -272,7 +272,7 @@ export const Dashboard: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-600">Requests:</span>
                   <span className="text-sm font-medium text-gray-900">
-                    {service.requests.toLocaleString()}
+                    <span suppressHydrationWarning>{service.requests.toLocaleString()}</span>
                   </span>
                 </div>
                 
@@ -300,7 +300,7 @@ export const Dashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
               <div className="text-2xl font-bold text-blue-600 mb-1">
-                {stats.totalRequests.toLocaleString()}
+                <span suppressHydrationWarning>{stats.totalRequests.toLocaleString()}</span>
               </div>
               <div className="text-sm text-gray-600">Total Requests</div>
             </div>

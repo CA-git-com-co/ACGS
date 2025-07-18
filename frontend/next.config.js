@@ -249,18 +249,6 @@ const nextConfig = {
   // Production source maps
   productionBrowserSourceMaps: false,
   
-  // Static export configuration
-  exportPathMap: async function (defaultPathMap, { dev, dir, outDir, distDir, buildId }) {
-    if (dev) {
-      return defaultPathMap;
-    }
-    
-    return {
-      '/': { page: '/' },
-      '/dashboard': { page: '/dashboard' },
-      '/health': { page: '/health' },
-    };
-  },
 };
 
 // Performance monitoring for build times

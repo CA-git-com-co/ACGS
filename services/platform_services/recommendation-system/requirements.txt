@@ -14,7 +14,7 @@ numpy==1.26.4
 scipy==1.13.1
 
 # Deep Learning for embeddings - Latest transformers
-torch==2.3.1
+torch>=2.6.0
 sentence-transformers==3.0.1
 transformers==4.42.0
 
@@ -36,7 +36,7 @@ fairlearn==0.10.0
 
 # Time series and sequence modeling
 torch-audiomentations==0.11.1
-pytorch-lightning==2.3.3
+pytorch-lightning>=2.4.0
 
 # Streaming and real-time processing
 kafka-python==2.0.2

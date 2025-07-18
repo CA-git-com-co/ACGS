@@ -189,7 +189,7 @@ export function ComplianceMetrics({ metrics, isLoading = false }: ComplianceMetr
                     {violation}
                   </p>
                   <p className="text-xs text-red-600">
-                    {new Date(metrics.lastValidated).toLocaleString()}
+                    <span suppressHydrationWarning>{new Date(metrics.lastValidated).toLocaleString()}</span>
                   </p>
                 </div>
               </div>
@@ -200,7 +200,7 @@ export function ComplianceMetrics({ metrics, isLoading = false }: ComplianceMetr
 
       {/* Last Updated */}
       <div className="mt-6 pt-4 border-t border-gray-200">
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500" suppressHydrationWarning>
           Last updated: {new Date(metrics.lastValidated).toLocaleString()}
         </p>
       </div>

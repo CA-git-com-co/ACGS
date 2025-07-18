@@ -6,9 +6,9 @@ asyncpg>=0.29.0
 sqlalchemy>=2.0.23
 alembic==1.12.1
 pydantic>=2.10.5
-python-jose>=3.5.1
+python-jose>=3.4.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart>=0.0.18
 aioredis==2.0.1
 httpx==0.25.2
 cryptography>=43.0.1

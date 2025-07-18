@@ -80,7 +80,7 @@ export function GovernanceInsights({ insights, isLoading = false }: GovernanceIn
           <span>Governance Insights</span>
         </h3>
         <span className="text-sm text-gray-500">
-          {insights.createdAt && new Date(insights.createdAt).toLocaleDateString()}
+          {insights.createdAt && <span suppressHydrationWarning>{new Date(insights.createdAt).toLocaleDateString()}</span>}
         </span>
       </div>
 
