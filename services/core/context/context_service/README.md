@@ -34,7 +34,7 @@ High-performance context management system providing sub-50ms context retrieval,
 
 ```bash
 cd /services/core/context/context_service
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 ```
 
 ### Configuration

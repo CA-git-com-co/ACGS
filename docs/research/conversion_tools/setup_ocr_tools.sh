@@ -103,7 +103,7 @@ install_python_packages() {
     pip install --upgrade pip setuptools wheel
 
     # Install basic requirements (excluding OCRFlux)
-    pip install -r requirements.txt
+    pip install -r config/environments/requirements.txt
 
     print_success "Basic Python packages installed"
 

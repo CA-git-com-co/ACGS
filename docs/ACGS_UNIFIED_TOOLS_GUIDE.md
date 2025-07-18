@@ -21,7 +21,7 @@ git clone https://github.com/acgs/acgs.git
 cd acgs
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Verify constitutional hash
 echo $CONSTITUTIONAL_HASH  # Should equal: cdd01ef066bc6cf2
@@ -314,7 +314,7 @@ jobs:
           python-version: '3.11'
       
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r config/environments/requirements.txt
       
       - name: Validate Constitutional Compliance
         env:

@@ -295,7 +295,7 @@ class ServiceDiscoveryEngine:
         # Look for service indicators
         indicators = [
             "main.py", "app.py", "server.py",
-            "requirements.txt", "pyproject.toml",
+            "config/environments/requirements.txt", "config/environments/pyproject.toml",
             "Dockerfile", "docker-compose.yml"
         ]
         
@@ -318,8 +318,8 @@ class ServiceDiscoveryEngine:
         
         dependencies = []
         
-        # Check requirements.txt
-        req_file = service_path / "requirements.txt"
+        # Check config/environments/requirements.txt
+        req_file = service_path / "config/environments/requirements.txt"
         if req_file.exists():
             try:
                 with open(req_file) as f:
@@ -332,8 +332,8 @@ class ServiceDiscoveryEngine:
             except Exception:
                 pass
         
-        # Check pyproject.toml
-        pyproject_file = service_path / "pyproject.toml"
+        # Check config/environments/pyproject.toml
+        pyproject_file = service_path / "config/environments/pyproject.toml"
         if pyproject_file.exists():
             try:
                 import toml

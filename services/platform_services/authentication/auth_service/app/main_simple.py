@@ -61,7 +61,7 @@ async def health_check() -> Dict[str, Any]:
             "security_audit": "operational",
             "intrusion_detection": "operational",
             "session_manager": "operational",
-        }
+        },
     }
 
 
@@ -80,7 +80,7 @@ async def auth_status() -> Dict[str, Any]:
                 "oauth_integration": True,
                 "tenant_isolation": True,
                 "api_key_management": True,
-            }
+            },
         }
     except Exception as e:
         logger.error(f"Auth status check failed: {e}")
@@ -93,10 +93,10 @@ async def validate_token(token: str = None) -> Dict[str, Any]:
     try:
         if not token:
             raise HTTPException(status_code=422, detail="Token is required")
-        
+
         # Basic validation logic (placeholder)
         is_valid = len(token) > 10  # Simple validation
-        
+
         return {
             "validation_id": f"auth_val_{int(datetime.now().timestamp())}",
             "token_valid": is_valid,
@@ -107,7 +107,7 @@ async def validate_token(token: str = None) -> Dict[str, Any]:
                 "not_expired": True,
                 "signature_valid": is_valid,
                 "constitutional_compliant": True,
-            }
+            },
         }
     except HTTPException:
         raise
@@ -121,7 +121,7 @@ async def get_metrics() -> Dict[str, Any]:
     """Prometheus-compatible metrics endpoint."""
     current_time = datetime.now(timezone.utc)
     uptime_seconds = (current_time - startup_time).total_seconds()
-    
+
     return {
         "service_uptime_seconds": uptime_seconds,
         "constitutional_hash": CONSTITUTIONAL_HASH,

@@ -14,8 +14,10 @@ import uuid
 
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 class ConsentStatus(str, Enum):
     """Consent status values"""
+
     GIVEN = "given"
     WITHDRAWN = "withdrawn"
     EXPIRED = "expired"
@@ -23,8 +25,10 @@ class ConsentStatus(str, Enum):
     REFUSED = "refused"
     DELETED = "deleted"
 
+
 class ProcessingLawfulBasis(str, Enum):
     """GDPR lawful bases for processing"""
+
     CONSENT = "consent"
     CONTRACT = "contract"
     LEGAL_OBLIGATION = "legal_obligation"
@@ -32,30 +36,36 @@ class ProcessingLawfulBasis(str, Enum):
     PUBLIC_TASK = "public_task"
     LEGITIMATE_INTEREST = "legitimate_interest"
 
+
 class DataCategory(str, Enum):
     """Categories of personal data"""
+
     IDENTITY = "identity"  # Name, ID numbers, etc.
-    CONTACT = "contact"    # Email, phone, address
+    CONTACT = "contact"  # Email, phone, address
     DEMOGRAPHIC = "demographic"  # Age, gender, etc.
-    FINANCIAL = "financial"      # Payment, billing
-    TECHNICAL = "technical"      # IP, cookies, logs
-    BEHAVIORAL = "behavioral"    # Usage patterns, preferences
-    BIOMETRIC = "biometric"      # Fingerprints, photos
-    HEALTH = "health"           # Medical data
+    FINANCIAL = "financial"  # Payment, billing
+    TECHNICAL = "technical"  # IP, cookies, logs
+    BEHAVIORAL = "behavioral"  # Usage patterns, preferences
+    BIOMETRIC = "biometric"  # Fingerprints, photos
+    HEALTH = "health"  # Medical data
     SPECIAL_CATEGORY = "special_category"  # Sensitive data
+
 
 class RequestType(str, Enum):
     """Data subject request types"""
-    ACCESS = "access"                    # Article 15
-    RECTIFICATION = "rectification"      # Article 16
-    ERASURE = "erasure"                 # Article 17
-    RESTRICTION = "restriction"          # Article 18
-    PORTABILITY = "portability"         # Article 20
-    OBJECTION = "objection"             # Article 21
+
+    ACCESS = "access"  # Article 15
+    RECTIFICATION = "rectification"  # Article 16
+    ERASURE = "erasure"  # Article 17
+    RESTRICTION = "restriction"  # Article 18
+    PORTABILITY = "portability"  # Article 20
+    OBJECTION = "objection"  # Article 21
     AUTOMATED_DECISION = "automated_decision"  # Article 22
+
 
 class DataSubject(BaseModel):
     """Data subject (individual)"""
+
     subject_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
     first_name: Optional[str] = None
@@ -70,8 +80,10 @@ class DataSubject(BaseModel):
     special_categories: List[str] = []
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
+
 class ConsentRecord(BaseModel):
     """Consent record for data processing"""
+
     consent_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     subject_id: str
     processing_activity: str
@@ -96,8 +108,10 @@ class ConsentRecord(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataProcessingActivity(BaseModel):
     """Data processing activity record"""
+
     activity_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -109,7 +123,7 @@ class DataProcessingActivity(BaseModel):
     data_categories: List[DataCategory]
     special_categories: bool = False
     data_subjects: List[str]  # Categories of data subjects
-    recipients: List[str]     # Who receives the data
+    recipients: List[str]  # Who receives the data
     retention_period_months: int
     international_transfers: bool = False
     transfer_safeguards: Optional[str] = None
@@ -120,8 +134,10 @@ class DataProcessingActivity(BaseModel):
     last_reviewed: datetime = Field(default_factory=datetime.utcnow)
     next_review_date: Optional[datetime] = None
 
+
 class DataRetentionRule(BaseModel):
     """Data retention rule"""
+
     rule_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -136,8 +152,10 @@ class DataRetentionRule(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_reviewed: datetime = Field(default_factory=datetime.utcnow)
 
+
 class PrivacyImpactAssessment(BaseModel):
     """Privacy Impact Assessment (PIA/DPIA)"""
+
     assessment_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: str
@@ -162,8 +180,10 @@ class PrivacyImpactAssessment(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataBreachIncident(BaseModel):
     """Data breach incident record"""
+
     incident_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     description: str
@@ -189,8 +209,10 @@ class DataBreachIncident(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataSubjectRequest(BaseModel):
     """Data subject request"""
+
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     subject_id: str
     request_type: RequestType
@@ -211,8 +233,10 @@ class DataSubjectRequest(BaseModel):
     extension_reason: Optional[str] = None
     processor_notifications: List[str] = []
 
+
 class ComplianceReport(BaseModel):
     """GDPR compliance report"""
+
     report_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     report_type: str
     period_start: datetime
@@ -234,8 +258,10 @@ class ComplianceReport(BaseModel):
     recommendations: List[str] = []
     action_items: List[str] = []
 
+
 class PrivacyNotice(BaseModel):
     """Privacy notice/policy"""
+
     notice_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     version: str
@@ -259,8 +285,10 @@ class PrivacyNotice(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataController(BaseModel):
     """Data controller information"""
+
     controller_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     organization: str
@@ -275,8 +303,10 @@ class DataController(BaseModel):
     processing_activities: List[str] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataProcessor(BaseModel):
     """Data processor information"""
+
     processor_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     organization: str
@@ -291,8 +321,10 @@ class DataProcessor(BaseModel):
     international_transfers: bool = False
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class CrossBorderTransfer(BaseModel):
     """Cross-border data transfer record"""
+
     transfer_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     from_country: str
     to_country: str
@@ -310,8 +342,10 @@ class CrossBorderTransfer(BaseModel):
     risk_assessment_completed: bool = False
     additional_safeguards: List[str] = []
 
+
 class ConsentStatistics(BaseModel):
     """Consent statistics"""
+
     total_consents: int = 0
     active_consents: int = 0
     expired_consents: int = 0
@@ -325,8 +359,10 @@ class ConsentStatistics(BaseModel):
     consents_by_category: Dict[str, int] = {}
     generated_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataSubjectStatistics(BaseModel):
     """Data subject statistics"""
+
     total_subjects: int = 0
     active_subjects: int = 0
     anonymized_subjects: int = 0
@@ -337,8 +373,10 @@ class DataSubjectStatistics(BaseModel):
     subjects_with_consents: int = 0
     generated_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class GDPRConfiguration(BaseModel):
     """GDPR service configuration"""
+
     config_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     organization_name: str = "ACGS-2 Platform"
     default_retention_days: int = 365

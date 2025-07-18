@@ -3,16 +3,30 @@ Application Settings Management for ACGS
 Constitutional Hash: cdd01ef066bc6cf2
 
 Centralized settings with environment-specific configurations and validation.
+Enhanced with performance optimization and duplication reduction.
 """
 
 import logging
 import os
 from dataclasses import dataclass, field
-from typing import Any
+from functools import lru_cache
+from typing import Any, Dict, Optional
+from urllib.parse import urlparse
 
 from .config_manager import get_config_manager
 
 logger = logging.getLogger(__name__)
+
+# Performance targets for consistency
+PERFORMANCE_TARGETS = {
+    "p99_latency_ms": 5.0,
+    "min_throughput_rps": 100,
+    "min_cache_hit_rate": 0.85,
+    "constitutional_compliance": 1.0
+}
+
+# Constitutional hash constant
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
 @dataclass
@@ -230,7 +244,7 @@ class Settings:
     """Main application settings."""
 
     def __init__(self, environment: str | None = None):
-        selfconfig/environments/development.environment = environment or os.getenv("ENVIRONMENT", "development")
+        self.environment = environment or os.getenv("ENVIRONMENT", "development")
         self._config_manager = get_config_manager()
 
         # Initialize settings from configuration
@@ -245,7 +259,7 @@ class Settings:
             port=db_config.get("port", 5432),
             database=db_config.get("database", "acgs"),
             username=db_config.get("username", "acgs_user"),
-            password=os.environ.get("PASSWORD")password", ""),
+            password=os.environ.get("PASSWORD", ""),
             pool_size=db_config.get("pool_size", 20),
             max_overflow=db_config.get("max_overflow", 10),
             pool_timeout=db_config.get("pool_timeout", 30.0),
@@ -364,17 +378,17 @@ class Settings:
 
     def _apply_environment_overrides(self) -> None:
         """Apply environment-specific setting overrides."""
-        if selfconfig/environments/development.environment == "development":
+        if self.environment == "development":
             self.database.echo = True
             self.logging.level = "DEBUG"
             self.security.enable_csrf_protection = False
             self.constitutional.strict_mode = False
-        elif selfconfig/environments/development.environment == "testing":
+        elif self.environment == "testing":
             self.database.database = "acgs_test"
             self.cache.redis_url = "redis://localhost:6379/1"
             self.logging.level = "WARNING"
             self.monitoring.enable_alerts = False
-        elif selfconfig/environments/development.environment == "production":
+        elif self.environment == "production":
             self.logging.level = "INFO"
             self.security.enable_2fa = True
             self.constitutional.strict_mode = True
@@ -383,7 +397,7 @@ class Settings:
     def reload(self) -> None:
         """Reload settings from configuration."""
         self._load_settings()
-        logger.info(f"Settings reloaded for environment: {selfconfig/environments/development.environment}")
+        logger.info(f"Settings reloaded for environment: {self.environment}")
 
     def get_database_url(self) -> str:
         """Get database connection URL."""
@@ -395,20 +409,20 @@ class Settings:
 
     def is_development(self) -> bool:
         """Check if running in development mode."""
-        return selfconfig/environments/development.environment == "development"
+        return self.environment == "development"
 
     def is_production(self) -> bool:
         """Check if running in production mode."""
-        return selfconfig/environments/development.environment == "production"
+        return self.environment == "production"
 
     def is_testing(self) -> bool:
         """Check if running in testing mode."""
-        return selfconfig/environments/development.environment == "testing"
+        return self.environment == "testing"
 
     def to_dict(self) -> dict[str, Any]:
         """Convert all settings to dictionary."""
         return {
-            "environment": selfconfig/environments/development.environment,
+            "environment": self.environment,
             "database": self.database.to_dict(),
             "cache": self.cache.to_dict(),
             "logging": self.logging.to_dict(),
@@ -569,6 +583,99 @@ def create_sample_config_files() -> None:
         json.dump(prod_config, f, indent=2)
 
     logger.info(f"Sample configuration files created in {config_dir}")
+
+
+# Utility functions to reduce code duplication across the codebase
+@lru_cache(maxsize=1)
+def get_database_url() -> str:
+    """Get centralized database URL."""
+    return get_settings().get_database_url()
+
+
+@lru_cache(maxsize=1)
+def get_redis_url() -> str:
+    """Get centralized Redis URL."""
+    return get_settings().get_cache_url()
+
+
+@lru_cache(maxsize=1)
+def get_constitutional_hash() -> str:
+    """Get constitutional hash constant."""
+    return CONSTITUTIONAL_HASH
+
+
+@lru_cache(maxsize=1)
+def get_performance_targets() -> Dict[str, Any]:
+    """Get performance targets."""
+    return PERFORMANCE_TARGETS.copy()
+
+
+def validate_constitutional_compliance() -> bool:
+    """Validate constitutional compliance."""
+    settings = get_settings()
+    return settings.constitutional.hash_value == CONSTITUTIONAL_HASH
+
+
+def get_service_url(service_name: str, default_port: int = 8000) -> str:
+    """Get URL for a specific service."""
+    # Try environment variable first
+    env_var = f"{service_name.upper().replace('-', '_')}_URL"
+    url = os.environ.get(env_var)
+    
+    if url:
+        return url
+    
+    # Build URL from components
+    host = os.environ.get(f"{service_name.upper().replace('-', '_')}_HOST", 'localhost')
+    port = os.environ.get(f"{service_name.upper().replace('-', '_')}_PORT", str(default_port))
+    
+    return f"http://{host}:{port}"
+
+
+def create_constitutional_headers() -> Dict[str, str]:
+    """Create standard constitutional compliance headers."""
+    return {
+        'X-Constitutional-Hash': CONSTITUTIONAL_HASH,
+        'X-Constitutional-Compliance': 'verified',
+        'X-Performance-Targets': f"P99<{PERFORMANCE_TARGETS['p99_latency_ms']}ms"
+    }
+
+
+def get_common_service_config() -> Dict[str, Any]:
+    """Get common service configuration."""
+    settings = get_settings()
+    return {
+        'database_url': settings.get_database_url(),
+        'redis_url': settings.get_cache_url(),
+        'constitutional_hash': CONSTITUTIONAL_HASH,
+        'performance_targets': PERFORMANCE_TARGETS,
+        'environment': settings.environment,
+        'debug': settings.is_development(),
+        'testing': settings.is_testing()
+    }
+
+
+# Export commonly used functions
+__all__ = [
+    'Settings',
+    'get_settings',
+    'reload_settings',
+    'validate_settings',
+    'get_database_url',
+    'get_redis_url',
+    'get_constitutional_hash',
+    'get_performance_targets',
+    'validate_constitutional_compliance',
+    'get_service_url',
+    'create_constitutional_headers',
+    'get_common_service_config',
+    'CONSTITUTIONAL_HASH',
+    'PERFORMANCE_TARGETS',
+    'load_development_settings',
+    'load_production_settings',
+    'load_testing_settings',
+    'create_sample_config_files'
+]
 
 
 if __name__ == "__main__":

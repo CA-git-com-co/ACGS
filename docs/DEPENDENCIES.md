@@ -9,11 +9,11 @@ This document outlines the dependency management strategy for ACGS-PGP using mod
 
 ACGS-PGP uses a hybrid dependency management approach:
 
-- **Python**: `uv` (primary) with `pyproject.toml` as the source of truth
+- **Python**: `uv` (primary) with `config/environments/pyproject.toml` as the source of truth
 - **JavaScript/TypeScript**: `npm` with `package.json`
-- **Legacy Support**: `requirements.txt` maintained for compatibility
+- **Legacy Support**: `config/environments/requirements.txt` maintained for compatibility
 
-## Python Dependencies (uv + pyproject.toml)
+## Python Dependencies (uv + config/environments/pyproject.toml)
 
 ### Installation
 
@@ -101,7 +101,7 @@ uv add --optional ml package-name
 # Update dependencies
 uv pip install --upgrade -e .
 
-# Generate requirements.txt (for compatibility)
+# Generate config/environments/requirements.txt (for compatibility)
 uv pip freeze > requirements-frozen.txt
 ```
 
@@ -175,8 +175,8 @@ npm outdated
 
 ### Keeping Dependencies in Sync
 
-1. **Primary Source**: `pyproject.toml` for Python, `package.json` for JavaScript
-2. **Generated Files**: `requirements.txt` (compatibility), `package-lock.json` (lockfile)
+1. **Primary Source**: `config/environments/pyproject.toml` for Python, `package.json` for JavaScript
+2. **Generated Files**: `config/environments/requirements.txt` (compatibility), `package-lock.json` (lockfile)
 3. **Version Pinning**: Use `>=` for flexibility, `==` for stability
 
 ### Update Workflow
@@ -197,7 +197,7 @@ uv pip freeze > requirements-frozen.txt
 # package-lock.json is updated automatically by npm
 
 # 5. Commit changes
-git add pyproject.toml package.json package-lock.json requirements.txt
+git add config/environments/pyproject.toml package.json package-lock.json config/environments/requirements.txt
 git commit -m "chore: update dependencies"
 ```
 
@@ -283,7 +283,7 @@ npm update --save
 1. **Pin security-critical dependencies** with exact versions
 2. **Regular updates**: Monthly dependency updates
 3. **Automated scanning**: Use GitHub Dependabot
-4. **Lock files**: Always commit `package-lock.json` and consider `uv.lock`
+4. **Lock files**: Always commit `package-lock.json` and consider `config/environments/uv.lock`
 5. **Minimal dependencies**: Only install what you need
 
 ## CI/CD Integration
@@ -312,7 +312,7 @@ npm update --save
 
 1. **Backup current setup**: `pip freeze > requirements-backup.txt`
 2. **Install uv**: `curl -LsSf https://astral.sh/uv/install.sh | sh`
-3. **Migrate dependencies**: Update `pyproject.toml` with current dependencies
+3. **Migrate dependencies**: Update `config/environments/pyproject.toml` with current dependencies
 4. **Test migration**: `uv pip install -e . && pytest`
 5. **Update CI/CD**: Replace `pip` commands with `uv pip`
 

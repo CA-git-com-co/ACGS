@@ -1,3 +1,7 @@
+---
+type: "agent_requested"
+description: "Example description"
+---
 <!-- Constitutional Hash: cdd01ef066bc6cf2 -->
 ---
 type: "always_apply"

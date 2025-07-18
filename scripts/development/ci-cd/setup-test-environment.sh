@@ -63,14 +63,14 @@ setup_python_environment() {
     pip install aiohttp requests psutil
     
     # Install additional dependencies if requirements file exists
-    if [ -f "$PROJECT_ROOT/requirements.txt" ]; then
+    if [ -f "$PROJECT_ROOT/config/environments/requirements.txt" ]; then
         log "Installing project requirements..."
-        pip install -r "$PROJECT_ROOT/requirements.txt"
+        pip install -r "$PROJECT_ROOT/config/environments/requirements.txt"
     fi
     
-    if [ -f "$PROJECT_ROOT/tests/requirements.txt" ]; then
+    if [ -f "$PROJECT_ROOT/tests/config/environments/requirements.txt" ]; then
         log "Installing test requirements..."
-        pip install -r "$PROJECT_ROOT/tests/requirements.txt"
+        pip install -r "$PROJECT_ROOT/tests/config/environments/requirements.txt"
     fi
     
     log "✅ Python environment setup complete"

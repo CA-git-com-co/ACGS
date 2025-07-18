@@ -57,7 +57,9 @@ class TestOperationalAgentRefactored:
         return monitor
 
     @pytest.fixture
-    def operational_agent(self, mock_blackboard, mock_constitutional_framework, mock_performance_monitor):
+    def operational_agent(
+        self, mock_blackboard, mock_constitutional_framework, mock_performance_monitor
+    ):
         """Create operational agent instance for testing."""
         return OperationalAgentRefactored(
             agent_id="test_agent",
@@ -77,21 +79,31 @@ class TestOperationalAgentRefactored:
 
     def test_handlers_initialization(self, operational_agent):
         """Test that all handlers are properly initialized."""
-        assert isinstance(operational_agent.validation_handler, OperationalValidationHandler)
-        assert isinstance(operational_agent.performance_handler, PerformanceAnalysisHandler)
-        assert isinstance(operational_agent.infrastructure_handler, InfrastructureAssessmentHandler)
-        assert isinstance(operational_agent.implementation_handler, ImplementationPlanningHandler)
+        assert isinstance(
+            operational_agent.validation_handler, OperationalValidationHandler
+        )
+        assert isinstance(
+            operational_agent.performance_handler, PerformanceAnalysisHandler
+        )
+        assert isinstance(
+            operational_agent.infrastructure_handler, InfrastructureAssessmentHandler
+        )
+        assert isinstance(
+            operational_agent.implementation_handler, ImplementationPlanningHandler
+        )
         assert isinstance(operational_agent.deployment_handler, DeploymentHandler)
-        assert isinstance(operational_agent.compliance_handler, ConstitutionalComplianceHandler)
+        assert isinstance(
+            operational_agent.compliance_handler, ConstitutionalComplianceHandler
+        )
 
     @pytest.mark.asyncio
     async def test_start_agent(self, operational_agent, mock_blackboard):
         """Test starting the operational agent."""
         await operational_agent.start()
-        
+
         assert operational_agent.is_running
         mock_blackboard.register_agent.assert_called_once()
-        
+
         # Verify registration parameters
         call_args = mock_blackboard.register_agent.call_args
         assert call_args[1]["agent_id"] == "test_agent"
@@ -104,7 +116,7 @@ class TestOperationalAgentRefactored:
         """Test stopping the operational agent."""
         await operational_agent.start()
         await operational_agent.stop()
-        
+
         assert not operational_agent.is_running
         mock_blackboard.unregister_agent.assert_called_once_with("test_agent")
 
@@ -125,14 +137,17 @@ class TestOperationalAgentRefactored:
             },
             priority=1,
         )
-        
+
         result = await operational_agent.process_task(task)
-        
+
         assert "approved" in result
         assert "risk_level" in result
         assert "confidence" in result
         assert "constitutional_compliance" in result
-        assert result["constitutional_compliance"]["constitutional_hash"] == CONSTITUTIONAL_HASH
+        assert (
+            result["constitutional_compliance"]["constitutional_hash"]
+            == CONSTITUTIONAL_HASH
+        )
 
     @pytest.mark.asyncio
     async def test_process_performance_analysis_task(self, operational_agent):
@@ -154,9 +169,9 @@ class TestOperationalAgentRefactored:
             },
             priority=1,
         )
-        
+
         result = await operational_agent.process_task(task)
-        
+
         assert "analysis_complete" in result
         assert "performance_score" in result
         assert "latency_analysis" in result
@@ -172,7 +187,11 @@ class TestOperationalAgentRefactored:
             task_data={
                 "governance_request": {
                     "model_info": {
-                        "resource_usage": {"cpu_cores": 8, "memory_gb": 16, "storage_gb": 500},
+                        "resource_usage": {
+                            "cpu_cores": 8,
+                            "memory_gb": 16,
+                            "storage_gb": 500,
+                        },
                         "network_requirements": {"bandwidth_mbps": 500},
                         "security": {"encryption_enabled": True},
                         "monitoring": {"metrics_enabled": True},
@@ -181,9 +200,9 @@ class TestOperationalAgentRefactored:
             },
             priority=1,
         )
-        
+
         result = await operational_agent.process_task(task)
-        
+
         assert "assessment_complete" in result
         assert "overall_readiness" in result
         assert "readiness_score" in result
@@ -199,15 +218,19 @@ class TestOperationalAgentRefactored:
             task_data={
                 "governance_request": {
                     "model_info": {
-                        "resource_usage": {"cpu_cores": 4, "memory_gb": 8, "storage_gb": 200}
+                        "resource_usage": {
+                            "cpu_cores": 4,
+                            "memory_gb": 8,
+                            "storage_gb": 200,
+                        }
                     }
                 }
             },
             priority=1,
         )
-        
+
         result = await operational_agent.process_task(task)
-        
+
         assert "plan_created" in result
         assert "plan_id" in result
         assert "phases" in result
@@ -223,16 +246,14 @@ class TestOperationalAgentRefactored:
             task_type="deployment_planning",
             task_data={
                 "governance_request": {
-                    "model_info": {
-                        "resource_usage": {"cpu_cores": 4, "memory_gb": 8}
-                    }
+                    "model_info": {"resource_usage": {"cpu_cores": 4, "memory_gb": 8}}
                 }
             },
             priority=1,
         )
-        
+
         result = await operational_agent.process_task(task)
-        
+
         assert "deployment_plan_created" in result
         assert "deployment_id" in result
         assert "deployment_strategy" in result
@@ -249,9 +270,9 @@ class TestOperationalAgentRefactored:
             task_data={},
             priority=1,
         )
-        
+
         result = await operational_agent.process_task(task)
-        
+
         assert "error" in result
         assert "No handler for task type" in result["error"]
 
@@ -259,7 +280,7 @@ class TestOperationalAgentRefactored:
     async def test_get_agent_status(self, operational_agent):
         """Test getting agent status."""
         status = await operational_agent.get_agent_status()
-        
+
         assert status["agent_id"] == "test_agent"
         assert status["agent_type"] == "operational_agent"
         assert "is_running" in status
@@ -272,7 +293,7 @@ class TestOperationalAgentRefactored:
     async def test_health_check(self, operational_agent):
         """Test health check functionality."""
         health = await operational_agent.health_check()
-        
+
         assert "healthy" in health
         assert "agent_id" in health
         assert "handlers" in health
@@ -283,7 +304,7 @@ class TestOperationalAgentRefactored:
     async def test_get_performance_metrics(self, operational_agent):
         """Test getting performance metrics."""
         metrics = await operational_agent.get_performance_metrics()
-        
+
         assert "agent_id" in metrics
         assert "uptime_seconds" in metrics
         assert "tasks_processed" in metrics
@@ -299,11 +320,13 @@ class TestOperationalAgentRefactored:
             "deployment_config": {"rollback_enabled": True},
             "security": {"encryption_enabled": True, "access_control_enabled": True},
         }
-        
-        compliance_result = await operational_agent.compliance_handler.check_constitutional_compliance(
-            governance_request
+
+        compliance_result = (
+            await operational_agent.compliance_handler.check_constitutional_compliance(
+                governance_request
+            )
         )
-        
+
         assert "compliant" in compliance_result
         assert "compliance_score" in compliance_result
         assert "principle_checks" in compliance_result
@@ -312,7 +335,7 @@ class TestOperationalAgentRefactored:
     def test_factory_function(self):
         """Test the factory function for creating operational agents."""
         agent = create_operational_agent(agent_id="factory_test_agent")
-        
+
         assert isinstance(agent, OperationalAgentRefactored)
         assert agent.agent_id == "factory_test_agent"
         assert agent.agent_type == "operational_agent"
@@ -337,7 +360,11 @@ class TestOperationalAgentHandlers:
             task_data={
                 "governance_request": {
                     "model_info": {
-                        "resource_usage": {"cpu_cores": 4, "memory_gb": 8, "storage_gb": 200},
+                        "resource_usage": {
+                            "cpu_cores": 4,
+                            "memory_gb": 8,
+                            "storage_gb": 200,
+                        },
                         "performance": {"avg_latency_ms": 100, "rps": 150},
                         "network_requirements": {"bandwidth_mbps": 500},
                         "security": {"encryption_enabled": True},
@@ -355,9 +382,9 @@ class TestOperationalAgentHandlers:
             agent_id="test_agent",
             blackboard_service=mock_blackboard,
         )
-        
+
         result = await handler.handle_operational_validation(sample_task)
-        
+
         assert "approved" in result
         assert "risk_level" in result
         assert "validation_checks" in result
@@ -370,9 +397,9 @@ class TestOperationalAgentHandlers:
             agent_id="test_agent",
             blackboard_service=mock_blackboard,
         )
-        
+
         result = await handler.handle_performance_analysis(sample_task)
-        
+
         assert "analysis_complete" in result
         assert "performance_score" in result
         assert "latency_analysis" in result
@@ -385,9 +412,9 @@ class TestOperationalAgentHandlers:
             agent_id="test_agent",
             blackboard_service=mock_blackboard,
         )
-        
+
         result = await handler.handle_infrastructure_assessment(sample_task)
-        
+
         assert "assessment_complete" in result
         assert "overall_readiness" in result
         assert "component_readiness" in result
@@ -400,9 +427,9 @@ class TestOperationalAgentHandlers:
             agent_id="test_agent",
             blackboard_service=mock_blackboard,
         )
-        
+
         result = await handler.handle_implementation_planning(sample_task)
-        
+
         assert "plan_created" in result
         assert "phases" in result
         assert "rollback_plan" in result
@@ -415,9 +442,9 @@ class TestOperationalAgentHandlers:
             agent_id="test_agent",
             blackboard_service=mock_blackboard,
         )
-        
+
         result = await handler.handle_deployment_planning(sample_task)
-        
+
         assert "deployment_plan_created" in result
         assert "deployment_steps" in result
         assert "scaling_configuration" in result
@@ -430,13 +457,13 @@ class TestOperationalAgentHandlers:
             agent_id="test_agent",
             blackboard_service=mock_blackboard,
         )
-        
+
         governance_request = sample_task.task_data["governance_request"]
         governance_request["deployment_config"] = {"rollback_enabled": True}
         governance_request["security"]["access_control_enabled"] = True
-        
+
         result = await handler.check_constitutional_compliance(governance_request)
-        
+
         assert "compliant" in result
         assert "compliance_score" in result
         assert "principle_checks" in result
@@ -447,19 +474,19 @@ if __name__ == "__main__":
     # Run basic tests
     print("Testing refactored operational agent...")
     print(f"Constitutional Hash: {CONSTITUTIONAL_HASH}")
-    
+
     # Simple smoke test
     async def smoke_test():
         agent = create_operational_agent("smoke_test_agent")
         status = await agent.get_agent_status()
         print(f"Agent Status: {status['agent_id']} - {status['agent_type']}")
-        
+
         health = await agent.health_check()
         print(f"Health Status: {'Healthy' if health['healthy'] else 'Unhealthy'}")
-        
+
         metrics = await agent.get_performance_metrics()
         print(f"Performance Metrics: {metrics['agent_id']}")
-        
+
         print("Smoke test completed successfully!")
-    
+
     asyncio.run(smoke_test())

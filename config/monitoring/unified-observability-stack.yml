@@ -1,0 +1,380 @@
+# ACGS-2 Unified Observability Stack Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+# Consolidated monitoring, metrics, and alerting configuration
+
+constitutional_hash: cdd01ef066bc6cf2
+stack_version: "1.0.0"
+last_updated: "2025-01-18T00:00:00Z"
+
+# Observability Stack Components
+observability_stack:
+  
+  # Metrics Collection (Prometheus)
+  prometheus:
+    enabled: true
+    version: "v2.48.0"
+    port: 9090
+    retention: "90d"
+    storage_size: "50GB"
+    scrape_interval: "15s"
+    evaluation_interval: "15s"
+    
+    # Global Configuration
+    global_config:
+      scrape_interval: "15s"
+      evaluation_interval: "15s"
+      external_labels:
+        cluster: "acgs-production"
+        environment: "${ENVIRONMENT}"
+        constitutional_hash: "cdd01ef066bc6cf2"
+    
+    # Scrape Configurations
+    scrape_configs:
+      # ACGS Core Services
+      - job_name: "acgs-core-services"
+        scrape_interval: "10s"
+        scrape_timeout: "5s"
+        metrics_path: "/metrics"
+        static_configs:
+          - targets:
+            - "constitutional_ai:8001"
+            - "integrity_service:8002"
+            - "formal_verification:8003"
+            - "governance_synthesis:8004"
+            - "policy_governance:8005"
+            - "evolutionary_computation:8006"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            regex: "([^:]+):.*"
+            replacement: "${1}"
+          - target_label: constitutional_hash
+            replacement: "cdd01ef066bc6cf2"
+      
+      # Platform Services
+      - job_name: "acgs-platform-services"
+        scrape_interval: "10s"
+        scrape_timeout: "5s"
+        metrics_path: "/metrics"
+        static_configs:
+          - targets:
+            - "auth_service:8016"
+            - "api_gateway:8000"
+            - "code_analysis:8007"
+            - "context_engine:8012"
+            - "multi_agent_coordinator:8008"
+            - "consensus_service:8009"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            regex: "([^:]+):.*"
+            replacement: "${1}"
+          - target_label: constitutional_hash
+            replacement: "cdd01ef066bc6cf2"
+      
+      # Infrastructure Services
+      - job_name: "acgs-infrastructure"
+        scrape_interval: "15s"
+        scrape_timeout: "10s"
+        static_configs:
+          - targets:
+            - "postgres_exporter:9187"
+            - "redis_exporter:9121"
+            - "node_exporter:9100"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            regex: "([^_]+)_.*"
+            replacement: "${1}"
+          - target_label: constitutional_hash
+            replacement: "cdd01ef066bc6cf2"
+      
+      # MCP Services
+      - job_name: "acgs-mcp-services"
+        scrape_interval: "30s"
+        scrape_timeout: "10s"
+        metrics_path: "/metrics"
+        static_configs:
+          - targets:
+            - "mcp_aggregator:3000"
+            - "mcp_filesystem:3001"
+            - "mcp_github:3002"
+            - "mcp_browser:3003"
+        relabel_configs:
+          - source_labels: [__address__]
+            target_label: service
+            regex: "([^:]+):.*"
+            replacement: "${1}"
+          - target_label: constitutional_hash
+            replacement: "cdd01ef066bc6cf2"
+    
+    # Rule Files
+    rule_files:
+      - "/etc/prometheus/rules/acgs-core-alerts.yml"
+      - "/etc/prometheus/rules/acgs-performance-alerts.yml"
+      - "/etc/prometheus/rules/acgs-constitutional-alerts.yml"
+      - "/etc/prometheus/rules/acgs-infrastructure-alerts.yml"
+    
+    # Alerting Configuration
+    alerting:
+      alertmanagers:
+        - static_configs:
+          - targets:
+            - "alertmanager:9093"
+          timeout: "10s"
+          api_version: "v2"
+
+  # Visualization (Grafana)
+  grafana:
+    enabled: true
+    version: "10.2.0"
+    port: 3000
+    admin_password: "${GRAFANA_PASSWORD}"
+    
+    # Security Configuration
+    security:
+      admin_user: "admin"
+      admin_password: "${GRAFANA_PASSWORD}"
+      secret_key: "${GRAFANA_SECRET_KEY}"
+      disable_gravatar: true
+      cookie_secure: true
+      strict_transport_security: true
+    
+    # Server Configuration
+    server:
+      protocol: "http"
+      http_port: 3000
+      domain: "grafana.acgs.internal"
+      root_url: "https://grafana.acgs.internal"
+      serve_from_sub_path: false
+    
+    # Database Configuration
+    database:
+      type: "postgres"
+      host: "postgres:5439"
+      name: "grafana"
+      user: "grafana"
+      password: "${GRAFANA_DB_PASSWORD}"
+    
+    # Data Sources
+    datasources:
+      - name: "Prometheus"
+        type: "prometheus"
+        access: "proxy"
+        url: "http://prometheus:9090"
+        is_default: true
+        editable: false
+        json_data:
+          timeout: "60s"
+          query_timeout: "60s"
+          http_method: "POST"
+      
+      - name: "Jaeger"
+        type: "jaeger"
+        access: "proxy"
+        url: "http://jaeger:16686"
+        editable: false
+    
+    # Dashboard Provisioning
+    dashboards:
+      - name: "ACGS Core Services"
+        folder: "ACGS"
+        path: "/etc/grafana/dashboards/acgs-core-services.json"
+      - name: "ACGS Performance"
+        folder: "ACGS"
+        path: "/etc/grafana/dashboards/acgs-performance.json"
+      - name: "ACGS Constitutional Compliance"
+        folder: "ACGS"
+        path: "/etc/grafana/dashboards/acgs-constitutional.json"
+      - name: "ACGS Infrastructure"
+        folder: "Infrastructure"
+        path: "/etc/grafana/dashboards/acgs-infrastructure.json"
+
+  # Distributed Tracing (Jaeger)
+  jaeger:
+    enabled: true
+    version: "1.50.0"
+    
+    # Collector Configuration
+    collector:
+      port: 14268
+      grpc_port: 14250
+      zipkin_port: 9411
+    
+    # Query Service
+    query:
+      port: 16686
+      base_path: "/"
+    
+    # Agent Configuration
+    agent:
+      port: 6831
+      compact_port: 6832
+      binary_port: 6832
+    
+    # Storage Configuration
+    storage:
+      type: "elasticsearch"
+      elasticsearch:
+        server_urls: "http://elasticsearch:9200"
+        index_prefix: "jaeger"
+        username: "${ELASTICSEARCH_USERNAME}"
+        password: "${ELASTICSEARCH_PASSWORD}"
+
+  # Log Aggregation (ELK Stack)
+  elasticsearch:
+    enabled: true
+    version: "8.11.0"
+    port: 9200
+    cluster_name: "acgs-logs"
+    
+    # Node Configuration
+    node:
+      name: "acgs-es-node"
+      master: true
+      data: true
+    
+    # Memory Configuration
+    heap_size: "2g"
+    
+    # Index Configuration
+    indices:
+      - name: "acgs-logs"
+        pattern: "acgs-logs-*"
+        settings:
+          number_of_shards: 3
+          number_of_replicas: 1
+          refresh_interval: "30s"
+  
+  logstash:
+    enabled: true
+    version: "8.11.0"
+    port: 5044
+    
+    # Pipeline Configuration
+    pipelines:
+      - name: "acgs-logs"
+        config: "/etc/logstash/conf.d/acgs-logs.conf"
+        workers: 2
+        batch_size: 125
+  
+  kibana:
+    enabled: true
+    version: "8.11.0"
+    port: 5601
+    elasticsearch_url: "http://elasticsearch:9200"
+
+  # Alerting (AlertManager)
+  alertmanager:
+    enabled: true
+    version: "v0.26.0"
+    port: 9093
+    
+    # Global Configuration
+    global:
+      smtp_smarthost: "${SMTP_HOST}:587"
+      smtp_from: "alerts@acgs.internal"
+      smtp_auth_username: "${SMTP_USERNAME}"
+      smtp_auth_password: "${SMTP_PASSWORD}"
+    
+    # Route Configuration
+    route:
+      group_by: ["alertname", "cluster", "service"]
+      group_wait: "10s"
+      group_interval: "10s"
+      repeat_interval: "1h"
+      receiver: "default"
+      routes:
+        - match:
+            severity: "critical"
+          receiver: "critical-alerts"
+          group_wait: "5s"
+          repeat_interval: "15m"
+        - match:
+            service: "constitutional_ai"
+          receiver: "constitutional-alerts"
+          group_wait: "5s"
+          repeat_interval: "30m"
+    
+    # Receivers Configuration
+    receivers:
+      - name: "default"
+        slack_configs:
+          - api_url: "${SLACK_WEBHOOK_URL}"
+            channel: "#acgs-alerts"
+            title: "ACGS Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+      
+      - name: "critical-alerts"
+        slack_configs:
+          - api_url: "${SLACK_WEBHOOK_URL}"
+            channel: "#acgs-critical"
+            title: "🚨 CRITICAL ACGS Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+        email_configs:
+          - to: "oncall@acgs.internal"
+            subject: "🚨 CRITICAL ACGS Alert"
+            body: "{{ range .Alerts }}{{ .Annotations.description }}{{ end }}"
+      
+      - name: "constitutional-alerts"
+        slack_configs:
+          - api_url: "${SLACK_WEBHOOK_URL}"
+            channel: "#acgs-constitutional"
+            title: "⚖️ Constitutional Compliance Alert"
+            text: "{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}"
+
+# Performance Targets and SLIs
+performance_targets:
+  constitutional_hash: "cdd01ef066bc6cf2"
+  
+  # Service Level Indicators (SLIs)
+  slis:
+    - name: "acgs_request_latency_p99"
+      description: "99th percentile request latency"
+      target: "5ms"
+      query: "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))"
+    
+    - name: "acgs_request_success_rate"
+      description: "Request success rate"
+      target: "99.9%"
+      query: "rate(http_requests_total{status!~\"5..\"}[5m]) / rate(http_requests_total[5m])"
+    
+    - name: "acgs_cache_hit_rate"
+      description: "Cache hit rate"
+      target: "85%"
+      query: "rate(cache_hits_total[5m]) / rate(cache_requests_total[5m])"
+    
+    - name: "acgs_constitutional_compliance_score"
+      description: "Constitutional compliance score"
+      target: "95%"
+      query: "avg(constitutional_compliance_score)"
+
+# Constitutional Compliance Monitoring
+constitutional_compliance:
+  hash: "cdd01ef066bc6cf2"
+  
+  # Compliance Metrics
+  metrics:
+    - name: "constitutional_hash_validation"
+      description: "Constitutional hash validation success rate"
+      labels: ["service", "endpoint"]
+    
+    - name: "constitutional_compliance_score"
+      description: "Overall constitutional compliance score"
+      labels: ["service", "domain"]
+    
+    - name: "policy_governance_quality"
+      description: "Policy governance quality score"
+      labels: ["policy_type", "governance_level"]
+  
+  # Compliance Alerts
+  alerts:
+    - name: "ConstitutionalHashMismatch"
+      severity: "critical"
+      condition: "constitutional_hash_validation < 1"
+      description: "Constitutional hash validation failed"
+    
+    - name: "ComplianceScoreLow"
+      severity: "warning"
+      condition: "constitutional_compliance_score < 0.95"
+      description: "Constitutional compliance score below target"

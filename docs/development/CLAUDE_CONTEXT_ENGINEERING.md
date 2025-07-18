@@ -43,7 +43,7 @@ def validate_constitutional_compliance(operation_data: dict) -> bool:
 # Initial setup with Context Engineering validation
 python -m venv .venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Start infrastructure with constitutional compliance validation
 docker compose -f infrastructure/docker/docker-compose.acgs.yml up -d

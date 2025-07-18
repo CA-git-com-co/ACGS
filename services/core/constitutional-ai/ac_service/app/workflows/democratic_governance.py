@@ -101,7 +101,9 @@ class DemocraticGovernanceEngine:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.metrics_collector = get_metrics_collector()
-        self.scalability_framework = ConstitutionalCouncilScalabilityFramework(db)  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        self.scalability_framework = ConstitutionalCouncilScalabilityFramework(
+            db
+        )  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
     async def initiate_democratic_process(
         self,

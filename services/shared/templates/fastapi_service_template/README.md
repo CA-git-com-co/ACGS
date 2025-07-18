@@ -79,7 +79,7 @@ CONSTITUTIONAL_COMPLIANCE_REQUIRED=true
 
 ### 4. Install Dependencies
 
-Add to your service's `requirements.txt`:
+Add to your service's `config/environments/requirements.txt`:
 
 ```txt
 fastapi>=0.104.0
@@ -92,7 +92,7 @@ python-jose[cryptography]>=3.3.0
 python-multipart>=0.0.6
 ```
 
-Or if using the consolidated `pyproject.toml`:
+Or if using the consolidated `config/environments/pyproject.toml`:
 
 ```bash
 pip install -e .[api,database,cache,auth]
@@ -120,7 +120,7 @@ your-service-name/
 │   └── v1/
 │       └── routes.py      # API route definitions
 ├── tests/                 # Service tests
-├── requirements.txt       # Python dependencies
+├── config/environments/requirements.txt       # Python dependencies
 ├── config/environments/development.env                   # Environment configuration
 └── README.md             # Service-specific documentation
 ```

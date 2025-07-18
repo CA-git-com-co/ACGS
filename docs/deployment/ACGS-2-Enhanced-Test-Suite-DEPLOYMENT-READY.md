@@ -110,7 +110,7 @@ The ACGS-2 Enhanced Test Suite has been successfully implemented and validated a
 1. **Environment Setup**
    ```bash
    # Install dependencies
-   pip install -r requirements.txt
+   pip install -r config/environments/requirements.txt
    
    # Configure environment variables
    export CONSTITUTIONAL_HASH=cdd01ef066bc6cf2

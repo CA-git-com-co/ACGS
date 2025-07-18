@@ -115,7 +115,7 @@ docs/research/
     ├── pdf_to_markdown_converter.py
     ├── convert_all_papers.py
     ├── setup_ocr_tools.sh
-    └── requirements.txt
+    └── config/environments/requirements.txt
 ```
 
 ## ⚙️ Configuration

@@ -170,8 +170,8 @@ jobs:
           # Check if safety is available
           if command -v safety >/dev/null 2>&1; then
             # Find requirements files
-            if find . -name "requirements*.txt" -o -name "pyproject.toml" | head -1 | grep -q .; then
-              find . -name "requirements*.txt" -o -name "pyproject.toml" | head -1 | xargs -I {} safety check -r {} || echo "Safety scan completed with warnings"
+            if find . -name "config/environments/requirements*.txt" -o -name "config/environments/pyproject.toml" | head -1 | grep -q .; then
+              find . -name "config/environments/requirements*.txt" -o -name "config/environments/pyproject.toml" | head -1 | xargs -I {} safety check -r {} || echo "Safety scan completed with warnings"
             else
               echo "No requirements files found, running basic safety check"
               safety check || echo "Basic safety check completed with warnings"
@@ -337,8 +337,8 @@ jobs:
             # Create a simple test image for scanning
             echo "FROM python:3.11-alpine" > Dockerfile.temp
             echo "WORKDIR /app" >> Dockerfile.temp
-            echo "COPY requirements.txt* ./" >> Dockerfile.temp
-            echo "RUN pip install -r requirements.txt || true" >> Dockerfile.temp
+            echo "COPY config/environments/requirements.txt* ./" >> Dockerfile.temp
+            echo "RUN pip install -r config/environments/requirements.txt || true" >> Dockerfile.temp
             docker build -f Dockerfile.temp -t acgs-security-test:latest . || echo "Failed to build temporary image"
             rm -f Dockerfile.temp
             DOCKERFILE_FOUND=true

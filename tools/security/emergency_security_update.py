@@ -31,7 +31,7 @@ class SecurityUpdater:
         
     def find_requirements_files(self) -> List[Path]:
         """Find all requirements files in the repository."""
-        patterns = ["requirements*.txt", "pyproject.toml", "setup.py"]
+        patterns = ["requirements*.txt", "config/environments/pyproject.toml", "setup.py"]
         files = []
         
         for pattern in patterns:
@@ -142,7 +142,7 @@ class SecurityUpdater:
         try:
             result = subprocess.run([
                 "python", "-m", "pip_audit", 
-                "--requirement", str(self.root_dir / "requirements-security.txt"),
+                "--requirement", str(self.root_dir / "config/environments/requirements-security.txt"),
                 "--format", "json"
             ], capture_output=True, text=True, timeout=120)
             
@@ -158,7 +158,7 @@ class SecurityUpdater:
         try:
             result = subprocess.run([
                 "python", "-m", "safety", "check", 
-                "--json", "--requirement", str(self.root_dir / "requirements-security.txt")
+                "--json", "--requirement", str(self.root_dir / "config/environments/requirements-security.txt")
             ], capture_output=True, text=True, timeout=120)
             
             if result.returncode == 0:
@@ -306,7 +306,7 @@ def main():
         success = updater.execute_security_update()
         if success:
             print(f"\n✅ Security update completed successfully!")
-            print(f"   Next: Run 'pip install -r requirements-security.txt' to apply updates")
+            print(f"   Next: Run 'pip install -r config/environments/requirements-security.txt' to apply updates")
             sys.exit(0)
         else:
             print(f"\n❌ Security update completed with issues")

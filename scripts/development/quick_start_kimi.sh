@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # ACGS Kimi-Dev-72B Quick Start Script

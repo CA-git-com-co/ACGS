@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Optimized Service Startup Script
 # Ensures proper dependency order and health checks
@@ -8,7 +9,7 @@ echo "🚀 Starting ACGS-1 optimized deployment..."
 
 # Start infrastructure services first
 echo "Starting infrastructure services..."
-docker-compose -f docker-compose.acgs.yml up -d postgres redis
+docker-compose -f config/docker/docker-compose.acgs.yml up -d postgres redis
 
 # Wait for infrastructure to be ready
 echo "Waiting for infrastructure services..."
@@ -20,21 +21,21 @@ docker exec acgs_redis redis-cli ping || exit 1
 
 # Start core services in dependency order
 echo "Starting core services..."
-docker-compose -f docker-compose.acgs.yml up -d auth_service
+docker-compose -f config/docker/docker-compose.acgs.yml up -d auth_service
 sleep 15
 
-docker-compose -f docker-compose.acgs.yml up -d ac_service integrity_service fv_service
+docker-compose -f config/docker/docker-compose.acgs.yml up -d ac_service integrity_service fv_service
 sleep 20
 
-docker-compose -f docker-compose.acgs.yml up -d gs_service pgc_service
+docker-compose -f config/docker/docker-compose.acgs.yml up -d gs_service pgc_service
 sleep 15
 
-docker-compose -f docker-compose.acgs.yml up -d ec_service
+docker-compose -f config/docker/docker-compose.acgs.yml up -d ec_service
 sleep 10
 
 # Start load balancer
 echo "Starting load balancer..."
-docker-compose -f docker-compose.acgs.yml up -d haproxy
+docker-compose -f config/docker/docker-compose.acgs.yml up -d haproxy
 
 # Start monitoring (optional)
 echo "Starting monitoring stack..."

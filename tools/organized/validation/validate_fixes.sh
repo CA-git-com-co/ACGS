@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # ACGS-PGP Fix Validation Script
@@ -51,11 +52,11 @@ else
     print_fail ".bandit configuration missing"
 fi
 
-print_test "Checking pytest.ini configuration..."
-if [ -f "pytest.ini" ]; then
-    print_pass "pytest.ini configuration exists"
+print_test "Checking config/environments/pytest.ini configuration..."
+if [ -f "config/environments/pytest.ini" ]; then
+    print_pass "config/environments/pytest.ini configuration exists"
 else
-    print_fail "pytest.ini configuration missing"
+    print_fail "config/environments/pytest.ini configuration missing"
 fi
 
 print_test "Checking Docker Compose configuration..."

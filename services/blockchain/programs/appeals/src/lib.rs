@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // programs/appeals/src/lib.rs
 // Quantumagi Appeals System - Democratic Appeal Process for Policy Violations
 // Provides multi-tier appeal system with human oversight

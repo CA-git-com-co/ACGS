@@ -69,7 +69,7 @@ class ComprehensiveDuplicateCleanup:
             "requirements*.txt",
             "package*.json",
             "Cargo.toml",
-            "pyproject.toml",
+            "config/environments/pyproject.toml",
             "docker-compose.prod.yml",  # Keep production compose
             "docker-compose.acgs.yml",  # Keep main ACGS compose
             "README.md",

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 @echo off
 REM Academic Submission System Compilation Script for Windows
 REM Simple wrapper for common compilation tasks

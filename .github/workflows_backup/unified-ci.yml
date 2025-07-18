@@ -80,8 +80,8 @@ jobs:
           filters: |
             python:
               - 'services/**/*.py'
-              - '**/requirements*.txt'
-              - '**/pyproject.toml'
+              - '**/config/environments/requirements*.txt'
+              - '**/config/environments/pyproject.toml'
               - 'tests/**/*.py'
             rust:
               - 'blockchain/**/*.rs'
@@ -100,7 +100,7 @@ jobs:
             security:
               - '.github/workflows/**'
               - 'scripts/security/**'
-              - '**/requirements*.txt'
+              - '**/config/environments/requirements*.txt'
               - '**/Cargo.toml'
               - '**/package.json'
 
@@ -159,7 +159,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.UV_CACHE_DIR }}
-          key: uv-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          key: uv-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml') }}
           restore-keys: |
             uv-${{ runner.os }}-${{ matrix.service }}-
             uv-${{ runner.os }}-
@@ -179,10 +179,10 @@ jobs:
           source .venv/bin/activate
           
           # Install based on what's available
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e . || echo "⚠️ Failed to install project"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt || echo "⚠️ Failed to install requirements"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt || echo "⚠️ Failed to install requirements"
           fi
           
           # Install common development tools

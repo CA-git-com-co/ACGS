@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # Emergency shutdown script for ACGS-PGP services
 # Properly terminates all services on their designated ports

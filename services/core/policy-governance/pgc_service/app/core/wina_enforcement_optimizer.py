@@ -437,7 +437,9 @@ class WINAEnforcementOptimizer:
                         "user_id": context.user_id,
                         "action_type": context.action_type,
                         "resource_id": context.resource_id,
-                        "environment_factors": contextconfig/environments/development.environment_factors,
+                        "environment_factors": contextconfig
+                        / environments
+                        / development.environment_factors,
                     },
                 )
             )
@@ -482,7 +484,9 @@ class WINAEnforcementOptimizer:
                     "user": {"id": context.user_id},
                     "action": {"type": context.action_type},
                     "resource": {"id": context.resource_id},
-                    "environment": contextconfig/environments/development.environment_factors,
+                    "environment": contextconfig
+                    / environments
+                    / development.environment_factors,
                     "constitutional_compliance": constitutional_compliance,
                     "strategy": strategy.value,
                 },
@@ -559,7 +563,9 @@ class WINAEnforcementOptimizer:
                 "optimization_potential": optimization_potential,
                 "adaptive_recommendation": adaptive_recommendation,
                 "policy_count": len(policies),
-                "context_complexity": len(contextconfig/environments/development.environment_factors),
+                "context_complexity": len(
+                    contextconfig / environments / development.environment_factors
+                ),
             }
 
         except Exception as e:
@@ -596,7 +602,9 @@ class WINAEnforcementOptimizer:
                 relevance_score += 0.3
 
             # Check for environment factors
-            for factor in contextconfig/environments/development.environment_factors:
+            for factor in (
+                contextconfig / environments / development.environment_factors
+            ):
                 if factor.lower() in policy_content:
                     relevance_score += 0.1
 
@@ -755,7 +763,7 @@ class WINAEnforcementOptimizer:
         import hashlib
 
         key_data = f"{context.user_id}:{context.action_type}:{context.resource_id}:{context.priority_level}"
-        if contextconfig/environments/development.environment_factors:
+        if contextconfig / environments / development.environment_factors:
             key_data += f":{sorted(contextconfig/environments/development.environment_factors.items())}"
         if context.constitutional_requirements:
             key_data += f":{sorted(context.constitutional_requirements)}"
@@ -948,7 +956,10 @@ class WINAEnforcementOptimizer:
         """Analyze potential performance benefit from WINA optimization."""
         # Simple heuristic: more policies and complex context = higher benefit potential
         policy_factor = min(len(policies) * 0.1, 0.5)
-        context_factor = min(len(contextconfig/environments/development.environment_factors) * 0.1, 0.3)
+        context_factor = min(
+            len(contextconfig / environments / development.environment_factors) * 0.1,
+            0.3,
+        )
         return policy_factor + context_factor
 
     async def _analyze_optimization_potential(

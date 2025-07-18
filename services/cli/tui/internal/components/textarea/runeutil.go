@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // Package runeutil provides utility functions for tidying up incoming runes
 // from Key messages.
 package textarea

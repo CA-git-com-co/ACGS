@@ -855,7 +855,7 @@ class EnhancedSecurityHardening:
         # Check for constitutional hash in key files
         key_files = [
             'README.md',
-            'pyproject.toml',
+            'config/environments/pyproject.toml',
             'package.json',
             'Dockerfile',
             'docker-compose.yml'

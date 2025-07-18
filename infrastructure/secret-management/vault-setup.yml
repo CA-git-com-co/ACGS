@@ -1,0 +1,365 @@
+# ACGS-2 HashiCorp Vault Secret Management Setup
+# Constitutional Hash: cdd01ef066bc6cf2
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vault-system
+  labels:
+    name: vault-system
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: vault
+    app.kubernetes.io/part-of: acgs
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault
+  namespace: vault-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: vault
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: vault-server-binding
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+- kind: ServiceAccount
+  name: vault
+  namespace: vault-system
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-config
+  namespace: vault-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  vault.hcl: |
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    ui = true
+    
+    listener "tcp" {
+      address = "0.0.0.0:8200"
+      tls_disable = true
+    }
+    
+    storage "consul" {
+      address = "consul:8500"
+      path = "vault/"
+    }
+    
+    # API address for cluster communication
+    api_addr = "http://vault:8200"
+    cluster_addr = "https://vault:8201"
+    
+    # Enable audit logging
+    audit {
+      file {
+        file_path = "/vault/logs/audit.log"
+        log_raw = false
+        hmac_accessor = true
+        mode = 0600
+        format = "json"
+      }
+    }
+    
+    # Performance and security settings
+    default_lease_ttl = "168h"
+    max_lease_ttl = "720h"
+    
+    # Constitutional compliance logging
+    log_level = "INFO"
+    log_format = "json"
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: vault
+  namespace: vault-system
+  labels:
+    app.kubernetes.io/name: vault
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  serviceName: vault
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vault
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vault
+        constitutional-hash: cdd01ef066bc6cf2
+      annotations:
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      serviceAccountName: vault
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 100
+        fsGroup: 1000
+      containers:
+      - name: vault
+        image: vault:1.15.2
+        imagePullPolicy: IfNotPresent
+        command:
+        - vault
+        - server
+        - -config=/vault/config/vault.hcl
+        env:
+        - name: VAULT_ADDR
+          value: "http://127.0.0.1:8200"
+        - name: VAULT_API_ADDR
+          value: "http://vault:8200"
+        - name: VAULT_CLUSTER_ADDR
+          value: "https://vault:8201"
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        ports:
+        - containerPort: 8200
+          name: vault-port
+          protocol: TCP
+        - containerPort: 8201
+          name: cluster-port
+          protocol: TCP
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - IPC_LOCK
+        volumeMounts:
+        - name: vault-config
+          mountPath: /vault/config
+        - name: vault-data
+          mountPath: /vault/data
+        - name: vault-logs
+          mountPath: /vault/logs
+        livenessProbe:
+          httpGet:
+            path: /v1/sys/health?standbyok=true
+            port: 8200
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 5
+        readinessProbe:
+          httpGet:
+            path: /v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204
+            port: 8200
+            scheme: HTTP
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+      volumes:
+      - name: vault-config
+        configMap:
+          name: vault-config
+      - name: vault-logs
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: vault-data
+      labels:
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault
+  namespace: vault-system
+  labels:
+    app.kubernetes.io/name: vault
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    app.kubernetes.io/name: vault
+  ports:
+  - name: vault-port
+    port: 8200
+    targetPort: 8200
+    protocol: TCP
+  - name: cluster-port
+    port: 8201
+    targetPort: 8201
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-ui
+  namespace: vault-system
+  labels:
+    app.kubernetes.io/name: vault
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    app.kubernetes.io/name: vault
+  ports:
+  - name: vault-ui
+    port: 8200
+    targetPort: 8200
+    protocol: TCP
+  type: LoadBalancer
+
+---
+# ACGS Secret Management Policy
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-vault-policies
+  namespace: vault-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  acgs-policy.hcl: |
+    # ACGS-2 Vault Policy
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    # ACGS secrets path
+    path "secret/data/acgs/*" {
+      capabilities = ["create", "read", "update", "delete", "list"]
+    }
+    
+    # Constitutional compliance secrets
+    path "secret/data/constitutional/*" {
+      capabilities = ["read", "list"]
+    }
+    
+    # Database credentials
+    path "database/creds/acgs-*" {
+      capabilities = ["read"]
+    }
+    
+    # PKI for TLS certificates
+    path "pki/issue/acgs" {
+      capabilities = ["create", "update"]
+    }
+    
+    # Transit encryption
+    path "transit/encrypt/acgs" {
+      capabilities = ["update"]
+    }
+    
+    path "transit/decrypt/acgs" {
+      capabilities = ["update"]
+    }
+    
+    # Audit log access (read-only)
+    path "sys/audit" {
+      capabilities = ["read", "list"]
+    }
+
+---
+# Vault Initialization Job
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vault-init
+  namespace: vault-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  template:
+    metadata:
+      labels:
+        constitutional-hash: cdd01ef066bc6cf2
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: vault
+      containers:
+      - name: vault-init
+        image: vault:1.15.2
+        env:
+        - name: VAULT_ADDR
+          value: "http://vault:8200"
+        - name: CONSTITUTIONAL_HASH
+          value: "cdd01ef066bc6cf2"
+        command:
+        - /bin/sh
+        - -c
+        - |
+          # Wait for Vault to be ready
+          until vault status; do
+            echo "Waiting for Vault to be ready..."
+            sleep 5
+          done
+          
+          # Initialize Vault if not already initialized
+          if ! vault status | grep -q "Initialized.*true"; then
+            echo "Initializing Vault..."
+            vault operator init -key-shares=5 -key-threshold=3 > /tmp/vault-keys.txt
+            
+            # Store initialization keys in Kubernetes secret
+            kubectl create secret generic vault-keys \
+              --from-file=/tmp/vault-keys.txt \
+              --namespace=vault-system
+            
+            echo "Vault initialized successfully"
+          else
+            echo "Vault already initialized"
+          fi
+          
+          # Enable audit logging
+          vault audit enable file file_path=/vault/logs/audit.log
+          
+          # Enable secret engines
+          vault secrets enable -path=secret kv-v2
+          vault secrets enable -path=database database
+          vault secrets enable -path=pki pki
+          vault secrets enable -path=transit transit
+          
+          # Configure ACGS policies
+          vault policy write acgs-policy - <<EOF
+          # ACGS-2 Vault Policy
+          # Constitutional Hash: cdd01ef066bc6cf2
+          
+          path "secret/data/acgs/*" {
+            capabilities = ["create", "read", "update", "delete", "list"]
+          }
+          
+          path "secret/data/constitutional/*" {
+            capabilities = ["read", "list"]
+          }
+          EOF
+          
+          # Store constitutional hash
+          vault kv put secret/constitutional/hash value="cdd01ef066bc6cf2"
+          
+          echo "Vault configuration complete"

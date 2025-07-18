@@ -8,15 +8,15 @@ on:
     paths:
       - 'services/**/*.py'
       - 'tests/**/*.py'
-      - '**/requirements*.txt'
-      - '**/pyproject.toml'
+      - '**/config/environments/requirements*.txt'
+      - '**/config/environments/pyproject.toml'
   pull_request:
     branches: [main, master, develop]
     paths:
       - 'services/**/*.py'
       - 'tests/**/*.py'
-      - '**/requirements*.txt'
-      - '**/pyproject.toml'
+      - '**/config/environments/requirements*.txt'
+      - '**/config/environments/pyproject.toml'
   schedule:
     - cron: '0 6 * * *' # Daily at 6 AM for comprehensive testing
   workflow_dispatch:
@@ -152,7 +152,7 @@ jobs:
             ${{ env.UV_CACHE_DIR }}
             .venv
             .pytest_cache
-          key: test-deps-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          key: test-deps-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml') }}
           restore-keys: |
             test-deps-${{ runner.os }}-${{ matrix.service }}-
             test-deps-${{ runner.os }}-
@@ -171,10 +171,10 @@ jobs:
           source .venv/bin/activate
           
           # Install service with test dependencies
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e ".[test,dev]" || uv pip install -e .
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt
           fi
           
           # Install test tools

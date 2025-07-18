@@ -24,7 +24,7 @@ docker-compose -f config/docker/docker-compose.production.yml down
 echo "⚙️ Restoring configuration files..."
 cp "backups/$BACKUP_DIR/config/docker/docker-compose.production.yml" .
 cp "backups/$BACKUP_DIR/config/environments/developmentconfig/environments/production.env.backup" .
-cp "backups/$BACKUP_DIR/nginx.production.conf" .
+cp "backups/$BACKUP_DIR/config/nginx.production.conf" .
 
 # Restore volumes
 echo "💽 Restoring Docker volumes..."

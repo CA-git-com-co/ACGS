@@ -13,11 +13,10 @@ core_dir = Path(__file__).parent
 
 # Add subdirectories with dashes as importable modules
 for subdir in core_dir.iterdir():
-    if subdir.is_dir() and '-' in subdir.name:
+    if subdir.is_dir() and "-" in subdir.name:
         # Create module name by replacing dashes with underscores
-        module_name = subdir.name.replace('-', '_')
+        module_name = subdir.name.replace("-", "_")
         # Add to sys.modules to make it importable
-        sys.modules[f'services.core.{module_name}'] = __import__(
-            'services.core',
-            fromlist=[subdir.name]
+        sys.modules[f"services.core.{module_name}"] = __import__(
+            "services.core", fromlist=[subdir.name]
         )

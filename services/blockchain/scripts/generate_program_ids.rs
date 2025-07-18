@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! Quantumagi Program ID Generator - Rust Implementation
 //! Generate valid Solana program IDs for Quantumagi programs
 //! Replaces blockchain/scripts/generate_program_ids.py with native Rust implementation

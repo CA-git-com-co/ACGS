@@ -58,7 +58,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           if [ -f requirements-test.txt ]; then
             pip install -r requirements-test.txt
           elif [ -f services/shared/requirements/requirements-test.txt ]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
@@ -177,7 +177,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest-benchmark
       
       - name: Run performance tests

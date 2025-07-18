@@ -397,7 +397,7 @@ class ACGSProductionReadinessCertifier:
         # Check for essential infrastructure files
         infrastructure_files = [
             "docker-compose.yml",
-            "requirements.txt",
+            "config/environments/requirements.txt",
             "config/environments/developmentconfig/environments/example.env",
             "services/shared/secrets_manager.py",
         ]

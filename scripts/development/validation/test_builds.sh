@@ -114,10 +114,10 @@ test_python_services() {
             
             cd "$SERVICE_DIR"
             
-            # Check for requirements.txt
-            if [ -f "requirements.txt" ]; then
+            # Check for config/environments/requirements.txt
+            if [ -f "config/environments/requirements.txt" ]; then
                 log_info "Installing dependencies for $service..."
-                if python -m pip install -r requirements.txt --quiet; then
+                if python -m pip install -r config/environments/requirements.txt --quiet; then
                     log_success "$service dependencies installed"
                 else
                     log_error "$service dependency installation failed"

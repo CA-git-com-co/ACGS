@@ -25,8 +25,8 @@ docs/research/
 │   └── *.pdf                       # Compiled papers
 ├── download_arxiv_papers.py        # Paper download automation
 ├── install_latex_packages.sh       # LaTeX setup automation
-├── latex_requirements.txt          # LaTeX package requirements
-├── python_latex_requirements.txt   # Python dependencies
+├── latex_config/environments/requirements.txt          # LaTeX package requirements
+├── python_latex_config/environments/requirements.txt   # Python dependencies
 ├── README_LATEX_SETUP.md          # LaTeX installation guide
 └── DOWNLOAD_SUMMARY.md            # Paper download summary
 ```
@@ -134,7 +134,7 @@ cd docs/research
 ./install_latex_packages.sh
 
 # Install Python dependencies
-pip install -r python_latex_requirements.txt
+pip install -r python_latex_config/environments/requirements.txt
 ```
 
 ### 2. Compile Research Papers

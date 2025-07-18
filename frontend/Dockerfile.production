@@ -1,0 +1,85 @@
+# ACGS-2 Frontend Production Dockerfile
+# Constitutional Hash: cdd01ef066bc6cf2
+# Multi-stage build for optimized production deployment
+
+# Build stage
+FROM node:18-alpine AS builder
+
+# Set constitutional compliance environment
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+ENV NODE_ENV=production
+ENV NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING=true
+ENV NEXT_PUBLIC_ENABLE_CONSTITUTIONAL_VALIDATION=true
+
+# Install build dependencies
+RUN apk add --no-cache git
+
+# Create app directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+COPY tsconfig.json ./
+COPY next.config.js ./
+COPY tailwind.config.js ./
+COPY postcss.config.js ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
+COPY src/ ./src/
+COPY public/ ./public/
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine AS runner
+
+# Set constitutional compliance environment
+ENV CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+ENV NODE_ENV=production
+ENV NEXT_PUBLIC_CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
+ENV NEXT_PUBLIC_ENABLE_PERFORMANCE_MONITORING=true
+ENV NEXT_PUBLIC_ENABLE_CONSTITUTIONAL_VALIDATION=true
+
+# Performance and security optimizations
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Create app directory
+WORKDIR /app
+
+# Copy built application
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+
+# Set ownership to non-root user
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+# Expose port
+EXPOSE 3000
+
+# Add constitutional compliance label
+LABEL constitutional.hash="cdd01ef066bc6cf2"
+LABEL constitutional.compliant="true"
+LABEL performance.targets="P99<5ms,RPS>100,Cache>85%"
+LABEL version="1.0.0"
+LABEL maintainer="ACGS-2 Team"
+
+# Start the application
+CMD ["node", "server.js"]

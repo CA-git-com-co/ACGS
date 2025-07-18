@@ -51,7 +51,7 @@ spec:
           RUN apt-get update && apt-get install -y \\\\\n    curl \\\\\n    && rm\
           \ -rf /var/lib/apt/lists/*\n\n# Create non-root user\nRUN groupadd -r acgs\
           \ && useradd -r -g acgs acgs\n\n# Copy requirements and install Python dependencies\n\
-          COPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\
+          COPY config/environments/requirements.txt .\nRUN pip install --no-cache-dir -r config/environments/requirements.txt\n\
           \n# Copy application code\nCOPY . .\n\n# Set ownership\nRUN chown -R acgs:acgs\
           \ /app\n\n# Switch to non-root user\nUSER acgs\n\n# Expose port\nEXPOSE\
           \ ${port}\n\n# Health check\nHEALTHCHECK --interval=30s --timeout=10s --start-period=30s\
@@ -88,7 +88,7 @@ spec:
           \nif __name__ == \"__main__\":\n    port = int(os.getenv(\"PORT\", ${port}))\n\
           \    uvicorn.run(\n        \"main:app\",\n        host=\"0.0.0.0\",\n  \
           \      port=port,\n        log_level=\"info\",\n        access_log=True\n\
-          \    )\n\"\"\"\n\n# Generate requirements.txt content\nrequirementsTxtContent\
+          \    )\n\"\"\"\n\n# Generate config/environments/requirements.txt content\nrequirementsTxtContent\
           \ = \"\"\"fastapi==0.104.1\nuvicorn[standard]==0.24.0\npydantic==2.5.0\n\
           httpx==0.25.2\npython-multipart==0.0.6\npython-jose[cryptography]==3.3.0\n\
           passlib[bcrypt]==1.7.4\npython-dotenv==1.0.0\nprometheus-client==0.19.0\n\
@@ -101,7 +101,7 @@ spec:
           \ metrics: `/metrics`\n- API documentation: `/docs`\n- Service port: `${port}`\n\
           \n## Quick Start\n\n### Using Docker\n\n```bash\ndocker build -t acgs-${serviceType}-service\
           \ .\ndocker run -p ${port}:${port} acgs-${serviceType}-service\n```\n\n\
-          ### Local Development\n\n```bash\npip install -r requirements.txt\npython\
+          ### Local Development\n\n```bash\npip install -r config/environments/requirements.txt\npython\
           \ main.py\n```\n\n## Configuration\n\nEnvironment variables:\n\n- `PORT`:\
           \ Service port (default: ${port})\n- `LOG_LEVEL`: Logging level (default:\
           \ INFO)\n- `CONSTITUTIONAL_HASH`: Constitutional hash for validation\n\n\
@@ -218,9 +218,9 @@ These targets are validated continuously and must be maintained across all opera
           ,\n        \"kind\": \"RepositoryFile\",\n        \"metadata\": {\n    \
           \        \"name\": \"${repoName}-requirements\"\n        },\n        \"\
           spec\": {\n            \"forProvider\": {\n                \"repository\"\
-          : repoName,\n                \"file\": \"requirements.txt\",\n         \
+          : repoName,\n                \"file\": \"config/environments/requirements.txt\",\n         \
           \       \"content\": requirementsTxtContent,\n                \"branch\"\
-          : \"main\",\n                \"commitMessage\": \"Add requirements.txt for\
+          : \"main\",\n                \"commitMessage\": \"Add config/environments/requirements.txt for\
           \ ${serviceType} service\"\n            },\n            \"providerConfigRef\"\
           : {\n                \"name\": \"github-provider-config\"\n            }\n\
           \        }\n    },\n    {\n        \"apiVersion\": \"github.upbound.io/v1alpha1\"\

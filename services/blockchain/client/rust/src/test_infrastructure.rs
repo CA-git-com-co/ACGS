@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // ACGS Test Infrastructure Helper - Rust Implementation
 // Implements governance specialist protocol v2.0 requirements
 // Migrated from TypeScript to eliminate Node.js dependency conflicts

@@ -1,0 +1,53 @@
+{
+  "timestamp": "2025-07-18T08:47:17.473489",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "enforcement_actions": [],
+  "compliance_metrics": {
+    "total_files": 6328,
+    "compliant_files": 6317,
+    "non_compliant_files": 11,
+    "core_services_compliance": {},
+    "priority_breakdown": {
+      "critical": {
+        "compliant": 5084,
+        "total": 5084,
+        "rate": 100.0
+      },
+      "high": {
+        "compliant": 433,
+        "total": 433,
+        "rate": 100.0
+      },
+      "medium": {
+        "compliant": 264,
+        "total": 264,
+        "rate": 100.0
+      },
+      "low": {
+        "compliant": 536,
+        "total": 547,
+        "rate": 97.99
+      }
+    },
+    "overall_compliance_rate": 99.83
+  },
+  "core_services_status": {},
+  "monitoring_setup": {
+    "monitoring_script": "scripts/monitoring/constitutional_compliance_monitor.py",
+    "workflow_file": ".github/workflows/constitutional_compliance_monitoring.yml",
+    "monitoring_frequency": "Every 6 hours",
+    "alert_thresholds": {
+      "warning": 50.0,
+      "critical": 40.0
+    }
+  },
+  "errors": [],
+  "summary": {
+    "initial_compliance_rate": 99.83,
+    "final_compliance_rate": 99.83,
+    "total_files_enhanced": 0,
+    "core_services_compliance": true,
+    "monitoring_implemented": true,
+    "target_achieved": true
+  }
+}

@@ -268,7 +268,7 @@ start_monitoring() {
         return 1
     }
     
-    if docker-compose -f docker-compose.monitoring-consolidated.yml up -d; then
+    if docker-compose -f config/docker/docker-compose.monitoring-consolidated.yml up -d; then
         log_success "Monitoring stack started successfully"
         return 0
     else
@@ -286,15 +286,15 @@ stop_services() {
     case "${service_type}" in
         "infrastructure")
             cd "${PROJECT_ROOT}/infrastructure/docker" || return 1
-            docker-compose -f docker-compose.base-infrastructure.yml down
+            docker-compose -f config/docker/docker-compose.base-infrastructure.yml down
             ;;
         "services")
             cd "${PROJECT_ROOT}/infrastructure/docker" || return 1
-            docker-compose -f docker-compose.acgs-services.yml down
+            docker-compose -f config/docker/docker-compose.acgs-services.yml down
             ;;
         "monitoring")
             cd "${PROJECT_ROOT}/infrastructure/monitoring" || return 1
-            docker-compose -f docker-compose.monitoring-consolidated.yml down
+            docker-compose -f config/docker/docker-compose.monitoring-consolidated.yml down
             ;;
         "all")
             stop_services "monitoring"

@@ -1,5 +1,5 @@
 # ACGS-2 Development Environment Override
-# Use with: docker-compose -f docker-compose.base-infrastructure.yml -f docker-compose.development.yml up -d
+# Use with: docker-compose -f config/docker/docker-compose.base-infrastructure.yml -f docker-compose.development.yml up -d
 
 version: '3.8'
 

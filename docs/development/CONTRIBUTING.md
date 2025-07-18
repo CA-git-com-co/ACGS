@@ -48,7 +48,7 @@ ACGS-2 is a comprehensive AI governance system built with:
    ```bash
    uv venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   uv pip install -r requirements.txt
+   uv pip install -r config/environments/requirements.txt
    ```
 
 3. **Start development environment**

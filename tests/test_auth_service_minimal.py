@@ -11,6 +11,7 @@ This is a minimal version to test the critical security fixes:
 
 import json
 import jwt
+import os
 import time
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional

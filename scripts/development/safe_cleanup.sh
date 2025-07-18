@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # 🔒 SAFE CLEANUP SCRIPT - ACGS Services
 # Removes only genuinely unused files, preserves symlinks

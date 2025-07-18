@@ -48,7 +48,7 @@ jobs:
     - name: Run dependency security scan
       run: |
         pip install pip-audit
-        pip-audit --requirement requirements.txt || echo "Dependency security scan completed with warnings"
+        pip-audit --requirement config/environments/requirements.txt || echo "Dependency security scan completed with warnings"
       continue-on-error: true
   test:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
-        pip install -r requirements.txt
+        pip install -r config/environments/requirements.txt
         pip install -r services/shared/requirements/requirements-test.txt  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         pip install pytest pytest-cov pytest-asyncio
     - name: Run security validation tests

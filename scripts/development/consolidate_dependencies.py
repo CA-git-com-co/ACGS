@@ -150,7 +150,7 @@ safety>=2.3.0
                 
             for service_dir in service_type_dir.iterdir():
                 if service_dir.is_dir():
-                    req_file = service_dir / "requirements.txt"
+                    req_file = service_dir / "config/environments/requirements.txt"
                     if req_file.exists():
                         self.update_single_service_requirements(req_file, service_dir.name, service_deps)
     
@@ -188,7 +188,7 @@ safety>=2.3.0
         ]
         
         for test_dir in test_dirs:
-            req_file = self.project_root / test_dir / "requirements.txt"
+            req_file = self.project_root / test_dir / "config/environments/requirements.txt"
             if req_file.exists():
                 relative_path = "../../services/shared/requirements/requirements-test.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
                 
@@ -216,7 +216,7 @@ safety>=2.3.0
         """Update tools requirements."""
         print("Updating tools requirements...")
         
-        tools_req = self.project_root / "tools" / "requirements.txt"
+        tools_req = self.project_root / "tools" / "config/environments/requirements.txt"
         if tools_req.exists():
             relative_path = "../services/shared/requirements/requirements-dev.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             
@@ -236,10 +236,10 @@ markupsafe>=3.0.2
             print(f"✓ Updated {tools_req}")
     
     def update_pyproject_toml(self):
-        """Update pyproject.toml to reflect consolidated dependencies."""
-        print("Updating pyproject.toml...")
+        """Update config/environments/pyproject.toml to reflect consolidated dependencies."""
+        print("Updating config/environments/pyproject.toml...")
         
-        pyproject_file = self.project_root / "pyproject.toml"
+        pyproject_file = self.project_root / "config/environments/pyproject.toml"
         if not pyproject_file.exists():
             return
         
@@ -320,7 +320,7 @@ dependencies = [
         with open(pyproject_file, "w") as f:
             f.write(content)
         
-        print("✓ Updated pyproject.toml")
+        print("✓ Updated config/environments/pyproject.toml")
     
     def create_validation_script(self):
         """Create a script to validate the consolidation."""
@@ -389,7 +389,7 @@ if __name__ == "__main__":
         # Step 5: Update tools requirements
         self.update_tools_requirements()
         
-        # Step 6: Update pyproject.toml
+        # Step 6: Update config/environments/pyproject.toml
         self.update_pyproject_toml()
         
         # Step 7: Create validation script

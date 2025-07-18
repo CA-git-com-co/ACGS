@@ -216,25 +216,25 @@ jobs:
           # Install service-specific dependencies based on correct paths
           case "${{ matrix.service }}" in
             "auth")
-              [ -f "services/platform/authentication/auth_service/requirements.txt" ] && pip install -r "services/platform/authentication/auth_service/requirements.txt"
+              [ -f "services/platform/authentication/auth_service/config/environments/requirements.txt" ] && pip install -r "services/platform/authentication/auth_service/config/environments/requirements.txt"
               ;;
             "ac")
-              [ -f "services/core/constitutional-ai/ac_service/requirements.txt" ] && pip install -r "services/core/constitutional-ai/ac_service/requirements.txt"
+              [ -f "services/core/constitutional-ai/ac_service/config/environments/requirements.txt" ] && pip install -r "services/core/constitutional-ai/ac_service/config/environments/requirements.txt"
               ;;
             "integrity")
-              [ -f "services/platform/integrity/integrity_service/requirements.txt" ] && pip install -r "services/platform/integrity/integrity_service/requirements.txt"
+              [ -f "services/platform/integrity/integrity_service/config/environments/requirements.txt" ] && pip install -r "services/platform/integrity/integrity_service/config/environments/requirements.txt"
               ;;
             "fv")
-              [ -f "services/core/formal-verification/fv_service/requirements.txt" ] && pip install -r "services/core/formal-verification/fv_service/requirements.txt"
+              [ -f "services/core/formal-verification/fv_service/config/environments/requirements.txt" ] && pip install -r "services/core/formal-verification/fv_service/config/environments/requirements.txt"
               ;;
             "gs")
-              [ -f "services/core/governance-synthesis/gs_service/requirements.txt" ] && pip install -r "services/core/governance-synthesis/gs_service/requirements.txt"
+              [ -f "services/core/governance-synthesis/gs_service/config/environments/requirements.txt" ] && pip install -r "services/core/governance-synthesis/gs_service/config/environments/requirements.txt"
               ;;
             "pgc")
-              [ -f "services/core/policy-governance/pgc_service/requirements.txt" ] && pip install -r "services/core/policy-governance/pgc_service/requirements.txt"
+              [ -f "services/core/policy-governance/pgc_service/config/environments/requirements.txt" ] && pip install -r "services/core/policy-governance/pgc_service/config/environments/requirements.txt"
               ;;
             "ec")
-              [ -f "services/core/evolutionary-computation/requirements.txt" ] && pip install -r "services/core/evolutionary-computation/requirements.txt"
+              [ -f "services/core/evolutionary-computation/config/environments/requirements.txt" ] && pip install -r "services/core/evolutionary-computation/config/environments/requirements.txt"
               ;;
           esac
 
@@ -418,7 +418,7 @@ jobs:
           echo "🎭 Setting up E2E test environment..."
 
           # This would start the application stack for E2E testing
-          # docker-compose -f docker-compose.test.yml up -d
+          # docker-compose -f config/docker/docker-compose.test.yml up -d
 
           echo "✅ E2E test environment ready"
 

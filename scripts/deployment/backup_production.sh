@@ -25,7 +25,7 @@ docker exec acgs-redis-production redis-cli --rdb - > "$BACKUP_DIR/redis.rdb"
 echo "⚙️ Backing up configuration files..."
 cp config/docker/config/docker/config/docker/docker-compose.production.yml "$BACKUP_DIR/"
 cp config/environments/developmentconfig/environments/productionconfig/environments/developmentconfig/environments/development.env.backup "$BACKUP_DIR/"
-cp nginx.production.conf "$BACKUP_DIR/"
+cp config/nginx.production.conf "$BACKUP_DIR/"
 
 # Backup volumes
 echo "💽 Backing up Docker volumes..."
@@ -43,7 +43,7 @@ cat > "$BACKUP_DIR/manifest.json" << EOF
     "redis.rdb",
     "config/docker/config/docker/config/docker/docker-compose.production.yml",
     "config/environments/developmentconfig/environments/productionconfig/environments/developmentconfig/environments/development.env.backup",
-    "nginx.production.conf",
+    "config/nginx.production.conf",
     "prometheus_data.tar.gz",
     "grafana_data.tar.gz"
   ]

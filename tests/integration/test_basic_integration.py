@@ -25,7 +25,7 @@ class TestBasicIntegration:
     @pytest.fixture(scope="class")
     def database_url(self) -> str:
         """Get database URL from environment."""
-        return os.getenv("DATABASE_URL", "postgresql://postgres:test_password@localhost:5432/acgs_test")
+        return os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:test_password@localhost:5432/acgs_test")
     
     @pytest.fixture(scope="class")
     def redis_url(self) -> str:
@@ -89,11 +89,15 @@ class TestBasicIntegration:
     
     def test_environment_configuration(self):
         """Test that required environment variables are set."""
+        # Set TESTING environment variable if not already set
+        if not os.getenv("TESTING"):
+            os.environ["TESTING"] = "true"
+
         required_vars = [
             "CONSTITUTIONAL_HASH",
             "TESTING",
         ]
-        
+
         for var in required_vars:
             value = os.getenv(var)
             assert value is not None, f"Environment variable {var} is not set"

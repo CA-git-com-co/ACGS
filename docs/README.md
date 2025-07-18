@@ -58,7 +58,7 @@ This directory contains comprehensive documentation for the ACGS-2 (AI Constitut
    cd ACGS-2-minimal
    python -m venv .venv
    source .venv/bin/activate
-   pip install -r requirements.txt
+   pip install -r config/environments/requirements.txt
    ```
 
 2. **Start infrastructure**

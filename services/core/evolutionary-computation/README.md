@@ -59,7 +59,7 @@ The Evolution Oversight Service provides automated evaluation criteria, human re
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Set environment variables
 export DATABASE_URL="postgresql://acgs_user:acgs_password@localhost:5432/acgs_evolution"

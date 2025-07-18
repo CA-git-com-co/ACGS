@@ -1,27 +1,100 @@
-<!-- Constitutional Hash: cdd01ef066bc6cf2 -->
+# ACGS-2 Production Environment Override
+# Constitutional Hash: cdd01ef066bc6cf2
+# Production-specific configurations and overrides
+
+version: '3.8'
+
+x-production-environment: &production-environment
+  ENVIRONMENT: production
+  DEBUG: false
+  LOG_LEVEL: WARNING
+  RELOAD: false
+  WORKERS: 4
+
+x-production-security: &production-security
+  security_opt:
+    - no-new-privileges:true
+  read_only: true
+  tmpfs:
+    - /tmp:noexec,nosuid,size=100m
+
+x-production-resources: &production-resources
+  deploy:
+    resources:
+      reservations:
+        memory: 256M
+        cpus: '0.25'
+      limits:
+        memory: 2G
+        cpus: '2.0'
+    restart_policy:
+      condition: on-failure
+      delay: 5s
+      max_attempts: 3
+      window: 120s
+
 networks:
-  acgs-production:
+  acgs_network:
     driver: bridge
     name: acgs-production-network
+    labels:
+      - "acgs.network=production"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
 services:
+  # Production Database Configuration
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: acgs_production
+      POSTGRES_USER: acgs_prod
+      POSTGRES_SHARED_PRELOAD_LIBRARIES: pg_stat_statements
+      POSTGRES_MAX_CONNECTIONS: 200
+      POSTGRES_SHARED_BUFFERS: 256MB
+      POSTGRES_EFFECTIVE_CACHE_SIZE: 1GB
+    ports:
+      - "5439:5432"
+    <<: *production-security
+    <<: *production-resources
+    deploy:
+      resources:
+        reservations:
+          memory: 1G
+          cpus: '0.5'
+        limits:
+          memory: 4G
+          cpus: '2.0'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ${ACGS_ROOT}/infrastructure/scripts/docker/init-db-prod.sql:/docker-entrypoint-initdb.d/init-db-prod.sql:ro
+    tmpfs:
+      - /tmp:noexec,nosuid,size=200m
+      - /var/run/postgresql:noexec,nosuid,size=100m
+
   grafana:
+    image: grafana/grafana:10.2.0
     container_name: acgs-grafana-production
     depends_on:
     - prometheus
     environment:
-    - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
-    - GF_USERS_ALLOW_SIGN_UP=false
-    - GF_SECURITY_DISABLE_GRAVATAR=true
-    - CONSTITUTIONAL_HASH=cdd01ef066bc6cf2
-    image: grafana/grafana:latest
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_SECURITY_DISABLE_GRAVATAR: true
+      GF_SECURITY_COOKIE_SECURE: true
+      GF_SECURITY_STRICT_TRANSPORT_SECURITY: true
+      GF_SERVER_ROOT_URL: https://grafana.acgs.internal
+      GF_ANALYTICS_REPORTING_ENABLED: false
+      GF_ANALYTICS_CHECK_FOR_UPDATES: false
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
     networks:
-    - acgs-production
+    - acgs_network
     ports:
     - 3000:3000
     restart: unless-stopped
+    <<: *production-resources
     volumes:
     - grafana_data:/var/lib/grafana
-    - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+    - ${ACGS_ROOT}/infrastructure/monitoring/grafana/dashboards-prod:/etc/grafana/provisioning/dashboards:ro
   hybrid-router:
     build:
       context: ./services/shared/routing

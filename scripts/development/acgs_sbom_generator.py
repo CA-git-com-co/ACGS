@@ -171,8 +171,8 @@ class ACGSSBOMGenerator:
         python_dependencies = []
 
         try:
-            # Check for requirements.txt
-            requirements_file = self.project_root / "requirements.txt"
+            # Check for config/environments/requirements.txt
+            requirements_file = self.project_root / "config/environments/requirements.txt"
             if requirements_file.exists():
                 with open(requirements_file, "r") as f:
                     for line in f:
@@ -194,7 +194,7 @@ class ACGSSBOMGenerator:
                                 name=name.strip(),
                                 version=version.strip(),
                                 license=license_info,
-                                source="requirements.txt",
+                                source="config/environments/requirements.txt",
                                 vulnerabilities=[],
                                 constitutional_compliance=True,
                             )
@@ -216,7 +216,7 @@ class ACGSSBOMGenerator:
                         if line and "==" in line:
                             name, version = line.split("==", 1)
 
-                            # Skip if already found in requirements.txt
+                            # Skip if already found in config/environments/requirements.txt
                             if any(dep.name == name for dep in python_dependencies):
                                 continue
 

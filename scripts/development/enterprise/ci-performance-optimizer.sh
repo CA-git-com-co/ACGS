@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # ACGS-1 CI/CD Performance Optimizer
@@ -132,7 +133,7 @@ optimize_caching() {
     fi
     
     # Check for Python caching opportunities
-    if find "$PROJECT_ROOT" -name "requirements*.txt" -o -name "pyproject.toml" | grep -q .; then
+    if find "$PROJECT_ROOT" -name "requirements*.txt" -o -name "config/environments/pyproject.toml" | grep -q .; then
         cache_optimizations=$((cache_optimizations + 1))
         log_optimization "SUCCESS" "✅ Python dependencies found - pip caching available"
     fi
@@ -181,7 +182,7 @@ optimize_parallel_execution() {
     # Check for multiple language ecosystems
     local ecosystems=0
     [ -d "$PROJECT_ROOT/blockchain" ] && ecosystems=$((ecosystems + 1))
-    [ -f "$PROJECT_ROOT/requirements.txt" ] || [ -f "$PROJECT_ROOT/pyproject.toml" ] && ecosystems=$((ecosystems + 1))
+    [ -f "$PROJECT_ROOT/config/environments/requirements.txt" ] || [ -f "$PROJECT_ROOT/config/environments/pyproject.toml" ] && ecosystems=$((ecosystems + 1))
     [ -f "$PROJECT_ROOT/package.json" ] && ecosystems=$((ecosystems + 1))
     
     if [ $ecosystems -gt 1 ]; then

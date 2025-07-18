@@ -1,5 +1,3 @@
-// Constitutional Hash: cdd01ef066bc6cf2
-
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />
 

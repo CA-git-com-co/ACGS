@@ -62,13 +62,13 @@ scrape_configs:
     scrape_interval: 30s
 
   # Mock Services (for testing)
-  - job_name: "acgs-auth-service"
+  - job_name: "acgs-auth-service-mock"
     static_configs:
       - targets: ["auth-service:80"]
     metrics_path: "/health"
     scrape_interval: 60s
 
-  - job_name: "acgs-context-service"
+  - job_name: "acgs-context-service-mock"
     static_configs:
       - targets: ["context-service:80"]
     metrics_path: "/health"

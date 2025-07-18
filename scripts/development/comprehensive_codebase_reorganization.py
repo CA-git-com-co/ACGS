@@ -234,7 +234,7 @@ class ACGSReorganizer:
                     if (
                         item.is_file()
                         and item.suffix == ".py"
-                        and item.name != "requirements.txt"
+                        and item.name != "config/environments/requirements.txt"
                     ):
                         if not (src_dir / item.name).exists():
                             shutil.move(str(item), str(src_dir / item.name))
@@ -307,8 +307,8 @@ class ACGSReorganizer:
             return False
 
     def _consolidate_python_dependencies(self):
-        """Consolidate Python requirements.txt files"""
-        # Find all requirements.txt files (excluding node_modules)
+        """Consolidate Python config/environments/requirements.txt files"""
+        # Find all config/environments/requirements.txt files (excluding node_modules)
         req_files = []
         for req_file in self.project_root.rglob("requirements*.txt"):
             if "node_modules" not in str(req_file) and "venv" not in str(req_file):
@@ -346,7 +346,7 @@ class ACGSReorganizer:
                 logger.warning(f"Could not read {req_file}: {e}")
 
         # Write consolidated requirements
-        main_req_file = files[0].parent / "requirements.txt"
+        main_req_file = files[0].parent / "config/environments/requirements.txt"
         with open(main_req_file, "w") as f:
             f.write(f"# {service} Service Dependencies\n")
             f.write(f"# Consolidated on {datetime.now().strftime('%Y-%m-%d')}\n\n")

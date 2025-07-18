@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-07-18T08:53:38.288757",
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "deployed_scripts": [
+    "scripts/maintenance/acgs2_continuous_improvement.py",
+    "scripts/reorganization/acgs2_root_cleanup.py",
+    "scripts/reorganization/update_config_references.py",
+    "scripts/reorganization/organize_scripts_directory.py",
+    "scripts/reorganization/remove_duplicates.py",
+    "scripts/reorganization/claude_md_standardizer_v2.py",
+    "scripts/reorganization/create_missing_claude_md.py"
+  ],
+  "deployment_status": "active",
+  "maintenance_schedule": "weekly"
+}

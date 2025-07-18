@@ -44,7 +44,7 @@ newgrp docker
 # Install dependencies
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Optional: for running analysis
 sudo apt-get install graphviz graphviz-dev

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # HAProxy Health Check Script for ACGS-1 Load Balancer
 # Validates load balancer health and backend service availability

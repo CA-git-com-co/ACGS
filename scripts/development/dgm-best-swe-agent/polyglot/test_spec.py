@@ -29,7 +29,7 @@ except ImportError:
     # Mock implementations for compatibility with newer swebench versions
     def get_requirements(instance):
         """Mock implementation for get_requirements"""
-        return "# Mock requirements.txt\n"
+        return "# Mock config/environments/requirements.txt\n"
 
     def get_environment_yml(instance, env_name):
         """Mock implementation for get_environment_yml"""
@@ -170,7 +170,7 @@ def make_repo_script_list(specs, repo, repo_directory, base_commit, env_name):
 
 
 def replace_uninstallable_packages_requirements_txt(requirement_str: str) -> str:
-    """Replaces certain packages in a requirements.txt-like string.
+    """Replaces certain packages in a config/environments/requirements.txt-like string.
     For example, some packages have been yanked and we need to replace them with compatible alternatives.
     """
     replacements = {
@@ -206,7 +206,7 @@ def make_env_script_list(instance: dict, specs: dict, env_name: str) -> list[str
     ]
     # Create conda environment according to install instructinos
     pkgs = specs.get("packages", "")
-    if pkgs == "requirements.txt":
+    if pkgs == "config/environments/requirements.txt":
         # Create environment
         cmd = f"conda create -n {env_name} python={specs['python']} -y"
         reqs_commands.append(cmd)
@@ -215,7 +215,7 @@ def make_env_script_list(instance: dict, specs: dict, env_name: str) -> list[str
         reqs = replace_uninstallable_packages_requirements_txt(
             get_requirements(instance)
         )
-        path_to_reqs = "$HOME/requirements.txt"
+        path_to_reqs = "$HOME/config/environments/requirements.txt"
         reqs_commands.append(
             f"cat <<'{HEREDOC_DELIMITER}' > {path_to_reqs}\n{reqs}\n{HEREDOC_DELIMITER}"
         )

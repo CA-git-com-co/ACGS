@@ -132,8 +132,8 @@ class TestingInfrastructureOptimizer:
 
     def _create_test_configs(self):
         """Create test configuration files"""
-        # pytest.ini
-        pytest_config = self.project_root / "pytest.ini"
+        # config/environments/pytest.ini
+        pytest_config = self.project_root / "config/environments/pytest.ini"
         with open(pytest_config, "w") as f:
             f.write(
                 """[tool:pytest]

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-2 Basic Monitoring Startup Script
 

@@ -1,0 +1,98 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "scan_timestamp": "2025-07-18T08:44:58.669873",
+  "total_files": 8565,
+  "compliant_files": 8562,
+  "non_compliant_files": [
+    {
+      "file_path": "docs_consolidated_archive_20250710_120000/development/system_prompt_improvements.md",
+      "file_type": ".md",
+      "issues": [
+        "Missing constitutional hash"
+      ],
+      "size_bytes": 9889,
+      "last_modified": "2025-07-08T16:15:46.669222"
+    },
+    {
+      "file_path": "docs_consolidated_archive_20250710_120000/development/TEST_INITIAL.md",
+      "file_type": ".md",
+      "issues": [
+        "Missing constitutional hash"
+      ],
+      "size_bytes": 964,
+      "last_modified": "2025-07-08T16:15:46.519234"
+    },
+    {
+      "file_path": "docs_consolidated_archive_20250710_120000/development/CONTRIBUTING.md",
+      "file_type": ".md",
+      "issues": [
+        "Missing constitutional hash"
+      ],
+      "size_bytes": 5693,
+      "last_modified": "2025-07-09T07:41:07.298087"
+    }
+  ],
+  "compliance_rate": 99.96497373029773,
+  "files_by_type": {
+    ".md": 2003,
+    ".json": 2160,
+    ".toml": 27,
+    ".yaml": 170,
+    ".py": 2956,
+    ".js": 84,
+    ".ts": 189,
+    ".yml": 217,
+    ".conf": 17,
+    ".ini": 17,
+    ".sh": 547,
+    ".sql": 22,
+    ".proto": 3,
+    ".rs": 56,
+    ".go": 96,
+    ".bat": 1
+  },
+  "compliant_by_type": {
+    ".md": 2000,
+    ".json": 2160,
+    ".toml": 27,
+    ".yaml": 170,
+    ".py": 2956,
+    ".js": 84,
+    ".ts": 189,
+    ".yml": 217,
+    ".conf": 17,
+    ".ini": 17,
+    ".sh": 547,
+    ".sql": 22,
+    ".proto": 3,
+    ".rs": 56,
+    ".go": 96,
+    ".bat": 1
+  },
+  "files_with_issues": [
+    {
+      "file_path": "docs_consolidated_archive_20250710_120000/development/system_prompt_improvements.md",
+      "file_type": ".md",
+      "issues": [
+        "Missing constitutional hash"
+      ],
+      "is_compliant": false
+    },
+    {
+      "file_path": "docs_consolidated_archive_20250710_120000/development/TEST_INITIAL.md",
+      "file_type": ".md",
+      "issues": [
+        "Missing constitutional hash"
+      ],
+      "is_compliant": false
+    },
+    {
+      "file_path": "docs_consolidated_archive_20250710_120000/development/CONTRIBUTING.md",
+      "file_type": ".md",
+      "issues": [
+        "Missing constitutional hash"
+      ],
+      "is_compliant": false
+    }
+  ]
+}

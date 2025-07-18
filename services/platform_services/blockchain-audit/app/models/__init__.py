@@ -11,16 +11,16 @@ from .schemas import (
     HealthResponse,
     EventType,
     BlockchainNetwork,
-    CONSTITUTIONAL_HASH
+    CONSTITUTIONAL_HASH,
 )
 
 __all__ = [
     "AuditEvent",
-    "BlockchainRecord", 
+    "BlockchainRecord",
     "AuditLogRequest",
     "AuditLogResponse",
     "HealthResponse",
     "EventType",
     "BlockchainNetwork",
-    "CONSTITUTIONAL_HASH"
+    "CONSTITUTIONAL_HASH",
 ]

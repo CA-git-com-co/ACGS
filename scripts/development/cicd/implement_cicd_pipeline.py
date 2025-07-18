@@ -162,7 +162,7 @@ class CICDPipelineImplementor:
                             },
                             {
                                 "name": "Install dependencies",
-                                "run": "pip install -r requirements.txt && pip install -r requirements-test.txt",
+                                "run": "pip install -r config/environments/requirements.txt && pip install -r requirements-test.txt",
                             },
                             {
                                 "name": "Run security validation tests",
@@ -201,7 +201,7 @@ class CICDPipelineImplementor:
                             },
                             {
                                 "name": "Run dependency security scan",
-                                "run": "pip-audit --requirement requirements.txt",
+                                "run": "pip-audit --requirement config/environments/requirements.txt",
                             },
                         ],
                     },
@@ -422,7 +422,7 @@ class CICDPipelineImplementor:
                             },
                             {
                                 "name": "Install dependencies",
-                                "run": "pip install -r requirements.txt && pip install -r requirements-test.txt",
+                                "run": "pip install -r config/environments/requirements.txt && pip install -r requirements-test.txt",
                             },
                             {
                                 "name": "Check test coverage threshold",
@@ -446,7 +446,7 @@ class CICDPipelineImplementor:
                             },
                             {
                                 "name": "Dependency vulnerability check",
-                                "run": "pip-audit --requirement requirements.txt --format=json --output=audit-report.json",
+                                "run": "pip-audit --requirement config/environments/requirements.txt --format=json --output=audit-report.json",
                             },
                             {
                                 "name": "Generate quality report",

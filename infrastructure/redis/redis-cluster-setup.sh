@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # Redis Cluster Setup for ACGS-1 Advanced Caching
 # High Availability Configuration with Sentinel

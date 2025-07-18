@@ -252,7 +252,7 @@ jobs:
           export CONSTITUTIONAL_HASH="${{ env.CONSTITUTIONAL_HASH }}"
           
           # Start services in background
-          docker-compose -f infrastructure/docker/docker-compose.test.yml up -d
+          docker-compose -f infrastructure/docker/config/docker/docker-compose.test.yml up -d
           
           # Wait for services to be ready
           sleep 30
@@ -278,7 +278,7 @@ jobs:
       - name: Cleanup services
         if: always()
         run: |
-          docker-compose -f infrastructure/docker/docker-compose.test.yml down -v
+          docker-compose -f infrastructure/docker/config/docker/docker-compose.test.yml down -v
 
   # Performance Tests
   performance-tests:

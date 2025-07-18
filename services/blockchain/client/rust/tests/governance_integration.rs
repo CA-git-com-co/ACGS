@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // ACGS Governance Integration Tests - Rust Implementation
 // Comprehensive End-to-End Tests for Quantumagi Constitutional Governance Framework
 // Migrated from TypeScript to eliminate Node.js dependency conflicts

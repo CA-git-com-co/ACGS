@@ -102,10 +102,10 @@ elif [ -d "services/platform_services/authentication/auth_service" ] && [ "${{ m
     python -m pip install --upgrade pip
     pip install pytest pytest-cov pytest-json-report coverage coverage-badge
     # Install requirements with fallback
-    if [ -f requirements.txt ]; then
-      pip install -r requirements.txt
-    elif [ -f requirements-security.txt ]; then
-      pip install -r requirements-security.txt
+    if [ -f config/environments/requirements.txt ]; then
+      pip install -r config/environments/requirements.txt
+    elif [ -f config/environments/requirements-security.txt ]; then
+      pip install -r config/environments/requirements-security.txt
     else
       echo "No requirements file found, installing minimal dependencies"
       pip install fastapi uvicorn pydantic sqlalchemy asyncpg redis

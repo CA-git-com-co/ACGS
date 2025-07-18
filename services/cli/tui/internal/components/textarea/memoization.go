@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // Package memoization implement a simple memoization cache. It's designed to
 // improve performance in textarea.
 package textarea

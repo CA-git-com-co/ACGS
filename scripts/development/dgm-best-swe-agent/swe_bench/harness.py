@@ -81,8 +81,8 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
 
         # Copy the necessary files and requirements to the container
         copy_to_container(container, "coding_agent.py", "/dgm/coding_agent.py")
-        copy_to_container(container, "requirements.txt", "/dgm/requirements.txt")
-        copy_to_container(container, "pytest.ini", "/dgm/pytest.ini")
+        copy_to_container(container, "config/environments/requirements.txt", "/dgm/config/environments/requirements.txt")
+        copy_to_container(container, "config/environments/pytest.ini", "/dgm/config/environments/pytest.ini")
         copy_to_container(container, "tools/", "/dgm/tools/")
         copy_to_container(container, "utils/", "/dgm/utils/")
         copy_to_container(container, "tests/", "/dgm/tests/")
@@ -125,7 +125,7 @@ def process_entry(entry, out_dname, model_name_or_path, model_patch_paths):
         # Install this repo requirements
         safe_log("Installing more requirements")
         exec_result = container.exec_run(
-            "python -m pip install -r /dgm/requirements.txt", workdir="/"
+            "python -m pip install -r /dgm/config/environments/requirements.txt", workdir="/"
         )
         log_container_output(exec_result)
 

@@ -74,7 +74,7 @@ jobs:
         
     - name: Install security testing dependencies
       run: |
-        pip install -r tests/security/requirements.txt
+        pip install -r tests/security/config/environments/requirements.txt
         
     - name: Start test services
       run: |
@@ -121,7 +121,7 @@ jobs:
         
     - name: Install performance testing dependencies
       run: |
-        pip install -r tests/performance/requirements.txt
+        pip install -r tests/performance/config/environments/requirements.txt
         
     - name: Start test services
       run: |

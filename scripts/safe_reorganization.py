@@ -219,7 +219,7 @@ class SafeReorganizer:
             checks["python_imports"] = False
         
         # Check config files
-        config_files = ["requirements.txt", "pyproject.toml", "pytest.ini"]
+        config_files = ["config/environments/requirements.txt", "config/environments/pyproject.toml", "config/environments/pytest.ini"]
         checks["config_files"] = all(
             (self.project_root / cf).exists() for cf in config_files
         )

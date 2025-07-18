@@ -95,12 +95,12 @@ install_python_dependencies() {
     pip install --upgrade pip
     
     # Install root dependencies
-    if [ -f "requirements.txt" ]; then
+    if [ -f "config/environments/requirements.txt" ]; then
         log "Installing root Python dependencies..."
-        pip install -r requirements.txt
+        pip install -r config/environments/requirements.txt
         success "Root dependencies installed"
     else
-        warning "requirements.txt not found, skipping root dependencies"
+        warning "config/environments/requirements.txt not found, skipping root dependencies"
     fi
     
     # Install service-specific dependencies
@@ -108,25 +108,25 @@ install_python_dependencies() {
     local services_found=0
     
     for service_dir in services/core/*/; do
-        if [ -d "$service_dir" ] && [ -f "${service_dir}requirements.txt" ]; then
+        if [ -d "$service_dir" ] && [ -f "${service_dir}config/environments/requirements.txt" ]; then
             log "Installing dependencies for ${service_dir}..."
-            pip install -r "${service_dir}requirements.txt"
+            pip install -r "${service_dir}config/environments/requirements.txt"
             ((services_found++))
         fi
     done
     
     for service_dir in services/platform/*/; do
-        if [ -d "$service_dir" ] && [ -f "${service_dir}requirements.txt" ]; then
+        if [ -d "$service_dir" ] && [ -f "${service_dir}config/environments/requirements.txt" ]; then
             log "Installing dependencies for ${service_dir}..."
-            pip install -r "${service_dir}requirements.txt"
+            pip install -r "${service_dir}config/environments/requirements.txt"
             ((services_found++))
         fi
     done
     
     # Install shared dependencies
-    if [ -f "services/shared/requirements.txt" ]; then
+    if [ -f "services/shared/config/environments/requirements.txt" ]; then
         log "Installing shared service dependencies..."
-        pip install -r services/shared/requirements.txt
+        pip install -r services/shared/config/environments/requirements.txt
         ((services_found++))
     fi
     

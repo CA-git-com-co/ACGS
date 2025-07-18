@@ -8,7 +8,7 @@
 
 ## ✅ 8大生产改进 - 全部实现
 
-### 1. **依赖管理：requirements.txt + 容器化** ✅
+### 1. **依赖管理：config/environments/requirements.txt + 容器化** ✅
 - **📁 文件**: `requirements-production.txt` - 完整依赖清单，版本锁定
 - **🐳 容器**: `Dockerfile.production` - 多阶段构建，安全加固
 - **🔒 安全**: 非root用户，健康检查，资源限制
@@ -341,7 +341,7 @@ docker restart governance-framework
 
 ## 📋 生产检查清单
 
-- [ ] ✅ 依赖管理：requirements.txt + Docker镜像
+- [ ] ✅ 依赖管理：config/environments/requirements.txt + Docker镜像
 - [ ] ✅ 类型注解：mypy --strict兼容
 - [ ] ✅ SHAP集成：真实模型wrapper
 - [ ] ✅ 配置管理：pydantic-settings + config/environments/development.env

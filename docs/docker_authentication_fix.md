@@ -27,7 +27,7 @@ Created a simplified Dockerfile using Python base image:
 
 **Location**: `infrastructure/docker/Dockerfile.local`
 
-### 2. **Local Docker Compose** (`docker-compose.local.yml`)
+### 2. **Local Docker Compose** (`config/docker/docker-compose.local.yml`)
 
 Alternative compose file that:
 - Uses local build contexts
@@ -37,13 +37,13 @@ Alternative compose file that:
 
 **Usage**:
 ```bash
-docker-compose -f docker-compose.local.yml up -d
+docker-compose -f config/docker/docker-compose.local.yml up -d
 ```
 
 ### 3. **Docker Authentication Fix Script** (`fix_docker_auth.sh`)
 
 Automated script that:
-- Creates missing requirements.txt files
+- Creates missing config/environments/requirements.txt files
 - Sets up local build contexts
 - Configures Docker alternatives
 - Provides clear next steps
@@ -74,7 +74,7 @@ python scripts/run_services_local.py
 ./scripts/fix_docker_auth.sh
 
 # Start services
-docker-compose -f docker-compose.local.yml up -d
+docker-compose -f config/docker/docker-compose.local.yml up -d
 
 # Check health
 curl http://localhost:8001/health
@@ -83,7 +83,7 @@ curl http://localhost:8001/health
 ### Option 2: Direct Python Execution
 ```bash
 # Ensure dependencies installed
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Run services
 python scripts/run_services_local.py
@@ -129,7 +129,7 @@ docker run -d -p 5439:5432 \
 ### Issue: Services won't start
 1. Check port availability: `lsof -i :8001`
 2. Verify Python version: `python --version` (needs 3.9+)
-3. Install dependencies: `pip install -r requirements.txt`
+3. Install dependencies: `pip install -r config/environments/requirements.txt`
 
 ### Issue: Database connection fails
 1. Ensure PostgreSQL is running on port 5439

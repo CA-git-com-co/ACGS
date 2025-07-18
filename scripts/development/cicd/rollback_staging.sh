@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 set -e
 
@@ -19,7 +20,7 @@ ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
     cd /opt/acgs-2
 
     echo "Stopping current services..."
-    docker-compose -f docker-compose.$ENVIRONMENT.yml down
+    docker-compose -f config/docker/docker-compose.$ENVIRONMENT.yml down
 
     if [ "$ROLLBACK_VERSION" = "previous" ]; then
         echo "Rolling back to previous containers..."
@@ -29,13 +30,13 @@ ssh -o StrictHostKeyChecking=no $USER@$HOST << EOF
             done < /tmp/acgs-backup-containers.txt
         else
             echo "No backup containers found, deploying last known good version..."
-            docker-compose -f docker-compose.$ENVIRONMENT.yml up -d
+            docker-compose -f config/docker/docker-compose.$ENVIRONMENT.yml up -d
         fi
     else
         echo "Rolling back to version $ROLLBACK_VERSION..."
         # Update image tags to rollback version
         sed -i "s/:latest/:$ROLLBACK_VERSION/g" docker-compose.$ENVIRONMENT.yml
-        docker-compose -f docker-compose.$ENVIRONMENT.yml up -d
+        docker-compose -f config/docker/docker-compose.$ENVIRONMENT.yml up -d
     fi
 
     echo "✅ Rollback completed"

@@ -176,7 +176,7 @@ async def verify_policies(
             updated_rule = await integrity_service_client.update_policy_rule_status(
                 rule_id=result.policy_rule_id,
                 status=result.status,  # "verified" or "failed"
-                auth_token=os.environ.get("AUTH_TOKEN")
+                auth_token=os.environ.get("AUTH_TOKEN"),
             )
             if not updated_rule:
                 result.message = (

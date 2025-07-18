@@ -239,7 +239,7 @@ class DocumentationSummaryGenerator:
                 "priority": "High",
             },
             {
-                "file": "requirements.txt",
+                "file": "config/environments/requirements.txt",
                 "reason": "Dependencies may need version updates",
                 "priority": "Low",
             },

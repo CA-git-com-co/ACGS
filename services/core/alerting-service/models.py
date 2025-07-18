@@ -13,6 +13,7 @@ import uuid
 
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 # Core Enums
 class NotificationChannel(str, Enum):
     EMAIL = "email"
@@ -23,6 +24,7 @@ class NotificationChannel(str, Enum):
     PAGERDUTY = "pagerduty"
     DISCORD = "discord"
 
+
 class EscalationTrigger(str, Enum):
     TIME_BASED = "time_based"
     ACK_TIMEOUT = "ack_timeout"
@@ -30,11 +32,13 @@ class EscalationTrigger(str, Enum):
     NO_RESPONSE = "no_response"
     CONSTITUTIONAL_VIOLATION = "constitutional_violation"
 
+
 class AlertingSeverity(str, Enum):
     INFO = "info"
     WARNING = "warning"
     CRITICAL = "critical"
     EMERGENCY = "emergency"
+
 
 class AlertingStatus(str, Enum):
     ACTIVE = "active"
@@ -43,6 +47,7 @@ class AlertingStatus(str, Enum):
     SUPPRESSED = "suppressed"
     ESCALATED = "escalated"
 
+
 class IncidentStatus(str, Enum):
     OPEN = "open"
     INVESTIGATING = "investigating"
@@ -50,11 +55,13 @@ class IncidentStatus(str, Enum):
     MONITORING = "monitoring"
     RESOLVED = "resolved"
 
+
 class OnCallStatus(str, Enum):
     ACTIVE = "active"
     INACTIVE = "inactive"
     OVERRIDE = "override"
     ESCALATED = "escalated"
+
 
 # Contact and Team Models
 class Contact(BaseModel):
@@ -67,9 +74,10 @@ class Contact(BaseModel):
     timezone: str = "UTC"
     preferred_channels: List[NotificationChannel] = [NotificationChannel.EMAIL]
     constitutional_clearance_level: int = Field(ge=1, le=10, default=1)
-    
+
     class Config:
         use_enum_values = True
+
 
 class Team(BaseModel):
     team_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -78,7 +86,8 @@ class Team(BaseModel):
     members: List[str] = []  # contact_ids
     escalation_policy_id: Optional[str] = None
     constitutional_oversight: bool = False
-    
+
+
 class OnCallSchedule(BaseModel):
     schedule_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
@@ -91,6 +100,7 @@ class OnCallSchedule(BaseModel):
     override_contact_id: Optional[str] = None
     rotation_frequency_hours: int = Field(default=168, ge=1)  # Default weekly
 
+
 # Notification Models
 class NotificationChannel(BaseModel):
     channel_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -101,6 +111,7 @@ class NotificationChannel(BaseModel):
     rate_limit_per_hour: int = Field(default=100, ge=1)
     constitutional_notifications_only: bool = False
 
+
 class NotificationTemplate(BaseModel):
     template_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
@@ -109,6 +120,7 @@ class NotificationTemplate(BaseModel):
     body_template: str
     constitutional_template: bool = False
     variables: List[str] = []
+
 
 class NotificationRequest(BaseModel):
     request_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -121,6 +133,7 @@ class NotificationRequest(BaseModel):
     constitutional_priority: bool = False
     scheduled_time: Optional[datetime] = None
 
+
 class NotificationDelivery(BaseModel):
     delivery_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     request_id: str
@@ -131,6 +144,7 @@ class NotificationDelivery(BaseModel):
     error_message: Optional[str] = None
     retry_count: int = 0
     constitutional_delivery: bool = False
+
 
 # Escalation Models
 class EscalationRule(BaseModel):
@@ -145,6 +159,7 @@ class EscalationRule(BaseModel):
     constitutional_escalation: bool = False
     active: bool = True
 
+
 class EscalationPolicy(BaseModel):
     policy_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
@@ -154,6 +169,7 @@ class EscalationPolicy(BaseModel):
     constitutional_policy: bool = False
     team_ids: List[str] = []
     severity_filters: List[AlertingSeverity] = []
+
 
 class EscalationExecution(BaseModel):
     execution_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -168,6 +184,7 @@ class EscalationExecution(BaseModel):
     notification_sent: bool = False
     constitutional_escalation: bool = False
 
+
 # Alert Models
 class AlertContext(BaseModel):
     service_name: str
@@ -177,6 +194,7 @@ class AlertContext(BaseModel):
     namespace: Optional[str] = None
     constitutional_impact: bool = False
     performance_metrics: Dict[str, float] = {}
+
 
 class AlertingAlert(BaseModel):
     alert_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -198,6 +216,7 @@ class AlertingAlert(BaseModel):
     constitutional_alert: bool = False
     hash_validation: str = CONSTITUTIONAL_HASH
 
+
 # Incident Models
 class Incident(BaseModel):
     incident_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -216,6 +235,7 @@ class Incident(BaseModel):
     constitutional_incident: bool = False
     timeline: List[Dict[str, Any]] = []
 
+
 class IncidentUpdate(BaseModel):
     update_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     incident_id: str
@@ -224,6 +244,7 @@ class IncidentUpdate(BaseModel):
     message: str
     timestamp: datetime
     constitutional_update: bool = False
+
 
 # Suppression and Maintenance Models
 class AlertSuppression(BaseModel):
@@ -237,6 +258,7 @@ class AlertSuppression(BaseModel):
     constitutional_suppression: bool = False
     active: bool = True
 
+
 class MaintenanceWindow(BaseModel):
     window_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
@@ -249,6 +271,7 @@ class MaintenanceWindow(BaseModel):
     constitutional_maintenance: bool = False
     recurring: bool = False
     recurrence_pattern: Optional[str] = None  # cron expression
+
 
 # Metrics and Reporting Models
 class AlertingMetrics(BaseModel):
@@ -264,6 +287,7 @@ class AlertingMetrics(BaseModel):
     mean_time_to_resolve: float = 0.0  # minutes
     notification_success_rate: float = 0.0  # percentage
 
+
 class EscalationMetrics(BaseModel):
     timestamp: datetime
     total_escalations: int = 0
@@ -272,6 +296,7 @@ class EscalationMetrics(BaseModel):
     constitutional_escalations: int = 0
     average_escalation_time: float = 0.0  # minutes
     escalation_success_rate: float = 0.0  # percentage
+
 
 class NotificationMetrics(BaseModel):
     timestamp: datetime
@@ -282,6 +307,7 @@ class NotificationMetrics(BaseModel):
     delivery_rate: float = 0.0  # percentage
     average_delivery_time: float = 0.0  # seconds
     constitutional_notifications: int = 0
+
 
 # System Configuration Models
 class AlertingConfig(BaseModel):
@@ -296,6 +322,7 @@ class AlertingConfig(BaseModel):
     enable_constitutional_oversight: bool = True
     hash_validation: str = CONSTITUTIONAL_HASH
 
+
 # Health and Status Models
 class AlertingServiceHealth(BaseModel):
     service_name: str = "alerting-service"
@@ -305,6 +332,7 @@ class AlertingServiceHealth(BaseModel):
     timestamp: datetime
     components: Dict[str, str] = {}  # component_name -> status
     metrics: Dict[str, Any] = {}
+
 
 # API Request/Response Models
 class CreateContactRequest(BaseModel):
@@ -317,11 +345,13 @@ class CreateContactRequest(BaseModel):
     preferred_channels: List[NotificationChannel] = [NotificationChannel.EMAIL]
     constitutional_clearance_level: int = Field(ge=1, le=10, default=1)
 
+
 class CreateTeamRequest(BaseModel):
     name: str
     description: Optional[str] = None
     member_contact_ids: List[str] = []
     constitutional_oversight: bool = False
+
 
 class CreateEscalationPolicyRequest(BaseModel):
     name: str
@@ -331,6 +361,7 @@ class CreateEscalationPolicyRequest(BaseModel):
     constitutional_policy: bool = False
     team_ids: List[str] = []
     severity_filters: List[AlertingSeverity] = []
+
 
 class TriggerAlertRequest(BaseModel):
     rule_name: str
@@ -343,15 +374,18 @@ class TriggerAlertRequest(BaseModel):
     annotations: Dict[str, str] = {}
     constitutional_alert: bool = False
 
+
 class AcknowledgeAlertRequest(BaseModel):
     contact_id: str
     acknowledgment_message: Optional[str] = None
     constitutional_acknowledgment: bool = False
 
+
 class ResolveAlertRequest(BaseModel):
     contact_id: str
     resolution_message: Optional[str] = None
     constitutional_resolution: bool = False
+
 
 class CreateIncidentRequest(BaseModel):
     title: str
@@ -364,6 +398,7 @@ class CreateIncidentRequest(BaseModel):
     alert_ids: List[str] = []
     constitutional_incident: bool = False
 
+
 # Webhook Models
 class WebhookPayload(BaseModel):
     webhook_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
@@ -372,6 +407,7 @@ class WebhookPayload(BaseModel):
     data: Dict[str, Any]
     constitutional_payload: bool = False
     hash_validation: str = CONSTITUTIONAL_HASH
+
 
 class WebhookDelivery(BaseModel):
     delivery_id: str = Field(default_factory=lambda: str(uuid.uuid4()))

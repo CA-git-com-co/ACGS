@@ -290,8 +290,8 @@ RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add - \\
 WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY config/environments/requirements.txt .
+RUN pip install --no-cache-dir -r config/environments/requirements.txt
 
 # Copy application code
 COPY . .

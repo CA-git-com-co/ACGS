@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # HAProxy Startup Script for ACGS-1 Load Balancer
 # Handles graceful startup with configuration validation and monitoring

@@ -628,7 +628,7 @@ class ConstitutionalComplianceEnforcer:
 
                 # Check for required files
                 required_files = {
-                    "requirements.txt": "medium",
+                    "config/environments/requirements.txt": "medium",
                     "Dockerfile": "high",
                     "README.md": "low",
                 }

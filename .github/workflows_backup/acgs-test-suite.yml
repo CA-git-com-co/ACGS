@@ -11,18 +11,18 @@ on:
       - 'services/**'
       - 'tests/**'
       - '.github/workflows/**'
-      - 'pytest.ini'
-      - 'pyproject.toml'
-      - 'requirements*.txt'
+      - 'config/environments/pytest.ini'
+      - 'config/environments/pyproject.toml'
+      - 'config/environments/requirements*.txt'
   pull_request:
     branches: [main, master, develop]
     paths:
       - 'services/**'
       - 'tests/**'
       - '.github/workflows/**'
-      - 'pytest.ini'
-      - 'pyproject.toml'
-      - 'requirements*.txt'
+      - 'config/environments/pytest.ini'
+      - 'config/environments/pyproject.toml'
+      - 'config/environments/requirements*.txt'
   schedule:
     # Daily at 00:00 UTC for comprehensive monitoring
     - cron: '0 0 * * *'
@@ -174,7 +174,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest-cov pytest-xdist pytest-benchmark pytest-html pytest-json-report
           pip install locust psutil tracemalloc
 
@@ -248,7 +248,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install locust pytest-benchmark redis psutil
 
       - name: Start services for performance testing

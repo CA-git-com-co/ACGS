@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // ACGS Logging Integration Tests - Rust Implementation
 // Comprehensive End-to-End Tests for Logging Program
 // Migrated from TypeScript to eliminate Node.js dependency conflicts

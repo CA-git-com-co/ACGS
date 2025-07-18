@@ -54,7 +54,7 @@ class TestMultiTenantIsolation:
                 id=uuid.uuid4(),
                 name="Tenant Alpha",
                 organization_id=mock_organization.id,
-                isolation_level="strict",
+                security_level="strict",
                 constitutional_hash=CONSTITUTIONAL_HASH,
                 created_at=datetime.now(timezone.utc),
             ),
@@ -62,7 +62,7 @@ class TestMultiTenantIsolation:
                 id=uuid.uuid4(),
                 name="Tenant Beta",
                 organization_id=mock_organization.id,
-                isolation_level="strict",
+                security_level="strict",
                 constitutional_hash=CONSTITUTIONAL_HASH,
                 created_at=datetime.now(timezone.utc),
             ),
@@ -118,9 +118,9 @@ class TestMultiTenantIsolation:
         assert tenant_alpha.constitutional_hash == CONSTITUTIONAL_HASH
         assert tenant_beta.constitutional_hash == CONSTITUTIONAL_HASH
 
-        # Verify isolation level is enforced
-        assert tenant_alpha.isolation_level == "strict"
-        assert tenant_beta.isolation_level == "strict"
+        # Verify security level is enforced
+        assert tenant_alpha.security_level == "strict"
+        assert tenant_beta.security_level == "strict"
 
     def test_tenant_user_association_validation(self, mock_tenant_users, mock_tenants):
         """Test tenant user associations are properly isolated."""
@@ -426,7 +426,7 @@ class TestMultiTenantIsolationStressTests:
                 id=uuid.uuid4(),
                 name=f"Concurrent Tenant {i}",
                 organization_id=uuid.uuid4(),
-                isolation_level="strict",
+                security_level="strict",
                 constitutional_hash=CONSTITUTIONAL_HASH,
                 created_at=datetime.now(timezone.utc),
             )

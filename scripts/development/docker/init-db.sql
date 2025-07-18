@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 -- ACGS-1 Database Initialization Script
 -- Creates necessary databases and users for containerized deployment
 

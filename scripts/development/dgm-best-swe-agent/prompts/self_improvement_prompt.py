@@ -26,7 +26,7 @@ coding_agent_summary = """# Coding Agent Summary
   - Tools should be designed to be as general as possible, ensuring they work across any GitHub repository. Avoid hardcoding repository-specific details or behaviors (e.g., paths).
   - Do not use 'while True' loops in the agent's code. This can cause the agent to get stuck and not respond.
   - Verify the implementation details of helper functions prior to usage to ensure proper integration and expected behavior.
-  - Do not install additional packages or dependencies directly. Update `requirements.txt` if new dependencies are required and install them using `pip install -r requirements.txt`.
+  - Do not install additional packages or dependencies directly. Update `config/environments/requirements.txt` if new dependencies are required and install them using `pip install -r config/environments/requirements.txt`.
 \n\n"""
 
 coding_agent_summary_polyglot = (

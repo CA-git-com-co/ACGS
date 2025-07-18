@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! QuantumAGI governance integration module
 //! 
 //! This module provides client functionality for interacting with the

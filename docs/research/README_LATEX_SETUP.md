@@ -12,7 +12,7 @@ This guide provides comprehensive instructions for setting up LaTeX and all requ
 ./install_latex_packages.sh
 
 # 2. Install Python dependencies
-pip install -r python_latex_requirements.txt
+pip install -r python_latex_config/environments/requirements.txt
 
 # 3. Test compilation
 cd arxiv_submission_package
@@ -84,7 +84,7 @@ tlmgr install graphicx tikz pgfplots hyperref natbib cleveref
 tlmgr install listings minted subcaption float xcolor
 
 # Install all packages from requirements
-cat latex_requirements.txt | grep -v '^#' | grep -v '^$' | xargs tlmgr install
+cat latex_config/environments/requirements.txt | grep -v '^#' | grep -v '^$' | xargs tlmgr install
 ```
 
 For **MiKTeX**:
@@ -101,7 +101,7 @@ miktex packages install acmart amsmath amsfonts amssymb booktabs
 
 ```bash
 # Install Python dependencies
-pip install -r python_latex_requirements.txt
+pip install -r python_latex_config/environments/requirements.txt
 
 # For development/testing
 pip install -r arxiv_submission_package/requirements-test.txt

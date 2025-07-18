@@ -188,7 +188,7 @@ class E2ETestRunner:
                 return False
 
         # Check pytest configuration
-        pytest_ini = self.e2e_dir / "pytest.ini"
+        pytest_ini = self.e2e_dir / "config/environments/pytest.ini"
         if not pytest_ini.exists():
             print(f"❌ Missing pytest configuration: {pytest_ini}")
             return False

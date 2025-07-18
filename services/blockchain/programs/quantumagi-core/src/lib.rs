@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 use anchor_lang::prelude::*;
 
 declare_id!("45shrZAMBbFGfLrev4FSDBchP847Q7oUR4jVqcxqnRD3");

@@ -149,7 +149,7 @@ services:
     - DATABASE_URL=os.environ.get("DATABASE_URL")
     - REDIS_URL=redis://:acgs_test_redis@redis:6379/0
     - TESTING=true
-    command: "bash -c \"\n  pip install -r requirements.txt &&\n  python -m pytest\
+    command: "bash -c \"\n  pip install -r config/environments/requirements.txt &&\n  python -m pytest\
       \ tests/ -v --tb=short --cov=services --cov-report=html --cov-report=term &&\n\
       \  python -m pytest tests/integration/ -v --tb=short\n\"\n"
     depends_on:

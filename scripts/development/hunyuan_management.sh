@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # Hunyuan-A13B Management Script for ACGS

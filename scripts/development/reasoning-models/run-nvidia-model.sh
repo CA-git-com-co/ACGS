@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # NVIDIA AceReason-Nemotron-1.1-7B Deployment Script
 

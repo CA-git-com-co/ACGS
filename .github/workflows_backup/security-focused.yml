@@ -8,10 +8,10 @@ on:
       - 'services/**'
       - 'scripts/**'
       - 'blockchain/**'
-      - '**/requirements*.txt'
+      - '**/config/environments/requirements*.txt'
       - '**/Cargo.toml'
       - '**/Cargo.lock'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       - 'Dockerfile*'
       - '.github/workflows/security-focused.yml'
   pull_request:
@@ -132,10 +132,10 @@ jobs:
           source .venv/bin/activate
           
           # Install project dependencies
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e . --index-strategy unsafe-best-match || echo "Project install failed"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
           fi
           
           # Install security scanning tools

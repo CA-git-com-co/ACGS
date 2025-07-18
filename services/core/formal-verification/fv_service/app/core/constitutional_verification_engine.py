@@ -20,20 +20,25 @@ from typing import Any
 
 try:
     import z3
+
     Z3_AVAILABLE = True
 except ImportError:
     Z3_AVAILABLE = False
+
     # Mock z3 for testing environments
     class MockZ3:
         @staticmethod
         def solve(*args, **kwargs):
             return "sat"
+
         @staticmethod
         def Bool(name):
             return f"Bool({name})"
+
         @staticmethod
         def And(*args):
             return f"And({args})"
+
     z3 = MockZ3()
 
 logger = logging.getLogger(__name__)

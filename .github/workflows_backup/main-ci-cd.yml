@@ -19,11 +19,11 @@ on:
       - '**.go'
       - '**.yml'
       - '**.yaml'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'package*.json'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       - 'Dockerfile*'
       - 'docker-compose*.yml'
       - 'services/**'
@@ -47,11 +47,11 @@ on:
       - '**.go'
       - '**.yml'
       - '**.yaml'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'package*.json'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       - 'Dockerfile*'
       - 'docker-compose*.yml'
       - 'services/**'
@@ -183,8 +183,8 @@ jobs:
           filters: |
             python:
               - '**.py'
-              - 'requirements*.txt'
-              - 'pyproject.toml'
+              - 'config/environments/requirements*.txt'
+              - 'config/environments/pyproject.toml'
             rust:
               - '**.rs'
               - 'Cargo.toml'
@@ -277,7 +277,7 @@ jobs:
             ~/.cache/pip
             ~/.cache/uv
             .venv
-          key: python-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          key: python-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml') }}
           restore-keys: |
             python-${{ env.PYTHON_VERSION }}-
             
@@ -320,10 +320,10 @@ jobs:
           pip install --upgrade pip wheel setuptools
           
           # Install security-hardened requirements
-          if [ -f "requirements-security.txt" ]; then
-            pip install -r requirements-security.txt
-          elif [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements-security.txt" ]; then
+            pip install -r config/environments/requirements-security.txt
+          elif [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           fi
           
           # Install development tools
@@ -426,7 +426,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements-security.txt || pip install -r requirements.txt
+          pip install -r config/environments/requirements-security.txt || pip install -r config/environments/requirements.txt
           pip install pytest pytest-cov pytest-asyncio pytest-xdist
           
       - name: Run Tests - ${{ matrix.test-type }}

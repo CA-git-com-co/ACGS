@@ -1,0 +1,47 @@
+name: Performance Monitoring
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'  # Every 15 minutes
+  workflow_dispatch:
+
+jobs:
+  performance-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Dependencies
+        run: |
+          pip install psutil requests
+          
+      - name: Run Performance Monitor
+        run: python3 scripts/monitoring/performance_monitor.py
+        
+      - name: Check Performance Compliance
+        run: |
+          python3 -c "
+          import json
+          with open('reports/performance/realtime_performance_dashboard.json') as f:
+              data = json.load(f)
+          
+          metrics = data['current_metrics']
+          if not metrics['overall_compliance']:
+              print('::warning::Performance targets not met')
+              for alert in data['alerts']:
+                  print(f'::warning::{alert["message"]}')
+          else:
+              print('✅ All performance targets met')
+          "
+          
+      - name: Upload Performance Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-dashboard
+          path: reports/performance/realtime_performance_dashboard.json

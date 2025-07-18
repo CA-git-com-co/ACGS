@@ -111,7 +111,7 @@ class TestCalculator:
     )
 
     # Requirements file
-    requirements = repo_path / "requirements.txt"
+    requirements = repo_path / "config/environments/requirements.txt"
     requirements.write_text("pytest>=7.0.0\n")
 
     # README

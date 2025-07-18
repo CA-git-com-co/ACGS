@@ -167,8 +167,8 @@ jobs:
           python-version: '3.11'
           cache: 'pip'
           cache-dependency-path: |
-            **/requirements*.txt
-            **/pyproject.toml
+            **/config/environments/requirements*.txt
+            **/config/environments/pyproject.toml
 
       - name: Advanced pip cache optimization
         run: |
@@ -188,7 +188,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -204,9 +204,9 @@ jobs:
             .mypy_cache/
             .ruff_cache/
             .coverage
-          key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/setup.py') }}-${{ hashFiles('**/*.py') }}
+          key: ${{ runner.os }}-venv-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml', '**/setup.py') }}-${{ hashFiles('**/*.py') }}
           restore-keys: |
-            ${{ runner.os }}-venv-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', '**/setup.py') }}-
+            ${{ runner.os }}-venv-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml', '**/setup.py') }}-
             ${{ runner.os }}-venv-
 
       - name: Layer 3 - Tool Cache Optimization

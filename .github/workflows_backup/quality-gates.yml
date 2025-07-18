@@ -10,8 +10,8 @@ on:
       - master
     paths:
       - '**.py'
-      - 'requirements*.txt'
-      - 'pyproject.toml'
+      - 'config/environments/requirements*.txt'
+      - 'config/environments/pyproject.toml'
       - 'tests/**'
       - '.github/workflows/quality-gates.yml'
   push:
@@ -21,8 +21,8 @@ on:
       - master
     paths:
       - '**.py'
-      - 'requirements*.txt'
-      - 'pyproject.toml'
+      - 'config/environments/requirements*.txt'
+      - 'config/environments/pyproject.toml'
       - 'tests/**'
       - '.github/workflows/quality-gates.yml'
 
@@ -171,7 +171,7 @@ jobs:
 
           # Run vulnerability scan with strict policy
           pip-audit \
-            --requirement requirements.txt \
+            --requirement config/environments/requirements.txt \
             --format=json \
             --output=audit-report.json \
             --strict

@@ -1,0 +1,34 @@
+name: ACGS-2 Automated Maintenance
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # Weekly on Monday at 2 AM
+  workflow_dispatch:
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Run Constitutional Compliance Check
+        run: python3 scripts/validation/constitutional_compliance_validator.py
+        
+      - name: Run Cross-Reference Validation
+        run: python3 scripts/validation/claude_md_cross_reference_validator.py
+        
+      - name: Run Continuous Improvement
+        run: python3 scripts/maintenance/acgs2_continuous_improvement.py
+        
+      - name: Generate Maintenance Report
+        run: |
+          echo "## ACGS-2 Automated Maintenance Report" > maintenance_report.md
+          echo "**Date**: $(date)" >> maintenance_report.md
+          echo "**Constitutional Hash**: cdd01ef066bc6cf2" >> maintenance_report.md
+          echo "**Status**: ✅ Completed" >> maintenance_report.md

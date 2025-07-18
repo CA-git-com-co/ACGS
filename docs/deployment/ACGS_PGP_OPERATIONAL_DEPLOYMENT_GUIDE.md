@@ -274,7 +274,7 @@ pnpm update
 
 # Update Python dependencies
 cd services/shared
-uv pip install --upgrade -r requirements.txt
+uv pip install --upgrade -r config/environments/requirements.txt
 ```
 
 #### Security Scans

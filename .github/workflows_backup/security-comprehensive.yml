@@ -49,17 +49,17 @@ jobs:
           echo "Virtual env: $VIRTUAL_ENV"
           
           # Install project dependencies with error handling
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e . --index-strategy unsafe-best-match || {
-              echo "Main install failed, trying requirements.txt..."
-              if [ -f "requirements.txt" ]; then
-                uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+              echo "Main install failed, trying config/environments/requirements.txt..."
+              if [ -f "config/environments/requirements.txt" ]; then
+                uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
               fi
             }
             # Install dev dependencies 
             uv pip install -e .[dev,test] --index-strategy unsafe-best-match || echo "Dev dependencies install failed"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
           fi
           
           # Install security tools
@@ -264,10 +264,10 @@ jobs:
           echo "Virtual env: $VIRTUAL_ENV"
           
           # Install project dependencies
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e . --index-strategy unsafe-best-match || echo "Project install failed"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
           fi
           
           timeout 300 uv pip install pip-licenses || echo "pip-licenses install failed"

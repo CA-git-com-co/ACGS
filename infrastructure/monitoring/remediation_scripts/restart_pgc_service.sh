@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 PGC Service Restart Script
 # Automated remediation for PGC service failures

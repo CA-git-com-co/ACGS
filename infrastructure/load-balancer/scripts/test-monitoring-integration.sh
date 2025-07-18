@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # HAProxy Monitoring Integration Test Script for ACGS-1
 # Subtask 13.6: Comprehensive validation of load balancing monitoring

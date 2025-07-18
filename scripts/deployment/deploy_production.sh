@@ -14,7 +14,7 @@ echo "🔒 Constitutional Hash: $CONSTITUTIONAL_HASH"
 echo "🔍 Running pre-deployment checks..."
 
 # Check required files
-required_files=("config/environments/developmentconfig/environments/productionconfig/environments/developmentconfig/environments/development.env.backup" "config/docker/config/docker/config/docker/docker-compose.production.yml" "nginx.production.conf")
+required_files=("config/environments/developmentconfig/environments/productionconfig/environments/developmentconfig/environments/development.env.backup" "config/docker/config/docker/config/docker/docker-compose.production.yml" "config/nginx.production.conf")
 for file in "${required_files[@]}"; do
     if [[ ! -f "$file" ]]; then
         echo "❌ Required file not found: $file"

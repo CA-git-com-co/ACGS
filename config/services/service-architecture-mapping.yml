@@ -1,0 +1,355 @@
+# ACGS-2 Service Architecture Mapping
+# Constitutional Hash: cdd01ef066bc6cf2
+# Service grouping and deployment unit organization
+
+constitutional_hash: cdd01ef066bc6cf2
+mapping_version: "1.0.0"
+last_updated: "2025-01-18T00:00:00Z"
+
+# Service Domain Groups
+service_domains:
+  
+  # Core Constitutional AI Domain
+  constitutional_ai:
+    description: "Core constitutional AI services for governance and compliance"
+    priority: "critical"
+    performance_targets:
+      p99_latency_ms: 5
+      throughput_rps: 100
+      cache_hit_rate: 0.85
+    services:
+      - name: "constitutional_ai"
+        port: 8001
+        container_name: "acgs_constitutional_ai"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "auth_service"]
+        resource_limits:
+          memory: "2G"
+          cpu: "2.0"
+      - name: "integrity_service"
+        port: 8002
+        container_name: "acgs_integrity"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "constitutional_ai"]
+        resource_limits:
+          memory: "1G"
+          cpu: "1.0"
+      - name: "formal_verification"
+        port: 8003
+        container_name: "acgs_formal_verification"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "constitutional_ai"]
+        resource_limits:
+          memory: "2G"
+          cpu: "2.0"
+
+  # Governance and Policy Domain
+  governance_synthesis:
+    description: "Policy governance and synthesis services"
+    priority: "critical"
+    performance_targets:
+      p99_latency_ms: 5
+      throughput_rps: 100
+      cache_hit_rate: 0.85
+    services:
+      - name: "governance_synthesis"
+        port: 8004
+        container_name: "acgs_governance_synthesis"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "constitutional_ai", "policy_governance"]
+        resource_limits:
+          memory: "2G"
+          cpu: "2.0"
+      - name: "policy_governance"
+        port: 8005
+        container_name: "acgs_policy_governance"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "constitutional_ai"]
+        resource_limits:
+          memory: "1G"
+          cpu: "1.0"
+
+  # Advanced Computation Domain
+  evolutionary_computation:
+    description: "Evolutionary computation and optimization services"
+    priority: "high"
+    performance_targets:
+      p99_latency_ms: 10
+      throughput_rps: 50
+      cache_hit_rate: 0.80
+    services:
+      - name: "evolutionary_computation"
+        port: 8006
+        container_name: "acgs_evolutionary_computation"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "constitutional_ai"]
+        resource_limits:
+          memory: "4G"
+          cpu: "4.0"
+
+  # Platform Services Domain
+  platform_services:
+    description: "Core platform and infrastructure services"
+    priority: "critical"
+    performance_targets:
+      p99_latency_ms: 3
+      throughput_rps: 200
+      cache_hit_rate: 0.90
+    services:
+      - name: "auth_service"
+        port: 8016
+        container_name: "acgs_auth_service"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis"]
+        resource_limits:
+          memory: "1G"
+          cpu: "1.0"
+      - name: "api_gateway"
+        port: 8000
+        container_name: "acgs_api_gateway"
+        health_endpoint: "/health"
+        dependencies: ["auth_service", "redis"]
+        resource_limits:
+          memory: "1G"
+          cpu: "1.0"
+      - name: "code_analysis"
+        port: 8007
+        container_name: "acgs_code_analysis"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "auth_service"]
+        resource_limits:
+          memory: "2G"
+          cpu: "2.0"
+      - name: "context_engine"
+        port: 8012
+        container_name: "acgs_context_engine"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "auth_service"]
+        resource_limits:
+          memory: "2G"
+          cpu: "2.0"
+
+  # Multi-Agent Coordination Domain
+  multi_agent:
+    description: "Multi-agent coordination and orchestration services"
+    priority: "high"
+    performance_targets:
+      p99_latency_ms: 7
+      throughput_rps: 75
+      cache_hit_rate: 0.85
+    services:
+      - name: "multi_agent_coordinator"
+        port: 8008
+        container_name: "acgs_multi_agent_coordinator"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "constitutional_ai"]
+        resource_limits:
+          memory: "2G"
+          cpu: "2.0"
+      - name: "consensus_service"
+        port: 8009
+        container_name: "acgs_consensus_service"
+        health_endpoint: "/health"
+        dependencies: ["postgres", "redis", "multi_agent_coordinator"]
+        resource_limits:
+          memory: "1G"
+          cpu: "1.0"
+
+  # MCP Integration Domain
+  mcp_services:
+    description: "Model Context Protocol integration services"
+    priority: "medium"
+    performance_targets:
+      p99_latency_ms: 15
+      throughput_rps: 30
+      cache_hit_rate: 0.75
+    services:
+      - name: "mcp_aggregator"
+        port: 3000
+        container_name: "acgs_mcp_aggregator"
+        health_endpoint: "/health"
+        dependencies: ["constitutional_ai"]
+        resource_limits:
+          memory: "512M"
+          cpu: "0.5"
+      - name: "mcp_filesystem"
+        port: 3001
+        container_name: "acgs_mcp_filesystem"
+        health_endpoint: "/health"
+        dependencies: ["mcp_aggregator"]
+        resource_limits:
+          memory: "256M"
+          cpu: "0.25"
+      - name: "mcp_github"
+        port: 3002
+        container_name: "acgs_mcp_github"
+        health_endpoint: "/health"
+        dependencies: ["mcp_aggregator"]
+        resource_limits:
+          memory: "256M"
+          cpu: "0.25"
+      - name: "mcp_browser"
+        port: 3003
+        container_name: "acgs_mcp_browser"
+        health_endpoint: "/health"
+        dependencies: ["mcp_aggregator"]
+        resource_limits:
+          memory: "512M"
+          cpu: "0.5"
+
+  # Infrastructure Domain
+  infrastructure:
+    description: "Core infrastructure services (database, cache, monitoring)"
+    priority: "critical"
+    performance_targets:
+      p99_latency_ms: 2
+      throughput_rps: 500
+      cache_hit_rate: 0.95
+    services:
+      - name: "postgres"
+        port: 5439
+        container_name: "acgs_postgres"
+        health_endpoint: "pg_isready"
+        dependencies: []
+        resource_limits:
+          memory: "4G"
+          cpu: "2.0"
+      - name: "redis"
+        port: 6389
+        container_name: "acgs_redis"
+        health_endpoint: "redis-cli ping"
+        dependencies: []
+        resource_limits:
+          memory: "2G"
+          cpu: "1.0"
+
+  # Monitoring Domain
+  monitoring:
+    description: "Observability and monitoring services"
+    priority: "high"
+    performance_targets:
+      p99_latency_ms: 10
+      throughput_rps: 100
+      cache_hit_rate: 0.80
+    services:
+      - name: "prometheus"
+        port: 9090
+        container_name: "acgs_prometheus"
+        health_endpoint: "/-/healthy"
+        dependencies: []
+        resource_limits:
+          memory: "2G"
+          cpu: "1.0"
+      - name: "grafana"
+        port: 3000
+        container_name: "acgs_grafana"
+        health_endpoint: "/api/health"
+        dependencies: ["prometheus"]
+        resource_limits:
+          memory: "1G"
+          cpu: "0.5"
+      - name: "jaeger"
+        port: 16686
+        container_name: "acgs_jaeger"
+        health_endpoint: "/health"
+        dependencies: []
+        resource_limits:
+          memory: "1G"
+          cpu: "0.5"
+
+# Deployment Units
+deployment_units:
+  
+  # Core Unit - Essential services that must be deployed together
+  core:
+    description: "Core constitutional AI and governance services"
+    domains: ["constitutional_ai", "governance_synthesis", "infrastructure"]
+    startup_order:
+      1: ["postgres", "redis"]
+      2: ["auth_service"]
+      3: ["constitutional_ai", "integrity_service"]
+      4: ["formal_verification", "governance_synthesis", "policy_governance"]
+    scaling_group: "core"
+    min_replicas: 2
+    max_replicas: 10
+
+  # Platform Unit - Platform and API services
+  platform:
+    description: "Platform services and API gateway"
+    domains: ["platform_services"]
+    startup_order:
+      1: ["api_gateway"]
+      2: ["code_analysis", "context_engine"]
+    scaling_group: "platform"
+    min_replicas: 1
+    max_replicas: 5
+
+  # Advanced Unit - Advanced computation services
+  advanced:
+    description: "Advanced computation and multi-agent services"
+    domains: ["evolutionary_computation", "multi_agent"]
+    startup_order:
+      1: ["evolutionary_computation"]
+      2: ["multi_agent_coordinator", "consensus_service"]
+    scaling_group: "advanced"
+    min_replicas: 1
+    max_replicas: 3
+
+  # Integration Unit - External integration services
+  integration:
+    description: "MCP and external integration services"
+    domains: ["mcp_services"]
+    startup_order:
+      1: ["mcp_aggregator"]
+      2: ["mcp_filesystem", "mcp_github", "mcp_browser"]
+    scaling_group: "integration"
+    min_replicas: 1
+    max_replicas: 2
+
+  # Observability Unit - Monitoring and observability
+  observability:
+    description: "Monitoring and observability services"
+    domains: ["monitoring"]
+    startup_order:
+      1: ["prometheus"]
+      2: ["grafana", "jaeger"]
+    scaling_group: "observability"
+    min_replicas: 1
+    max_replicas: 2
+
+# Service Mesh Configuration
+service_mesh:
+  enabled: true
+  provider: "istio"
+  mtls_mode: "strict"
+  traffic_policy:
+    load_balancer: "round_robin"
+    circuit_breaker:
+      max_connections: 100
+      max_pending_requests: 50
+      max_requests: 200
+      consecutive_errors: 5
+  retry_policy:
+    attempts: 3
+    per_try_timeout: "10s"
+    retry_on: "5xx,reset,connect-failure,refused-stream"
+
+# Constitutional Compliance Requirements
+constitutional_compliance:
+  hash: "cdd01ef066bc6cf2"
+  validation_requirements:
+    - "All services must include constitutional hash in environment"
+    - "All services must implement health checks"
+    - "All services must use structured logging"
+    - "All services must implement resource limits"
+    - "All services must support graceful shutdown"
+  performance_monitoring:
+    - "P99 latency monitoring for all services"
+    - "Throughput monitoring with alerting"
+    - "Cache hit rate monitoring"
+    - "Constitutional compliance score tracking"
+  security_requirements:
+    - "Mutual TLS between all services"
+    - "JWT token validation for API access"
+    - "Role-based access control"
+    - "Audit logging for all operations"

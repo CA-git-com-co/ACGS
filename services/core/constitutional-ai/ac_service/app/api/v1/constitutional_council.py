@@ -68,7 +68,7 @@ async def create_meta_rule_endpoint(
 ):
     """Create a new AC meta-rule (requires admin role)"""
     # Validate constitutional compliance
-    if not hasattr(meta_rule, 'constitutional_hash'):
+    if not hasattr(meta_rule, "constitutional_hash"):
         meta_rule.constitutional_hash = CONSTITUTIONAL_HASH
 
     created_meta_rule = await create_ac_meta_rule(
@@ -76,8 +76,8 @@ async def create_meta_rule_endpoint(
     )
 
     # Ensure response includes constitutional hash
-    if hasattr(created_meta_rule, '__dict__'):
-        created_meta_rule.__dict__['constitutional_hash'] = CONSTITUTIONAL_HASH
+    if hasattr(created_meta_rule, "__dict__"):
+        created_meta_rule.__dict__["constitutional_hash"] = CONSTITUTIONAL_HASH
 
     return created_meta_rule
 
@@ -91,7 +91,9 @@ async def list_meta_rules_endpoint(
     current_user: User = Depends(get_current_active_user_placeholder),
 ):
     """List AC meta-rules with optional filtering by rule type"""
-    meta_rules = await get_ac_meta_rules(db, rule_type=rule_type, skip=skip, limit=limit)
+    meta_rules = await get_ac_meta_rules(
+        db, rule_type=rule_type, skip=skip, limit=limit
+    )
     return meta_rules
 
 
@@ -202,7 +204,9 @@ async def vote_on_amendment_endpoint(
     current_user: User = Depends(require_constitutional_council_role),
 ):
     """Vote on an AC amendment (requires Constitutional Council membership)"""
-    vote_create = schemas.ACAmendmentVoteCreate(amendment_id=amendment_id, **vote_data.model_dump())
+    vote_create = schemas.ACAmendmentVoteCreate(
+        amendment_id=amendment_id, **vote_data.model_dump()
+    )
     try:
         created_vote = await create_ac_amendment_vote(
             db=db, vote=vote_create, voter_id=current_user.id
@@ -212,7 +216,9 @@ async def vote_on_amendment_endpoint(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.get("/amendments/{amendment_id}/votes", response_model=list[schemas.ACAmendmentVote])
+@router.get(
+    "/amendments/{amendment_id}/votes", response_model=list[schemas.ACAmendmentVote]
+)
 async def get_amendment_votes_endpoint(
     amendment_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -258,7 +264,9 @@ async def get_amendment_comments_endpoint(
     current_user: User | None = Depends(get_current_active_user_placeholder),
 ):
     """Get comments for a specific amendment"""
-    comments = await get_ac_amendment_comments(db, amendment_id=amendment_id, is_public=is_public)
+    comments = await get_ac_amendment_comments(
+        db, amendment_id=amendment_id, is_public=is_public
+    )
     return comments
 
 
@@ -297,7 +305,9 @@ async def list_conflict_resolutions_endpoint(
     return conflicts
 
 
-@router.get("/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution)
+@router.get(
+    "/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution
+)
 async def get_conflict_resolution_endpoint(
     conflict_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -310,7 +320,9 @@ async def get_conflict_resolution_endpoint(
     return conflict
 
 
-@router.put("/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution)
+@router.put(
+    "/conflict-resolutions/{conflict_id}", response_model=schemas.ACConflictResolution
+)
 async def update_conflict_resolution_endpoint(
     conflict_id: int,
     conflict_update: schemas.ACConflictResolutionUpdate,
@@ -342,7 +354,9 @@ async def get_scalability_metrics_endpoint(
             async_voting_enabled=True,
             performance_monitoring_enabled=True,
         )
-        framework = ConstitutionalCouncilScalabilityFramework(config)  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+        framework = ConstitutionalCouncilScalabilityFramework(
+            config
+        )  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
 
         # Get scalability metrics
         metrics = await framework.get_scalability_metrics(db)
@@ -400,7 +414,9 @@ async def transition_amendment_state_endpoint(
             event = AmendmentEvent(event_name)
             current_state = AmendmentState(amendment.workflow_state)
         except ValueError as e:
-            raise HTTPException(status_code=400, detail=f"Invalid event or state: {str(e)}")
+            raise HTTPException(
+                status_code=400, detail=f"Invalid event or state: {str(e)}"
+            )
 
         context = WorkflowContext(
             amendment_id=amendment_id,
@@ -409,7 +425,9 @@ async def transition_amendment_state_endpoint(
         )
 
         # Trigger transition
-        result = await amendment_state_machine.trigger_event(db, current_state, event, context)
+        result = await amendment_state_machine.trigger_event(
+            db, current_state, event, context
+        )
 
         if not result.get("success", False):
             raise HTTPException(
@@ -428,7 +446,9 @@ async def transition_amendment_state_endpoint(
 
 # Enhanced Amendment Processing Pipeline endpoints
 @validate_governance_input
-@router.post("/amendments/{amendment_id}/process-finalization", response_model=dict[str, Any])
+@router.post(
+    "/amendments/{amendment_id}/process-finalization", response_model=dict[str, Any]
+)
 async def process_amendment_finalization_endpoint(
     amendment_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -494,7 +514,9 @@ async def process_amendments_parallel_endpoint(
     """Process multiple amendments in parallel (requires Constitutional Council membership)"""
     try:
         if not amendment_ids:
-            raise HTTPException(status_code=400, detail="Amendment IDs list cannot be empty")
+            raise HTTPException(
+                status_code=400, detail="Amendment IDs list cannot be empty"
+            )
 
         if len(amendment_ids) > 10:
             raise HTTPException(
@@ -528,7 +550,9 @@ async def process_amendments_parallel_endpoint(
 
 
 @validate_governance_input
-@router.post("/amendments/{amendment_id}/automated-transition", response_model=dict[str, Any])
+@router.post(
+    "/amendments/{amendment_id}/automated-transition", response_model=dict[str, Any]
+)
 async def automated_status_transition_endpoint(
     amendment_id: int,
     target_status: str,
@@ -588,7 +612,9 @@ async def automated_status_transition_endpoint(
         )
 
 
-@router.get("/amendments/{amendment_id}/processing-status", response_model=dict[str, Any])
+@router.get(
+    "/amendments/{amendment_id}/processing-status", response_model=dict[str, Any]
+)
 async def get_amendment_processing_status_endpoint(
     amendment_id: int,
     db: AsyncSession = Depends(get_async_db),
@@ -631,12 +657,16 @@ async def get_amendment_processing_status_endpoint(
             "engagement_metrics": {
                 "total_comments": len(comments),
                 "public_comments": len([c for c in comments if c.is_public]),
-                "stakeholder_feedback_count": len([c for c in comments if not c.is_public]),
+                "stakeholder_feedback_count": len(
+                    [c for c in comments if not c.is_public]
+                ),
             },
             "processing_pipeline": {
-                "can_proceed_to_voting": approval_rate > 0.5 and participation_rate > 0.3,
+                "can_proceed_to_voting": approval_rate > 0.5
+                and participation_rate > 0.3,
                 "requires_refinement": approval_rate < 0.6,
-                "ready_for_finalization": amendment.status == "voting" and approval_rate > 0.6,
+                "ready_for_finalization": amendment.status == "voting"
+                and approval_rate > 0.6,
                 "estimated_completion": "2024-01-15T00:00:00Z",  # Would be calculated based on current progress
             },
         }
@@ -654,7 +684,9 @@ async def get_amendment_processing_status_endpoint(
 
 # Democratic Governance Workflow endpoints
 @validate_governance_input
-@router.post("/amendments/{amendment_id}/democratic-process", response_model=dict[str, Any])
+@router.post(
+    "/amendments/{amendment_id}/democratic-process", response_model=dict[str, Any]
+)
 async def initiate_democratic_process_endpoint(
     amendment_id: int,
     process_config: dict[str, Any] | None = None,
@@ -675,12 +707,18 @@ async def initiate_democratic_process_endpoint(
         if process_config:
             democratic_process = DemocraticProcess(
                 amendment_id=amendment_id,
-                process_type=process_config.get("process_type", "constitutional_amendment"),
+                process_type=process_config.get(
+                    "process_type", "constitutional_amendment"
+                ),
                 stakeholder_groups=[
                     StakeholderGroup(group)
                     for group in process_config.get(
                         "stakeholder_groups",
-                        ["constitutional_council", "expert_advisors", "public_representatives"],
+                        [
+                            "constitutional_council",
+                            "expert_advisors",
+                            "public_representatives",
+                        ],
                     )
                 ],
                 voting_config=VotingConfiguration(
@@ -688,7 +726,9 @@ async def initiate_democratic_process_endpoint(
                         process_config.get("voting_mechanism", "weighted_voting")
                     ),
                     quorum_percentage=process_config.get("quorum_percentage", 0.6),
-                    threshold_percentage=process_config.get("threshold_percentage", 0.67),
+                    threshold_percentage=process_config.get(
+                        "threshold_percentage", 0.67
+                    ),
                     voting_period_hours=process_config.get("voting_period_hours", 72),
                 ),
             )
@@ -706,7 +746,9 @@ async def initiate_democratic_process_endpoint(
             "process_id": f"democratic_process_{amendment_id}",
             "eligible_participants": process.eligible_participants,
             "current_phase": process.current_phase.value,
-            "started_at": process.started_at.isoformat() if process.started_at else None,
+            "started_at": (
+                process.started_at.isoformat() if process.started_at else None
+            ),
             "message": "Democratic governance process initiated successfully",
         }
 
@@ -778,11 +820,15 @@ async def start_consultation_phase_endpoint(
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to start consultation phase: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to start consultation phase: {str(e)}"
+        )
 
 
 @validate_governance_input
-@router.post("/amendments/{amendment_id}/democratic-voting", response_model=dict[str, Any])
+@router.post(
+    "/amendments/{amendment_id}/democratic-voting", response_model=dict[str, Any]
+)
 async def conduct_democratic_voting_endpoint(
     amendment_id: int,
     voting_config: dict[str, Any] | None = None,
@@ -803,15 +849,21 @@ async def conduct_democratic_voting_endpoint(
                 if voting_config
                 else VotingMechanism.WEIGHTED_VOTING
             ),
-            quorum_percentage=voting_config.get("quorum_percentage", 0.6) if voting_config else 0.6,
+            quorum_percentage=(
+                voting_config.get("quorum_percentage", 0.6) if voting_config else 0.6
+            ),
             threshold_percentage=(
-                voting_config.get("threshold_percentage", 0.67) if voting_config else 0.67
+                voting_config.get("threshold_percentage", 0.67)
+                if voting_config
+                else 0.67
             ),
             voting_period_hours=(
                 voting_config.get("voting_period_hours", 72) if voting_config else 72
             ),
             weighted_by_expertise=(
-                voting_config.get("weighted_by_expertise", True) if voting_config else True
+                voting_config.get("weighted_by_expertise", True)
+                if voting_config
+                else True
             ),
         )
 
@@ -860,7 +912,9 @@ async def get_democratic_governance_metrics_endpoint(
     try:
         # Get metrics from collector
         performance_metrics = await metrics_collector.get_performance_summary()
-        participation_metrics = await metrics_collector.get_democratic_participation_summary()
+        participation_metrics = (
+            await metrics_collector.get_democratic_participation_summary()
+        )
 
         return {
             "performance_metrics": {
@@ -890,5 +944,6 @@ async def get_democratic_governance_metrics_endpoint(
 
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail=f"Failed to get democratic governance metrics: {str(e)}"
+            status_code=500,
+            detail=f"Failed to get democratic governance metrics: {str(e)}",
         )

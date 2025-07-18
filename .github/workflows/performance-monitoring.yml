@@ -90,14 +90,14 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/config/environments/requirements*.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
     - name: Install Python dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r config/environments/requirements.txt
         pip install -r services/shared/requirements/requirements-test.txt  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
         pip install pytest pytest-asyncio aiohttp prometheus-client
 

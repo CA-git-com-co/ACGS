@@ -461,7 +461,7 @@ class ACGSSecurityAssessment:
         score = 0.0
         findings = []
 
-        # Check for requirements.txt
+        # Check for config/environments/requirements.txt
         requirements_files = list(self.project_root.glob("**/requirements*.txt"))
         if requirements_files:
             score += 0.3
@@ -500,7 +500,7 @@ class ACGSSecurityAssessment:
                             "medium",
                             "dependency",
                             f"Only {pin_ratio:.1%} of dependencies are pinned",
-                            "requirements.txt",
+                            "config/environments/requirements.txt",
                             "Pin all dependency versions for security",
                         )
                     )

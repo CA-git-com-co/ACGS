@@ -2,7 +2,7 @@
 %%% Do NOT edit. File created by BibTeX with style
 %%% ACM-Reference-Format-Journals [18-Jan-2012].
 
-\begin{thebibliography}{57}
+\begin{thebibliography}{59}
 
 %%% ====================================================================
 %%% NOTE TO THE USER: you can override these defaults by providing
@@ -36,6 +36,20 @@
 \providecommand\bibinfo[2]{#2}
 \providecommand\natexlab[1]{#1}
 \providecommand\showeprint[2][]{arXiv:#2}
+
+\bibitem[Abiri(2024)]%
+        {Abiri2024PublicConstitutional}
+\bibfield{author}{\bibinfo{person}{Gilad Abiri}.}
+  \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Public Constitutional AI}.
+\newblock \bibinfo{journal}{\emph{arXiv preprint arXiv:2406.16696}}
+  (\bibinfo{year}{2024}).
+\newblock
+\urldef\tempurl%
+\url{https://arxiv.org/abs/2406.16696}
+\showURL{%
+\tempurl}
+
 
 \bibitem[Abiri et~al\mbox{.}(2024)]%
         {Abiri2024PublicConstitutionalAI}
@@ -124,6 +138,25 @@
 \newblock \bibinfo{type}{Research Report} ANT-2024-CAI-001.
   \bibinfo{institution}{Anthropic}, \bibinfo{address}{San Francisco, CA}.
 \newblock
+
+
+\bibitem[Bai et~al\mbox{.}(2024)]%
+        {Bai2024CollectiveCAI}
+\bibfield{author}{\bibinfo{person}{Yuntao Bai}, \bibinfo{person}{Saurav
+  Kadavath}, \bibinfo{person}{Sandipan Kundu}, \bibinfo{person}{Amanda Askell},
+  \bibinfo{person}{Jackson Kernion}, \bibinfo{person}{Andy Jones},
+  \bibinfo{person}{Anna Chen}, \bibinfo{person}{Anna Goldie},
+  \bibinfo{person}{Azalia Mirhoseini}, \bibinfo{person}{Cameron McKinnon},
+  {et~al\mbox{.}}} \bibinfo{year}{2024}\natexlab{}.
+\newblock \showarticletitle{Collective Constitutional AI: Aligning a Language
+  Model with Public Input}. In \bibinfo{booktitle}{\emph{Proceedings of the
+  2024 ACM Conference on Fairness, Accountability, and Transparency}}.
+  \bibinfo{publisher}{ACM}, \bibinfo{pages}{1--15}.
+\newblock
+\urldef\tempurl%
+\url{https://dl.acm.org/doi/10.1145/3630106.3658979}
+\showURL{%
+\tempurl}
 
 
 \bibitem[Bai et~al\mbox{.}(2025)]%

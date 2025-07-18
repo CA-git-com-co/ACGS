@@ -59,7 +59,7 @@ jobs:
       - name: Create backup
         run: |
           mkdir -p .backup
-          cp pyproject.toml .backup/pyproject.toml.backup
+          cp config/environments/pyproject.toml .backup/config/environments/pyproject.toml.backup
           cp project/package.json .backup/package.json.backup
           cp project/package-lock.json .backup/package-lock.json.backup || true
 
@@ -76,11 +76,11 @@ jobs:
           echo "Virtual env: $VIRTUAL_ENV"
 
           # Install current dependencies
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e . --index-strategy unsafe-best-match || echo "Main install failed"
             uv pip install -e .[dev,test] --index-strategy unsafe-best-match || echo "Dev dependencies install failed"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "Requirements install failed"
           fi
 
           # Check for outdated packages
@@ -95,18 +95,18 @@ jobs:
               ;;
             "patch")
               echo "Performing patch updates..."
-              if [ -f "pyproject.toml" ]; then
+              if [ -f "config/environments/pyproject.toml" ]; then
                 uv pip install --upgrade -e . --upgrade-strategy only-if-needed
-              elif [ -f "requirements.txt" ]; then
-                uv pip install --upgrade -r requirements.txt --upgrade-strategy only-if-needed
+              elif [ -f "config/environments/requirements.txt" ]; then
+                uv pip install --upgrade -r config/environments/requirements.txt --upgrade-strategy only-if-needed
               fi
               ;;
             "minor"|"major")
               echo "Performing ${{ github.event.inputs.update_type || 'minor' }} updates..."
-              if [ -f "pyproject.toml" ]; then
+              if [ -f "config/environments/pyproject.toml" ]; then
                 uv pip install --upgrade -e .[all] --index-strategy unsafe-best-match || echo "Upgrade failed"
-              elif [ -f "requirements.txt" ]; then
-                uv pip install --upgrade -r requirements.txt --index-strategy unsafe-best-match || echo "Upgrade failed"
+              elif [ -f "config/environments/requirements.txt" ]; then
+                uv pip install --upgrade -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "Upgrade failed"
               fi
               ;;
           esac
@@ -284,7 +284,7 @@ jobs:
             ### Rollback Instructions
             If issues are found, you can rollback using:
             ```bash
-            cp .backup/pyproject.toml.backup pyproject.toml
+            cp .backup/config/environments/pyproject.toml.backup config/environments/pyproject.toml
             cp .backup/package.json.backup project/package.json
             cp .backup/package-lock.json.backup project/package-lock.json
             ```

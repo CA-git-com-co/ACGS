@@ -126,7 +126,7 @@ This document identifies services that were referenced in the system but exist o
    ├── models.py         # Pydantic models
    ├── services.py       # Business logic
    ├── config.py         # Configuration
-   └── requirements.txt  # Dependencies
+   └── config/environments/requirements.txt  # Dependencies
    ```
 
 2. **Implement Core Requirements**:

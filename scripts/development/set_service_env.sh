@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # Environment Variable Override for ACGS-1 Services
 # Source this file to set correct service URLs

@@ -17,10 +17,10 @@ PytestUnknownMarkWarning: Unknown pytest.mark.constitutional - is this a typo?
 PytestUnknownMarkWarning: Unknown pytest.mark.smoke - is this a typo?
 ```
 
-**Root Cause**: The `tests/e2e/pytest.ini` file was using incorrect section header format `[tool:pytest]` instead of `[pytest]`.
+**Root Cause**: The `tests/e2e/config/environments/pytest.ini` file was using incorrect section header format `[tool:pytest]` instead of `[pytest]`.
 
 **Solution**:
-- Fixed pytest.ini section header from `[tool:pytest]` to `[pytest]`
+- Fixed config/environments/pytest.ini section header from `[tool:pytest]` to `[pytest]`
 - Verified markers were already properly defined in the configuration
 - Removed the warning suppression for `pytest.PytestUnknownMarkWarning` to validate the fix
 
@@ -34,13 +34,13 @@ ERROR: Unknown config option: benchmark_json
 
 **Root Cause**: Benchmark-related configuration options that aren't supported in the current pytest setup.
 
-**Solution**: Removed unsupported benchmark configuration options from pytest.ini
+**Solution**: Removed unsupported benchmark configuration options from config/environments/pytest.ini
 
 ## Technical Details
 
 ### Configuration Changes
 
-**File**: `tests/e2e/pytest.ini`
+**File**: `tests/e2e/config/environments/pytest.ini`
 
 1. **Section Header Fix**:
    ```ini

@@ -59,7 +59,7 @@ This document summarizes the comprehensive code quality improvements implemented
 - **CI/CD Integration**: Validates workflow configurations
 - **Compliance Scoring**: Calculates overall compliance percentage
 
-### 4. Enhanced pyproject.toml Configuration
+### 4. Enhanced config/environments/pyproject.toml Configuration
 
 **Improvements Made:**
 - **Mypy**: Strict type checking with enterprise settings

@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! Quantumagi Constitution Initialization Tool - Rust Implementation
 //! Initializes the constitutional governance system on Solana devnet
 //! Replaces blockchain/scripts/initialize_constitution.py with native Rust implementation

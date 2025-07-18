@@ -46,7 +46,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: pip-${{ runner.os }}-${{ hashFiles('**/requirements*.txt') }}
+          key: pip-${{ runner.os }}-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: |
             pip-${{ runner.os }}-
 
@@ -58,10 +58,10 @@ jobs:
 
       - name: Install project dependencies
         run: |
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           else
-            echo "⚠️ No requirements.txt found, continuing with system packages"
+            echo "⚠️ No config/environments/requirements.txt found, continuing with system packages"
           fi
         continue-on-error: true
 

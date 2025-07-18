@@ -14,8 +14,10 @@ import uuid
 
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 class ConsensusAlgorithm(str, Enum):
     """Consensus algorithms supported"""
+
     PBFT = "pbft"  # Practical Byzantine Fault Tolerance
     RAFT = "raft"  # Raft consensus
     CONSTITUTIONAL = "constitutional"  # Constitutional governance consensus
@@ -25,8 +27,10 @@ class ConsensusAlgorithm(str, Enum):
     WEIGHTED_VOTING = "weighted_voting"  # Weighted voting based on reputation
     FEDERATED_CONSENSUS = "federated_consensus"  # Federated Byzantine Agreement
 
+
 class NodeRole(str, Enum):
     """Node roles in consensus"""
+
     LEADER = "leader"
     FOLLOWER = "follower"
     CANDIDATE = "candidate"
@@ -35,8 +39,10 @@ class NodeRole(str, Enum):
     DELEGATE = "delegate"
     CONSTITUTIONAL_GUARDIAN = "constitutional_guardian"
 
+
 class ProposalType(str, Enum):
     """Types of proposals for consensus"""
+
     POLICY_CHANGE = "policy_change"
     SYSTEM_UPGRADE = "system_upgrade"
     RESOURCE_ALLOCATION = "resource_allocation"
@@ -46,16 +52,20 @@ class ProposalType(str, Enum):
     PARAMETER_ADJUSTMENT = "parameter_adjustment"
     EMERGENCY_ACTION = "emergency_action"
 
+
 class VoteType(str, Enum):
     """Vote types"""
+
     YES = "yes"
     NO = "no"
     ABSTAIN = "abstain"
     CONDITIONAL = "conditional"
     VETO = "veto"  # Constitutional veto power
 
+
 class ConsensusStatus(str, Enum):
     """Consensus process status"""
+
     PENDING = "pending"
     IN_PROGRESS = "in_progress"
     ACHIEVED = "achieved"
@@ -64,8 +74,10 @@ class ConsensusStatus(str, Enum):
     VETOED = "vetoed"
     CONSTITUTIONAL_VIOLATION = "constitutional_violation"
 
+
 class NodeIdentity(BaseModel):
     """Identity of a consensus node"""
+
     node_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     role: NodeRole
@@ -77,15 +89,19 @@ class NodeIdentity(BaseModel):
     is_active: bool = True
     voting_power: float = Field(ge=0.0, le=1.0, default=1.0)
     constitutional_hash: str = CONSTITUTIONAL_HASH
-    
-    @validator('constitutional_hash')
+
+    @validator("constitutional_hash")
     def validate_constitutional_hash(cls, v):
         if v != CONSTITUTIONAL_HASH:
-            raise ValueError(f"Invalid constitutional hash. Expected {CONSTITUTIONAL_HASH}")
+            raise ValueError(
+                f"Invalid constitutional hash. Expected {CONSTITUTIONAL_HASH}"
+            )
         return v
+
 
 class Proposal(BaseModel):
     """Consensus proposal"""
+
     proposal_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     proposer_id: str
     proposal_type: ProposalType
@@ -102,13 +118,15 @@ class Proposal(BaseModel):
     emergency: bool = False
     metadata: Dict[str, Any] = {}
     dependencies: List[str] = []  # Other proposal IDs this depends on
-    
+
     def __post_init__(self):
         if not self.expires_at:
             self.expires_at = self.created_at + timedelta(seconds=self.timeout_seconds)
 
+
 class Vote(BaseModel):
     """Vote on a proposal"""
+
     vote_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     proposal_id: str
     voter_id: str
@@ -120,8 +138,10 @@ class Vote(BaseModel):
     signature: Optional[str] = None
     constitutional_basis: Optional[str] = None  # For constitutional votes
 
+
 class ConsensusRound(BaseModel):
     """A round of consensus for a proposal"""
+
     round_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     proposal_id: str
     round_number: int = Field(ge=1)
@@ -137,8 +157,10 @@ class ConsensusRound(BaseModel):
     threshold_met: bool = False
     constitutional_validation: bool = False
 
+
 class ConsensusResult(BaseModel):
     """Final result of consensus process"""
+
     result_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     proposal_id: str
     status: ConsensusStatus
@@ -152,8 +174,10 @@ class ConsensusResult(BaseModel):
     constitutional_compliance: bool = True
     audit_trail: List[Dict[str, Any]] = []
 
+
 class ConstitutionalRule(BaseModel):
     """Constitutional rule for governance"""
+
     rule_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -167,8 +191,10 @@ class ConstitutionalRule(BaseModel):
     last_modified: datetime = Field(default_factory=datetime.utcnow)
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
+
 class Delegate(BaseModel):
     """Delegated voting representative"""
+
     delegate_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     delegator_ids: List[str] = []  # Who delegated to this delegate
@@ -178,8 +204,10 @@ class Delegate(BaseModel):
     active: bool = True
     constitutional_alignment: float = Field(ge=0.0, le=1.0, default=1.0)
 
+
 class VotingPool(BaseModel):
     """Pool for specific voting scenarios"""
+
     pool_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -191,8 +219,10 @@ class VotingPool(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     active: bool = True
 
+
 class ConsensusMetrics(BaseModel):
     """Performance metrics for consensus"""
+
     total_proposals: int = 0
     successful_consensus: int = 0
     failed_consensus: int = 0
@@ -205,8 +235,10 @@ class ConsensusMetrics(BaseModel):
     throughput_proposals_per_hour: float = 0.0
     success_rate: float = Field(ge=0.0, le=1.0, default=0.0)
 
+
 class ByzantineFaultTolerance(BaseModel):
     """Byzantine fault tolerance configuration"""
+
     max_byzantine_nodes: int = Field(ge=0)
     total_nodes: int = Field(ge=1)
     fault_tolerance_percentage: float = Field(ge=0.0, le=0.5)
@@ -214,8 +246,10 @@ class ByzantineFaultTolerance(BaseModel):
     recovery_protocols: List[str] = []
     quarantine_policy: Dict[str, Any] = {}
 
+
 class StakingInfo(BaseModel):
     """Staking information for PoS consensus"""
+
     staker_id: str
     staked_amount: float = Field(ge=0.0)
     staking_duration_days: int = Field(ge=0)
@@ -225,8 +259,10 @@ class StakingInfo(BaseModel):
     validator_status: bool = False
     minimum_stake_required: float = Field(ge=0.0, default=1000.0)
 
+
 class FederatedConsensusNode(BaseModel):
     """Node in federated consensus network"""
+
     node_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     organization: str
     trust_level: float = Field(ge=0.0, le=1.0, default=0.5)
@@ -235,8 +271,10 @@ class FederatedConsensusNode(BaseModel):
     last_agreement: Optional[datetime] = None
     agreement_history: List[Dict[str, Any]] = []
 
+
 class ConsensusConfig(BaseModel):
     """Configuration for consensus engine"""
+
     algorithm: ConsensusAlgorithm
     parameters: Dict[str, Any] = {}
     node_requirements: Dict[str, Any] = {}
@@ -247,8 +285,10 @@ class ConsensusConfig(BaseModel):
     max_proposal_size_kb: int = Field(ge=1, default=1024)
     max_concurrent_proposals: int = Field(ge=1, default=10)
 
+
 class ConstitutionalChallenge(BaseModel):
     """Challenge to constitutional compliance"""
+
     challenge_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     challenger_id: str
     proposal_id: str
@@ -260,8 +300,10 @@ class ConstitutionalChallenge(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     resolution: Optional[Dict[str, Any]] = None
 
+
 class EmergencyProtocol(BaseModel):
     """Emergency consensus protocol"""
+
     protocol_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     trigger_conditions: List[str]
@@ -272,8 +314,10 @@ class EmergencyProtocol(BaseModel):
     constitutional_override: bool = False
     audit_requirements: List[str] = []
 
+
 class ConsensusAuditTrail(BaseModel):
     """Audit trail for consensus decisions"""
+
     audit_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     proposal_id: str
     action_type: str
@@ -285,8 +329,10 @@ class ConsensusAuditTrail(BaseModel):
     constitutional_impact: bool = False
     signature: Optional[str] = None
 
+
 class ReputationScore(BaseModel):
     """Reputation scoring for consensus participants"""
+
     participant_id: str
     current_score: float = Field(ge=0.0, le=1.0, default=0.5)
     voting_accuracy: float = Field(ge=0.0, le=1.0, default=0.5)
@@ -297,8 +343,10 @@ class ReputationScore(BaseModel):
     historical_performance: List[Dict[str, Any]] = []
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
+
 class QuorumSlice(BaseModel):
     """Quorum slice for federated consensus"""
+
     slice_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     members: List[str]
     threshold: int = Field(ge=1)
@@ -306,8 +354,10 @@ class QuorumSlice(BaseModel):
     trust_requirements: Dict[str, float] = {}
     active: bool = True
 
+
 class ConsensusNetwork(BaseModel):
     """Network topology for consensus"""
+
     network_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     nodes: List[NodeIdentity] = []

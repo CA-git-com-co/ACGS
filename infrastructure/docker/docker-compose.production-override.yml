@@ -1,5 +1,5 @@
 # ACGS-2 Production Environment Override
-# Use with: docker-compose -f docker-compose.base-infrastructure.yml -f docker-compose.acgs-services.yml -f docker-compose.production-override.yml
+# Use with: docker-compose -f config/docker/docker-compose.base-infrastructure.yml -f docker-compose.acgs-services.yml -f docker-compose.production-override.yml
 
 version: '3.8'
 

@@ -213,7 +213,7 @@ The performance monitor integrates with the ACGS-2 alerting service:
 ### Requirements
 ```bash
 # Install performance testing dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 ```
 
 ### Prerequisites
@@ -227,7 +227,7 @@ pip install -r requirements.txt
 cd tests/performance
 
 # 2. Install dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # 3. Run quick validation
 python run_performance_tests.py

@@ -1,0 +1,34 @@
+name: Constitutional Compliance Monitoring
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  workflow_dispatch:
+
+jobs:
+  compliance-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Run Constitutional Compliance Monitor
+        run: python3 scripts/monitoring/constitutional_compliance_monitor.py
+        
+      - name: Check Compliance Rate
+        run: |
+          RATE=$(python3 -c "
+          import json
+          with open('reports/compliance/realtime_compliance_monitoring.json') as f:
+              data = json.load(f)
+          print(data['compliance_rate'])
+          ")
+          echo "Current compliance rate: $RATE%"
+          if (( $(echo "$RATE < 50.0" | bc -l) )); then
+            echo "::warning::Constitutional compliance below target: $RATE%"
+          fi

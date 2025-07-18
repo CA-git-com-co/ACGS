@@ -121,7 +121,7 @@ Phase 1 of the ACGS platform analytical enhancements has been successfully compl
 
 #### 3.2 Dashboard Configuration
 - **Files**:
-  - `dashboards/requirements.txt` - Python dependencies
+  - `dashboards/config/environments/requirements.txt` - Python dependencies
   - `dashboards/Dockerfile` - Container deployment
   - `dashboards/config/dashboard_config.yaml` - Configuration management
 - **Features**:

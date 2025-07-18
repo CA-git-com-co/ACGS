@@ -138,7 +138,7 @@ class ACGSReorganizationPlan:
             "SECURITY.md",
             "Makefile",
             "docker-compose.yml",
-            "pyproject.toml",
+            "config/environments/pyproject.toml",
             "package.json",
             "Cargo.toml",
             ".gitignore",

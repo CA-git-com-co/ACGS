@@ -132,7 +132,7 @@ class ApplicationsRestructurer:
             return "react-frontend"
         if (app_dir / "Cargo.toml").exists():
             return "rust-service"
-        if (app_dir / "requirements.txt").exists():
+        if (app_dir / "config/environments/requirements.txt").exists():
             return "python-service"
         return "unknown"
 

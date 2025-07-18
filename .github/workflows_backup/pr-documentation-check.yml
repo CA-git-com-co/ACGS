@@ -98,7 +98,7 @@ jobs:
               services/*/api/*|services/*/main.py|services/*/app.py)
                 API_CHANGED=true
                 ;;
-              config/*|*config/environments/development.env|pyproject.toml|pytest.ini)
+              config/*|*config/environments/development.env|config/environments/pyproject.toml|config/environments/pytest.ini)
                 CONFIG_CHANGED=true
                 ;;
               services/*)

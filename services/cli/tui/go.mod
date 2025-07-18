@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 module github.com/sst/opencode
 
 go 1.24.0

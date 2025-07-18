@@ -3,7 +3,7 @@ Constitutional Hash: cdd01ef066bc6cf2
 
 ## Executive Summary
 
-This analysis examines all requirements.txt files throughout the ACGS-2 project to identify consolidation opportunities, duplicate dependencies, version conflicts, and optimization strategies.
+This analysis examines all config/environments/requirements.txt files throughout the ACGS-2 project to identify consolidation opportunities, duplicate dependencies, version conflicts, and optimization strategies.
 
 ## Current State Analysis
 
@@ -11,7 +11,7 @@ This analysis examines all requirements.txt files throughout the ACGS-2 project 
 The project already has a partial consolidation structure in place:
 - `services/shared/requirements/requirements-base.txt` - Core dependencies
 - `services/shared/requirements/requirements-web.txt` - Web service dependencies  
-- `services/shared/requirements/requirements-security.txt` - Security dependencies
+- `services/shared/requirements/config/environments/requirements-security.txt` - Security dependencies
 - `services/shared/requirements/requirements-test.txt` - Testing dependencies
 - `services/shared/requirements/requirements-dev.txt` - Development dependencies
 
@@ -44,7 +44,7 @@ The project already has a partial consolidation structure in place:
 ## Critical Version Conflicts
 
 ### 1. Cryptography Package
-- **services/shared/requirements/requirements-security.txt**: `cryptography>=45.0.4`
+- **services/shared/requirements/config/environments/requirements-security.txt**: `cryptography>=45.0.4`
 - **services/platform_services/integrity/integrity_service**: `cryptography==41.0.7`
 - **services/core/constitutional-core**: `cryptography>=41.0.8`
 - **RISK**: Security vulnerability - newer versions contain critical fixes
@@ -56,7 +56,7 @@ The project already has a partial consolidation structure in place:
 
 ### 3. Alembic Database Migrations
 - **services/shared/requirements/requirements-web.txt**: `alembic>=1.13.0`
-- **tools/requirements.txt**: `alembic==1.16.2`
+- **tools/config/environments/requirements.txt**: `alembic==1.16.2`
 - **services/core/code-analysis**: `alembic==1.13.1`
 - **RISK**: Database migration compatibility issues
 
@@ -90,7 +90,7 @@ Create `services/shared/requirements/requirements-core.txt`:
 # Core ACGS service dependencies
 -r requirements-base.txt
 -r requirements-web.txt
--r requirements-security.txt
+-r config/environments/requirements-security.txt
 
 # Additional core dependencies
 tenacity>=8.2.3
@@ -183,7 +183,7 @@ find services/ -name "requirements*.txt" -exec sed -i 's/fastapi==0.104.1/fastap
 services/shared/requirements/
 ├── requirements-base.txt          # Core utilities (existing)
 ├── requirements-web.txt           # Web framework (existing)
-├── requirements-security.txt      # Security (existing)
+├── config/environments/requirements-security.txt      # Security (existing)
 ├── requirements-test.txt          # Testing (existing)
 ├── requirements-dev.txt           # Development (existing)
 ├── requirements-core.txt          # Core ACGS services (new)
@@ -197,14 +197,14 @@ services/shared/requirements/
 
 #### Core Services
 ```
-# services/core/constitutional-ai/requirements.txt
+# services/core/constitutional-ai/config/environments/requirements.txt
 -r ../../shared/requirements/requirements-core.txt
 # Service-specific dependencies only
 ```
 
 #### Platform Services
 ```
-# services/platform_services/api_gateway/requirements.txt
+# services/platform_services/api_gateway/config/environments/requirements.txt
 -r ../../shared/requirements/requirements-core.txt
 # Service-specific dependencies (e.g., slowapi)
 slowapi>=0.1.9
@@ -212,7 +212,7 @@ slowapi>=0.1.9
 
 #### Specialized Services
 ```
-# services/core/code-analysis/requirements.txt
+# services/core/code-analysis/config/environments/requirements.txt
 -r ../../shared/requirements/requirements-core.txt
 -r ../../shared/requirements/requirements-ml.txt
 -r ../../shared/requirements/requirements-analysis.txt
@@ -236,7 +236,7 @@ from pathlib import Path
 from typing import Dict, List, Set
 
 def find_requirements_files() -> List[Path]:
-    """Find all requirements.txt files in the project."""
+    """Find all config/environments/requirements.txt files in the project."""
     root = Path(__file__).parent.parent
     return list(root.glob("**/requirements*.txt"))
 

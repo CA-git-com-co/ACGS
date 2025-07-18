@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # GS Service Restart Script
 # This script restarts the GS Service with updated configuration

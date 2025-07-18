@@ -138,7 +138,7 @@ The constitutional hash validation tests have some assertion mismatches that nee
 ## Recent Updates (2025-07-03)
 
 ### ✅ Pytest Warning Resolution
-- **Fixed pytest.ini configuration format** - Changed from `[tool:pytest]` to `[pytest]`
+- **Fixed config/environments/pytest.ini configuration format** - Changed from `[tool:pytest]` to `[pytest]`
 - **Resolved unknown marker warnings** - All custom markers (`constitutional`, `smoke`) now properly registered
 - **Cleaned up benchmark configuration** - Removed unsupported benchmark options
 - **Test collection working cleanly** - No more pytest warnings during test discovery
@@ -148,7 +148,7 @@ The constitutional hash validation tests have some assertion mismatches that nee
 - **E2E Test Collection**: ✅ 21 tests collected cleanly (no warnings)
 - **Custom Markers**: ✅ `smoke` (12 tests), `constitutional` (9 tests) working
 - **Test Execution**: ✅ Individual tests running successfully
-- **Configuration**: ✅ pytest.ini properly formatted and functional
+- **Configuration**: ✅ config/environments/pytest.ini properly formatted and functional
 
 ## Next Steps
 

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # ACGS-1 vLLM to Nano-vLLM Migration Script
@@ -99,8 +100,8 @@ backup_vllm_config() {
     cp -r "$PROJECT_ROOT/services/reasoning-models" "$BACKUP_DIR/" 2>/dev/null || true
     cp -r "$PROJECT_ROOT/infrastructure/docker" "$BACKUP_DIR/" 2>/dev/null || true
     cp -r "$PROJECT_ROOT/scripts/reasoning-models" "$BACKUP_DIR/" 2>/dev/null || true
-    cp "$PROJECT_ROOT/requirements.txt" "$BACKUP_DIR/" 2>/dev/null || true
-    cp "$PROJECT_ROOT/pyproject.toml" "$BACKUP_DIR/" 2>/dev/null || true
+    cp "$PROJECT_ROOT/config/environments/requirements.txt" "$BACKUP_DIR/" 2>/dev/null || true
+    cp "$PROJECT_ROOT/config/environments/pyproject.toml" "$BACKUP_DIR/" 2>/dev/null || true
     
     # Backup running services state
     if command -v docker &> /dev/null; then
@@ -378,8 +379,8 @@ rollback() {
         # Restore key files
         cp -r "$BACKUP_DIR/reasoning-models" "$PROJECT_ROOT/services/" 2>/dev/null || true
         cp -r "$BACKUP_DIR/docker" "$PROJECT_ROOT/infrastructure/" 2>/dev/null || true
-        cp "$BACKUP_DIR/requirements.txt" "$PROJECT_ROOT/" 2>/dev/null || true
-        cp "$BACKUP_DIR/pyproject.toml" "$PROJECT_ROOT/" 2>/dev/null || true
+        cp "$BACKUP_DIR/config/environments/requirements.txt" "$PROJECT_ROOT/" 2>/dev/null || true
+        cp "$BACKUP_DIR/config/environments/pyproject.toml" "$PROJECT_ROOT/" 2>/dev/null || true
         
         success "Rollback completed"
     else

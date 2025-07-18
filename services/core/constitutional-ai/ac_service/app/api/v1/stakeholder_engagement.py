@@ -23,7 +23,6 @@ from services.shared.security_validation import (
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 
-
 # Placeholder function for current user
 async def get_current_active_user_placeholder() -> User:
     """Placeholder function for current user authentication."""
@@ -205,7 +204,9 @@ async def submit_stakeholder_feedback(
             status=feedback_record.status.value,
             submitted_at=feedback_record.submitted_at.isoformat(),
             reviewed_at=(
-                feedback_record.reviewed_at.isoformat() if feedback_record.reviewed_at else None
+                feedback_record.reviewed_at.isoformat()
+                if feedback_record.reviewed_at
+                else None
             ),
         )
 
@@ -248,11 +249,17 @@ async def get_stakeholder_notifications(
                 amendment_id=notification.amendment_id,
                 channel=notification.channel.value,
                 status=notification.status.value,
-                sent_at=(notification.sent_at.isoformat() if notification.sent_at else None),
-                delivered_at=(
-                    notification.delivered_at.isoformat() if notification.delivered_at else None
+                sent_at=(
+                    notification.sent_at.isoformat() if notification.sent_at else None
                 ),
-                read_at=(notification.read_at.isoformat() if notification.read_at else None),
+                delivered_at=(
+                    notification.delivered_at.isoformat()
+                    if notification.delivered_at
+                    else None
+                ),
+                read_at=(
+                    notification.read_at.isoformat() if notification.read_at else None
+                ),
                 content=notification.content,
             )
             notification_responses.append(notification_response)
@@ -302,7 +309,9 @@ async def get_amendment_feedback(
                 feedback_type=feedback.feedback_type,
                 status=feedback.status.value,
                 submitted_at=feedback.submitted_at.isoformat(),
-                reviewed_at=(feedback.reviewed_at.isoformat() if feedback.reviewed_at else None),
+                reviewed_at=(
+                    feedback.reviewed_at.isoformat() if feedback.reviewed_at else None
+                ),
             )
             feedback_responses.append(feedback_response)
 
@@ -337,7 +346,9 @@ async def websocket_engagement_updates(websocket: WebSocket, amendment_id: int):
 
         async for db in get_async_db():
             config = ConstitutionalCouncilConfig()
-            engagement_service = get_stakeholder_engagement_service(db=db, config=config)
+            engagement_service = get_stakeholder_engagement_service(
+                db=db, config=config
+            )
             break
 
         await engagement_service.add_websocket_connection(amendment_id, websocket)

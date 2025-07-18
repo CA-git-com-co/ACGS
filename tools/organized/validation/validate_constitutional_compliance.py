@@ -150,25 +150,25 @@ def main():
     project_root = Path.cwd()
     attempts = 0
     while (
-        not (project_root / "pyproject.toml").exists()
+        not (project_root / "config/environments/pyproject.toml").exists()
         and project_root.parent != project_root
         and attempts < 10
     ):
         project_root = project_root.parent
         attempts += 1
 
-    if not (project_root / "pyproject.toml").exists():
+    if not (project_root / "config/environments/pyproject.toml").exists():
         # Try common locations
         for possible_root in [
             Path.cwd(),
             Path.cwd().parent,
             Path("/home/dislove/ACGS-2"),
         ]:
-            if (possible_root / "pyproject.toml").exists():
+            if (possible_root / "config/environments/pyproject.toml").exists():
                 project_root = possible_root
                 break
         else:
-            print("❌ Could not find project root (pyproject.toml)")
+            print("❌ Could not find project root (config/environments/pyproject.toml)")
             sys.exit(1)
 
     validator = ConstitutionalComplianceValidator(project_root)

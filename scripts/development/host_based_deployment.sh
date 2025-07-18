@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # Host-based ACGS deployment fallback
 
@@ -43,7 +44,7 @@ source venv/bin/activate
 
 # Install dependencies
 echo "Installing Python dependencies..."
-pip install -r services/shared/requirements.txt
+pip install -r services/shared/config/environments/requirements.txt
 
 # Run database migrations
 echo "Running database migrations..."

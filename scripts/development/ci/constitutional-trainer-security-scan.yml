@@ -171,9 +171,9 @@ jobs:
         \ B101,B601 || true\n\n# Generate human-readable report\nbandit -r services/core/constitutional-trainer\
         \ \\\n  -f txt \\\n  -o security-scan-results/bandit-report.txt \\\n  --skip\
         \ B101,B601 || true\n\n# Run Safety check for known vulnerabilities in dependencies\n\
-        if [[ -f services/core/constitutional-trainer/requirements.txt ]]; then\n\
+        if [[ -f services/core/constitutional-trainer/config/environments/requirements.txt ]]; then\n\
         \  safety check \\\n    --json \\\n    --output security-scan-results/safety-results.json\
-        \ \\\n    -r services/core/constitutional-trainer/requirements.txt || true\n\
+        \ \\\n    -r services/core/constitutional-trainer/config/environments/requirements.txt || true\n\
         fi\n\n# Check for high severity issues\nHIGH_ISSUES=$(jq '[.results[] | select(.issue_severity\
         \ == \"HIGH\")] | length' security-scan-results/bandit-results.json 2>/dev/null\
         \ || echo \"0\")\n\nif [[ \"$HIGH_ISSUES\" -gt 0 ]]; then\n  echo \"::warning::Found\

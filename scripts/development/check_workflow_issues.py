@@ -26,7 +26,7 @@ def check_workflow_files():
     issues = []
 
     # Check for required files
-    required_files = ["requirements.txt", "requirements-test.txt"]
+    required_files = ["config/environments/requirements.txt", "requirements-test.txt"]
     for file in required_files:
         if not Path(file).exists():
             print(f"✅ Created missing {file}")

@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! Specialized nodes for PocketFlow-Rust
 //! 
 //! This module provides additional node types for building

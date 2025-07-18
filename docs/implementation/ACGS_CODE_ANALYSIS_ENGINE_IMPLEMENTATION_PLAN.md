@@ -66,8 +66,8 @@ services/core/code-analysis/
 │   │   ├── integration/
 │   │   ├── performance/
 │   │   └── fixtures/
-│   ├── requirements.txt
-│   ├── pyproject.toml
+│   ├── config/environments/requirements.txt
+│   ├── config/environments/pyproject.toml
 │   ├── Dockerfile
 │   └── README.md
 ├── database/
@@ -99,7 +99,7 @@ services/core/code-analysis/
 **Tasks**:
 1. **Project Structure Creation** (2 hours)
    - Initialize directory structure
-   - Setup `pyproject.toml` with Poetry configuration
+   - Setup `config/environments/pyproject.toml` with Poetry configuration
    - Create base `__init__.py` files
    - Setup Git repository structure
 

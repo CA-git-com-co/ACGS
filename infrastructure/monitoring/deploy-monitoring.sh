@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Monitoring Infrastructure Deployment Script
 # Deploy Prometheus, Grafana, and Alertmanager with enterprise configuration
@@ -153,11 +154,11 @@ deploy_monitoring() {
     
     # Pull latest images
     info "Pulling Docker images..."
-    docker-compose -f docker-compose.monitoring.yml pull
+    docker-compose -f config/docker/docker-compose.monitoring.yml pull
     
     # Start monitoring services
     info "Starting monitoring services..."
-    docker-compose -f docker-compose.monitoring.yml up -d
+    docker-compose -f config/docker/docker-compose.monitoring.yml up -d
     
     # Wait for services to be ready
     info "Waiting for services to be ready..."

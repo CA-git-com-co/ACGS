@@ -232,7 +232,7 @@ jobs:
           SERVICE_PATH=$(echo $SERVICE_CONFIG | jq -r '.path // "services/${{ matrix.service }}"')
           
           # Try multiple requirement files in order of preference
-          for req_file in requirements-security.txt requirements.txt requirements-dev.txt; do
+          for req_file in config/environments/requirements-security.txt config/environments/requirements.txt requirements-dev.txt; do
             if [ -f "$req_file" ]; then
               echo "Installing from $req_file"
               pip install -r "$req_file"

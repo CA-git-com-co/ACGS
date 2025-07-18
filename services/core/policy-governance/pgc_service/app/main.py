@@ -3,7 +3,9 @@ from services.shared.middleware.constitutional_validation import (
     ConstitutionalValidationMiddleware,
 )
 from services.shared.middleware.enhanced_auth_middleware import EnhancedAuthMiddleware
-from services.shared.middleware.prometheus_metrics_middleware import setup_prometheus_middleware
+from services.shared.middleware.prometheus_metrics_middleware import (
+    setup_prometheus_middleware,
+)
 from services.shared.performance.performance_monitoring import track_performance_metrics
 from services.shared.validation.constitutional_validator import CONSTITUTIONAL_HASH
 

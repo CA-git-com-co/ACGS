@@ -235,8 +235,8 @@ jobs:
               print("🔍 Validating test coverage targets...")
 
               files_to_check = [
-                  "pytest.ini",
-                  "pyproject.toml",
+                  "config/environments/pytest.ini",
+                  "config/environments/pyproject.toml",
                   "docs/configuration/README.md"
               ]
 

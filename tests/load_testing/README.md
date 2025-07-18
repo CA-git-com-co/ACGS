@@ -21,7 +21,7 @@ This load testing suite validates ACGS performance under enterprise workloads wh
 
 ```bash
 # Install dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Run basic enterprise load test
 python run_load_test.py --test-name "acgs-enterprise-test" --test-type enterprise --users 1000 --duration 30m
@@ -222,7 +222,7 @@ tests/load_testing/
 ├── docker-compose.yml        # Docker orchestration
 ├── Dockerfile.loadtest       # Load test container
 ├── Dockerfile.analyzer       # Analysis container
-├── requirements.txt          # Python dependencies
+├── config/environments/requirements.txt          # Python dependencies
 ├── README.md                 # This file
 ├── monitoring/
 │   ├── prometheus.yml        # Prometheus configuration

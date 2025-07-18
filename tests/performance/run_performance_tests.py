@@ -266,7 +266,7 @@ def main():
         import aiohttp
     except ImportError:
         print("📦 Installing performance test requirements...")
-        subprocess.run([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"], check=True)
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r", "config/environments/requirements.txt"], check=True)
     
     # Run test suite
     all_passed = True

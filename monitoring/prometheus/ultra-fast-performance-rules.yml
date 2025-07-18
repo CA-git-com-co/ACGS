@@ -1,0 +1,318 @@
+# Ultra-Fast Performance Monitoring Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+
+groups:
+  - name: acgs_ultra_fast_performance
+    interval: 15s
+    rules:
+      # Constitutional Validation Performance
+      - alert: ConstitutionalValidationLatencyHigh
+        expr: histogram_quantile(0.99, rate(constitutional_validation_duration_seconds_bucket[5m])) > 0.0001
+        for: 2m
+        labels:
+          severity: critical
+          component: constitutional_validator
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional validation P99 latency exceeds target"
+          description: "Constitutional validation P99 latency is {{ $value }}s, exceeding the 0.1ms target"
+          runbook_url: "https://docs.acgs.example.com/runbooks/constitutional-validation-performance"
+
+      - alert: ConstitutionalValidationThroughputLow
+        expr: rate(constitutional_validation_total[5m]) < 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: constitutional_validator
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional validation throughput below target"
+          description: "Constitutional validation throughput is {{ $value }} validations/sec, below 1000/sec target"
+
+      - alert: ConstitutionalComplianceViolation
+        expr: rate(constitutional_validation_failures_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          component: constitutional_validator
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional compliance violation detected"
+          description: "Constitutional validation failures detected: {{ $value }} failures/sec"
+          runbook_url: "https://docs.acgs.example.com/runbooks/constitutional-compliance-violation"
+
+      # Connection Pool Performance
+      - alert: ConnectionPoolAcquisitionLatencyHigh
+        expr: histogram_quantile(0.99, rate(connection_pool_acquisition_duration_seconds_bucket[5m])) > 0.001
+        for: 2m
+        labels:
+          severity: critical
+          component: connection_pool
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Connection pool acquisition P99 latency exceeds target"
+          description: "Connection pool acquisition P99 latency is {{ $value }}s, exceeding the 1ms target"
+
+      - alert: ConnectionPoolUtilizationHigh
+        expr: connection_pool_active_connections / connection_pool_max_connections > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          component: connection_pool
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Connection pool utilization high"
+          description: "Connection pool utilization is {{ $value | humanizePercentage }}, above 90% threshold"
+
+      - alert: ConnectionPoolHealthCheckFailures
+        expr: rate(connection_pool_health_check_failures_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: connection_pool
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Connection pool health check failures"
+          description: "Connection pool health check failure rate: {{ $value }} failures/sec"
+
+      # Cache System Performance
+      - alert: CacheHitRateLow
+        expr: rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m])) < 0.95
+        for: 5m
+        labels:
+          severity: warning
+          component: cache_system
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Cache hit rate below target"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}, below 95% target"
+
+      - alert: L1CacheAccessLatencyHigh
+        expr: histogram_quantile(0.99, rate(l1_cache_access_duration_seconds_bucket[5m])) > 0.00001
+        for: 2m
+        labels:
+          severity: critical
+          component: cache_system
+          tier: l1
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "L1 cache access P99 latency exceeds target"
+          description: "L1 cache access P99 latency is {{ $value }}s, exceeding the 0.01ms target"
+
+      - alert: L2CacheAccessLatencyHigh
+        expr: histogram_quantile(0.99, rate(l2_cache_access_duration_seconds_bucket[5m])) > 0.0001
+        for: 2m
+        labels:
+          severity: warning
+          component: cache_system
+          tier: l2
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "L2 cache access P99 latency exceeds target"
+          description: "L2 cache access P99 latency is {{ $value }}s, exceeding the 0.1ms target"
+
+      - alert: CachePromotionRateLow
+        expr: rate(cache_promotions_total[5m]) / rate(l2_cache_hits_total[5m]) < 0.1
+        for: 10m
+        labels:
+          severity: info
+          component: cache_system
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Cache promotion rate low"
+          description: "Cache promotion rate is {{ $value | humanizePercentage }}, may indicate suboptimal caching"
+
+      # Service Integration Performance
+      - alert: ServiceIntegrationLatencyHigh
+        expr: histogram_quantile(0.99, rate(service_integration_duration_seconds_bucket[5m])) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          component: service_integration
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Service integration P99 latency exceeds target"
+          description: "Service integration P99 latency is {{ $value }}s, exceeding the 100ms target"
+
+      - alert: ServiceIntegrationFailureRateHigh
+        expr: rate(service_integration_failures_total[5m]) / rate(service_integration_total[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          component: service_integration
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Service integration failure rate high"
+          description: "Service integration failure rate is {{ $value | humanizePercentage }}, above 1% threshold"
+
+      - alert: CrossServiceCommunicationLatencyHigh
+        expr: histogram_quantile(0.95, rate(cross_service_call_duration_seconds_bucket[5m])) > 0.01
+        for: 5m
+        labels:
+          severity: warning
+          component: service_integration
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Cross-service communication latency high"
+          description: "Cross-service communication P95 latency is {{ $value }}s, exceeding the 10ms target"
+
+      # End-to-End Performance
+      - alert: EndToEndLatencyHigh
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="acgs-services"}[5m])) > 0.005
+        for: 2m
+        labels:
+          severity: critical
+          component: end_to_end
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "End-to-end P99 latency exceeds target"
+          description: "End-to-end P99 latency is {{ $value }}s, exceeding the 5ms target"
+          runbook_url: "https://docs.acgs.example.com/runbooks/end-to-end-performance"
+
+      - alert: ThroughputLow
+        expr: rate(http_requests_total{job="acgs-services"}[5m]) < 1000
+        for: 5m
+        labels:
+          severity: warning
+          component: end_to_end
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "System throughput below target"
+          description: "System throughput is {{ $value }} requests/sec, below 1000 RPS target"
+
+      - alert: ErrorRateHigh
+        expr: rate(http_requests_total{job="acgs-services",status=~"5.."}[5m]) / rate(http_requests_total{job="acgs-services"}[5m]) > 0.01
+        for: 2m
+        labels:
+          severity: critical
+          component: end_to_end
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Error rate exceeds threshold"
+          description: "Error rate is {{ $value | humanizePercentage }}, above 1% threshold"
+
+      # Performance Regression Detection
+      - alert: PerformanceRegression
+        expr: |
+          (
+            histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="acgs-services"}[5m])) /
+            histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="acgs-services"}[1h] offset 1d))
+          ) > 1.5
+        for: 10m
+        labels:
+          severity: warning
+          component: performance_regression
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Performance regression detected"
+          description: "Current P99 latency is {{ $value }}x higher than yesterday's baseline"
+          runbook_url: "https://docs.acgs.example.com/runbooks/performance-regression"
+
+      # Constitutional Hash Monitoring
+      - alert: ConstitutionalHashMismatch
+        expr: constitutional_hash_valid != 1
+        for: 0m
+        labels:
+          severity: critical
+          component: constitutional_compliance
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Constitutional hash mismatch detected"
+          description: "Service {{ $labels.service }} has invalid constitutional hash"
+          runbook_url: "https://docs.acgs.example.com/runbooks/constitutional-hash-mismatch"
+
+      # Resource Utilization
+      - alert: MemoryUsageHigh
+        expr: (process_resident_memory_bytes{job="acgs-services"} / 1024 / 1024 / 1024) > 2
+        for: 5m
+        labels:
+          severity: warning
+          component: resource_utilization
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "Memory usage high"
+          description: "Service {{ $labels.service }} memory usage is {{ $value }}GB, above 2GB threshold"
+
+      - alert: CPUUsageHigh
+        expr: rate(process_cpu_seconds_total{job="acgs-services"}[5m]) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: resource_utilization
+          constitutional_hash: cdd01ef066bc6cf2
+        annotations:
+          summary: "CPU usage high"
+          description: "Service {{ $labels.service }} CPU usage is {{ $value | humanizePercentage }}, above 80% threshold"
+
+  - name: acgs_ultra_fast_performance_recording
+    interval: 15s
+    rules:
+      # Recording rules for performance dashboards
+      - record: acgs:constitutional_validation_p99_latency
+        expr: histogram_quantile(0.99, rate(constitutional_validation_duration_seconds_bucket[5m]))
+
+      - record: acgs:constitutional_validation_throughput
+        expr: rate(constitutional_validation_total[5m])
+
+      - record: acgs:connection_pool_p99_latency
+        expr: histogram_quantile(0.99, rate(connection_pool_acquisition_duration_seconds_bucket[5m]))
+
+      - record: acgs:cache_hit_rate
+        expr: rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m]))
+
+      - record: acgs:l1_cache_p99_latency
+        expr: histogram_quantile(0.99, rate(l1_cache_access_duration_seconds_bucket[5m]))
+
+      - record: acgs:l2_cache_p99_latency
+        expr: histogram_quantile(0.99, rate(l2_cache_access_duration_seconds_bucket[5m]))
+
+      - record: acgs:service_integration_p99_latency
+        expr: histogram_quantile(0.99, rate(service_integration_duration_seconds_bucket[5m]))
+
+      - record: acgs:end_to_end_p99_latency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{job="acgs-services"}[5m]))
+
+      - record: acgs:end_to_end_p95_latency
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="acgs-services"}[5m]))
+
+      - record: acgs:end_to_end_p50_latency
+        expr: histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job="acgs-services"}[5m]))
+
+      - record: acgs:throughput_rps
+        expr: rate(http_requests_total{job="acgs-services"}[5m])
+
+      - record: acgs:error_rate
+        expr: rate(http_requests_total{job="acgs-services",status=~"5.."}[5m]) / rate(http_requests_total{job="acgs-services"}[5m])
+
+      - record: acgs:constitutional_compliance_rate
+        expr: 1 - (rate(constitutional_validation_failures_total[5m]) / rate(constitutional_validation_total[5m]))
+
+      # Performance target compliance
+      - record: acgs:performance_targets_met
+        expr: |
+          (
+            (acgs:constitutional_validation_p99_latency < 0.0001) and
+            (acgs:connection_pool_p99_latency < 0.001) and
+            (acgs:l1_cache_p99_latency < 0.00001) and
+            (acgs:l2_cache_p99_latency < 0.0001) and
+            (acgs:end_to_end_p99_latency < 0.005) and
+            (acgs:cache_hit_rate > 0.95) and
+            (acgs:throughput_rps > 1000) and
+            (acgs:error_rate < 0.01) and
+            (acgs:constitutional_compliance_rate > 0.99)
+          )
+
+      # Performance score (0-100)
+      - record: acgs:performance_score
+        expr: |
+          (
+            (acgs:constitutional_validation_p99_latency < 0.0001) * 15 +
+            (acgs:connection_pool_p99_latency < 0.001) * 10 +
+            (acgs:l1_cache_p99_latency < 0.00001) * 10 +
+            (acgs:l2_cache_p99_latency < 0.0001) * 10 +
+            (acgs:end_to_end_p99_latency < 0.005) * 20 +
+            (acgs:cache_hit_rate > 0.95) * 10 +
+            (acgs:throughput_rps > 1000) * 10 +
+            (acgs:error_rate < 0.01) * 10 +
+            (acgs:constitutional_compliance_rate > 0.99) * 5
+          )

@@ -85,8 +85,8 @@ class ACGSSecurityAuditor:
         """Check for known vulnerabilities in dependencies."""
         findings = []
         
-        # Check if requirements.txt exists
-        req_file = self.project_root / "requirements.txt"
+        # Check if config/environments/requirements.txt exists
+        req_file = self.project_root / "config/environments/requirements.txt"
         if req_file.exists():
             try:
                 # Try to run safety check if available

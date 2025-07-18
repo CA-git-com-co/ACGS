@@ -55,7 +55,7 @@ export REDIS_PASSWORD=""
 export ENVIRONMENT="testing"
 
 # Install Python dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Install additional testing dependencies
 pip install matplotlib numpy pytest-cov requests asyncpg redis

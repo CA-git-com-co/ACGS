@@ -15,6 +15,7 @@ CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
 class MessageRole(str, Enum):
     """Message role types in conversation"""
+
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
@@ -23,6 +24,7 @@ class MessageRole(str, Enum):
 
 class ConversationStatus(str, Enum):
     """Conversation status types"""
+
     ACTIVE = "active"
     PAUSED = "paused"
     COMPLETED = "completed"
@@ -31,6 +33,7 @@ class ConversationStatus(str, Enum):
 
 class ComplianceLevel(str, Enum):
     """Compliance checking levels"""
+
     STRICT = "strict"
     MODERATE = "moderate"
     PERMISSIVE = "permissive"
@@ -38,6 +41,7 @@ class ComplianceLevel(str, Enum):
 
 class ConversationMessage(BaseModel):
     """Individual message in conversation"""
+
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     role: MessageRole = Field(description="Message role (user/assistant/system)")
     content: str = Field(description="Message content")
@@ -49,6 +53,7 @@ class ConversationMessage(BaseModel):
 
 class ConversationContext(BaseModel):
     """Context information for conversation"""
+
     user_id: str = Field(description="User identifier")
     session_id: str = Field(description="Session identifier")
     conversation_id: str = Field(description="Conversation identifier")
@@ -59,24 +64,30 @@ class ConversationContext(BaseModel):
 
 class ChatRequest(BaseModel):
     """Request for chat conversation"""
+
     message: str = Field(min_length=1, max_length=4000, description="User message")
     conversation_id: Optional[str] = Field(None, description="Existing conversation ID")
-    context: Optional[ConversationContext] = Field(None, description="Conversation context")
+    context: Optional[ConversationContext] = Field(
+        None, description="Conversation context"
+    )
     compliance_level: ComplianceLevel = Field(default=ComplianceLevel.MODERATE)
     max_tokens: int = Field(default=1000, ge=1, le=4000)
     temperature: float = Field(default=0.7, ge=0.0, le=2.0)
     stream: bool = Field(default=False, description="Enable streaming response")
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
-    
-    @validator('constitutional_hash')
+
+    @validator("constitutional_hash")
     def validate_constitutional_hash(cls, v):
         if v != CONSTITUTIONAL_HASH:
-            raise ValueError(f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}")
+            raise ValueError(
+                f"Invalid constitutional hash. Expected: {CONSTITUTIONAL_HASH}"
+            )
         return v
 
 
 class ChatResponse(BaseModel):
     """Response from chat conversation"""
+
     response: str = Field(description="Assistant response")
     conversation_id: str = Field(description="Conversation identifier")
     message_id: str = Field(description="Message identifier")
@@ -90,6 +101,7 @@ class ChatResponse(BaseModel):
 
 class ConversationHistory(BaseModel):
     """Full conversation history"""
+
     conversation_id: str = Field(description="Conversation identifier")
     messages: List[ConversationMessage] = Field(description="List of messages")
     status: ConversationStatus = Field(default=ConversationStatus.ACTIVE)
@@ -101,6 +113,7 @@ class ConversationHistory(BaseModel):
 
 class StreamingChatResponse(BaseModel):
     """Streaming chat response chunk"""
+
     chunk: str = Field(description="Response chunk")
     conversation_id: str = Field(description="Conversation identifier")
     message_id: str = Field(description="Message identifier")
@@ -110,6 +123,7 @@ class StreamingChatResponse(BaseModel):
 
 class ConversationSummary(BaseModel):
     """Summary of conversation for context management"""
+
     conversation_id: str = Field(description="Conversation identifier")
     summary: str = Field(description="Conversation summary")
     key_topics: List[str] = Field(default_factory=list)
@@ -121,6 +135,7 @@ class ConversationSummary(BaseModel):
 
 class ComplianceCheck(BaseModel):
     """Compliance check result"""
+
     compliant: bool = Field(description="Whether content is compliant")
     score: float = Field(ge=0.0, le=1.0, description="Compliance confidence score")
     violations: List[str] = Field(default_factory=list)
@@ -131,6 +146,7 @@ class ComplianceCheck(BaseModel):
 
 class ConversationAnalytics(BaseModel):
     """Analytics for conversation patterns"""
+
     total_conversations: int = Field(ge=0)
     total_messages: int = Field(ge=0)
     avg_response_time: float = Field(ge=0.0)
@@ -142,6 +158,7 @@ class ConversationAnalytics(BaseModel):
 
 class HealthResponse(BaseModel):
     """Health check response"""
+
     status: str = Field(default="healthy")
     constitutional_hash: str = Field(default=CONSTITUTIONAL_HASH)
     timestamp: datetime = Field(default_factory=datetime.utcnow)
@@ -151,6 +168,7 @@ class HealthResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     """Error response model"""
+
     error: str = Field(description="Error message")
     error_code: str = Field(description="Error code")
     details: Optional[Dict[str, Any]] = None
@@ -160,6 +178,7 @@ class ErrorResponse(BaseModel):
 
 class ConversationSearchRequest(BaseModel):
     """Search request for conversations"""
+
     query: str = Field(min_length=1, description="Search query")
     user_id: Optional[str] = Field(None, description="Filter by user ID")
     date_from: Optional[datetime] = Field(None, description="Start date filter")
@@ -171,6 +190,7 @@ class ConversationSearchRequest(BaseModel):
 
 class ConversationSearchResult(BaseModel):
     """Search result for conversations"""
+
     conversations: List[ConversationSummary] = Field(description="Found conversations")
     total: int = Field(ge=0, description="Total number of results")
     limit: int = Field(description="Result limit")

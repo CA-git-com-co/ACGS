@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 use async_trait::async_trait;
 use governance_rules::{SharedWorkingMemory as WorkingMemory};
 use solana_sdk::{

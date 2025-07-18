@@ -363,7 +363,7 @@ docker-compose -f docker-compose.acgs.yml exec acgs-sandbox-execution python -m 
 For development, you can run individual services:
 ```bash
 cd services/core/agent-hitl
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 uvicorn app.main:app --host 0.0.0.0 --port 8008 --reload
 ```
 

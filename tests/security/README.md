@@ -244,7 +244,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r tests/security/requirements.txt
+          pip install -r tests/security/config/environments/requirements.txt
 
       - name: Run Security Tests
         env:
@@ -270,7 +270,7 @@ jobs:
 security-tests:
   stage: test
   script:
-    - pip install -r tests/security/requirements.txt
+    - pip install -r tests/security/config/environments/requirements.txt
     - python tests/security/security_ci_integration.py
   artifacts:
     when: always

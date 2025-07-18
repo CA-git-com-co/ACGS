@@ -216,7 +216,7 @@ class QuantumagiDeployer:
 
         # Install Python dependencies
         gs_engine_dir = self.project_root / "gs_engine"
-        requirements_file = gs_engine_dir / "requirements.txt"
+        requirements_file = gs_engine_dir / "config/environments/requirements.txt"
 
         if requirements_file.exists():
             result = subprocess.run(

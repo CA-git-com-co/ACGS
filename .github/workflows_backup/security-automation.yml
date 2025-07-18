@@ -156,7 +156,7 @@ jobs:
           echo "🐍 Running pip-audit..."
 
           # Find and audit all requirements files
-          find . -name "requirements*.txt" -o -name "pyproject.toml" | while read req_file; do
+          find . -name "config/environments/requirements*.txt" -o -name "config/environments/pyproject.toml" | while read req_file; do
             echo "Auditing $req_file..."
             pip-audit -r "$req_file" --format=json --output="/tmp/pip-audit-$(basename $req_file).json" || true
             pip-audit -r "$req_file"

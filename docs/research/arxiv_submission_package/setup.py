@@ -39,10 +39,10 @@ def get_long_description():
     return "Academic Submission System for validating and optimizing academic papers."
 
 
-# Read requirements from requirements.txt
+# Read requirements from config/environments/requirements.txt
 def get_requirements():
-    """Get requirements from requirements.txt."""
-    req_file = Path("requirements.txt")
+    """Get requirements from config/environments/requirements.txt."""
+    req_file = Path("config/environments/requirements.txt")
     if req_file.exists():
         with open(req_file) as f:
             return [

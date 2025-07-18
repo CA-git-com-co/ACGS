@@ -622,7 +622,7 @@ For support, please visit [ACGS Documentation](https://docs.acgs.ai).
     def _get_required_files(self, config: SDKConfig) -> list[str]:
         """Get list of required files for the SDK."""
         if config.language == SDKLanguage.PYTHON:
-            return ["setup.py", "requirements.txt", "README.md"]
+            return ["setup.py", "config/environments/requirements.txt", "README.md"]
         if config.language == SDKLanguage.JAVASCRIPT:
             return ["package.json", "README.md"]
         if config.language == SDKLanguage.JAVA:

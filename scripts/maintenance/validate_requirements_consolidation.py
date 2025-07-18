@@ -13,11 +13,11 @@ from collections import defaultdict
 import sys
 
 def find_requirements_files() -> List[Path]:
-    """Find all requirements.txt files in the project."""
+    """Find all config/environments/requirements.txt files in the project."""
     root = Path(__file__).parent.parent.parent
     requirements_files = []
     
-    for pattern in ["**/requirements*.txt", "**/requirements.txt"]:
+    for pattern in ["**/requirements*.txt", "**/config/environments/requirements.txt"]:
         for file_path in root.glob(pattern):
             # Skip temporary and backup directories
             if any(skip in str(file_path) for skip in ["temp/", "backup-", "__pycache__", ".git"]):

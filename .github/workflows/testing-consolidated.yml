@@ -19,10 +19,10 @@ on:
       - '**.go'
       - 'tests/**'
       - 'services/**'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'package*.json'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       
   pull_request:
     branches: [main, master, develop]
@@ -34,10 +34,10 @@ on:
       - '**.go'
       - 'tests/**'
       - 'services/**'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'package*.json'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       
   schedule:
     - cron: '0 4 * * *'  # Daily at 4 AM for comprehensive testing
@@ -106,7 +106,7 @@ jobs:
           path: |
             ~/.cache/pip
             .venv
-          key: python-test-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt') }}
+          key: python-test-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: |
             python-test-${{ env.PYTHON_VERSION }}-
             
@@ -116,10 +116,10 @@ jobs:
           pip install --upgrade pip wheel setuptools
           
           # Install security-hardened requirements
-          if [ -f "requirements-security.txt" ]; then
-            pip install -r requirements-security.txt
-          elif [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements-security.txt" ]; then
+            pip install -r config/environments/requirements-security.txt
+          elif [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           fi
           
           # Install test dependencies with all required plugins
@@ -341,10 +341,10 @@ jobs:
           
           pip install --upgrade pip
           
-          if [ -f "requirements-security.txt" ]; then
-            pip install -r requirements-security.txt
-          elif [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements-security.txt" ]; then
+            pip install -r config/environments/requirements-security.txt
+          elif [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           fi
           
           # Install pytest and required plugins
@@ -459,8 +459,8 @@ jobs:
           EOF
           
           # Start services with docker-compose
-          if [ -f "docker-compose.test.yml" ]; then
-            docker-compose -f docker-compose.test.yml up -d
+          if [ -f "config/docker/docker-compose.test.yml" ]; then
+            docker-compose -f config/docker/docker-compose.test.yml up -d
           elif [ -f "infrastructure/docker/docker-compose.acgs.yml" ]; then
             docker-compose -f infrastructure/docker/docker-compose.acgs.yml up -d
           else
@@ -537,8 +537,8 @@ jobs:
         run: |
           echo "🧹 Cleaning up E2E environment..."
           
-          if [ -f "docker-compose.test.yml" ]; then
-            docker-compose -f docker-compose.test.yml down -v
+          if [ -f "config/docker/docker-compose.test.yml" ]; then
+            docker-compose -f config/docker/docker-compose.test.yml down -v
           elif [ -f "infrastructure/docker/docker-compose.acgs.yml" ]; then
             docker-compose -f infrastructure/docker/docker-compose.acgs.yml down -v
           fi
@@ -578,10 +578,10 @@ jobs:
           pip install --upgrade pip
           pip install pytest pytest-benchmark locust httpx
           
-          if [ -f "requirements-security.txt" ]; then
-            pip install -r requirements-security.txt
-          elif [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements-security.txt" ]; then
+            pip install -r config/environments/requirements-security.txt
+          elif [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           fi
           
       - name: Run Performance Tests

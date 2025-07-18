@@ -82,7 +82,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
@@ -91,8 +91,8 @@ jobs:
           python -m pip install --upgrade pip
 
           # Install common requirements if they exist
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           fi
 
           # Install test requirements if they exist
@@ -106,62 +106,62 @@ jobs:
           # Install service-specific requirements with correct paths
           case "${{ matrix.service }}" in
             "auth")
-              if [ -f "services/platform/authentication/auth_service/requirements.txt" ]; then
-                pip install -r "services/platform/authentication/auth_service/requirements.txt"
+              if [ -f "services/platform/authentication/auth_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/platform/authentication/auth_service/config/environments/requirements.txt"
               fi
               ;;
             "ac")
-              if [ -f "services/core/constitutional-ai/ac_service/requirements.txt" ]; then
-                pip install -r "services/core/constitutional-ai/ac_service/requirements.txt"
-              elif [ -f "services/core/constitutional-ai/requirements.txt" ]; then
-                pip install -r "services/core/constitutional-ai/requirements.txt"
+              if [ -f "services/core/constitutional-ai/ac_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/constitutional-ai/ac_service/config/environments/requirements.txt"
+              elif [ -f "services/core/constitutional-ai/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/constitutional-ai/config/environments/requirements.txt"
               fi
               ;;
             "integrity")
-              if [ -f "services/platform/integrity/integrity_service/requirements.txt" ]; then
-                pip install -r "services/platform/integrity/integrity_service/requirements.txt"
-              elif [ -f "services/platform/integrity/requirements.txt" ]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
-                pip install -r "services/platform/integrity/requirements.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+              if [ -f "services/platform/integrity/integrity_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/platform/integrity/integrity_service/config/environments/requirements.txt"
+              elif [ -f "services/platform/integrity/config/environments/requirements.txt" ]; then  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+                pip install -r "services/platform/integrity/config/environments/requirements.txt"  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
               fi
               ;;
             "fv")
-              if [ -f "services/core/formal-verification/fv_service/requirements.txt" ]; then
-                pip install -r "services/core/formal-verification/fv_service/requirements.txt"
-              elif [ -f "services/core/formal-verification/requirements.txt" ]; then
-                pip install -r "services/core/formal-verification/requirements.txt"
+              if [ -f "services/core/formal-verification/fv_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/formal-verification/fv_service/config/environments/requirements.txt"
+              elif [ -f "services/core/formal-verification/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/formal-verification/config/environments/requirements.txt"
               fi
               ;;
             "gs")
-              if [ -f "services/core/governance-synthesis/gs_service/requirements.txt" ]; then
-                pip install -r "services/core/governance-synthesis/gs_service/requirements.txt"
-              elif [ -f "services/core/governance-synthesis/requirements.txt" ]; then
-                pip install -r "services/core/governance-synthesis/requirements.txt"
+              if [ -f "services/core/governance-synthesis/gs_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/governance-synthesis/gs_service/config/environments/requirements.txt"
+              elif [ -f "services/core/governance-synthesis/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/governance-synthesis/config/environments/requirements.txt"
               fi
               ;;
             "pgc")
-              if [ -f "services/core/policy-governance/pgc_service/requirements.txt" ]; then
-                pip install -r "services/core/policy-governance/pgc_service/requirements.txt"
-              elif [ -f "services/core/policy-governance/requirements.txt" ]; then
-                pip install -r "services/core/policy-governance/requirements.txt"
+              if [ -f "services/core/policy-governance/pgc_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/policy-governance/pgc_service/config/environments/requirements.txt"
+              elif [ -f "services/core/policy-governance/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/policy-governance/config/environments/requirements.txt"
               fi
               ;;
             "ec")
-              if [ -f "services/core/evolutionary-computation/ec_service/requirements.txt" ]; then
-                pip install -r "services/core/evolutionary-computation/ec_service/requirements.txt"
-              elif [ -f "services/core/evolutionary-computation/requirements.txt" ]; then
-                pip install -r "services/core/evolutionary-computation/requirements.txt"
+              if [ -f "services/core/evolutionary-computation/ec_service/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/evolutionary-computation/ec_service/config/environments/requirements.txt"
+              elif [ -f "services/core/evolutionary-computation/config/environments/requirements.txt" ]; then
+                pip install -r "services/core/evolutionary-computation/config/environments/requirements.txt"
               fi
               ;;
           esac
 
           # Fallback: Install service-specific requirements if they exist (old format)
-          SERVICE_REQ_FILE="services/core/${{ matrix.service }}/requirements.txt"
+          SERVICE_REQ_FILE="services/core/${{ matrix.service }}/config/environments/requirements.txt"
           if [ -f "$SERVICE_REQ_FILE" ]; then
             pip install -r "$SERVICE_REQ_FILE"
           fi
 
           # Install platform service requirements if applicable (old format)
-          PLATFORM_REQ_FILE="services/platform/${{ matrix.service }}/requirements.txt"
+          PLATFORM_REQ_FILE="services/platform/${{ matrix.service }}/config/environments/requirements.txt"
           if [ -f "$PLATFORM_REQ_FILE" ]; then
             pip install -r "$PLATFORM_REQ_FILE"
           fi

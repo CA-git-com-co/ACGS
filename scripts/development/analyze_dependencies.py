@@ -45,7 +45,7 @@ class DependencyAnalyzer:
         return None, None
         
     def parse_requirements_file(self, file_path: Path) -> None:
-        """Parse a requirements.txt file."""
+        """Parse a config/environments/requirements.txt file."""
         try:
             with open(file_path, 'r') as f:
                 for line in f:
@@ -56,8 +56,8 @@ class DependencyAnalyzer:
             print(f"Error parsing {file_path}: {e}")
             
     def parse_pyproject_toml(self) -> None:
-        """Parse the main pyproject.toml file."""
-        pyproject_path = self.project_root / "pyproject.toml"
+        """Parse the main config/environments/pyproject.toml file."""
+        pyproject_path = self.project_root / "config/environments/pyproject.toml"
         if not pyproject_path.exists():
             return
             
@@ -81,7 +81,7 @@ class DependencyAnalyzer:
                         if package:
                             self.pyproject_deps[package] = version
         except Exception as e:
-            print(f"Error parsing pyproject.toml: {e}")
+            print(f"Error parsing config/environments/pyproject.toml: {e}")
             
     def analyze(self) -> None:
         """Run the complete dependency analysis."""
@@ -98,7 +98,7 @@ class DependencyAnalyzer:
         for req_file in req_files:
             self.parse_requirements_file(req_file)
             
-        # Parse pyproject.toml
+        # Parse config/environments/pyproject.toml
         self.parse_pyproject_toml()
         
         # Analyze results
@@ -146,7 +146,7 @@ class DependencyAnalyzer:
                 print(f"  {version or 'unspecified'}: {', '.join(files)}")
                 
     def report_version_mismatches(self) -> None:
-        """Report mismatches between pyproject.toml and requirements files."""
+        """Report mismatches between config/environments/pyproject.toml and requirements files."""
         print("\n" + "=" * 60)
         print("PYPROJECT.TOML vs REQUIREMENTS.TXT MISMATCHES")
         print("=" * 60)
@@ -159,13 +159,13 @@ class DependencyAnalyzer:
                         mismatches.append((package, pyproject_version, req_version, files))
                         
         if not mismatches:
-            print("No mismatches found between pyproject.toml and requirements files.")
+            print("No mismatches found between config/environments/pyproject.toml and requirements files.")
             return
             
         for package, py_ver, req_ver, files in mismatches:
             print(f"\n{package}:")
-            print(f"  pyproject.toml: {py_ver}")
-            print(f"  requirements.txt: {req_ver} in {', '.join(files)}")
+            print(f"  config/environments/pyproject.toml: {py_ver}")
+            print(f"  config/environments/requirements.txt: {req_ver} in {', '.join(files)}")
             
     def report_recommendations(self) -> None:
         """Provide specific recommendations for cleanup."""
@@ -193,7 +193,7 @@ class DependencyAnalyzer:
             if versions:
                 print(f"\n   {package}:")
                 if package in self.pyproject_deps:
-                    print(f"     Recommended (from pyproject.toml): {self.pyproject_deps[package]}")
+                    print(f"     Recommended (from config/environments/pyproject.toml): {self.pyproject_deps[package]}")
                 for version, files in versions:
                     print(f"     Current: {version} in {len(files)} file(s)")
                     

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Emergency Rollback Script
 # Generated: 2025-06-24T00:09:12.960104

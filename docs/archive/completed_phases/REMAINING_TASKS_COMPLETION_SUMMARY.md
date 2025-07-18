@@ -32,7 +32,7 @@ Successfully addressed all remaining development workflow items following the py
 - Implemented flexible coverage modes (none/services/framework)
 
 **Key Deliverables**:
-- Clean pytest.ini configuration without coverage warnings
+- Clean config/environments/pytest.ini configuration without coverage warnings
 - Enhanced E2E test runner with coverage options
 - Clear separation of concerns for different test types
 

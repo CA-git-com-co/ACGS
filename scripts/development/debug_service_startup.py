@@ -63,19 +63,19 @@ class ServiceStartupDebugger:
             main_py = service_dir / "app" / "main.py"
             print(f"   main.py: {main_py.exists()} ({main_py})")
 
-            # Check for requirements.txt
+            # Check for config/environments/requirements.txt
             req_files = [
-                service_dir / "requirements.txt",
-                service_dir / "app" / "requirements.txt",
-                self.project_root / "services" / "shared" / "requirements.txt",
+                service_dir / "config/environments/requirements.txt",
+                service_dir / "app" / "config/environments/requirements.txt",
+                self.project_root / "services" / "shared" / "config/environments/requirements.txt",
             ]
 
             for req_file in req_files:
                 if req_file.exists():
-                    print(f"   requirements.txt: ✅ {req_file}")
+                    print(f"   config/environments/requirements.txt: ✅ {req_file}")
                     break
             else:
-                print("   requirements.txt: ❌ Not found")
+                print("   config/environments/requirements.txt: ❌ Not found")
 
             # List directory contents
             if service_dir.exists():

@@ -39,10 +39,10 @@ Based on the latest health check, these workflows were failing:
 # Install core tools first
 uv pip install pytest black isort mypy fastapi httpx pandas numpy || echo "⚠️ Core tools install failed"
 
-# Install dependencies from requirements.txt if it exists
-if [ -f "requirements.txt" ]; then
-  echo "Installing from requirements.txt..."
-  uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "⚠️ Requirements install failed, continuing..."
+# Install dependencies from config/environments/requirements.txt if it exists
+if [ -f "config/environments/requirements.txt" ]; then
+  echo "Installing from config/environments/requirements.txt..."
+  uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "⚠️ Requirements install failed, continuing..."
 fi
 ```
 

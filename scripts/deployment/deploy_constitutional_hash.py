@@ -85,7 +85,7 @@ class ConstitutionalHashDeployer:
             "CODE_OF_CONDUCT.md",
             "CONTRIBUTING.md",
             "SECURITY.md",
-            "requirements.txt",
+            "config/environments/requirements.txt",
             "requirements_dev.txt"
         ]
 

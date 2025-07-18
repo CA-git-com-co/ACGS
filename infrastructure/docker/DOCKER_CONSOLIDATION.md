@@ -33,7 +33,7 @@ Consolidation of the 15+ scattered Docker Compose files into streamlined develop
 ├── docker-compose.dev.yml
 ├── docker-compose.prod.yml
 ├── docker-compose.staging.yml
-├── docker-compose.test.yml
+├── config/docker/docker-compose.test.yml
 ├── docker-compose.monitoring.yml
 ├── docker-compose.security.yml
 ├── docker-compose.operational-excellence.yml

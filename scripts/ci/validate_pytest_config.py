@@ -167,25 +167,25 @@ class PytestCIValidator:
         """Test configuration file validity."""
         print("\n📄 Test 4: Configuration File Validation")
 
-        # Check pytest.ini format
-        pytest_ini = self.project_root / "tests/e2e/pytest.ini"
+        # Check config/environments/pytest.ini format
+        pytest_ini = self.project_root / "tests/e2e/config/environments/pytest.ini"
         if pytest_ini.exists():
             with open(pytest_ini, "r") as f:
                 content = f.read()
 
             if content.startswith("[pytest]"):
-                print("✅ pytest.ini has correct section header")
+                print("✅ config/environments/pytest.ini has correct section header")
                 self.results.append(
-                    CIValidationResult("pytest.ini format", "file check", True)
+                    CIValidationResult("config/environments/pytest.ini format", "file check", True)
                 )
             else:
-                print("❌ pytest.ini has incorrect section header")
+                print("❌ config/environments/pytest.ini has incorrect section header")
                 self.results.append(
-                    CIValidationResult("pytest.ini format", "file check", False)
+                    CIValidationResult("config/environments/pytest.ini format", "file check", False)
                 )
 
-        # Check pyproject.toml markers
-        pyproject_toml = self.project_root / "pyproject.toml"
+        # Check config/environments/pyproject.toml markers
+        pyproject_toml = self.project_root / "config/environments/pyproject.toml"
         if pyproject_toml.exists():
             with open(pyproject_toml, "r") as f:
                 content = f.read()
@@ -195,14 +195,14 @@ class PytestCIValidator:
                 and "constitutional" in content
                 and "smoke" in content
             ):
-                print("✅ pyproject.toml has required markers")
+                print("✅ config/environments/pyproject.toml has required markers")
                 self.results.append(
-                    CIValidationResult("pyproject.toml markers", "file check", True)
+                    CIValidationResult("config/environments/pyproject.toml markers", "file check", True)
                 )
             else:
-                print("❌ pyproject.toml missing required markers")
+                print("❌ config/environments/pyproject.toml missing required markers")
                 self.results.append(
-                    CIValidationResult("pyproject.toml markers", "file check", False)
+                    CIValidationResult("config/environments/pyproject.toml markers", "file check", False)
                 )
 
     def _test_coverage_compatibility(self) -> None:

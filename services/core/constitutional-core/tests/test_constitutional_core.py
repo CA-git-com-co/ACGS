@@ -157,7 +157,9 @@ def test_list_constitutional_principles():
 
 def test_get_specific_principle():
     """Test getting a specific constitutional principle."""
-    response = client.get("/api/v1/constitutional/principles/fairness")  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    response = client.get(
+        "/api/v1/constitutional/principles/fairness"
+    )  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     assert response.status_code == 200
     data = response.json()
     assert data["id"] == "fairness_001"
@@ -167,7 +169,9 @@ def test_get_specific_principle():
 
 def test_get_nonexistent_principle():
     """Test getting a non-existent principle."""
-    response = client.get("/api/v1/constitutional/principles/nonexistent")  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
+    response = client.get(
+        "/api/v1/constitutional/principles/nonexistent"
+    )  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
     assert response.status_code == 404
 
 

@@ -220,6 +220,7 @@ async def mock_auth_service():
 # Test environment setup
 def pytest_configure(config):
     """Configure pytest with ACGS-specific settings."""
+    _ = config  # Unused but required by pytest
     # Set environment variables for testing
     os.environ["ACGS_ENVIRONMENT"] = "test"
     os.environ["ACGS_DATABASE_URL"] = TEST_DATABASE_URL
@@ -227,22 +228,17 @@ def pytest_configure(config):
     os.environ["ACGS_JWT_SECRET"] = TEST_JWT_SECRET
     os.environ["ACGS_JWT_ALGORITHM"] = TEST_JWT_ALGORITHM
     os.environ["ACGS_CONSTITUTIONAL_HASH"] = CONSTITUTIONAL_HASH
+    os.environ["PYTEST_CURRENT_TEST"] = "true"
+    os.environ["TESTING"] = "true"
 
 
 def pytest_collection_modifyitems(config, items):
     """Modify test collection to add markers."""
+    _ = config  # Unused but required by pytest
     for item in items:
         # Add asyncio marker to all async tests
         if asyncio.iscoroutinefunction(item.function):
             item.add_marker(pytest.mark.asyncio)
-
-        # Add performance marker to performance tests
-        if "performance" in item.nodeid:
-            item.add_marker(pytest.mark.performance)
-
-        # Add integration marker to integration tests
-        if "integration" in item.nodeid:
-            item.add_marker(pytest.mark.integration)
 
 
 # Pytest markers

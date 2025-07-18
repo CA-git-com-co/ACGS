@@ -32,8 +32,8 @@ class ProjectCleanup:
             "DEPENDENCIES.md", "EXECUTIVE_SUMMARY.md", "NON_TECHNICAL_SUMMARY.md",
             
             # Essential configuration
-            "docker-compose.yml", "Dockerfile", "requirements.txt", "package.json",
-            "pyproject.toml", "Cargo.toml", "go.mod", ".env.example",
+            "docker-compose.yml", "Dockerfile", "config/environments/requirements.txt", "package.json",
+            "config/environments/pyproject.toml", "Cargo.toml", "go.mod", ".env.example",
             
             # Essential scripts and tools
             "scripts/enhancement/", "scripts/validation/", "scripts/reorganization/",
@@ -329,7 +329,7 @@ class ProjectCleanup:
 
 The following essential files and directories were preserved:
 - All CLAUDE.md files with constitutional compliance
-- Essential configuration files (docker-compose.yml, requirements.txt, etc.)
+- Essential configuration files (docker-compose.yml, config/environments/requirements.txt, etc.)
 - Enhancement and validation scripts
 - GitHub Actions workflows
 - Recent reports and documentation

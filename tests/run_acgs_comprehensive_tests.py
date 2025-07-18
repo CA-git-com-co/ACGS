@@ -229,7 +229,7 @@ class ACGSComprehensiveTestRunner:
                 "--cov-report=json:test_reports/coverage.json",
                 "--cov-report=term-missing",
                 f"--cov-fail-under={target_coverage}",
-                "--cov-config=pyproject.toml",
+                "--cov-config=config/environments/pyproject.toml",
                 "--cov-branch",  # Include branch coverage
                 "--disable-warnings",
                 "-q",  # Quiet mode for cleaner output

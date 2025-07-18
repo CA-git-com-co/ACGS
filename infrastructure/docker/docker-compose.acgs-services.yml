@@ -1,5 +1,5 @@
 # ACGS-2 Core Services Configuration
-# Use with base infrastructure: docker-compose -f docker-compose.base-infrastructure.yml -f docker-compose.acgs-services.yml
+# Use with base infrastructure: docker-compose -f config/docker/docker-compose.base-infrastructure.yml -f docker-compose.acgs-services.yml
 
 version: '3.8'
 

@@ -175,7 +175,7 @@ class AdvancedLinkIntegrityResolver:
                 'CLAUDE.md': 'Directory documentation with constitutional compliance',
                 'README.md': 'Project or component overview documentation',
                 'docker-compose.yml': 'Docker service orchestration',
-                'requirements.txt': 'Python dependencies',
+                'config/environments/requirements.txt': 'Python dependencies',
                 'package.json': 'Node.js dependencies'
             }
         }

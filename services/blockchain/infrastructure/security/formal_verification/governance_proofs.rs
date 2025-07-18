@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // Formal verification specifications for the governance system
 // Using Prusti for Rust verification (https://github.com/viperproject/prusti-dev)
 

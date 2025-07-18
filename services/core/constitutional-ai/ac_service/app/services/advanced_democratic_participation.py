@@ -175,9 +175,7 @@ class AdvancedDemocraticParticipation:
             if self.w3.is_connected():
                 logger.info("Blockchain connection established")
                 # In production, deploy voting smart contract
-                self.voting_contract_address = (
-                    "0x1234567890123456789012345678901234567890"  # Placeholder  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
-                )
+                self.voting_contract_address = "0x1234567890123456789012345678901234567890"  # Placeholder  # TODO: Replace with environment variable - Constitutional Hash: cdd01ef066bc6cf2
             else:
                 logger.warning("Blockchain connection failed - using local storage")
         except Exception as e:

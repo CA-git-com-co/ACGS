@@ -58,8 +58,8 @@ This report validates the completion of comprehensive documentation updates for 
 **Resolution**: Standardized to 80% across all configurations
 
 **Files Updated**:
-- `pytest.ini`: `--cov-fail-under=80` ✅
-- `pyproject.toml`: `fail_under = 80` ✅
+- `config/environments/pytest.ini`: `--cov-fail-under=80` ✅
+- `config/environments/pyproject.toml`: `fail_under = 80` ✅
 - Documentation: 80% target ✅
 
 ### 5. Cross-Reference Validation ✅

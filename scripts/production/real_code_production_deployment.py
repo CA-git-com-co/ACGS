@@ -148,7 +148,7 @@ class RealCodeProductionDeployment:
         required_files = [
             "config/docker/docker-compose.production.yml",
             "config/environments/developmentconfig/environments/production.env.backup",
-            "nginx.production.conf",
+            "config/nginx.production.conf",
             "scripts/deployment/deploy_production.sh"
         ]
         

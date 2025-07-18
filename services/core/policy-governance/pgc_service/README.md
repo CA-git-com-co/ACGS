@@ -201,7 +201,7 @@ source ~/.bashrc
 uv sync
 
 # Alternative: Traditional pip
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # 2. Install and start OPA
 # Download OPA

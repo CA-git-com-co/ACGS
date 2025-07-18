@@ -91,8 +91,8 @@ jobs:
           filters: |
             python:
               - 'services/**/*.py'
-              - '**/requirements*.txt'
-              - '**/pyproject.toml'
+              - '**/config/environments/requirements*.txt'
+              - '**/config/environments/pyproject.toml'
               - 'tests/**/*.py'
               - '.github/workflows/**'
             rust:
@@ -113,7 +113,7 @@ jobs:
             security:
               - '.github/workflows/**'
               - 'scripts/security/**'
-              - '**/requirements*.txt'
+              - '**/config/environments/requirements*.txt'
               - '**/Cargo.toml'
               - '**/package.json'
             infrastructure:
@@ -204,7 +204,7 @@ jobs:
             ${{ env.UV_CACHE_DIR }}
             ~/.cache/pip
             .venv
-          key: uv-v2-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', 'uv.lock') }}
+          key: uv-v2-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml', 'config/environments/uv.lock') }}
           restore-keys: |
             uv-v2-${{ runner.os }}-${{ matrix.service }}-
             uv-v2-${{ runner.os }}-
@@ -229,12 +229,12 @@ jobs:
           source .venv/bin/activate
           
           # Install with UV's fast resolver
-          if [ -f "pyproject.toml" ]; then
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv pip install -e ".[dev,test]" --resolution highest || \
             uv pip install -e . || \
             echo "⚠️ Project installation failed"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt || echo "⚠️ Requirements installation failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt || echo "⚠️ Requirements installation failed"
           fi
           
           # Install essential dev tools only

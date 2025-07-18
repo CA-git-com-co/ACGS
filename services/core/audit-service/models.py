@@ -13,8 +13,10 @@ import uuid
 
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
 
+
 class EventType(str, Enum):
     """Audit event types"""
+
     AUTHENTICATION = "authentication"
     AUTHORIZATION = "authorization"
     DATA_ACCESS = "data_access"
@@ -31,23 +33,29 @@ class EventType(str, Enum):
     DATA_PROCESSING = "data_processing"
     PRIVACY_EVENT = "privacy_event"
 
+
 class ComplianceStatus(str, Enum):
     """Compliance status values"""
+
     COMPLIANT = "compliant"
     NON_COMPLIANT = "non_compliant"
     PARTIAL_COMPLIANCE = "partial_compliance"
     UNDER_REVIEW = "under_review"
     EXEMPTED = "exempted"
 
+
 class ExportFormat(str, Enum):
     """Export format options"""
+
     JSON = "json"
     CSV = "csv"
     PDF = "pdf"
     XML = "xml"
 
+
 class AuditEntry(BaseModel):
     """Core audit entry"""
+
     entry_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     timestamp: datetime = Field(default_factory=datetime.utcnow)
     event_type: str
@@ -70,8 +78,10 @@ class AuditEntry(BaseModel):
     integrity_hash: Optional[str] = None
     constitutional_hash: str = CONSTITUTIONAL_HASH
 
+
 class AuditQuery(BaseModel):
     """Query parameters for audit entries"""
+
     start_time: Optional[datetime] = None
     end_time: Optional[datetime] = None
     event_types: Optional[List[str]] = None
@@ -84,8 +94,10 @@ class AuditQuery(BaseModel):
     limit: Optional[int] = Field(None, le=10000)
     offset: Optional[int] = 0
 
+
 class ComplianceReport(BaseModel):
     """Compliance assessment report"""
+
     report_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     framework_name: str
     status: ComplianceStatus
@@ -105,8 +117,10 @@ class ComplianceReport(BaseModel):
     detailed_findings: Dict[str, Any] = {}
     risk_assessment: Dict[str, str] = {}
 
+
 class RegulatoryFramework(BaseModel):
     """Regulatory framework definition"""
+
     framework_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -121,8 +135,10 @@ class RegulatoryFramework(BaseModel):
     mandatory_fields: List[str] = []
     optional_fields: List[str] = []
 
+
 class DataRetentionPolicy(BaseModel):
     """Data retention policy"""
+
     policy_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -137,8 +153,10 @@ class DataRetentionPolicy(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_reviewed: datetime = Field(default_factory=datetime.utcnow)
 
+
 class AuditTrail(BaseModel):
     """Audit trail for specific resource"""
+
     resource_id: str
     resource_type: str
     entries: List[AuditEntry] = []
@@ -147,8 +165,10 @@ class AuditTrail(BaseModel):
     integrity_verified: bool = True
     chain_hash: Optional[str] = None
 
+
 class SystemActivity(BaseModel):
     """System-wide activity summary"""
+
     activity_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     period_start: datetime
     period_end: datetime
@@ -162,8 +182,10 @@ class SystemActivity(BaseModel):
     peak_activity_hour: Optional[int] = None
     generated_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class ConstitutionalEvent(BaseModel):
     """Constitutional governance event"""
+
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     event_type: str
     description: str
@@ -177,8 +199,10 @@ class ConstitutionalEvent(BaseModel):
     compliance_impact: List[str] = []
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
+
 class ComplianceMetrics(BaseModel):
     """Compliance performance metrics"""
+
     total_audit_entries: int = 0
     constitutional_events: int = 0
     compliance_violations_last_30_days: int = 0
@@ -189,8 +213,10 @@ class ComplianceMetrics(BaseModel):
     privacy_compliance_score: float = Field(ge=0.0, le=100.0, default=100.0)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
+
 class AuditAlert(BaseModel):
     """Audit system alert"""
+
     alert_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     alert_type: str
     severity: str  # low, medium, high, critical
@@ -210,8 +236,10 @@ class AuditAlert(BaseModel):
     processed: bool = False
     processed_at: Optional[datetime] = None
 
+
 class AuditConfiguration(BaseModel):
     """Audit system configuration"""
+
     config_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     real_time_monitoring: bool = True
     constitutional_tracking: bool = True
@@ -233,8 +261,10 @@ class AuditConfiguration(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_modified: datetime = Field(default_factory=datetime.utcnow)
 
+
 class ReportTemplate(BaseModel):
     """Compliance report template"""
+
     template_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
     description: str
@@ -250,8 +280,10 @@ class ReportTemplate(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_modified: datetime = Field(default_factory=datetime.utcnow)
 
+
 class PrivacyEvent(BaseModel):
     """Privacy-related event"""
+
     event_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     event_type: str  # consent_given, consent_withdrawn, data_accessed, data_deleted
     data_subject_id: Optional[str] = None
@@ -266,8 +298,10 @@ class PrivacyEvent(BaseModel):
     related_audit_entry: Optional[str] = None
     timestamp: datetime = Field(default_factory=datetime.utcnow)
 
+
 class DataLineage(BaseModel):
     """Data lineage tracking"""
+
     lineage_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     data_id: str
     data_type: str
@@ -282,8 +316,10 @@ class DataLineage(BaseModel):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_updated: datetime = Field(default_factory=datetime.utcnow)
 
+
 class AuditDashboardWidget(BaseModel):
     """Dashboard widget configuration"""
+
     widget_id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     title: str
     widget_type: str  # chart, table, metric, alert_list, compliance_status
@@ -295,8 +331,10 @@ class AuditDashboardWidget(BaseModel):
     visible: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
+
 class AuditStatistics(BaseModel):
     """Audit system statistics"""
+
     total_entries: int = 0
     entries_by_type: Dict[str, int] = {}
     entries_by_service: Dict[str, int] = {}

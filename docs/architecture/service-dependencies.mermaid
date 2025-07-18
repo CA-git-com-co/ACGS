@@ -1,0 +1,185 @@
+graph TB
+    %% ACGS-2 Service Dependency Architecture
+    %% Constitutional Hash: cdd01ef066bc6cf2
+    
+    subgraph "External Layer"
+        EXT[External Clients]
+        CLI[CLI Tools]
+        WEB[Web Interface]
+    end
+    
+    subgraph "Protocol Layer"
+        MCP_AGG[MCP Aggregator:8010]
+        MCP_BROWSER[MCP Browser:8011]
+        MCP_FS[MCP Filesystem:8012]
+        MCP_GH[MCP GitHub:8013]
+    end
+    
+    subgraph "Platform Layer"
+        GATEWAY[API Gateway:8000]
+        AUTH[Authentication:8006]
+        INTEGRITY[Integrity:8002]
+        AUDIT_AGG[Audit Aggregator]
+        BLOCKCHAIN_AUDIT[Blockchain Audit]
+        HUMAN_REVIEW[Human Review]
+        IMAGE_COMP[Image Compliance]
+        DIALOGUE[Dialogue Assistant]
+        RECOMMEND[Recommendation System]
+    end
+    
+    subgraph "Core Layer"
+        CONST_AI[Constitutional AI:8001]
+        POLICY_GOV[Policy Governance:8003]
+        EVOL_COMP[Evolutionary Computation:8004]
+        FORMAL_VER[Formal Verification:8005]
+        GOV_SYNTH[Governance Synthesis]
+        CODE_ANAL[Code Analysis]
+        MULTI_AGENT[Multi-Agent Coordination]
+        CONSENSUS[Consensus Engine]
+        AUDIT_SVC[Audit Service]
+        SECURITY_VAL[Security Validation]
+        GDPR[GDPR Compliance]
+        WORKER_AGENTS[Worker Agents]
+    end
+    
+    subgraph "Shared Layer"
+        SHARED_MODELS[Shared Models]
+        SHARED_MIDDLEWARE[Shared Middleware]
+        SHARED_CONFIG[Shared Config]
+        SHARED_AUTH[Shared Auth]
+        SHARED_DB[Shared Database]
+        SHARED_MONITORING[Shared Monitoring]
+        BLACKBOARD[Blackboard Coordination]
+        ROUTING[Routing Service]
+        EVENTS[Event Management]
+        COMPLIANCE[Compliance Framework]
+    end
+    
+    subgraph "Security Layer (Cross-cutting)"
+        SEC_MIDDLEWARE[Security Middleware]
+        ENCRYPTION[Encryption Services]
+        ACCESS_CONTROL[Access Control]
+        CONST_HASH[Constitutional Hash Validation]
+    end
+    
+    subgraph "Infrastructure Layer"
+        REDIS[Redis Cache]
+        POSTGRES[PostgreSQL]
+        PROMETHEUS[Prometheus]
+        GRAFANA[Grafana]
+        ELK[ELK Stack]
+        JAEGER[Jaeger Tracing]
+    end
+    
+    %% External connections
+    EXT --> GATEWAY
+    CLI --> GATEWAY
+    WEB --> GATEWAY
+    
+    %% Gateway routing
+    GATEWAY --> CONST_AI
+    GATEWAY --> POLICY_GOV
+    GATEWAY --> EVOL_COMP
+    GATEWAY --> FORMAL_VER
+    GATEWAY --> AUTH
+    GATEWAY --> INTEGRITY
+    
+    %% Authentication flows
+    AUTH --> SHARED_AUTH
+    AUTH --> POSTGRES
+    GATEWAY --> AUTH
+    
+    %% Core service dependencies
+    CONST_AI --> SHARED_MODELS
+    CONST_AI --> SHARED_MIDDLEWARE
+    CONST_AI --> COMPLIANCE
+    CONST_AI --> CONST_HASH
+    
+    POLICY_GOV --> SHARED_MODELS
+    POLICY_GOV --> COMPLIANCE
+    POLICY_GOV --> CONST_AI
+    
+    EVOL_COMP --> SHARED_MODELS
+    EVOL_COMP --> BLACKBOARD
+    EVOL_COMP --> CONST_AI
+    
+    FORMAL_VER --> SHARED_MODELS
+    FORMAL_VER --> CONST_AI
+    FORMAL_VER --> POLICY_GOV
+    
+    GOV_SYNTH --> CONST_AI
+    GOV_SYNTH --> POLICY_GOV
+    GOV_SYNTH --> EVOL_COMP
+    
+    CODE_ANAL --> SHARED_MODELS
+    CODE_ANAL --> MCP_FS
+    CODE_ANAL --> MCP_GH
+    
+    MULTI_AGENT --> BLACKBOARD
+    MULTI_AGENT --> CONST_AI
+    MULTI_AGENT --> WORKER_AGENTS
+    
+    CONSENSUS --> CONST_AI
+    CONSENSUS --> POLICY_GOV
+    CONSENSUS --> MULTI_AGENT
+    
+    %% Platform service dependencies
+    INTEGRITY --> SHARED_DB
+    INTEGRITY --> AUDIT_SVC
+    INTEGRITY --> BLOCKCHAIN_AUDIT
+    
+    AUDIT_AGG --> INTEGRITY
+    AUDIT_AGG --> SHARED_MONITORING
+    AUDIT_AGG --> ELK
+    
+    HUMAN_REVIEW --> AUTH
+    HUMAN_REVIEW --> CONST_AI
+    HUMAN_REVIEW --> POLICY_GOV
+    
+    %% MCP service dependencies
+    MCP_AGG --> MCP_BROWSER
+    MCP_AGG --> MCP_FS
+    MCP_AGG --> MCP_GH
+    
+    %% Shared service dependencies
+    SHARED_MODELS --> POSTGRES
+    SHARED_MIDDLEWARE --> REDIS
+    SHARED_MONITORING --> PROMETHEUS
+    SHARED_MONITORING --> GRAFANA
+    SHARED_MONITORING --> JAEGER
+    
+    %% Security layer (cross-cutting)
+    SEC_MIDDLEWARE --> ACCESS_CONTROL
+    SEC_MIDDLEWARE --> ENCRYPTION
+    SEC_MIDDLEWARE --> CONST_HASH
+    
+    %% All services connect to shared security
+    CONST_AI -.-> SEC_MIDDLEWARE
+    POLICY_GOV -.-> SEC_MIDDLEWARE
+    EVOL_COMP -.-> SEC_MIDDLEWARE
+    FORMAL_VER -.-> SEC_MIDDLEWARE
+    AUTH -.-> SEC_MIDDLEWARE
+    INTEGRITY -.-> SEC_MIDDLEWARE
+    
+    %% Monitoring connections (dotted lines)
+    SHARED_MONITORING -.-> CONST_AI
+    SHARED_MONITORING -.-> POLICY_GOV
+    SHARED_MONITORING -.-> EVOL_COMP
+    SHARED_MONITORING -.-> FORMAL_VER
+    SHARED_MONITORING -.-> AUTH
+    SHARED_MONITORING -.-> INTEGRITY
+    
+    %% Styling
+    classDef coreService fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef platformService fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef sharedService fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef protocolService fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef securityService fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef infraService fill:#f5f5f5,stroke:#424242,stroke-width:2px
+    
+    class CONST_AI,POLICY_GOV,EVOL_COMP,FORMAL_VER,GOV_SYNTH,CODE_ANAL,MULTI_AGENT,CONSENSUS,AUDIT_SVC,SECURITY_VAL,GDPR,WORKER_AGENTS coreService
+    class GATEWAY,AUTH,INTEGRITY,AUDIT_AGG,BLOCKCHAIN_AUDIT,HUMAN_REVIEW,IMAGE_COMP,DIALOGUE,RECOMMEND platformService
+    class SHARED_MODELS,SHARED_MIDDLEWARE,SHARED_CONFIG,SHARED_AUTH,SHARED_DB,SHARED_MONITORING,BLACKBOARD,ROUTING,EVENTS,COMPLIANCE sharedService
+    class MCP_AGG,MCP_BROWSER,MCP_FS,MCP_GH protocolService
+    class SEC_MIDDLEWARE,ENCRYPTION,ACCESS_CONTROL,CONST_HASH securityService
+    class REDIS,POSTGRES,PROMETHEUS,GRAFANA,ELK,JAEGER infraService

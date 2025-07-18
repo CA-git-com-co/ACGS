@@ -1,0 +1,217 @@
+# ACGS-2 Base Docker Compose Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+# Base configuration shared across all environments
+
+version: '3.8'
+
+x-common-environment: &common-environment
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  ACGS_ROOT: ${ACGS_ROOT:-/opt/acgs}
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  PYTHONPATH: /app
+  TZ: UTC
+
+x-common-healthcheck: &common-healthcheck
+  interval: 30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+x-common-restart: &common-restart
+  restart: unless-stopped
+
+x-common-logging: &common-logging
+  logging:
+    driver: json-file
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+networks:
+  acgs_network:
+    driver: bridge
+    name: acgs-network
+    ipam:
+      config:
+        - subnet: 10.200.0.0/16
+    labels:
+      - "acgs.network=main"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+volumes:
+  postgres_data:
+    driver: local
+    labels:
+      - "acgs.volume=database"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  redis_data:
+    driver: local
+    labels:
+      - "acgs.volume=cache"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  acgs_logs:
+    driver: local
+    labels:
+      - "acgs.volume=logs"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  prometheus_data:
+    driver: local
+    labels:
+      - "acgs.volume=monitoring"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+  grafana_data:
+    driver: local
+    labels:
+      - "acgs.volume=monitoring"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+services:
+  # Core Infrastructure Services
+  postgres:
+    image: postgres:15-alpine
+    container_name: acgs_postgres
+    environment:
+      <<: *common-environment
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER environment variable required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD environment variable required}
+      POSTGRES_DB: ${POSTGRES_DB:-acgs_db}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ${ACGS_ROOT}/infrastructure/scripts/docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5439}:5432"
+    networks:
+      - acgs_network
+    healthcheck:
+      <<: *common-healthcheck
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-acgs_db}"]
+    <<: *common-restart
+    <<: *common-logging
+    deploy:
+      resources:
+        limits:
+          memory: ${POSTGRES_MEMORY_LIMIT:-1G}
+          cpus: ${POSTGRES_CPU_LIMIT:-0.5}
+    labels:
+      - "acgs.service=database"
+      - "acgs.component=postgres"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  redis:
+    image: redis:7-alpine
+    container_name: acgs_redis
+    environment:
+      <<: *common-environment
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD environment variable required}
+      --maxmemory ${REDIS_MAX_MEMORY:-256mb}
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6389}:6379"
+    networks:
+      - acgs_network
+    healthcheck:
+      <<: *common-healthcheck
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+    <<: *common-restart
+    <<: *common-logging
+    deploy:
+      resources:
+        limits:
+          memory: ${REDIS_MEMORY_LIMIT:-512M}
+          cpus: ${REDIS_CPU_LIMIT:-0.25}
+    labels:
+      - "acgs.service=cache"
+      - "acgs.component=redis"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Monitoring Infrastructure
+  prometheus:
+    image: prom/prometheus:v2.48.0
+    container_name: acgs_prometheus
+    environment:
+      <<: *common-environment
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-30d}'
+      - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
+    volumes:
+      - prometheus_data:/prometheus
+      - ${ACGS_ROOT}/infrastructure/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ${ACGS_ROOT}/infrastructure/monitoring/prometheus/rules:/etc/prometheus/rules:ro
+    ports:
+      - "${PROMETHEUS_PORT:-9090}:9090"
+    networks:
+      - acgs_network
+    healthcheck:
+      <<: *common-healthcheck
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+    <<: *common-restart
+    <<: *common-logging
+    deploy:
+      resources:
+        limits:
+          memory: ${PROMETHEUS_MEMORY_LIMIT:-1G}
+          cpus: ${PROMETHEUS_CPU_LIMIT:-0.5}
+    labels:
+      - "acgs.service=monitoring"
+      - "acgs.component=prometheus"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  grafana:
+    image: grafana/grafana:10.2.0
+    container_name: acgs_grafana
+    environment:
+      <<: *common-environment
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:?GRAFANA_PASSWORD environment variable required}
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_SECURITY_DISABLE_GRAVATAR: true
+      GF_INSTALL_PLUGINS: ${GRAFANA_PLUGINS:-}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ${ACGS_ROOT}/infrastructure/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ${ACGS_ROOT}/infrastructure/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    networks:
+      - acgs_network
+    depends_on:
+      - prometheus
+    healthcheck:
+      <<: *common-healthcheck
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+    <<: *common-restart
+    <<: *common-logging
+    deploy:
+      resources:
+        limits:
+          memory: ${GRAFANA_MEMORY_LIMIT:-512M}
+          cpus: ${GRAFANA_CPU_LIMIT:-0.25}
+    labels:
+      - "acgs.service=monitoring"
+      - "acgs.component=grafana"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Constitutional Compliance Validation
+x-constitutional-compliance:
+  hash: cdd01ef066bc6cf2
+  performance_targets:
+    p99_latency_ms: 5
+    throughput_rps: 100
+    cache_hit_rate: 0.85
+  validation_requirements:
+    - "All services must include constitutional hash in environment"
+    - "All services must implement health checks"
+    - "All services must use structured logging"
+    - "All services must implement resource limits"

@@ -119,7 +119,7 @@ source ~/.bashrc
 uv sync
 
 # Alternative: Traditional pip
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # 2. Setup database
 createdb acgs_auth

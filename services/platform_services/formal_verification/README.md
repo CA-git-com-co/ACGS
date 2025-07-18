@@ -34,7 +34,7 @@ formal_verification/
 │   └── VALIDATION_REPORT.md
 ├── config/                 # Configuration files
 ├── service.py             # FastAPI service entry point
-├── requirements.txt       # Python dependencies
+├── config/environments/requirements.txt       # Python dependencies
 ├── README.md             # This file
 └── __init__.py
 
@@ -50,7 +50,7 @@ source venv/bin/activate
 
 2. Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 ```
 
 ## Usage

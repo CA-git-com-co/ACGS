@@ -1,0 +1,389 @@
+# ACGS-2 Multi-Region Deployment Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Global Load Balancer Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-global-config
+  namespace: acgs-global
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  regions.yml: |
+    # ACGS-2 Multi-Region Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    global:
+      constitutional_hash: cdd01ef066bc6cf2
+      performance_targets:
+        p99_latency_ms: 5
+        throughput_rps: 100
+        cache_hit_rate: 0.85
+      
+    regions:
+      primary:
+        name: us-east-1
+        zone: us-east-1a,us-east-1b,us-east-1c
+        cluster_endpoint: https://acgs-primary.k8s.local
+        constitutional_compliance: required
+        failover_priority: 1
+        
+      secondary:
+        name: us-west-2
+        zone: us-west-2a,us-west-2b,us-west-2c
+        cluster_endpoint: https://acgs-secondary.k8s.local
+        constitutional_compliance: required
+        failover_priority: 2
+        
+      tertiary:
+        name: eu-west-1
+        zone: eu-west-1a,eu-west-1b,eu-west-1c
+        cluster_endpoint: https://acgs-tertiary.k8s.local
+        constitutional_compliance: required
+        failover_priority: 3
+    
+    traffic_distribution:
+      default:
+        us-east-1: 50
+        us-west-2: 30
+        eu-west-1: 20
+      
+      failover:
+        us-east-1_down:
+          us-west-2: 70
+          eu-west-1: 30
+        us-west-2_down:
+          us-east-1: 70
+          eu-west-1: 30
+        eu-west-1_down:
+          us-east-1: 60
+          us-west-2: 40
+
+---
+# Cross-Region Service Discovery
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: acgs-cross-region-services
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - constitutional-ai.us-east-1.acgs.local
+  - constitutional-ai.us-west-2.acgs.local
+  - constitutional-ai.eu-west-1.acgs.local
+  ports:
+  - number: 8001
+    name: http
+    protocol: HTTP
+  - number: 8443
+    name: https
+    protocol: HTTPS
+  location: MESH_EXTERNAL
+  resolution: DNS
+
+---
+# Global Virtual Service for Multi-Region Routing
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: acgs-global-routing
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  hosts:
+  - acgs.global
+  gateways:
+  - acgs-global-gateway
+  http:
+  - match:
+    - headers:
+        x-region:
+          exact: us-east-1
+    route:
+    - destination:
+        host: constitutional-ai.us-east-1.acgs.local
+        port:
+          number: 8001
+      weight: 100
+    headers:
+      request:
+        add:
+          x-constitutional-hash: cdd01ef066bc6cf2
+          x-region-routed: us-east-1
+  - match:
+    - headers:
+        x-region:
+          exact: us-west-2
+    route:
+    - destination:
+        host: constitutional-ai.us-west-2.acgs.local
+        port:
+          number: 8001
+      weight: 100
+    headers:
+      request:
+        add:
+          x-constitutional-hash: cdd01ef066bc6cf2
+          x-region-routed: us-west-2
+  - match:
+    - headers:
+        x-region:
+          exact: eu-west-1
+    route:
+    - destination:
+        host: constitutional-ai.eu-west-1.acgs.local
+        port:
+          number: 8001
+      weight: 100
+    headers:
+      request:
+        add:
+          x-constitutional-hash: cdd01ef066bc6cf2
+          x-region-routed: eu-west-1
+  - route:
+    - destination:
+        host: constitutional-ai.us-east-1.acgs.local
+        port:
+          number: 8001
+      weight: 50
+    - destination:
+        host: constitutional-ai.us-west-2.acgs.local
+        port:
+          number: 8001
+      weight: 30
+    - destination:
+        host: constitutional-ai.eu-west-1.acgs.local
+        port:
+          number: 8001
+      weight: 20
+    headers:
+      request:
+        add:
+          x-constitutional-hash: cdd01ef066bc6cf2
+          x-region-routed: global-distribution
+    fault:
+      delay:
+        percentage:
+          value: 0.1
+        fixedDelay: 5s
+    retries:
+      attempts: 3
+      perTryTimeout: 10s
+      retryOn: 5xx,reset,connect-failure,refused-stream
+
+---
+# Cross-Region Data Replication Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-data-replication
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  replication.yml: |
+    # ACGS-2 Cross-Region Data Replication
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    replication:
+      constitutional_data:
+        strategy: synchronous
+        regions: [us-east-1, us-west-2, eu-west-1]
+        consistency: strong
+        validation_required: true
+        
+      policy_data:
+        strategy: asynchronous
+        regions: [us-east-1, us-west-2, eu-west-1]
+        consistency: eventual
+        max_lag_seconds: 30
+        
+      audit_logs:
+        strategy: asynchronous
+        regions: [us-east-1, us-west-2, eu-west-1]
+        consistency: eventual
+        max_lag_seconds: 60
+        retention_days: 90
+        
+      performance_metrics:
+        strategy: asynchronous
+        regions: [us-east-1, us-west-2, eu-west-1]
+        consistency: eventual
+        max_lag_seconds: 15
+        aggregation_interval: 60
+
+---
+# Regional Health Check Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-regional-health
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  health-checks.yml: |
+    # ACGS-2 Regional Health Checks
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    health_checks:
+      constitutional_compliance:
+        endpoint: /health/constitutional
+        interval: 30s
+        timeout: 5s
+        threshold: 95
+        
+      performance_targets:
+        endpoint: /health/performance
+        interval: 15s
+        timeout: 3s
+        thresholds:
+          p99_latency_ms: 5
+          throughput_rps: 100
+          cache_hit_rate: 0.85
+          
+      cross_region_connectivity:
+        endpoint: /health/connectivity
+        interval: 60s
+        timeout: 10s
+        regions: [us-east-1, us-west-2, eu-west-1]
+        
+      data_consistency:
+        endpoint: /health/consistency
+        interval: 120s
+        timeout: 15s
+        max_lag_seconds: 30
+
+---
+# Disaster Recovery Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-disaster-recovery
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  disaster-recovery.yml: |
+    # ACGS-2 Disaster Recovery Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    disaster_recovery:
+      rto_target_minutes: 15  # Recovery Time Objective
+      rpo_target_minutes: 5   # Recovery Point Objective
+      
+      failover_scenarios:
+        region_failure:
+          trigger: region_health_check_failure
+          action: redirect_traffic_to_healthy_regions
+          validation: constitutional_compliance_check
+          
+        service_failure:
+          trigger: service_health_check_failure
+          action: restart_service_in_region
+          validation: performance_targets_check
+          
+        data_corruption:
+          trigger: data_consistency_check_failure
+          action: restore_from_backup
+          validation: data_integrity_check
+      
+      backup_strategy:
+        constitutional_data:
+          frequency: continuous
+          retention: 90_days
+          encryption: required
+          
+        policy_data:
+          frequency: hourly
+          retention: 30_days
+          encryption: required
+          
+        audit_logs:
+          frequency: daily
+          retention: 365_days
+          encryption: required
+      
+      monitoring:
+        health_check_interval: 30s
+        failover_detection_time: 60s
+        recovery_validation_time: 300s
+
+---
+# Cross-Region Network Policy
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: acgs-cross-region-policy
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/part-of: acgs
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs
+    - podSelector:
+        matchLabels:
+          constitutional-hash: cdd01ef066bc6cf2
+    ports:
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 8443
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          name: acgs
+    - podSelector:
+        matchLabels:
+          constitutional-hash: cdd01ef066bc6cf2
+    ports:
+    - protocol: TCP
+      port: 8001
+    - protocol: TCP
+      port: 8443
+  - to: []
+    ports:
+    - protocol: TCP
+      port: 53
+    - protocol: UDP
+      port: 53
+
+---
+# Global Service Monitor for Multi-Region Metrics
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: acgs-global-metrics
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: acgs
+      constitutional-hash: cdd01ef066bc6cf2
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_annotation_constitutional_hash]
+      targetLabel: constitutional_hash
+    - sourceLabels: [__meta_kubernetes_pod_label_region]
+      targetLabel: region
+    - sourceLabels: [__meta_kubernetes_pod_label_zone]
+      targetLabel: zone

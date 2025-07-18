@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 set -e
 
@@ -12,7 +13,7 @@ source venv/bin/activate
 # Install Python dependencies
 echo "📦 Installing Python dependencies..."
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 pip install -r requirements-dev.txt  # Install development dependencies
 
 # Install Node.js dependencies for governance dashboard
@@ -44,7 +45,7 @@ source scripts/set_service_env.sh
 # Start development services
 echo "🚀 Starting development services..."
 cd infrastructure/docker
-docker-compose -f docker-compose.dev.yml up -d
+docker-compose -f config/docker/docker-compose.dev.yml up -d
 cd ../..
 
 # Run database migrations

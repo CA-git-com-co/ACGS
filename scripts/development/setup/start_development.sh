@@ -102,7 +102,7 @@ start_infrastructure() {
         elif [ -f "infrastructure/docker/docker-compose.dev.yml" ]; then
             log "Starting services with docker-compose.dev.yml..."
             cd infrastructure/docker
-            docker-compose -f docker-compose.dev.yml up -d
+            docker-compose -f config/docker/docker-compose.dev.yml up -d
             cd - > /dev/null
             success "Development infrastructure services started"
         else

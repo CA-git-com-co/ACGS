@@ -1,0 +1,37 @@
+{
+  "constitutional_hash": "cdd01ef066bc6cf2",
+  "verification_timestamp": "2025-07-18T12:40:08.362615",
+  "archive_integrity": {
+    "structure_exists": true,
+    "constitutional_markers": true,
+    "metadata_files": true,
+    "archived_files_count": 149269,
+    "missing_directories": [],
+    "missing_markers": [],
+    "verification_errors": []
+  },
+  "system_integrity": {
+    "critical_files_exist": true,
+    "constitutional_compliance": true,
+    "unified_configs_intact": true,
+    "missing_critical_files": [],
+    "constitutional_violations": [],
+    "verification_errors": []
+  },
+  "constitutional_compliance": {},
+  "overall_success": true,
+  "execution_verification": {
+    "execution_data_valid": true,
+    "archival_success": true,
+    "files_processed": 1110,
+    "files_archived": 1087,
+    "files_failed": 0,
+    "constitutional_compliance_maintained": true,
+    "verification_errors": []
+  },
+  "node_modules_verification": {
+    "active_node_modules_removed": true,
+    "remaining_node_modules": [],
+    "verification_errors": []
+  }
+}

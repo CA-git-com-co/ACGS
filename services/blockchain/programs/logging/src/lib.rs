@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // programs/logging/src/lib.rs
 // Quantumagi Logging System - Comprehensive Event Logging and Monitoring
 // Provides audit trail and real-time monitoring for governance events

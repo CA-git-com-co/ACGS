@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! LLM client module for AI-driven decision making
 //! 
 //! This module provides integration with various LLM providers

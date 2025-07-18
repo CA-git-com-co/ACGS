@@ -281,7 +281,7 @@ jobs:
                 # kubectl apply -f infrastructure/kubernetes/production/
               elif [ -f "docker-compose.prod.yml" ]; then
                 echo "🐳 Using Docker Compose for production..."
-                # docker-compose -f docker-compose.prod.yml up -d
+                # docker-compose -f config/docker/docker-compose.prod.yml up -d
               else
                 echo "🔧 Custom production deployment"
                 # Add custom production deployment logic
@@ -297,7 +297,7 @@ jobs:
                 # kubectl apply -f infrastructure/kubernetes/staging/
               elif [ -f "docker-compose.staging.yml" ]; then
                 echo "🐳 Using Docker Compose for staging..."
-                # docker-compose -f docker-compose.staging.yml up -d
+                # docker-compose -f config/docker/docker-compose.staging.yml up -d
               else
                 echo "🔧 Custom staging deployment"
                 # Add custom staging deployment logic
@@ -310,7 +310,7 @@ jobs:
               # Development deployment logic
               if [ -f "docker-compose.dev.yml" ]; then
                 echo "🐳 Using Docker Compose for development..."
-                # docker-compose -f docker-compose.dev.yml up -d
+                # docker-compose -f config/docker/docker-compose.dev.yml up -d
               else
                 echo "🔧 Custom development deployment"
                 # Add custom development deployment logic

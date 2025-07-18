@@ -11,10 +11,18 @@ from collections.abc import (  # AsyncGenerator for async fixture
 import pytest
 
 try:
-    from services.platform_services.authentication.auth_service.app.core.config import settings
-    from services.platform_services.authentication.auth_service.app.db.base_class import Base
-    from services.platform_services.authentication.auth_service.app.db.session import get_async_db
-    from services.platform_services.authentication.auth_service.app.main import app as fastapi_app
+    from services.platform_services.authentication.auth_service.app.core.config import (
+        settings,
+    )
+    from services.platform_services.authentication.auth_service.app.db.base_class import (
+        Base,
+    )
+    from services.platform_services.authentication.auth_service.app.db.session import (
+        get_async_db,
+    )
+    from services.platform_services.authentication.auth_service.app.main import (
+        app as fastapi_app,
+    )
 except ImportError:
     # Mock imports for testing when modules are not available
     class MockSettings:

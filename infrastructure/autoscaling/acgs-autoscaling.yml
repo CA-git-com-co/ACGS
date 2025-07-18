@@ -1,0 +1,397 @@
+# ACGS-2 Auto-scaling Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Horizontal Pod Autoscaler for Constitutional AI
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: constitutional-ai-hpa
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: constitutional-ai
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: constitutional-ai
+  minReplicas: 2
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: constitutional_compliance_score
+      target:
+        type: AverageValue
+        averageValue: "95"
+  - type: Object
+    object:
+      metric:
+        name: requests_per_second
+      describedObject:
+        apiVersion: v1
+        kind: Service
+        name: constitutional-ai
+      target:
+        type: Value
+        value: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 50
+        periodSeconds: 60
+      - type: Pods
+        value: 4
+        periodSeconds: 60
+      selectPolicy: Max
+
+---
+# Horizontal Pod Autoscaler for Governance Synthesis
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: governance-synthesis-hpa
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: governance-synthesis
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: governance-synthesis
+  minReplicas: 2
+  maxReplicas: 15
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: policy_quality_score
+      target:
+        type: AverageValue
+        averageValue: "80"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 15
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 40
+        periodSeconds: 60
+
+---
+# Horizontal Pod Autoscaler for Formal Verification
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: formal-verification-hpa
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: formal-verification
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: formal-verification
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 75
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 85
+  - type: Pods
+    pods:
+      metric:
+        name: verification_queue_length
+      target:
+        type: AverageValue
+        averageValue: "10"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+      - type: Pods
+        value: 1
+        periodSeconds: 120
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Pods
+        value: 2
+        periodSeconds: 30
+
+---
+# Vertical Pod Autoscaler for Constitutional AI
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: constitutional-ai-vpa
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: constitutional-ai
+    app.kubernetes.io/component: autoscaling
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: constitutional-ai
+  updatePolicy:
+    updateMode: "Auto"
+  resourcePolicy:
+    containerPolicies:
+    - containerName: constitutional-ai
+      minAllowed:
+        cpu: 100m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 2000m
+        memory: 4Gi
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsAndLimits
+
+---
+# Pod Disruption Budget for Constitutional AI
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: constitutional-ai-pdb
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: constitutional-ai
+    app.kubernetes.io/component: availability
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: constitutional-ai
+
+---
+# Pod Disruption Budget for Governance Synthesis
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: governance-synthesis-pdb
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: governance-synthesis
+    app.kubernetes.io/component: availability
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: governance-synthesis
+
+---
+# Custom Metrics for Constitutional Compliance
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: constitutional-metrics-config
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  metrics.yml: |
+    # Constitutional Compliance Metrics Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    metrics:
+      constitutional_compliance_score:
+        description: "Constitutional compliance score (0-100)"
+        type: gauge
+        labels: ["service", "endpoint"]
+        target_value: 95
+        
+      policy_quality_score:
+        description: "Policy governance quality score (0-100)"
+        type: gauge
+        labels: ["policy_type", "governance_level"]
+        target_value: 80
+        
+      verification_queue_length:
+        description: "Formal verification queue length"
+        type: gauge
+        labels: ["verification_type"]
+        target_value: 10
+        
+      requests_per_second:
+        description: "Requests per second"
+        type: counter
+        labels: ["service", "method", "status"]
+        target_value: 100
+        
+      response_time_p99:
+        description: "99th percentile response time in milliseconds"
+        type: histogram
+        labels: ["service", "endpoint"]
+        target_value: 5
+
+---
+# KEDA ScaledObject for Constitutional AI (Advanced Scaling)
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: constitutional-ai-keda
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: constitutional-ai
+    app.kubernetes.io/component: autoscaling
+spec:
+  scaleTargetRef:
+    name: constitutional-ai
+  pollingInterval: 30
+  cooldownPeriod: 300
+  idleReplicaCount: 2
+  minReplicaCount: 2
+  maxReplicaCount: 50
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus:9090
+      metricName: constitutional_requests_per_second
+      threshold: '100'
+      query: sum(rate(http_requests_total{service="constitutional-ai"}[1m]))
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus:9090
+      metricName: constitutional_compliance_score
+      threshold: '95'
+      query: avg(constitutional_compliance_score{service="constitutional-ai"})
+  - type: prometheus
+    metadata:
+      serverAddress: http://prometheus:9090
+      metricName: response_time_p99
+      threshold: '5'
+      query: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service="constitutional-ai"}[5m])) * 1000
+
+---
+# Cluster Autoscaler Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-autoscaler-status
+  namespace: kube-system
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  nodes.max: "100"
+  nodes.min: "3"
+  scale-down-delay-after-add: "10m"
+  scale-down-unneeded-time: "10m"
+  scale-down-utilization-threshold: "0.5"
+  skip-nodes-with-local-storage: "false"
+  skip-nodes-with-system-pods: "false"
+  constitutional-hash: "cdd01ef066bc6cf2"
+
+---
+# Performance-based Scaling Policy
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-scaling-policy
+  namespace: acgs
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  policy.yml: |
+    # ACGS-2 Performance-based Scaling Policy
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    scaling_rules:
+      constitutional_ai:
+        performance_targets:
+          p99_latency_ms: 5
+          throughput_rps: 100
+          cache_hit_rate: 0.85
+          constitutional_compliance: 0.95
+        
+        scaling_thresholds:
+          scale_up:
+            - metric: p99_latency_ms
+              threshold: 4
+              action: increase_replicas
+              factor: 1.5
+            - metric: throughput_rps
+              threshold: 90
+              action: increase_replicas
+              factor: 1.2
+            - metric: constitutional_compliance
+              threshold: 0.93
+              action: increase_replicas
+              factor: 1.1
+          
+          scale_down:
+            - metric: p99_latency_ms
+              threshold: 2
+              action: decrease_replicas
+              factor: 0.8
+            - metric: cpu_utilization
+              threshold: 0.3
+              action: decrease_replicas
+              factor: 0.9
+        
+        constraints:
+          min_replicas: 2
+          max_replicas: 20
+          max_scale_up_rate: 2
+          max_scale_down_rate: 1
+          stabilization_window: 300

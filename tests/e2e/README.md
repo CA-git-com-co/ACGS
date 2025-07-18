@@ -66,7 +66,7 @@ tests/e2e/
 
 1. **Install dependencies:**
    ```bash
-   pip install -r requirements.txt
+   pip install -r config/environments/requirements.txt
    pip install pytest pytest-asyncio pytest-cov
    ```
 

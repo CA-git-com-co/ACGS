@@ -709,7 +709,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
@@ -721,8 +721,8 @@ jobs:
             pip install -r requirements-test.txt
           fi
           # Install shared dependencies
-          if [ -f "services/shared/requirements.txt" ]; then
-            pip install -r services/shared/requirements.txt
+          if [ -f "services/shared/config/environments/requirements.txt" ]; then
+            pip install -r services/shared/config/environments/requirements.txt
           fi
 
       - name: Code formatting check
@@ -770,9 +770,9 @@ jobs:
         continue-on-error: true
         run: |
           # Create bandit config if it doesn't exist
-          if [ ! -f "pyproject.toml" ] && [ ! -f ".bandit" ]; then
-            echo "[tool.bandit]" > pyproject.toml
-            echo "exclude_dirs = ['tests', 'venv', '.venv', 'target']" >> pyproject.toml
+          if [ ! -f "config/environments/pyproject.toml" ] && [ ! -f ".bandit" ]; then
+            echo "[tool.bandit]" > config/environments/pyproject.toml
+            echo "exclude_dirs = ['tests', 'venv', '.venv', 'target']" >> config/environments/pyproject.toml
           fi
           # Run bandit on source code
           bandit -r . -f json -o bandit-report.json --exclude ./tests,./venv,./.venv,./target,./blockchain/target || true
@@ -812,7 +812,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ matrix.python-version }}-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
@@ -823,12 +823,12 @@ jobs:
             pip install -r requirements-test.txt
           fi
           # Install shared dependencies
-          if [ -f "services/shared/requirements.txt" ]; then
-            pip install -r services/shared/requirements.txt
+          if [ -f "services/shared/config/environments/requirements.txt" ]; then
+            pip install -r services/shared/config/environments/requirements.txt
           fi
           # Install component-specific dependencies if they exist
-          if [ -f "${{ matrix.component }}/requirements.txt" ]; then
-            pip install -r ${{ matrix.component }}/requirements.txt
+          if [ -f "${{ matrix.component }}/config/environments/requirements.txt" ]; then
+            pip install -r ${{ matrix.component }}/config/environments/requirements.txt
           fi
 
       - name: Run unit tests

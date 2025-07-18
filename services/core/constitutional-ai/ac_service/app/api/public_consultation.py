@@ -196,8 +196,12 @@ async def submit_public_feedback(
 @router.get("/proposals", response_model=list[PublicProposalResponse])
 async def get_public_proposals(
     status: str | None = Query(None, description="Filter by proposal status"),
-    stakeholder_group: str | None = Query(None, description="Filter by stakeholder group"),
-    limit: int = Query(20, ge=1, le=100, description="Maximum number of proposals to return"),
+    stakeholder_group: str | None = Query(
+        None, description="Filter by stakeholder group"
+    ),
+    limit: int = Query(
+        20, ge=1, le=100, description="Maximum number of proposals to return"
+    ),
     offset: int = Query(0, ge=0, description="Number of proposals to skip"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -218,7 +222,9 @@ async def get_public_proposals(
                 proposed_changes="Add new privacy principle requiring explicit consent for data processing in governance decisions.",
                 justification="Current privacy protections are insufficient for modern AI governance needs.",
                 submitter_name=f"Citizen {i}",
-                submitter_organization=(f"Privacy Advocacy Group {i}" if i % 2 == 0 else None),
+                submitter_organization=(
+                    f"Privacy Advocacy Group {i}" if i % 2 == 0 else None
+                ),
                 stakeholder_group="citizen",
                 status="open" if i <= 3 else "review",
                 created_at=datetime.utcnow() - timedelta(days=i * 5),
@@ -296,7 +302,9 @@ async def get_public_proposal(proposal_id: int, db: AsyncSession = Depends(get_d
 async def get_proposal_feedback(
     proposal_id: int,
     feedback_type: str | None = Query(None, description="Filter by feedback type"),
-    limit: int = Query(20, ge=1, le=100, description="Maximum number of feedback items to return"),
+    limit: int = Query(
+        20, ge=1, le=100, description="Maximum number of feedback items to return"
+    ),
     offset: int = Query(0, ge=0, description="Number of feedback items to skip"),
     db: AsyncSession = Depends(get_db),
 ):
@@ -465,7 +473,9 @@ async def get_transparency_dashboard(db: AsyncSession = Depends(get_db)):
                 "active_amendments": 2,
                 "recent_votes": 5,
                 "public_comments_enabled": True,
-                "next_voting_deadline": (datetime.utcnow() + timedelta(days=7)).isoformat(),
+                "next_voting_deadline": (
+                    datetime.utcnow() + timedelta(days=7)
+                ).isoformat(),
             },
             "participation_trends": {
                 "daily_participants": [15, 23, 18, 31, 27, 19, 25],

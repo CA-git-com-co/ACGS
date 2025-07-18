@@ -79,7 +79,7 @@ jobs:
             ${{ env.UV_CACHE_DIR }}
             ~/.cache/pip
             ~/.cache/uv
-          key: uv-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml', 'uv.lock') }}
+          key: uv-${{ runner.os }}-${{ matrix.service }}-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml', 'config/environments/uv.lock') }}
           restore-keys: |
             uv-${{ runner.os }}-${{ matrix.service }}-
             uv-${{ runner.os }}-
@@ -100,14 +100,14 @@ jobs:
           # Install core tools first
           uv pip install pytest black isort mypy fastapi httpx pandas numpy || echo "⚠️ Core tools install failed"
 
-          # Install dependencies from requirements.txt if it exists
-          if [ -f "requirements.txt" ]; then
-            echo "Installing from requirements.txt..."
-            uv pip install -r requirements.txt --index-strategy unsafe-best-match || echo "⚠️ Requirements install failed, continuing..."
+          # Install dependencies from config/environments/requirements.txt if it exists
+          if [ -f "config/environments/requirements.txt" ]; then
+            echo "Installing from config/environments/requirements.txt..."
+            uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match || echo "⚠️ Requirements install failed, continuing..."
           fi
 
-          # Try to install project in editable mode if pyproject.toml exists
-          if [ -f "pyproject.toml" ]; then
+          # Try to install project in editable mode if config/environments/pyproject.toml exists
+          if [ -f "config/environments/pyproject.toml" ]; then
             echo "Installing project in editable mode..."
             uv pip install -e . --index-strategy unsafe-best-match || echo "⚠️ Editable install failed, continuing..."
           fi
@@ -335,16 +335,16 @@ jobs:
           echo "Virtual env: $VIRTUAL_ENV"
           
           # Try to install from existing configuration
-          if [ -f "uv.lock" ]; then
-            echo "Installing from uv.lock..."
+          if [ -f "config/environments/uv.lock" ]; then
+            echo "Installing from config/environments/uv.lock..."
             uv sync --frozen || {
               echo "Sync failed, trying alternative installation..."
               source .venv/bin/activate
               uv pip install pytest fastapi httpx requests psycopg2-binary redis
             }
-          elif [ -f "requirements.txt" ]; then
-            echo "Installing from requirements.txt..."
-            uv pip install -r requirements.txt || echo "Requirements install failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            echo "Installing from config/environments/requirements.txt..."
+            uv pip install -r config/environments/requirements.txt || echo "Requirements install failed"
           else
             echo "Installing minimal dependencies for integration tests..."
             uv pip install pytest fastapi httpx requests psycopg2-binary redis
@@ -399,12 +399,12 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Check if uv.lock exists
-          if [ -f "uv.lock" ]; then
-            echo "Found uv.lock, installing with sync..."
+          # Check if config/environments/uv.lock exists
+          if [ -f "config/environments/uv.lock" ]; then
+            echo "Found config/environments/uv.lock, installing with sync..."
             uv sync --frozen
           else
-            echo "No uv.lock found, creating virtual environment and installing dependencies..."
+            echo "No config/environments/uv.lock found, creating virtual environment and installing dependencies..."
             uv venv
             source .venv/bin/activate
             echo "Python path: $(which python)"
@@ -453,24 +453,24 @@ jobs:
 
       - name: Build with UV
         run: |
-          # Check if uv.lock exists before syncing
-          if [ -f "uv.lock" ]; then
-            echo "Found uv.lock, syncing dependencies..."
+          # Check if config/environments/uv.lock exists before syncing
+          if [ -f "config/environments/uv.lock" ]; then
+            echo "Found config/environments/uv.lock, syncing dependencies..."
             uv sync --frozen
           else
-            echo "No uv.lock found, creating virtual environment..."
+            echo "No config/environments/uv.lock found, creating virtual environment..."
             uv venv
             source .venv/bin/activate
-            if [ -f "requirements.txt" ]; then
-              uv pip install -r requirements.txt
+            if [ -f "config/environments/requirements.txt" ]; then
+              uv pip install -r config/environments/requirements.txt
             fi
           fi
           
-          # Build if pyproject.toml exists
-          if [ -f "pyproject.toml" ]; then
+          # Build if config/environments/pyproject.toml exists
+          if [ -f "config/environments/pyproject.toml" ]; then
             uv build
           else
-            echo "No pyproject.toml found, skipping build"
+            echo "No config/environments/pyproject.toml found, skipping build"
           fi
 
       - name: Set up Docker Buildx
@@ -526,16 +526,16 @@ jobs:
 
       - name: Install dependencies
         run: |
-          # Check if uv.lock exists
-          if [ -f "uv.lock" ]; then
-            echo "Found uv.lock, syncing dependencies..."
+          # Check if config/environments/uv.lock exists
+          if [ -f "config/environments/uv.lock" ]; then
+            echo "Found config/environments/uv.lock, syncing dependencies..."
             uv sync --frozen
           else
-            echo "No uv.lock found, creating virtual environment..."
+            echo "No config/environments/uv.lock found, creating virtual environment..."
             uv venv
             source .venv/bin/activate
-            if [ -f "requirements.txt" ]; then
-              uv pip install -r requirements.txt
+            if [ -f "config/environments/requirements.txt" ]; then
+              uv pip install -r config/environments/requirements.txt
             else
               uv pip install pytest pytest-benchmark
             fi

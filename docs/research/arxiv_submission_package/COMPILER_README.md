@@ -319,7 +319,7 @@ Solution: The `setup.py` file is crucial for Python package building. Ensure you
 
 ```
 Error: Command 'pdflatex' not found
-Solution: This indicates a missing system dependency. For LaTeX, install a TeX distribution like TeX Live (Linux/macOS), MiKTeX (Windows), or MacTeX (macOS). For Python dependencies, ensure they are installed via `pip install -r requirements.txt`.
+Solution: This indicates a missing system dependency. For LaTeX, install a TeX distribution like TeX Live (Linux/macOS), MiKTeX (Windows), or MacTeX (macOS). For Python dependencies, ensure they are installed via `pip install -r config/environments/requirements.txt`.
 ```
 
 ## Performance
@@ -354,7 +354,7 @@ If you encounter issues during compilation, follow these systematic troubleshoot
 ### Package Issues
 
 1.  **Check Python Version**: Ensure you are using a compatible Python version (e.g., Python 3.9+ as specified in project requirements). Incompatible versions can lead to unexpected build failures.
-2.  **Install Dependencies**: Make sure all Python dependencies are installed by running `pip install -r requirements.txt` (or `pip install -r requirements-test.txt` for test dependencies).
+2.  **Install Dependencies**: Make sure all Python dependencies are installed by running `pip install -r config/environments/requirements.txt` (or `pip install -r requirements-test.txt` for test dependencies).
 3.  **Verify Setup**: Double-check your `setup.py` configuration for any syntax errors or incorrect metadata that might prevent the package from building correctly.
 4.  **Clean Build**: Remove the `build/` and `dist/` directories, along with any `.egg-info` directories, to ensure a clean slate for your package build. This can be done using `make clean` or `python compiler.py clean`.
 
@@ -391,7 +391,7 @@ jobs:
       with:
         python-version: '3.x'
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run: pip install -r config/environments/requirements.txt
     - name: Compile Academic Submission
       run: |
         python3 build.py --release --report

@@ -21,8 +21,9 @@ logger = logging.getLogger(__name__)
 app = FastAPI(
     title="ACGS Constitutional AI Service",
     description="Constitutional AI governance service with compliance validation",
-    version="1.0.0"
+    version="1.0.0",
 )
+
 
 # Response models
 class HealthResponse(BaseModel):
@@ -32,9 +33,11 @@ class HealthResponse(BaseModel):
     timestamp: str
     version: str
 
+
 class ConstitutionalValidationRequest(BaseModel):
     content: str
     policy_type: str = "general"
+
 
 class ConstitutionalValidationResponse(BaseModel):
     valid: bool
@@ -42,6 +45,7 @@ class ConstitutionalValidationResponse(BaseModel):
     constitutional_hash: str
     timestamp: str
     details: Dict[str, Any]
+
 
 # Constitutional compliance logging
 logger.info("✅ Optimized constitutional middleware enabled for constitutional-ai")

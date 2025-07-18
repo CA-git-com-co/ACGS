@@ -8,7 +8,7 @@ A comprehensive command-line interface for academic paper submission preparation
 
 ```bash
 # Install required dependencies
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Make CLI executable
 chmod +x academic_cli.py
@@ -280,7 +280,7 @@ jobs:
         with:
           python-version: "3.9"
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r config/environments/requirements.txt
       - name: Validate submission
         run: python academic_cli.py validate ./paper/ --format json
 ```

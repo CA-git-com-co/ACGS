@@ -57,9 +57,9 @@ cd project && npm test
 
 ### **Core Configuration Files**
 
-- ✅ `pyproject.toml` - Modern Python dependency management with uv
-- ✅ `uv.toml` - UV configuration for optimal performance
-- ✅ `requirements.txt` - Updated for compatibility
+- ✅ `config/environments/pyproject.toml` - Modern Python dependency management with uv
+- ✅ `config/environments/uv.toml` - UV configuration for optimal performance
+- ✅ `config/environments/requirements.txt` - Updated for compatibility
 - ✅ `project/package.json` - Enhanced JavaScript dependency management
 - ✅ `project/.eslintrc.json` - Fixed ESLint configuration
 
@@ -219,7 +219,7 @@ cd project && npm test
 
 ```bash
 # Rollback dependencies
-cp .backup/pyproject.toml.backup pyproject.toml
+cp .backup/config/environments/pyproject.toml.backup config/environments/pyproject.toml
 cp .backup/package.json.backup project/package.json
 
 # Clean install

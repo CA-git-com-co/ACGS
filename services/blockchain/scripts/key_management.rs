@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! Quantumagi Key Management Tool - Rust Implementation
 //! Secure key generation, backup, and authority management for Solana programs
 //! Replaces blockchain/scripts/key_management.sh with native Rust implementation

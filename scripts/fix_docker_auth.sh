@@ -8,13 +8,13 @@ echo "🔧 ACGS-2 Docker Authentication Fix"
 echo "📋 Constitutional Hash: cdd01ef066bc6cf2"
 echo "============================================"
 
-# Function to create requirements.txt if missing
+# Function to create config/environments/requirements.txt if missing
 create_requirements() {
     local service_path=$1
-    local requirements_file="$service_path/requirements.txt"
+    local requirements_file="$service_path/config/environments/requirements.txt"
     
     if [ ! -f "$requirements_file" ]; then
-        echo "📝 Creating requirements.txt for $service_path"
+        echo "📝 Creating config/environments/requirements.txt for $service_path"
         cat > "$requirements_file" << EOF
 # ACGS-2 Service Requirements
 # Constitutional Hash: cdd01ef066bc6cf2
@@ -130,8 +130,8 @@ echo "✅ Docker authentication fixes applied!"
 echo ""
 echo "📚 Next steps:"
 echo "1. Build services: ./scripts/build_services.sh"
-echo "2. Start with local compose: docker-compose -f docker-compose.local.yml up -d"
-echo "3. Or use pre-built images: docker-compose -f docker-compose.local.yml up -d --no-build"
+echo "2. Start with local compose: docker-compose -f config/docker/docker-compose.local.yml up -d"
+echo "3. Or use pre-built images: docker-compose -f config/docker/docker-compose.local.yml up -d --no-build"
 echo ""
 echo "🔍 To check service health:"
 echo "   curl http://localhost:8001/health"

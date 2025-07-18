@@ -651,7 +651,7 @@ jobs:
         continue-on-error: true
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
@@ -660,13 +660,13 @@ jobs:
           python -m pip install --upgrade pip
 
           # Install common requirements
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
+          if [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt
           fi
 
           # Install service-specific requirements
-          if [ -f "services/core/${{ matrix.service }}/requirements.txt" ]; then
-            pip install -r services/core/${{ matrix.service }}/requirements.txt
+          if [ -f "services/core/${{ matrix.service }}/config/environments/requirements.txt" ]; then
+            pip install -r services/core/${{ matrix.service }}/config/environments/requirements.txt
           fi
 
           # Install test requirements

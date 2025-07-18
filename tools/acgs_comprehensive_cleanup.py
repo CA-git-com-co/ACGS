@@ -121,7 +121,7 @@ class ACGSComprehensiveCleanup:
     def _analyze_dependencies(self) -> Dict:
         """Analyze dependencies for unused packages."""
         # This is a placeholder for dependency analysis
-        # In a real implementation, this would check requirements.txt, package.json, etc.
+        # In a real implementation, this would check config/environments/requirements.txt, package.json, etc.
         return {
             "python_unused": [],
             "node_unused": [],

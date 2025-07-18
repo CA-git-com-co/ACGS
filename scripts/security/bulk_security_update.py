@@ -3,7 +3,7 @@
 ACGS-2 Bulk Security Update Script
 Constitutional Hash: cdd01ef066bc6cf2
 
-Updates all requirements.txt files with secure package versions
+Updates all config/environments/requirements.txt files with secure package versions
 to address the 161 security vulnerabilities identified by GitHub.
 """
 
@@ -50,7 +50,7 @@ class BulkSecurityUpdater:
         }
     
     def find_requirements_files(self) -> List[Path]:
-        """Find all requirements.txt files in the project"""
+        """Find all config/environments/requirements.txt files in the project"""
         return list(self.project_root.rglob("requirements*.txt"))
     
     def update_package_version(self, content: str, package: str, new_version: str) -> str:
@@ -222,7 +222,7 @@ def main():
     updater = BulkSecurityUpdater()
     
     # Confirm before proceeding
-    print("⚠️  This will update ALL requirements.txt files with security fixes.")
+    print("⚠️  This will update ALL config/environments/requirements.txt files with security fixes.")
     print("Backups will be created with .backup extension.")
     print()
     

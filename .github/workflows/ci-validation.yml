@@ -110,7 +110,7 @@ jobs:
     - name: Run Safety dependency check
       run: |
         echo "🛡️ Checking dependencies for known vulnerabilities..."
-        find . -name "requirements.txt" -exec safety check -r {} \; || true
+        find . -name "config/environments/requirements.txt" -exec safety check -r {} \; || true
         
     - name: Upload code quality artifacts
       uses: actions/upload-artifact@v3
@@ -144,7 +144,7 @@ jobs:
         
     - name: Install service dependencies
       run: |
-        find services/core -name "requirements.txt" -exec pip install -r {} \;
+        find services/core -name "config/environments/requirements.txt" -exec pip install -r {} \;
         
     - name: Run unit tests
       if: matrix.test-type == 'unit'
@@ -307,7 +307,7 @@ EOF
     - name: Run Safety dependency vulnerability scan
       run: |
         echo "🛡️ Scanning dependencies for vulnerabilities..."
-        find . -name "requirements.txt" -exec safety check -r {} --json --output safety-report.json \; || true
+        find . -name "config/environments/requirements.txt" -exec safety check -r {} --json --output safety-report.json \; || true
         
     - name: Run Semgrep security scan
       run: |
@@ -393,7 +393,7 @@ EOF
         
     - name: Install performance test dependencies
       run: |
-        pip install -r tests/performance/requirements.txt
+        pip install -r tests/performance/config/environments/requirements.txt
         
     - name: Start services for performance testing
       run: |

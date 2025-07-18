@@ -3,7 +3,7 @@
 
 
 ## Overview
-All dependencies are now consolidated in `pyproject.toml` with clear dependency groups for different use cases.
+All dependencies are now consolidated in `config/environments/pyproject.toml` with clear dependency groups for different use cases.
 
 ## Installation Options
 
@@ -63,9 +63,9 @@ pip install -e ".[prod]"
 - **docs**: Documentation generation
 - **prod**: Production deployment tools
 
-## Migration from requirements.txt
+## Migration from config/environments/requirements.txt
 
-The old requirements.txt files have been consolidated. If you have existing installations:
+The old config/environments/requirements.txt files have been consolidated. If you have existing installations:
 
 ```bash
 # Remove old virtual environment

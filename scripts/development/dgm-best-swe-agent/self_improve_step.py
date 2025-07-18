@@ -415,7 +415,7 @@ def self_improve(
 
     # Install requirements again in case of any changes
     exec_result = container.exec_run(
-        "python -m pip install -r /dgm/requirements.txt", workdir="/"
+        "python -m pip install -r /dgm/config/environments/requirements.txt", workdir="/"
     )
     log_container_output(exec_result)
 

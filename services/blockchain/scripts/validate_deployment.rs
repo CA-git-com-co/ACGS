@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! Quantumagi Deployment Validation Tool - Rust Implementation
 //! Comprehensive validation of deployed governance system on Solana
 //! Replaces blockchain/scripts/validate_devnet_deployment.py with native Rust implementation

@@ -1,0 +1,54 @@
+name: Performance Regression Testing
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM
+
+jobs:
+  performance-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Run Performance Regression Test
+        run: python3 scripts/testing/performance_regression_test.py
+        
+      - name: Check for Regressions
+        run: |
+          python3 -c "
+          import json
+          import glob
+          
+          # Find latest test results
+          test_files = glob.glob('reports/performance/regression_test_*.json')
+          if test_files:
+              latest_file = max(test_files)
+              with open(latest_file) as f:
+                  results = json.load(f)
+                  
+              if results['regression_analysis']['regression_detected']:
+                  print('::error::Performance regression detected!')
+                  for metric, change in results['regression_analysis']['performance_changes'].items():
+                      if change['regression']:
+                          print(f'::error::{metric}: {change["change_percent"]}% regression')
+                  exit(1)
+              else:
+                  print('✅ No performance regressions detected')
+          "
+          
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-regression-results
+          path: reports/performance/regression_test_*.json

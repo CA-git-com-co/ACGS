@@ -183,7 +183,7 @@ These targets are validated continuously and must be maintained across all opera
                     # Check for special files
                     if item.name.lower() == "dockerfile":
                         analysis["has_dockerfile"] = True
-                    elif item.name.lower() in ["requirements.txt", "requirements-dev.txt"]:
+                    elif item.name.lower() in ["config/environments/requirements.txt", "requirements-dev.txt"]:
                         analysis["has_requirements"] = True
                     elif item.name.lower() == "package.json":
                         analysis["has_package_json"] = True
@@ -249,7 +249,7 @@ These targets are validated continuously and must be maintained across all opera
         # Special files
         if lower_name == "dockerfile":
             return "Container image definition"
-        elif lower_name in ["requirements.txt", "requirements-dev.txt"]:
+        elif lower_name in ["config/environments/requirements.txt", "requirements-dev.txt"]:
             return "Python dependency specifications"
         elif lower_name == "package.json":
             return "Node.js package configuration"

@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // Quantum Policy Evaluator (QPE) Protocol Buffer Definition
 // ACGS-1 Constitutional Governance Enhancement
 // Implements quantum-inspired policy evaluation with superposition states

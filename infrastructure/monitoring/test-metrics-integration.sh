@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Phase A3: Enhanced Prometheus Metrics Integration Testing
 # Comprehensive validation of custom metrics across all 7 ACGS services

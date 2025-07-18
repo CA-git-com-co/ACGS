@@ -9,9 +9,4 @@ __description__ = "Blockchain audit and logging service for ACGS-2"
 
 from .models.schemas import CONSTITUTIONAL_HASH
 
-__all__ = [
-    "__version__",
-    "__author__", 
-    "__description__",
-    "CONSTITUTIONAL_HASH"
-]
+__all__ = ["__version__", "__author__", "__description__", "CONSTITUTIONAL_HASH"]

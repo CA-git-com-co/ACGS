@@ -79,7 +79,7 @@ ACGS-1/
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\\Scripts\\activate
-   pip install -r requirements.txt
+   pip install -r config/environments/requirements.txt
    ```
 
 4. **Install Node.js dependencies** (for frontend applications):
@@ -385,7 +385,7 @@ source venv/bin/activate
 # Install Python dependencies
 echo "📦 Installing Python dependencies..."
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Install Node.js dependencies for governance dashboard
 echo "📦 Installing Node.js dependencies..."
@@ -500,7 +500,7 @@ git pull origin master
 
 # Update Python virtual environment
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 
 # Rebuild Anchor programs
 cd blockchain

@@ -74,7 +74,7 @@ The ACGS-2 constitutional compliance enhancement project has successfully increa
 - `CODE_OF_CONDUCT.md` - Community guidelines
 - `CONTRIBUTING.md` - Contribution guidelines
 - `SECURITY.md` - Security policies
-- `requirements.txt` - Dependency specifications
+- `config/environments/requirements.txt` - Dependency specifications
 - `requirements_dev.txt` - Development dependencies
 
 **Impact**: Improved coverage of project governance and configuration files
@@ -98,7 +98,7 @@ The ACGS-2 constitutional compliance enhancement project has successfully increa
 ### High Priority ACGS-2 Documentation (26 files)
 1. **Root Project Files**:
    - `CHANGELOG.md`
-   - `database/requirements.txt`
+   - `database/config/environments/requirements.txt`
 
 2. **Reorganization Tools** (6 files):
    - `reorganization-tools/documentation/TEAM_DOCUMENTATION_UPDATE.md`
@@ -118,7 +118,7 @@ The ACGS-2 constitutional compliance enhancement project has successfully increa
    - `scripts/development/mcp-inspector/CODE_OF_CONDUCT.md`
    - `scripts/development/mcp-inspector/CONTRIBUTING.md`
    - `scripts/development/mcp-inspector/SECURITY.md`
-   - `scripts/development/requirements.txt`
+   - `scripts/development/config/environments/requirements.txt`
 
 5. **Tools Documentation** (6 files):
    - `tools/CTMguide.md`
@@ -126,7 +126,7 @@ The ACGS-2 constitutional compliance enhancement project has successfully increa
    - `tools/mcp-inspector/CODE_OF_CONDUCT.md`
    - `tools/mcp-inspector/CONTRIBUTING.md`
    - `tools/mcp-inspector/SECURITY.md`
-   - `tools/requirements.txt`
+   - `tools/config/environments/requirements.txt`
 
 6. **Archive Documentation** (3 files - permission errors):
    - `docs_consolidated_archive_20250710_120000/development/CONTRIBUTING.md` ❌ Permission denied

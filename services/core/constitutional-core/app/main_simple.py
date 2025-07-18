@@ -22,12 +22,14 @@ try:
         get_fast_validator,
         validate_constitutional_fast,
     )
+
     FAST_VALIDATOR_AVAILABLE = True
 except ImportError:
     FAST_VALIDATOR_AVAILABLE = False
 
 # Constitutional compliance hash for ACGS
 CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
 
 # Multi-tenant security enhancement
 class TenantContext:
@@ -44,6 +46,8 @@ class TenantContext:
     def get_tenant_id(self) -> str:
         """Get the current tenant ID."""
         return self.tenant_id
+
+
 SERVICE_NAME = "constitutional-core"
 SERVICE_VERSION = "1.0.0"
 
@@ -283,19 +287,23 @@ async def get_performance_metrics():
             return {
                 "constitutional_hash": CONSTITUTIONAL_HASH,
                 "service": SERVICE_NAME,
-                "performance_status": cache_stats["performance_metrics"]["current_performance"],
+                "performance_status": cache_stats["performance_metrics"][
+                    "current_performance"
+                ],
                 "metrics": cache_stats,
                 "optimization_level": "ENHANCED_CACHING",
                 "target_p99_latency_ms": 1.0,
                 "current_avg_latency_ms": cache_stats["performance_metrics"][
                     "avg_validation_time_ms"
                 ],
-                "cache_effectiveness": cache_stats["cache_performance"]["overall_hit_rate"],
+                "cache_effectiveness": cache_stats["cache_performance"][
+                    "overall_hit_rate"
+                ],
                 "timestamp": datetime.now(timezone.utc).isoformat(),
             }
         except Exception as e:
             logger.warning(f"Failed to get performance metrics: {e}")
-    
+
     # Fallback performance metrics
     return {
         "constitutional_hash": CONSTITUTIONAL_HASH,
@@ -315,57 +323,59 @@ async def get_prometheus_metrics():
     """Prometheus metrics endpoint with constitutional compliance."""
     try:
         uptime = time.time() - start_time
-        
+
         # Generate Prometheus-compatible metrics
         metrics = [
-            f'# HELP constitutional_core_uptime_seconds Total uptime of the constitutional core service',
-            f'# TYPE constitutional_core_uptime_seconds gauge',
+            f"# HELP constitutional_core_uptime_seconds Total uptime of the constitutional core service",
+            f"# TYPE constitutional_core_uptime_seconds gauge",
             f'constitutional_core_uptime_seconds{{service="{SERVICE_NAME}",version="{SERVICE_VERSION}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {uptime}',
-            f'',
-            f'# HELP constitutional_core_health_status Service health status (1=healthy, 0=unhealthy)',
-            f'# TYPE constitutional_core_health_status gauge',
+            f"",
+            f"# HELP constitutional_core_health_status Service health status (1=healthy, 0=unhealthy)",
+            f"# TYPE constitutional_core_health_status gauge",
             f'constitutional_core_health_status{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} 1',
         ]
-        
+
         # Add detailed metrics if fast validator is available
         if FAST_VALIDATOR_AVAILABLE:
             try:
                 validator = get_fast_validator()
                 cache_stats = validator.get_cache_stats()
-                
-                metrics.extend([
-                    f'',
-                    f'# HELP constitutional_core_cache_hit_rate Cache hit rate for constitutional validations',
-                    f'# TYPE constitutional_core_cache_hit_rate gauge',
-                    f'constitutional_core_cache_hit_rate{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {cache_stats["cache_performance"]["overall_hit_rate"]}',
-                    f'',
-                    f'# HELP constitutional_core_avg_latency_ms Average validation latency in milliseconds',
-                    f'# TYPE constitutional_core_avg_latency_ms gauge',
-                    f'constitutional_core_avg_latency_ms{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {cache_stats["performance_metrics"]["avg_validation_time_ms"]}',
-                    f'',
-                    f'# HELP constitutional_core_total_validations Total number of constitutional validations',
-                    f'# TYPE constitutional_core_total_validations counter',
-                    f'constitutional_core_total_validations{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {cache_stats["performance_metrics"]["total_validations"]}',
-                ])
+
+                metrics.extend(
+                    [
+                        f"",
+                        f"# HELP constitutional_core_cache_hit_rate Cache hit rate for constitutional validations",
+                        f"# TYPE constitutional_core_cache_hit_rate gauge",
+                        f'constitutional_core_cache_hit_rate{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {cache_stats["cache_performance"]["overall_hit_rate"]}',
+                        f"",
+                        f"# HELP constitutional_core_avg_latency_ms Average validation latency in milliseconds",
+                        f"# TYPE constitutional_core_avg_latency_ms gauge",
+                        f'constitutional_core_avg_latency_ms{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {cache_stats["performance_metrics"]["avg_validation_time_ms"]}',
+                        f"",
+                        f"# HELP constitutional_core_total_validations Total number of constitutional validations",
+                        f"# TYPE constitutional_core_total_validations counter",
+                        f'constitutional_core_total_validations{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {cache_stats["performance_metrics"]["total_validations"]}',
+                    ]
+                )
             except Exception as e:
                 logger.warning(f"Failed to get detailed metrics: {e}")
-        
-        return '\n'.join(metrics)
-        
+
+        return "\n".join(metrics)
+
     except Exception as e:
         logger.error(f"Failed to generate metrics: {e}")
         # Return minimal metrics if everything fails
         uptime = time.time() - start_time
         basic_metrics = [
-            f'# HELP constitutional_core_uptime_seconds Total uptime of the constitutional core service',
-            f'# TYPE constitutional_core_uptime_seconds gauge',
+            f"# HELP constitutional_core_uptime_seconds Total uptime of the constitutional core service",
+            f"# TYPE constitutional_core_uptime_seconds gauge",
             f'constitutional_core_uptime_seconds{{service="{SERVICE_NAME}",version="{SERVICE_VERSION}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} {uptime}',
-            f'',
-            f'# HELP constitutional_core_health_status Service health status (1=healthy, 0=unhealthy)',
-            f'# TYPE constitutional_core_health_status gauge',
+            f"",
+            f"# HELP constitutional_core_health_status Service health status (1=healthy, 0=unhealthy)",
+            f"# TYPE constitutional_core_health_status gauge",
             f'constitutional_core_health_status{{service="{SERVICE_NAME}",constitutional_hash="{CONSTITUTIONAL_HASH}"}} 1',
         ]
-        return '\n'.join(basic_metrics)
+        return "\n".join(basic_metrics)
 
 
 @app.middleware("http")

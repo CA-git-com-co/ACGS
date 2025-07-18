@@ -1,0 +1,425 @@
+# ACGS-2 Enhanced Performance Monitoring and Alerting
+# Constitutional Hash: cdd01ef066bc6cf2
+
+# Prometheus Rules for ACGS Performance Monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: acgs-performance-rules
+  namespace: monitoring
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    prometheus: kube-prometheus
+    role: alert-rules
+spec:
+  groups:
+  - name: acgs.constitutional.compliance
+    interval: 30s
+    rules:
+    - alert: ConstitutionalComplianceViolation
+      expr: constitutional_compliance_score < 95
+      for: 1m
+      labels:
+        severity: critical
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "Constitutional compliance below threshold"
+        description: "Constitutional compliance score {{ $value }}% is below the required 95% threshold for {{ $labels.service }}"
+        
+    - alert: ConstitutionalHashMismatch
+      expr: constitutional_hash_validation_failures_total > 0
+      for: 0s
+      labels:
+        severity: critical
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "Constitutional hash validation failure"
+        description: "Constitutional hash validation failed for {{ $labels.service }} - immediate attention required"
+
+  - name: acgs.performance.targets
+    interval: 15s
+    rules:
+    - alert: P99LatencyHigh
+      expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=~"constitutional-ai|governance-synthesis|formal-verification"}[5m])) * 1000 > 5
+      for: 2m
+      labels:
+        severity: warning
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "P99 latency exceeds target"
+        description: "P99 latency {{ $value }}ms exceeds 5ms target for {{ $labels.service }}"
+        
+    - alert: P99LatencyCritical
+      expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket{service=~"constitutional-ai|governance-synthesis|formal-verification"}[5m])) * 1000 > 10
+      for: 1m
+      labels:
+        severity: critical
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "P99 latency critically high"
+        description: "P99 latency {{ $value }}ms is critically high for {{ $labels.service }}"
+        
+    - alert: ThroughputLow
+      expr: rate(http_requests_total{service=~"constitutional-ai|governance-synthesis|formal-verification"}[5m]) < 100
+      for: 5m
+      labels:
+        severity: warning
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "Throughput below target"
+        description: "Throughput {{ $value }} RPS is below 100 RPS target for {{ $labels.service }}"
+        
+    - alert: CacheHitRateLow
+      expr: cache_hit_rate{service=~"constitutional-ai|governance-synthesis|formal-verification"} < 0.85
+      for: 3m
+      labels:
+        severity: warning
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "Cache hit rate below target"
+        description: "Cache hit rate {{ $value }} is below 85% target for {{ $labels.service }}"
+
+  - name: acgs.service.health
+    interval: 30s
+    rules:
+    - alert: ServiceDown
+      expr: up{job=~"constitutional-ai|governance-synthesis|formal-verification"} == 0
+      for: 1m
+      labels:
+        severity: critical
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "ACGS service is down"
+        description: "{{ $labels.job }} service is down"
+        
+    - alert: ServiceHighErrorRate
+      expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) > 0.05
+      for: 2m
+      labels:
+        severity: warning
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "High error rate detected"
+        description: "Error rate {{ $value | humanizePercentage }} for {{ $labels.service }}"
+
+  - name: acgs.infrastructure
+    interval: 60s
+    rules:
+    - alert: DatabaseConnectionsHigh
+      expr: postgresql_connections_active / postgresql_connections_max > 0.8
+      for: 5m
+      labels:
+        severity: warning
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "Database connections high"
+        description: "PostgreSQL connections at {{ $value | humanizePercentage }} of maximum"
+        
+    - alert: RedisMemoryHigh
+      expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.9
+      for: 3m
+      labels:
+        severity: warning
+        constitutional_hash: cdd01ef066bc6cf2
+      annotations:
+        summary: "Redis memory usage high"
+        description: "Redis memory usage at {{ $value | humanizePercentage }} of maximum"
+
+---
+# Grafana Dashboard ConfigMap
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-performance-dashboard
+  namespace: monitoring
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    grafana_dashboard: "1"
+data:
+  acgs-performance.json: |
+    {
+      "dashboard": {
+        "id": null,
+        "title": "ACGS-2 Performance Dashboard",
+        "tags": ["acgs", "performance", "constitutional"],
+        "style": "dark",
+        "timezone": "browser",
+        "annotations": {
+          "list": [
+            {
+              "name": "Constitutional Events",
+              "datasource": "Prometheus",
+              "enable": true,
+              "expr": "constitutional_compliance_events",
+              "iconColor": "red",
+              "titleFormat": "Constitutional Event"
+            }
+          ]
+        },
+        "panels": [
+          {
+            "id": 1,
+            "title": "Constitutional Compliance Score",
+            "type": "stat",
+            "targets": [
+              {
+                "expr": "avg(constitutional_compliance_score)",
+                "legendFormat": "Compliance Score"
+              }
+            ],
+            "fieldConfig": {
+              "defaults": {
+                "min": 0,
+                "max": 100,
+                "unit": "percent",
+                "thresholds": {
+                  "steps": [
+                    {"color": "red", "value": 0},
+                    {"color": "yellow", "value": 90},
+                    {"color": "green", "value": 95}
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": 2,
+            "title": "P99 Latency",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) * 1000",
+                "legendFormat": "{{ service }} P99"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Milliseconds",
+                "max": 10,
+                "min": 0
+              }
+            ],
+            "alert": {
+              "conditions": [
+                {
+                  "query": {"params": ["A", "5m", "now"]},
+                  "reducer": {"params": [], "type": "last"},
+                  "evaluator": {"params": [5], "type": "gt"}
+                }
+              ],
+              "executionErrorState": "alerting",
+              "for": "2m",
+              "frequency": "10s",
+              "handler": 1,
+              "name": "P99 Latency Alert",
+              "noDataState": "no_data"
+            }
+          },
+          {
+            "id": 3,
+            "title": "Throughput (RPS)",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "rate(http_requests_total[5m])",
+                "legendFormat": "{{ service }} RPS"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Requests/sec",
+                "min": 0
+              }
+            ]
+          },
+          {
+            "id": 4,
+            "title": "Cache Hit Rate",
+            "type": "graph",
+            "targets": [
+              {
+                "expr": "cache_hit_rate",
+                "legendFormat": "{{ service }} Cache Hit Rate"
+              }
+            ],
+            "yAxes": [
+              {
+                "label": "Percentage",
+                "max": 1,
+                "min": 0,
+                "unit": "percentunit"
+              }
+            ]
+          }
+        ],
+        "time": {
+          "from": "now-1h",
+          "to": "now"
+        },
+        "refresh": "30s"
+      }
+    }
+
+---
+# AlertManager Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: acgs-alertmanager-config
+  namespace: monitoring
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+data:
+  alertmanager.yml: |
+    # ACGS-2 AlertManager Configuration
+    # Constitutional Hash: cdd01ef066bc6cf2
+    
+    global:
+      smtp_smarthost: 'localhost:587'
+      smtp_from: 'alerts@acgs.internal'
+      
+    route:
+      group_by: ['alertname', 'cluster', 'service']
+      group_wait: 10s
+      group_interval: 10s
+      repeat_interval: 1h
+      receiver: 'default'
+      routes:
+      - match:
+          severity: critical
+          constitutional_hash: cdd01ef066bc6cf2
+        receiver: 'constitutional-critical'
+        group_wait: 5s
+        repeat_interval: 15m
+      - match:
+          alertname: ConstitutionalComplianceViolation
+        receiver: 'constitutional-compliance'
+        group_wait: 0s
+        repeat_interval: 5m
+      - match:
+          alertname: P99LatencyCritical
+        receiver: 'performance-critical'
+        group_wait: 30s
+        repeat_interval: 30m
+    
+    receivers:
+    - name: 'default'
+      slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#acgs-alerts'
+        title: 'ACGS Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.summary }}{{ end }}'
+        
+    - name: 'constitutional-critical'
+      slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#acgs-constitutional'
+        title: '🚨 CRITICAL Constitutional Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        color: 'danger'
+      email_configs:
+      - to: 'constitutional-team@acgs.internal'
+        subject: '🚨 CRITICAL Constitutional Alert'
+        body: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        
+    - name: 'constitutional-compliance'
+      slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#acgs-constitutional'
+        title: '⚖️ Constitutional Compliance Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        color: 'warning'
+        
+    - name: 'performance-critical'
+      slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#acgs-performance'
+        title: '🎯 Performance Critical Alert'
+        text: '{{ range .Alerts }}{{ .Annotations.description }}{{ end }}'
+        color: 'danger'
+    
+    inhibit_rules:
+    - source_match:
+        severity: 'critical'
+      target_match:
+        severity: 'warning'
+      equal: ['alertname', 'cluster', 'service']
+
+---
+# Custom Metrics Exporter for Constitutional Compliance
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: constitutional-metrics-exporter
+  namespace: monitoring
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+    app.kubernetes.io/name: constitutional-metrics-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: constitutional-metrics-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: constitutional-metrics-exporter
+        constitutional-hash: cdd01ef066bc6cf2
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: exporter
+        image: acgs/constitutional-metrics-exporter:latest
+        ports:
+        - containerPort: 8080
+          name: metrics
+        env:
+        - name: CONSTITUTIONAL_HASH
+          value: cdd01ef066bc6cf2
+        - name: METRICS_PORT
+          value: "8080"
+        - name: SCRAPE_INTERVAL
+          value: "30s"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+---
+# ServiceMonitor for Constitutional Metrics
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: constitutional-metrics
+  namespace: monitoring
+  labels:
+    constitutional-hash: cdd01ef066bc6cf2
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: constitutional-metrics-exporter
+  endpoints:
+  - port: metrics
+    interval: 30s
+    path: /metrics
+    relabelings:
+    - sourceLabels: [__meta_kubernetes_pod_annotation_constitutional_hash]
+      targetLabel: constitutional_hash

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Health Monitor Startup Script
 # Enterprise-grade health monitoring for constitutional governance system

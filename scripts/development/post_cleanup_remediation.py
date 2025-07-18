@@ -3,7 +3,7 @@
 ACGS-1 Post-Cleanup Remediation Script
 
 This script addresses the issues found in the post-cleanup analysis:
-1. Fix missing requirements.txt files for services
+1. Fix missing config/environments/requirements.txt files for services
 2. Consolidate environment configurations
 3. Update documentation references
 4. Validate service integration
@@ -73,24 +73,24 @@ class PostCleanupRemediation:
         print(f"📝 {log_entry}")
 
     def create_missing_requirements_files(self):
-        """Create missing requirements.txt files for services."""
-        print("📦 Creating missing requirements.txt files...")
+        """Create missing config/environments/requirements.txt files for services."""
+        print("📦 Creating missing config/environments/requirements.txt files...")
 
         services_core = self.project_root / "services" / "core"
 
         for service_name, requirements in self.service_requirements.items():
             service_path = services_core / service_name
-            requirements_file = service_path / "requirements.txt"
+            requirements_file = service_path / "config/environments/requirements.txt"
 
             if service_path.exists() and not requirements_file.exists():
-                # Create requirements.txt
+                # Create config/environments/requirements.txt
                 with open(requirements_file, "w") as f:
                     f.write("# ACGS-1 Service Requirements\n")
                     f.write(f"# Generated for {service_name} service\n\n")
                     for req in requirements:
                         f.write(f"{req}\n")
 
-                self.log_action(f"Created requirements.txt for {service_name}")
+                self.log_action(f"Created config/environments/requirements.txt for {service_name}")
             elif requirements_file.exists():
                 self.log_action(f"Requirements.txt already exists for {service_name}")
 
@@ -205,7 +205,7 @@ class PostCleanupRemediation:
 
             if validation["exists"]:
                 # Check requirements
-                req_file = service_path / "requirements.txt"
+                req_file = service_path / "config/environments/requirements.txt"
                 validation["has_requirements"] = req_file.exists()
 
                 # Check for main app structure

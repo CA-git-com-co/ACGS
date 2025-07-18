@@ -4,7 +4,7 @@ ACGS-2 Dependency Managers Update Suite
 Comprehensive update and optimization of all package managers
 
 Features:
-- Python: UV + pyproject.toml optimization
+- Python: UV + config/environments/pyproject.toml optimization
 - JavaScript/TypeScript: pnpm workspace optimization
 - Rust: Cargo workspace optimization
 - Docker: Multi-stage build optimization
@@ -87,7 +87,7 @@ class DependencyManagerUpdater:
         }
 
         try:
-            # Phase 1: Update Python Dependency Management (UV + pyproject.toml)
+            # Phase 1: Update Python Dependency Management (UV + config/environments/pyproject.toml)
             logger.info("🐍 Phase 1: Updating Python Dependency Management")
             python_results = await self.update_python_dependencies()
             update_report["python_results"] = python_results
@@ -141,7 +141,7 @@ class DependencyManagerUpdater:
         return update_report
 
     async def update_python_dependencies(self) -> Dict[str, Any]:
-        """Update Python dependencies using UV and pyproject.toml."""
+        """Update Python dependencies using UV and config/environments/pyproject.toml."""
         logger.info("Updating Python dependencies with UV...")
 
         python_results = {
@@ -174,7 +174,7 @@ class DependencyManagerUpdater:
                 python_results["uv_installation"] = install_result.returncode == 0
                 logger.info("✅ UV installation/update completed")
 
-            # Optimize main pyproject.toml
+            # Optimize main config/environments/pyproject.toml
             await self.optimize_main_pyproject_toml()
             python_results["pyproject_optimization"] = True
 
@@ -211,11 +211,11 @@ class DependencyManagerUpdater:
         return python_results
 
     async def optimize_main_pyproject_toml(self):
-        """Optimize the main pyproject.toml file."""
-        pyproject_path = self.config.project_root / "pyproject.toml"
+        """Optimize the main config/environments/pyproject.toml file."""
+        pyproject_path = self.config.project_root / "config/environments/pyproject.toml"
 
         if not pyproject_path.exists():
-            logger.warning("pyproject.toml not found, skipping optimization")
+            logger.warning("config/environments/pyproject.toml not found, skipping optimization")
             return
 
         # Read current configuration
@@ -292,7 +292,7 @@ class DependencyManagerUpdater:
         with open(pyproject_path, "w") as f:
             toml.dump(config, f)
 
-        logger.info("✅ pyproject.toml optimized")
+        logger.info("✅ config/environments/pyproject.toml optimized")
 
     async def update_python_security_dependencies(self) -> List[str]:
         """Update Python dependencies with security fixes."""
@@ -525,7 +525,7 @@ class DependencyManagerUpdater:
             "index-strategy": "unsafe-best-match",
         }
 
-        with open(uv_config_dir / "uv.toml", "w") as f:
+        with open(uv_config_dir / "config/environments/uv.toml", "w") as f:
             toml.dump(uv_config, f)
 
         # pnpm caching configuration
@@ -561,7 +561,7 @@ RUN pip install uv
 
 # Set up Python environment
 WORKDIR /app
-COPY pyproject.toml uv.lock* ./
+COPY config/environments/pyproject.toml config/environments/uv.lock* ./
 RUN uv pip install --system -e .
 
 # Node.js stage
@@ -572,7 +572,7 @@ RUN npm install -g pnpm@latest
 
 # Set up Node.js environment
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json config/environments/pnpm-lock.yaml config/environments/pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 # Rust stage
@@ -756,8 +756,8 @@ CMD ["uvicorn", "services.main:app", "--host", "0.0.0.0", "--port", "8000"]
             "workspace": {"members": ["services/core/*", "services/cli/*", "tools/*"]}
         }
 
-        # Update pyproject.toml with workspace configuration
-        pyproject_path = self.config.project_root / "pyproject.toml"
+        # Update config/environments/pyproject.toml with workspace configuration
+        pyproject_path = self.config.project_root / "config/environments/pyproject.toml"
         if pyproject_path.exists():
             with open(pyproject_path, "r") as f:
                 config = toml.load(f)
@@ -771,7 +771,7 @@ CMD ["uvicorn", "services.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
     async def optimize_javascript_workspace(self):
         """Optimize JavaScript workspace configuration."""
-        # Update pnpm-workspace.yaml with optimized configuration
+        # Update config/environments/pnpm-workspace.yaml with optimized configuration
         workspace_config = {
             "packages": [
                 "services/cli/*",
@@ -787,7 +787,7 @@ CMD ["uvicorn", "services.main:app", "--host", "0.0.0.0", "--port", "8000"]
             },
         }
 
-        workspace_path = self.config.project_root / "pnpm-workspace.yaml"
+        workspace_path = self.config.project_root / "config/environments/pnpm-workspace.yaml"
         with open(workspace_path, "w") as f:
             yaml.dump(workspace_config, f, default_flow_style=False)
 
@@ -987,7 +987,7 @@ if __name__ == "__main__":
             ]
         }
 
-        workspace_path = self.config.project_root / "pnpm-workspace.yaml"
+        workspace_path = self.config.project_root / "config/environments/pnpm-workspace.yaml"
 
         with open(workspace_path, "w") as f:
             yaml.dump(workspace_config, f, default_flow_style=False)

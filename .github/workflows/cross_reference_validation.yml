@@ -1,0 +1,102 @@
+name: Automated Cross-Reference Validation
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    paths:
+      - '**/*.md'
+      - 'docs/**/*'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'docs/**/*'
+  schedule:
+    - cron: '0 3 * * 2'  # Weekly on Tuesday at 3 AM
+
+jobs:
+  cross-reference-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Run Cross-Reference Validation
+        run: python3 scripts/validation/claude_md_cross_reference_validator.py
+        
+      - name: Check Validation Results
+        run: |
+          python3 -c "
+          import json
+          
+          try:
+              with open('claude_md_cross_reference_report.json') as f:
+                  report = json.load(f)
+                  
+              validity_rate = report.get('summary', {}).get('link_validity_rate', 0)
+              broken_links = report.get('summary', {}).get('broken_links', 0)
+              
+              print(f'Cross-reference validity: {validity_rate}%')
+              print(f'Broken links: {broken_links}')
+              
+              if validity_rate < 88.0:
+                  print('::warning::Cross-reference validity below target (88%)')
+                  
+              if broken_links > 50:
+                  print('::warning::High number of broken links detected')
+                  
+          except Exception as e:
+              print(f'::error::Failed to check validation results: {e}')
+          "
+          
+      - name: Upload Validation Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: cross-reference-validation-report
+          path: claude_md_cross_reference_report.json
+          
+      - name: Create Issue for Broken Links
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            if (fs.existsSync('claude_md_cross_reference_report.json')) {
+              const report = JSON.parse(fs.readFileSync('claude_md_cross_reference_report.json', 'utf8'));
+              
+              const brokenLinks = report.summary?.broken_links || 0;
+              const validityRate = report.summary?.link_validity_rate || 0;
+              
+              if (brokenLinks > 0 || validityRate < 88.0) {
+                const issueBody = `## 🔗 Cross-Reference Validation Report
+                
+**Validation Date**: ${new Date().toISOString().split('T')[0]}
+**Constitutional Hash**: cdd01ef066bc6cf2
+
+### Summary
+- **Link Validity Rate**: ${validityRate}%
+- **Broken Links**: ${brokenLinks}
+- **Target**: >88% validity rate
+
+### Action Required
+${brokenLinks > 0 ? '- Fix broken links identified in the validation report' : ''}
+${validityRate < 88.0 ? '- Improve cross-reference validity to meet target' : ''}
+
+### Report Details
+See the attached validation report for detailed information about broken links and validation issues.
+`;
+                
+                github.rest.issues.create({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  title: `Cross-Reference Validation Issues - ${new Date().toISOString().split('T')[0]}`,
+                  body: issueBody,
+                  labels: ['documentation', 'maintenance', 'automated']
+                });
+              }
+            }

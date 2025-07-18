@@ -128,8 +128,8 @@ Each service has its own configuration in:
 
 | File | Purpose | Location |
 |------|---------|----------|
-| `pyproject.toml` | Python project config | Root |
-| `pytest.ini` | Test configuration | Root |
+| `config/environments/pyproject.toml` | Python project config | Root |
+| `config/environments/pytest.ini` | Test configuration | Root |
 | `docker-compose.*.yml` | Container orchestration | Root |
 | `alembic.ini` | Database migrations | `services/shared/` |
 
@@ -139,8 +139,8 @@ Each service has its own configuration in:
 
 All test configurations standardized to **80% coverage**:
 
-- `pytest.ini`: `--cov-fail-under=80`
-- `pyproject.toml`: `fail_under = 80`
+- `config/environments/pytest.ini`: `--cov-fail-under=80`
+- `config/environments/pyproject.toml`: `fail_under = 80`
 - CI/CD pipelines: 80% minimum
 
 ### Test Commands

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Health Metrics Exporter Startup Script
 # Prometheus metrics exporter for health monitoring data

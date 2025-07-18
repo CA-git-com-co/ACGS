@@ -97,19 +97,19 @@ class FocusedDependencyUpdater:
         }
 
         try:
-            # Update requirements.txt with latest secure versions
-            requirements_path = self.project_root / "requirements.txt"
+            # Update config/environments/requirements.txt with latest secure versions
+            requirements_path = self.project_root / "config/environments/requirements.txt"
             if requirements_path.exists():
                 self.update_requirements_txt(requirements_path)
                 python_results["requirements_updated"] = True
-                self.updates_applied.append("requirements.txt updated")
+                self.updates_applied.append("config/environments/requirements.txt updated")
 
-            # Optimize pyproject.toml
-            pyproject_path = self.project_root / "pyproject.toml"
+            # Optimize config/environments/pyproject.toml
+            pyproject_path = self.project_root / "config/environments/pyproject.toml"
             if pyproject_path.exists():
                 self.optimize_pyproject_toml(pyproject_path)
                 python_results["pyproject_optimized"] = True
-                self.updates_applied.append("pyproject.toml optimized")
+                self.updates_applied.append("config/environments/pyproject.toml optimized")
 
             # Install critical security updates
             security_packages = self.install_python_security_updates()
@@ -122,7 +122,7 @@ class FocusedDependencyUpdater:
         return python_results
 
     def update_requirements_txt(self, requirements_path: Path):
-        """Update requirements.txt with latest secure versions."""
+        """Update config/environments/requirements.txt with latest secure versions."""
         # Critical security updates
         security_updates = {
             "cryptography": ">=45.0.4",
@@ -172,10 +172,10 @@ class FocusedDependencyUpdater:
         with open(requirements_path, "w") as f:
             f.write("\n".join(updated_lines))
 
-        logger.info("✅ requirements.txt updated with security fixes")
+        logger.info("✅ config/environments/requirements.txt updated with security fixes")
 
     def optimize_pyproject_toml(self, pyproject_path: Path):
-        """Optimize pyproject.toml configuration."""
+        """Optimize config/environments/pyproject.toml configuration."""
         try:
             import toml
 
@@ -206,14 +206,14 @@ class FocusedDependencyUpdater:
             with open(pyproject_path, "w") as f:
                 toml.dump(config, f)
 
-            logger.info("✅ pyproject.toml optimized")
+            logger.info("✅ config/environments/pyproject.toml optimized")
 
         except ImportError:
             logger.warning(
-                "toml module not available, skipping pyproject.toml optimization"
+                "toml module not available, skipping config/environments/pyproject.toml optimization"
             )
         except Exception as e:
-            logger.error(f"Failed to optimize pyproject.toml: {e}")
+            logger.error(f"Failed to optimize config/environments/pyproject.toml: {e}")
 
     def install_python_security_updates(self) -> List[str]:
         """Install critical Python security updates."""
@@ -328,7 +328,7 @@ class FocusedDependencyUpdater:
                 ]
             }
 
-            workspace_path = self.project_root / "pnpm-workspace.yaml"
+            workspace_path = self.project_root / "config/environments/pnpm-workspace.yaml"
             with open(workspace_path, "w") as f:
                 yaml.dump(workspace_config, f, default_flow_style=False)
 
@@ -349,7 +349,7 @@ class FocusedDependencyUpdater:
         except ImportError:
             logger.warning("yaml module not available, creating basic workspace config")
             # Create basic workspace file
-            workspace_path = self.project_root / "pnpm-workspace.yaml"
+            workspace_path = self.project_root / "config/environments/pnpm-workspace.yaml"
             with open(workspace_path, "w") as f:
                 f.write(
                     "packages:\n  - 'services/cli/*'\n  - 'tools/mcp-inspector/*'\n"

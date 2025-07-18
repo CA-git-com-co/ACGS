@@ -131,7 +131,11 @@ def main():
         pass
 
     # Check if service configuration files exist
-    config_files = ["main.py", "config/settings.py", "requirements.txt"]
+    config_files = [
+        "main.py",
+        "config/settings.py",
+        "config/environments/requirements.txt",
+    ]
 
     for config_file in config_files:
         if pathlib.Path(config_file).exists():

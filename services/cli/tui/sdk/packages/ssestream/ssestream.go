@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
 
 package ssestream

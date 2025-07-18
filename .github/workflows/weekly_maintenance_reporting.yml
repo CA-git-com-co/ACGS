@@ -1,0 +1,66 @@
+name: Weekly Maintenance Reporting
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  schedule:
+    - cron: '0 8 * * 1'  # Weekly on Monday at 8 AM
+  workflow_dispatch:
+
+jobs:
+  weekly-maintenance-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Generate Weekly Maintenance Report
+        run: python3 scripts/reporting/weekly_maintenance_reporter.py
+        
+      - name: Upload Weekly Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: weekly-maintenance-report
+          path: |
+            reports/maintenance/weekly_maintenance_report_*.md
+            reports/maintenance/weekly_maintenance_data_*.json
+            
+      - name: Create Weekly Summary Issue
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const glob = require('glob');
+            
+            // Find latest weekly report
+            const reportFiles = glob.sync('reports/maintenance/weekly_maintenance_report_*.md');
+            
+            if (reportFiles.length > 0) {
+              const latestReport = reportFiles[reportFiles.length - 1];
+              const reportContent = fs.readFileSync(latestReport, 'utf8');
+              
+              // Extract summary section
+              const summaryMatch = reportContent.match(/## 📊 Overall System Health([\s\S]*?)---/);
+              const summary = summaryMatch ? summaryMatch[1] : 'Summary not available';
+              
+              const issueBody = `## 📊 ACGS-2 Weekly Maintenance Summary
+              
+**Report Date**: ${new Date().toISOString().split('T')[0]}
+**Constitutional Hash**: cdd01ef066bc6cf2
+
+${summary}
+
+**Full Report**: See attached artifacts for complete weekly maintenance report.
+`;
+              
+              github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `Weekly Maintenance Report - ${new Date().toISOString().split('T')[0]}`,
+                body: issueBody,
+                labels: ['maintenance', 'weekly-report', 'automated']
+              });
+            }

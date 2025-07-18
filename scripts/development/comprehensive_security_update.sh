@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # ACGS Comprehensive Security Update Script
@@ -66,7 +67,7 @@ update_requirements() {
 }
 
 # Update main requirements
-update_requirements "requirements.txt"
+update_requirements "config/environments/requirements.txt"
 update_requirements "requirements-test.txt"
 
 # Update service requirements

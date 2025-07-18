@@ -1,0 +1,272 @@
+{
+  "compliance_analysis": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "total_active_files": 2761,
+    "categories": {
+      "miscellaneous": {
+        "file_count": 1630,
+        "compliant_files": 1621,
+        "non_compliant_files": [
+          "frontend/package-lock.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/__init__.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/_openssl.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/exceptions.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/x509.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/asn1.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/__init__.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/ocsp.data.json",
+          "frontend/.next/build-manifest.json"
+        ],
+        "sample_files": [
+          "comprehensive_performance_analysis.json",
+          "constitutional-compliance-report.json",
+          "current_compliance_status.json",
+          "claude_md_cross_reference_report.json",
+          "database_performance_results.json"
+        ]
+      },
+      "environment": {
+        "file_count": 4,
+        "compliant_files": 4,
+        "non_compliant_files": [],
+        "sample_files": [
+          ".cursor/environment.json",
+          "reports/review_environment_cache.json",
+          ".github/workflows_backup/setup-environments.yml",
+          "reports/validation/environment_validation_report.json"
+        ]
+      },
+      "ci_cd": {
+        "file_count": 109,
+        "compliant_files": 108,
+        "non_compliant_files": [
+          ".github/markdown-link-check-config.json"
+        ],
+        "sample_files": [
+          "pipeline_results/complete_pipeline_results_1752454285.json",
+          "pipeline_results/complete_pipeline_results_1752453241.json",
+          ".github/dependabot.yml",
+          ".github/discussions_config.yml",
+          ".github/markdown-link-check-config.json"
+        ]
+      },
+      "testing": {
+        "file_count": 195,
+        "compliant_files": 191,
+        "non_compliant_files": [
+          ".mypy_cache/3.10/_pytest/tmpdir.data.json",
+          ".mypy_cache/3.10/_pytest/tmpdir.meta.json",
+          ".mypy_cache/3.10/_pytest/outcomes.data.json",
+          "test_reports/htmlcov/status.json"
+        ],
+        "sample_files": [
+          "generated_tests/test_metadata.json",
+          "tests/pytest.ini",
+          "tests/system_validation_results.json",
+          "test_reports/performance_baseline.json",
+          "test_reports/coverage.json"
+        ]
+      },
+      "services": {
+        "file_count": 228,
+        "compliant_files": 226,
+        "non_compliant_files": [
+          "services/platform_services/human-review/frontend/package-lock.json",
+          "config/environments/integrity.env"
+        ],
+        "sample_files": [
+          "config/volume_mount_triage.yaml",
+          "config/mapping_table.yml",
+          "config/.pre-commit-config.yaml",
+          "config/nginx.production.conf",
+          "config/monitoring-stack.yml"
+        ]
+      },
+      "docker": {
+        "file_count": 99,
+        "compliant_files": 99,
+        "non_compliant_files": [],
+        "sample_files": [
+          "compose-stacks/docker-compose.mcp.yml",
+          "monitoring/docker-compose.yml",
+          "services/core/code-analysis/docker-compose.yml",
+          "services/blockchain/expert-service/config/docker-compose.yml",
+          "services/blockchain/config/docker/docker-compose.unified.yml"
+        ]
+      },
+      "infrastructure": {
+        "file_count": 19,
+        "compliant_files": 19,
+        "non_compliant_files": [],
+        "sample_files": [
+          "infrastructure/composite-resource-definition.yaml",
+          "infrastructure/composition.yaml",
+          "reports/validation/acgs_infrastructure_validation_report.json",
+          "infrastructure/linkerd/linkerd-crds.yaml",
+          "infrastructure/phase3/phase3a-hpa-simple.yaml"
+        ]
+      },
+      "monitoring": {
+        "file_count": 136,
+        "compliant_files": 136,
+        "non_compliant_files": [],
+        "sample_files": [
+          "monitoring/alert_rules.yml",
+          "monitoring/prometheus.yml",
+          "monitoring/monitoring-stack.yml",
+          "monitoring/alertmanager.yml",
+          "services/core/code-analysis/prometheus_alerting_rules.yml"
+        ]
+      },
+      "kubernetes": {
+        "file_count": 116,
+        "compliant_files": 116,
+        "non_compliant_files": [],
+        "sample_files": [
+          "services/core/policy-governance/k8s/hpa-autoscaling.yaml",
+          "services/core/policy-governance/pgc_service/k8s/service-mesh.yaml",
+          "infrastructure/kubernetes/ac-service.yaml",
+          "infrastructure/kubernetes/ingress.yaml",
+          "infrastructure/kubernetes/deployment.yaml"
+        ]
+      },
+      "database": {
+        "file_count": 165,
+        "compliant_files": 165,
+        "non_compliant_files": [],
+        "sample_files": [
+          "services/core/code-analysis/config/redis.conf",
+          ".mypy_cache/3.10/aioredis/lock.meta.json",
+          ".mypy_cache/3.10/aioredis/lock.data.json",
+          ".mypy_cache/3.10/aioredis/__init__.meta.json",
+          ".mypy_cache/3.10/aioredis/connection.data.json"
+        ]
+      },
+      "security": {
+        "file_count": 59,
+        "compliant_files": 42,
+        "non_compliant_files": [
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/hashes.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/aead.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/poly1305.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/dsa.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/ciphers.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/ec.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/ed448.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/__init__.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/ed25519.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/keys.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/rsa.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/cmac.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/kdf.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/hmac.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/x448.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/x25519.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/_rust/openssl/dh.data.json"
+        ],
+        "sample_files": [
+          "docs/security/security_validation_report.json",
+          "docs/security/SECURITY_POLICY.yml",
+          ".mypy_cache/3.10/requests/auth.meta.json",
+          ".mypy_cache/3.10/requests/auth.data.json",
+          ".mypy_cache/3.10/cryptography/hazmat/bindings/openssl/binding.meta.json"
+        ]
+      },
+      "networking": {
+        "file_count": 1,
+        "compliant_files": 1,
+        "non_compliant_files": [],
+        "sample_files": [
+          "infrastructure/haproxy/haproxy.cfg"
+        ]
+      }
+    },
+    "compliance_summary": {
+      "files_with_hash": 2728,
+      "files_without_hash": 33,
+      "compliance_rate": 98.8
+    }
+  },
+  "recommendations": {
+    "constitutional_hash": "cdd01ef066bc6cf2",
+    "analysis_timestamp": "2025-01-18T00:00:00Z",
+    "current_state": {
+      "total_active_configs": 2761,
+      "categories": 12,
+      "compliance_rate": 98.8
+    },
+    "simplification_opportunities": [
+      {
+        "category": "miscellaneous",
+        "current_files": 1630,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "326 files (80% reduction)"
+      },
+      {
+        "category": "ci_cd",
+        "current_files": 109,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "21 files (80% reduction)"
+      },
+      {
+        "category": "testing",
+        "current_files": 195,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "39 files (80% reduction)"
+      },
+      {
+        "category": "services",
+        "current_files": 228,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "45 files (80% reduction)"
+      },
+      {
+        "category": "docker",
+        "current_files": 99,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "19 files (80% reduction)"
+      },
+      {
+        "category": "infrastructure",
+        "current_files": 19,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "3 files (80% reduction)"
+      },
+      {
+        "category": "monitoring",
+        "current_files": 136,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "27 files (80% reduction)"
+      },
+      {
+        "category": "kubernetes",
+        "current_files": 116,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "23 files (80% reduction)"
+      },
+      {
+        "category": "database",
+        "current_files": 165,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "33 files (80% reduction)"
+      },
+      {
+        "category": "security",
+        "current_files": 59,
+        "recommendation": "HIGH - Consolidate multiple files into standardized templates",
+        "potential_reduction": "11 files (80% reduction)"
+      }
+    ],
+    "priority_actions": [
+      {
+        "action": "Configuration Consolidation",
+        "description": "Consolidate configurations in: miscellaneous, ci_cd, testing, services, docker, infrastructure, monitoring, kubernetes, database, security",
+        "impact": "Significant operational simplification"
+      }
+    ],
+    "archive_exclusions": {
+      "patterns_used": 57,
+      "files_excluded": "See scan output for count"
+    }
+  }
+}

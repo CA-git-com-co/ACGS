@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # HAProxy Monitoring Script for ACGS-1 Load Balancer
 # Continuous monitoring of load balancer performance and backend health

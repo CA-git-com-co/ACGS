@@ -201,7 +201,7 @@ class MigrationGenerator:
                 description="Update development environment for new version",
                 commands=[
                     "# Update dependencies",
-                    "pip install --upgrade -r requirements.txt",
+                    "pip install --upgrade -r config/environments/requirements.txt",
                     "# Update environment variables",
                     f"export API_VERSION={diff_report.target_version}",
                     "# Clear caches",

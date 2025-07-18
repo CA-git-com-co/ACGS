@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 -- ACGS-1 Security Enhancement: MD5 to SCRAM-SHA-256 Migration Script
 -- This script migrates PostgreSQL authentication from MD5 to SCRAM-SHA-256
 -- Run this script as PostgreSQL superuser after updating configuration files

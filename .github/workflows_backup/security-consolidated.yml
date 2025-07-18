@@ -17,7 +17,7 @@ on:
       - '**.js'
       - '**.ts'
       - '**.go'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'package*.json'
       - 'Dockerfile*'
@@ -32,7 +32,7 @@ on:
       - '**.js'
       - '**.ts'
       - '**.go'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'package*.json'
       - 'Dockerfile*'
@@ -109,7 +109,7 @@ jobs:
           vuln_count=0
           
           # Safety scan for known vulnerabilities
-          if ls requirements*.txt 1> /dev/null 2>&1; then
+          if ls config/environments/requirements*.txt 1> /dev/null 2>&1; then
             echo "Running Safety scan..."
             safety check --json --output safety-results.json || true
             
@@ -121,7 +121,7 @@ jobs:
           
           # Pip-audit scan
           echo "Running pip-audit scan..."
-          if ls requirements*.txt 1> /dev/null 2>&1; then
+          if ls config/environments/requirements*.txt 1> /dev/null 2>&1; then
             pip-audit --format=json --output=pip-audit-results.json || true
             
             # Add to vulnerability count

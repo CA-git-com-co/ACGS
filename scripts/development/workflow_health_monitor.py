@@ -151,8 +151,8 @@ def check_dependencies():
 
     # Check if critical files exist
     critical_files = [
-        "/home/ubuntu/ACGS/requirements.txt",
-        "/home/ubuntu/ACGS/pyproject.toml",
+        "/home/ubuntu/ACGS/config/environments/requirements.txt",
+        "/home/ubuntu/ACGS/config/environments/pyproject.toml",
         "/home/ubuntu/ACGS/package.json",
     ]
 
@@ -161,9 +161,9 @@ def check_dependencies():
             issues.append(f"Missing critical file: {file_path}")
 
     # Check for common dependency conflicts
-    if os.path.exists("/home/ubuntu/ACGS/pyproject.toml"):
+    if os.path.exists("/home/ubuntu/ACGS/config/environments/pyproject.toml"):
         try:
-            with open("/home/ubuntu/ACGS/pyproject.toml") as f:
+            with open("/home/ubuntu/ACGS/config/environments/pyproject.toml") as f:
                 content = f.read()
                 if (
                     "nemo-skills" in content

@@ -14,6 +14,7 @@ import hashlib
 # Security Event Types
 class SecurityEventType(Enum):
     """Types of security events"""
+
     AUTHENTICATION_FAILURE = "authentication_failure"
     AUTHORIZATION_VIOLATION = "authorization_violation"
     CONSTITUTIONAL_VIOLATION = "constitutional_violation"
@@ -33,6 +34,7 @@ class SecurityEventType(Enum):
 
 class ThreatLevel(Enum):
     """Threat severity levels"""
+
     CRITICAL = "critical"
     HIGH = "high"
     MEDIUM = "medium"
@@ -42,6 +44,7 @@ class ThreatLevel(Enum):
 
 class SecurityAction(Enum):
     """Security response actions"""
+
     BLOCK = "block"
     QUARANTINE = "quarantine"
     MONITOR = "monitor"
@@ -54,6 +57,7 @@ class SecurityAction(Enum):
 
 class ComplianceFramework(Enum):
     """Compliance frameworks"""
+
     CONSTITUTIONAL_AI = "constitutional_ai"
     SOC2 = "soc2"
     ISO27001 = "iso27001"
@@ -67,6 +71,7 @@ class ComplianceFramework(Enum):
 
 class ValidationResult(Enum):
     """Validation results"""
+
     PASS = "pass"
     FAIL = "fail"
     WARNING = "warning"
@@ -76,6 +81,7 @@ class ValidationResult(Enum):
 
 class SecurityControlType(Enum):
     """Types of security controls"""
+
     PREVENTIVE = "preventive"
     DETECTIVE = "detective"
     CORRECTIVE = "corrective"
@@ -86,9 +92,11 @@ class SecurityControlType(Enum):
 
 # Core Domain Models
 
+
 @dataclass
 class ConstitutionalContext:
     """Constitutional context for security operations"""
+
     constitutional_hash: str = "cdd01ef066bc6cf2"
     purpose: str = ""
     tenant_id: Optional[str] = None
@@ -100,6 +108,7 @@ class ConstitutionalContext:
 @dataclass
 class SecurityEvent:
     """Security event record"""
+
     event_id: UUID = field(default_factory=uuid4)
     event_type: SecurityEventType = SecurityEventType.SUSPICIOUS_ACTIVITY
     threat_level: ThreatLevel = ThreatLevel.MEDIUM
@@ -112,7 +121,9 @@ class SecurityEvent:
     indicators: List[str] = field(default_factory=list)
     attack_vector: Optional[str] = None
     affected_assets: List[str] = field(default_factory=list)
-    constitutional_context: ConstitutionalContext = field(default_factory=ConstitutionalContext)
+    constitutional_context: ConstitutionalContext = field(
+        default_factory=ConstitutionalContext
+    )
     timestamp: datetime = field(default_factory=datetime.utcnow)
     detection_method: str = ""
     confidence_score: float = 0.0  # 0.0 to 1.0
@@ -129,6 +140,7 @@ class SecurityEvent:
 @dataclass
 class ThreatIntelligence:
     """Threat intelligence data"""
+
     intel_id: UUID = field(default_factory=uuid4)
     threat_name: str = ""
     threat_type: str = ""
@@ -154,6 +166,7 @@ class ThreatIntelligence:
 @dataclass
 class SecurityRule:
     """Security detection rule"""
+
     rule_id: UUID = field(default_factory=uuid4)
     rule_name: str = ""
     rule_type: str = ""
@@ -181,6 +194,7 @@ class SecurityRule:
 @dataclass
 class SecurityControl:
     """Security control implementation"""
+
     control_id: UUID = field(default_factory=uuid4)
     control_name: str = ""
     control_type: SecurityControlType = SecurityControlType.PREVENTIVE
@@ -207,6 +221,7 @@ class SecurityControl:
 @dataclass
 class VulnerabilityAssessment:
     """Vulnerability assessment result"""
+
     assessment_id: UUID = field(default_factory=uuid4)
     scan_type: str = ""
     target: str = ""
@@ -234,6 +249,7 @@ class VulnerabilityAssessment:
 @dataclass
 class ComplianceAssessment:
     """Compliance assessment result"""
+
     assessment_id: UUID = field(default_factory=uuid4)
     framework: ComplianceFramework = ComplianceFramework.CONSTITUTIONAL_AI
     assessment_date: datetime = field(default_factory=datetime.utcnow)
@@ -258,6 +274,7 @@ class ComplianceAssessment:
 @dataclass
 class SecurityIncident:
     """Security incident record"""
+
     incident_id: UUID = field(default_factory=uuid4)
     incident_number: str = ""
     title: str = ""
@@ -293,6 +310,7 @@ class SecurityIncident:
 @dataclass
 class SecurityMetrics:
     """Security metrics and KPIs"""
+
     metric_id: UUID = field(default_factory=uuid4)
     metric_name: str = ""
     metric_type: str = ""
@@ -318,6 +336,7 @@ class SecurityMetrics:
 @dataclass
 class SecurityConfiguration:
     """Security service configuration"""
+
     service_name: str = "Advanced Security & Validation Service"
     service_version: str = "1.0.0"
     constitutional_hash: str = "cdd01ef066bc6cf2"
@@ -345,6 +364,7 @@ class SecurityConfiguration:
 @dataclass
 class ZeroTrustPolicy:
     """Zero Trust security policy"""
+
     policy_id: UUID = field(default_factory=uuid4)
     policy_name: str = ""
     description: str = ""
@@ -369,6 +389,7 @@ class ZeroTrustPolicy:
 @dataclass
 class SecurityAuditEntry:
     """Security audit log entry"""
+
     audit_id: UUID = field(default_factory=uuid4)
     event_type: str = ""
     actor: str = ""
@@ -380,7 +401,9 @@ class SecurityAuditEntry:
     user_agent: str = ""
     session_id: Optional[str] = None
     request_id: Optional[str] = None
-    constitutional_context: ConstitutionalContext = field(default_factory=ConstitutionalContext)
+    constitutional_context: ConstitutionalContext = field(
+        default_factory=ConstitutionalContext
+    )
     risk_score: float = 0.0
     anomaly_score: float = 0.0
     compliance_flags: List[str] = field(default_factory=list)
@@ -389,7 +412,7 @@ class SecurityAuditEntry:
     chain_of_custody: List[Dict[str, Any]] = field(default_factory=list)
     retention_policy: str = "365d"
     classification: str = "internal"
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert audit entry to dictionary"""
         return {
@@ -405,13 +428,14 @@ class SecurityAuditEntry:
             "risk_score": self.risk_score,
             "anomaly_score": self.anomaly_score,
             "compliance_flags": self.compliance_flags,
-            "correlation_id": str(self.correlation_id) if self.correlation_id else None
+            "correlation_id": str(self.correlation_id) if self.correlation_id else None,
         }
 
 
 @dataclass
 class SecurityCapabilities:
     """Capabilities of the Security & Validation service"""
+
     real_time_threat_detection: bool = True
     behavioral_analysis: bool = True
     machine_learning_detection: bool = True
@@ -430,11 +454,25 @@ class SecurityCapabilities:
     penetration_testing: bool = False  # Requires special authorization
     red_team_exercises: bool = False  # Requires special authorization
     max_concurrent_scans: int = 10
-    supported_scan_types: List[str] = field(default_factory=lambda: [
-        "vulnerability", "compliance", "configuration", "behavioral", "threat_intelligence"
-    ])
-    supported_compliance_frameworks: List[str] = field(default_factory=lambda: [
-        "constitutional_ai", "soc2", "iso27001", "gdpr", "ccpa", "nist", "owasp"
-    ])
+    supported_scan_types: List[str] = field(
+        default_factory=lambda: [
+            "vulnerability",
+            "compliance",
+            "configuration",
+            "behavioral",
+            "threat_intelligence",
+        ]
+    )
+    supported_compliance_frameworks: List[str] = field(
+        default_factory=lambda: [
+            "constitutional_ai",
+            "soc2",
+            "iso27001",
+            "gdpr",
+            "ccpa",
+            "nist",
+            "owasp",
+        ]
+    )
     constitutional_validation: bool = True
     security_certification: str = "ACGS-2-Constitutional-Security-Validated"

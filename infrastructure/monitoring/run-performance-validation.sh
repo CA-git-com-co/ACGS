@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # ACGS-1 Monitoring Infrastructure Performance Validation Master Script
 # Subtask 13.7: Comprehensive performance validation and testing orchestration

@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // Custom getrandom implementation for Solana BPF
 // This provides a minimal implementation to satisfy getrandom requirements
 

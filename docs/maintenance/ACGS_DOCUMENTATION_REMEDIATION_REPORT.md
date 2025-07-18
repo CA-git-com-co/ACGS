@@ -114,7 +114,7 @@ The ACGS-2 documentation remediation project has been successfully completed, ac
 #### Key Improvements
 1. **Refined Exclusion Patterns**: Allowed legitimate ACGS-2 README files in test directories
 2. **Expanded Directory Coverage**: Added tools/, scripts/, reports/, reorganization-tools/, database/
-3. **Enhanced File Categories**: Included CHANGELOG.md, requirements.txt, and governance files
+3. **Enhanced File Categories**: Included CHANGELOG.md, config/environments/requirements.txt, and governance files
 4. **Quality Standards**: Raised minimum compliance threshold from 80% to 85%
 5. **Validation Enhancement**: Updated all validation tools to enforce higher standards
 

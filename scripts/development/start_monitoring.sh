@@ -1,10 +1,11 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # Start ACGS-PGP monitoring stack
 
 echo "🚀 Starting ACGS-PGP Monitoring Stack..."
 
 # Start monitoring services
-docker-compose -f docker-compose.monitoring.yml up -d
+docker-compose -f config/docker/docker-compose.monitoring.yml up -d
 
 echo "✅ Monitoring stack started!"
 echo "📊 Prometheus: http://localhost:9090"

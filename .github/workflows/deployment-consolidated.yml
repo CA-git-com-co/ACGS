@@ -309,9 +309,9 @@ jobs:
                 echo "  - Health checking new instances..."
                 echo "  - Switching traffic..."
                 echo "  - Removing old containers..."
-                # docker-compose -f docker-compose.prod.yml up -d --scale app=2
+                # docker-compose -f config/docker/docker-compose.prod.yml up -d --scale app=2
                 # Health check and traffic switch logic
-                # docker-compose -f docker-compose.prod.yml stop old_containers
+                # docker-compose -f config/docker/docker-compose.prod.yml stop old_containers
               else
                 echo "🔧 Custom production deployment with zero-downtime"
                 echo "  - Implementing custom blue-green deployment"
@@ -342,7 +342,7 @@ jobs:
                 # kubectl apply -f infrastructure/kubernetes/staging/
               elif [ -f "docker-compose.staging.yml" ]; then
                 echo "🐳 Using Docker Compose for staging..."
-                # docker-compose -f docker-compose.staging.yml up -d
+                # docker-compose -f config/docker/docker-compose.staging.yml up -d
               else
                 echo "🔧 Custom staging deployment"
                 # Add custom staging deployment logic
@@ -355,7 +355,7 @@ jobs:
               # Development deployment logic
               if [ -f "docker-compose.dev.yml" ]; then
                 echo "🐳 Using Docker Compose for development..."
-                # docker-compose -f docker-compose.dev.yml up -d
+                # docker-compose -f config/docker/docker-compose.dev.yml up -d
               else
                 echo "🔧 Custom development deployment"
                 # Add custom development deployment logic

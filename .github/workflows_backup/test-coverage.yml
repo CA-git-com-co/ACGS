@@ -9,19 +9,19 @@ on:
     paths:
       - '**.py'
       - 'tests/**'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - '.github/workflows/test-coverage.yml'
-      - 'pytest.ini'
-      - 'pyproject.toml'
+      - 'config/environments/pytest.ini'
+      - 'config/environments/pyproject.toml'
   pull_request:
     branches: [ main, develop ]
     paths:
       - '**.py'
       - 'tests/**'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - '.github/workflows/test-coverage.yml'
-      - 'pytest.ini'
-      - 'pyproject.toml'
+      - 'config/environments/pytest.ini'
+      - 'config/environments/pyproject.toml'
   schedule:
     - cron: '0 6 * * 1'  # Weekly on Monday at 6 AM (optimized from every 6 hours)
 
@@ -64,10 +64,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest pytest-cov pytest-json-report coverage coverage-badge
         # Install requirements with fallback
-        if [ -f requirements.txt ]; then
-          pip install -r requirements.txt
-        elif [ -f requirements-security.txt ]; then
-          pip install -r requirements-security.txt
+        if [ -f config/environments/requirements.txt ]; then
+          pip install -r config/environments/requirements.txt
+        elif [ -f config/environments/requirements-security.txt ]; then
+          pip install -r config/environments/requirements-security.txt
         else
           echo "No requirements file found, installing minimal dependencies"
           pip install fastapi uvicorn pydantic sqlalchemy asyncpg redis

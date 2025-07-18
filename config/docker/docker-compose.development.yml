@@ -1,0 +1,248 @@
+# ACGS-2 Development Environment Override
+# Constitutional Hash: cdd01ef066bc6cf2
+# Development-specific configurations and overrides
+
+version: '3.8'
+
+x-development-environment: &development-environment
+  ENVIRONMENT: development
+  DEBUG: true
+  LOG_LEVEL: DEBUG
+  RELOAD: true
+  WORKERS: 1
+
+services:
+  # Development Database Configuration
+  postgres:
+    environment:
+      POSTGRES_DB: acgs_development
+      POSTGRES_USER: acgs_dev
+    ports:
+      - "5433:5432"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.25'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ${ACGS_ROOT}/infrastructure/scripts/docker/init-db-dev.sql:/docker-entrypoint-initdb.d/init-db-dev.sql:ro
+
+  # Development Redis Configuration
+  redis:
+    command: >
+      redis-server
+      --requirepass dev_password
+      --maxmemory 128mb
+      --maxmemory-policy allkeys-lru
+    ports:
+      - "6380:6379"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.1'
+
+  # Development Monitoring (Lightweight)
+  prometheus:
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9091:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.1'
+
+  grafana:
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: dev_password
+      GF_USERS_ALLOW_SIGN_UP: true
+      GF_AUTH_ANONYMOUS_ENABLED: true
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+    ports:
+      - "3001:3000"
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.1'
+
+  # ACGS Core Services - Development Configuration
+  constitutional_ai:
+    build:
+      context: ${ACGS_ROOT}/services/core/constitutional-ai
+      dockerfile: Dockerfile.dev
+    container_name: acgs_constitutional_ai_dev
+    environment:
+      <<: *development-environment
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      DATABASE_URL: postgresql+asyncpg://acgs_dev:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/acgs_development
+      REDIS_URL: redis://:dev_password@redis:6379/0
+      SERVICE_PORT: 8001
+    ports:
+      - "8001:8001"
+    volumes:
+      - ${ACGS_ROOT}/services/core/constitutional-ai:/app
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_network
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=constitutional-ai"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  integrity_service:
+    build:
+      context: ${ACGS_ROOT}/services/core/integrity
+      dockerfile: Dockerfile.dev
+    container_name: acgs_integrity_dev
+    environment:
+      <<: *development-environment
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      DATABASE_URL: postgresql+asyncpg://acgs_dev:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/acgs_development
+      REDIS_URL: redis://:dev_password@redis:6379/1
+      SERVICE_PORT: 8002
+    ports:
+      - "8002:8002"
+    volumes:
+      - ${ACGS_ROOT}/services/core/integrity:/app
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_network
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=integrity"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  formal_verification:
+    build:
+      context: ${ACGS_ROOT}/services/core/formal-verification
+      dockerfile: Dockerfile.dev
+    container_name: acgs_formal_verification_dev
+    environment:
+      <<: *development-environment
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      DATABASE_URL: postgresql+asyncpg://acgs_dev:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/acgs_development
+      REDIS_URL: redis://:dev_password@redis:6379/2
+      SERVICE_PORT: 8003
+    ports:
+      - "8003:8003"
+    volumes:
+      - ${ACGS_ROOT}/services/core/formal-verification:/app
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_network
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=formal-verification"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  governance_synthesis:
+    build:
+      context: ${ACGS_ROOT}/services/core/governance-synthesis
+      dockerfile: Dockerfile.dev
+    container_name: acgs_governance_synthesis_dev
+    environment:
+      <<: *development-environment
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+      DATABASE_URL: postgresql+asyncpg://acgs_dev:${POSTGRES_PASSWORD:-dev_password}@postgres:5432/acgs_development
+      REDIS_URL: redis://:dev_password@redis:6379/3
+      SERVICE_PORT: 8004
+    ports:
+      - "8004:8004"
+    volumes:
+      - ${ACGS_ROOT}/services/core/governance-synthesis:/app
+      - acgs_logs:/app/logs
+    networks:
+      - acgs_network
+    depends_on:
+      - postgres
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    labels:
+      - "acgs.service=core"
+      - "acgs.component=governance-synthesis"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+  # Development Tools and Utilities
+  dev_tools:
+    image: alpine:latest
+    container_name: acgs_dev_tools
+    environment:
+      <<: *development-environment
+      CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+    command: tail -f /dev/null
+    volumes:
+      - ${ACGS_ROOT}:/workspace
+      - acgs_logs:/logs
+    networks:
+      - acgs_network
+    labels:
+      - "acgs.service=tools"
+      - "acgs.component=development"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Development-specific volumes
+volumes:
+  dev_cache:
+    driver: local
+    labels:
+      - "acgs.volume=dev-cache"
+      - "acgs.environment=development"
+      - "acgs.constitutional_hash=cdd01ef066bc6cf2"
+
+# Constitutional Compliance for Development
+x-constitutional-compliance-dev:
+  hash: cdd01ef066bc6cf2
+  environment: development
+  performance_targets:
+    p99_latency_ms: 10  # Relaxed for development
+    throughput_rps: 50   # Lower for development
+    cache_hit_rate: 0.70 # Relaxed for development
+  development_features:
+    - "Hot reload enabled"
+    - "Debug logging enabled"
+    - "Development database with test data"
+    - "Relaxed security for development convenience"

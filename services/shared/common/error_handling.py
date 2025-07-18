@@ -22,9 +22,17 @@ class ServiceUnavailableError(ACGSException):
     """Service unavailability errors."""
 
 
-def handle_service_error(error: Exception, service_name: str = "unknown") -> None:
-    """Handle service errors with logging."""
+def handle_service_error(error: Exception, service_name: str = "unknown") -> dict[str, Any]:
+    """Handle service errors with logging and return structured error information."""
     logger.error(f"Service error in {service_name}: {error}")
+
+    # Return structured error information as expected by tests
+    return {
+        "error": str(error),
+        "service": service_name,
+        "error_type": type(error).__name__,
+        "constitutional_hash": CONSTITUTIONAL_HASH,
+    }
 
 
 def log_error(error: Exception, context: dict[str, Any] | None = None) -> None:

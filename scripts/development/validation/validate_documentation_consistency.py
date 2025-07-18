@@ -249,8 +249,8 @@ class ACGSDocumentationValidator:
 
         # Files that should have 80% coverage target
         coverage_files = [
-            ("pytest.ini", ["--cov-fail-under=80", "80"]),
-            ("pyproject.toml", ["fail_under = 80", "80"]),
+            ("config/environments/pytest.ini", ["--cov-fail-under=80", "80"]),
+            ("config/environments/pyproject.toml", ["fail_under = 80", "80"]),
             ("docs/configuration/README.md", ["80%", "coverage"]),
         ]
 

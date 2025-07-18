@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 -- Research Papers Knowledge Base Schema
 -- PostgreSQL Database for ACGS Research Materials
 

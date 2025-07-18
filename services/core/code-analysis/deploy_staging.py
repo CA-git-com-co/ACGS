@@ -101,7 +101,7 @@ class StagingDeployment:
         required_paths = [
             "code_analysis_service/main.py",
             "code_analysis_service/config/settings.py",
-            "code_analysis_service/requirements.txt",
+            "code_analysis_service/config/environments/requirements.txt",
             "database/migrations",
         ]
 
@@ -162,7 +162,14 @@ class StagingDeployment:
 
         try:
             # Stop any existing deployment
-            stop_cmd = ["docker", "compose", "--env-file", "config/environments/development.env.staging", "down", "-v"]
+            stop_cmd = [
+                "docker",
+                "compose",
+                "--env-file",
+                "config/environments/development.env.staging",
+                "down",
+                "-v",
+            ]
             subprocess.run(stop_cmd, check=False, capture_output=True, timeout=60)
 
             # Start the deployment
@@ -186,7 +193,13 @@ class StagingDeployment:
                 time.sleep(30)
 
                 # Check service status
-                status_cmd = ["docker", "compose", "--env-file", "config/environments/development.env.staging", "ps"]
+                status_cmd = [
+                    "docker",
+                    "compose",
+                    "--env-file",
+                    "config/environments/development.env.staging",
+                    "ps",
+                ]
                 status_result = subprocess.run(
                     status_cmd, check=False, capture_output=True, text=True
                 )

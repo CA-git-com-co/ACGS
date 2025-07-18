@@ -181,8 +181,8 @@ class WorkflowValidator:
         
         # Check for required files
         required_files = [
-            "requirements.txt",
-            "requirements-security.txt"
+            "config/environments/requirements.txt",
+            "config/environments/requirements-security.txt"
         ]
         
         for file_name in required_files:

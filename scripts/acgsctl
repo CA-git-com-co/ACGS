@@ -1,0 +1,652 @@
+#!/usr/bin/env python3
+
+"""
+ACGS-2 Centralized CLI Tool (acgsctl)
+Unified command-line interface for managing ACGS-2 operations
+Constitutional Hash: cdd01ef066bc6cf2
+"""
+
+import os
+import sys
+import json
+import argparse
+import asyncio
+import subprocess
+from pathlib import Path
+from typing import Dict, List, Optional, Any
+from datetime import datetime
+import logging
+
+# Add project root to path
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+# Constitutional compliance
+CONSTITUTIONAL_HASH = "cdd01ef066bc6cf2"
+
+# Setup logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+
+class ACGSController:
+    """Main ACGS-2 controller"""
+    
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+        self.constitutional_hash = CONSTITUTIONAL_HASH
+        
+    def run_command(self, command: List[str], cwd: Optional[Path] = None, 
+                   capture_output: bool = True) -> subprocess.CompletedProcess:
+        """Run a command and return the result"""
+        cwd = cwd or self.project_root
+        
+        logger.debug(f"Running command: {' '.join(command)} in {cwd}")
+        
+        try:
+            result = subprocess.run(
+                command,
+                cwd=cwd,
+                capture_output=capture_output,
+                text=True,
+                check=False
+            )
+            return result
+        except Exception as e:
+            logger.error(f"Command failed: {e}")
+            raise
+            
+    def print_banner(self):
+        """Print ACGS-2 banner"""
+        print("\n" + "="*60)
+        print("ACGS-2 Centralized CLI Tool (acgsctl)")
+        print("="*60)
+        print(f"Constitutional Hash: {self.constitutional_hash}")
+        print(f"Project Root: {self.project_root}")
+        print()
+        
+    # Service management commands
+    def start_services(self, services: List[str] = None, environment: str = "development"):
+        """Start ACGS services"""
+        print(f"🚀 Starting ACGS services for {environment} environment")
+        
+        if services:
+            print(f"Services: {', '.join(services)}")
+            
+        # Use consolidated deployment script
+        deploy_script = self.project_root / "scripts/deploy-acgs-consolidated.sh"
+        if deploy_script.exists():
+            command = [str(deploy_script), "-e", environment]
+            if services:
+                command.extend(["-c", ",".join(services)])
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Services started successfully")
+            else:
+                print("❌ Failed to start services")
+                return False
+        else:
+            print("❌ Deployment script not found")
+            return False
+            
+        return True
+        
+    def stop_services(self, services: List[str] = None, environment: str = "development"):
+        """Stop ACGS services"""
+        print(f"🛑 Stopping ACGS services for {environment} environment")
+        
+        if services:
+            print(f"Services: {', '.join(services)}")
+            
+        deploy_script = self.project_root / "scripts/deploy-acgs-consolidated.sh"
+        if deploy_script.exists():
+            command = [str(deploy_script), "-e", environment, "-a", "stop"]
+            if services:
+                command.extend(["-c", ",".join(services)])
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Services stopped successfully")
+            else:
+                print("❌ Failed to stop services")
+                return False
+        else:
+            print("❌ Deployment script not found")
+            return False
+            
+        return True
+        
+    def restart_services(self, services: List[str] = None, environment: str = "development"):
+        """Restart ACGS services"""
+        print(f"🔄 Restarting ACGS services for {environment} environment")
+        
+        if services:
+            print(f"Services: {', '.join(services)}")
+            
+        deploy_script = self.project_root / "scripts/deploy-acgs-consolidated.sh"
+        if deploy_script.exists():
+            command = [str(deploy_script), "-e", environment, "-a", "restart"]
+            if services:
+                command.extend(["-c", ",".join(services)])
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Services restarted successfully")
+            else:
+                print("❌ Failed to restart services")
+                return False
+        else:
+            print("❌ Deployment script not found")
+            return False
+            
+        return True
+        
+    def status_services(self, services: List[str] = None, environment: str = "development"):
+        """Check status of ACGS services"""
+        print(f"📊 Checking status of ACGS services for {environment} environment")
+        
+        deploy_script = self.project_root / "scripts/deploy-acgs-consolidated.sh"
+        if deploy_script.exists():
+            command = [str(deploy_script), "-e", environment, "-a", "status"]
+            if services:
+                command.extend(["-c", ",".join(services)])
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Status check completed")
+            else:
+                print("❌ Status check failed")
+                return False
+        else:
+            print("❌ Deployment script not found")
+            return False
+            
+        return True
+        
+    def logs_services(self, services: List[str] = None, environment: str = "development", 
+                     follow: bool = False):
+        """Show logs for ACGS services"""
+        print(f"📋 Showing logs for ACGS services ({environment} environment)")
+        
+        deploy_script = self.project_root / "scripts/deploy-acgs-consolidated.sh"
+        if deploy_script.exists():
+            command = [str(deploy_script), "-e", environment, "-a", "logs"]
+            if services:
+                command.extend(["-c", ",".join(services)])
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Logs displayed")
+            else:
+                print("❌ Failed to show logs")
+                return False
+        else:
+            print("❌ Deployment script not found")
+            return False
+            
+        return True
+        
+    # Validation commands
+    def validate_compliance(self, fix: bool = False, output: str = None):
+        """Validate constitutional compliance"""
+        print("🔍 Validating constitutional compliance")
+        
+        scanner_script = self.project_root / "scripts/compliance/constitutional_compliance_scanner.py"
+        if scanner_script.exists():
+            command = ["python3", str(scanner_script)]
+            if fix:
+                command.append("--fix")
+            if output:
+                command.extend(["--output", output])
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Constitutional compliance validation passed")
+            else:
+                print("❌ Constitutional compliance validation failed")
+                return False
+        else:
+            print("❌ Compliance scanner not found")
+            return False
+            
+        return True
+        
+    def validate_dependencies(self, output: str = None, visualize: bool = False):
+        """Validate service dependencies"""
+        print("🔍 Analyzing service dependencies")
+        
+        analyzer_script = self.project_root / "scripts/analysis/service_dependency_analyzer.py"
+        if analyzer_script.exists():
+            command = ["python3", str(analyzer_script)]
+            if output:
+                command.extend(["--output", output])
+            if visualize:
+                command.append("--visualize")
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Service dependency analysis completed")
+            else:
+                print("❌ Service dependency analysis failed")
+                return False
+        else:
+            print("❌ Dependency analyzer not found")
+            return False
+            
+        return True
+        
+    def validate_system(self):
+        """Validate entire system"""
+        print("🔍 Validating entire ACGS-2 system")
+        
+        validator_script = self.project_root / "scripts/validate-consolidated-system.sh"
+        if validator_script.exists():
+            command = [str(validator_script)]
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ System validation passed")
+            else:
+                print("❌ System validation failed")
+                return False
+        else:
+            print("❌ System validator not found")
+            return False
+            
+        return True
+        
+    # Testing commands
+    def test_constitutional(self):
+        """Run constitutional compliance tests"""
+        print("🧪 Running constitutional compliance tests")
+        
+        command = ["make", "test-constitutional"]
+        result = self.run_command(command, capture_output=False)
+        
+        if result.returncode == 0:
+            print("✅ Constitutional tests passed")
+        else:
+            print("❌ Constitutional tests failed")
+            return False
+            
+        return True
+        
+    def test_performance(self):
+        """Run performance tests"""
+        print("🚀 Running performance tests")
+        
+        command = ["make", "test-performance"]
+        result = self.run_command(command, capture_output=False)
+        
+        if result.returncode == 0:
+            print("✅ Performance tests passed")
+        else:
+            print("❌ Performance tests failed")
+            return False
+            
+        return True
+        
+    def test_security(self):
+        """Run security tests"""
+        print("🔒 Running security tests")
+        
+        command = ["make", "test-security"]
+        result = self.run_command(command, capture_output=False)
+        
+        if result.returncode == 0:
+            print("✅ Security tests passed")
+        else:
+            print("❌ Security tests failed")
+            return False
+            
+        return True
+        
+    def test_all(self):
+        """Run all tests"""
+        print("🧪 Running all tests")
+        
+        success = True
+        
+        # Constitutional compliance tests
+        if not self.test_constitutional():
+            success = False
+            
+        # Performance tests
+        if not self.test_performance():
+            success = False
+            
+        # Security tests
+        if not self.test_security():
+            success = False
+            
+        if success:
+            print("✅ All tests passed")
+        else:
+            print("❌ Some tests failed")
+            
+        return success
+        
+    # Documentation commands
+    def generate_docs(self, force: bool = False):
+        """Generate documentation"""
+        print("📚 Generating documentation")
+        
+        generator_script = self.project_root / "scripts/tools/claude_md_generator.py"
+        if generator_script.exists():
+            command = ["python3", str(generator_script), "--all"]
+            if force:
+                command.append("--force")
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Documentation generated successfully")
+            else:
+                print("❌ Documentation generation failed")
+                return False
+        else:
+            print("❌ Documentation generator not found")
+            return False
+            
+        return True
+        
+    def validate_docs(self):
+        """Validate documentation"""
+        print("📋 Validating documentation")
+        
+        # Check for CLAUDE.md files
+        claude_files = list(self.project_root.rglob("CLAUDE.md"))
+        placeholder_files = []
+        
+        for file_path in claude_files:
+            try:
+                content = file_path.read_text(encoding='utf-8')
+                if '{' in content and '}' in content:
+                    placeholder_files.append(file_path)
+            except Exception:
+                continue
+                
+        if placeholder_files:
+            print(f"❌ Found {len(placeholder_files)} CLAUDE.md files with placeholders")
+            for file_path in placeholder_files[:5]:  # Show first 5
+                print(f"  - {file_path.relative_to(self.project_root)}")
+            if len(placeholder_files) > 5:
+                print(f"  ... and {len(placeholder_files) - 5} more files")
+            return False
+        else:
+            print("✅ All CLAUDE.md files are properly filled")
+            return True
+            
+    # Migration commands
+    def migrate_to_consolidated(self):
+        """Migrate to consolidated system"""
+        print("🔄 Migrating to consolidated system")
+        
+        migration_script = self.project_root / "scripts/migrate-to-consolidated.sh"
+        if migration_script.exists():
+            command = [str(migration_script)]
+            
+            result = self.run_command(command, capture_output=False)
+            if result.returncode == 0:
+                print("✅ Migration completed successfully")
+            else:
+                print("❌ Migration failed")
+                return False
+        else:
+            print("❌ Migration script not found")
+            return False
+            
+        return True
+        
+    # Build commands
+    def build_services(self, services: List[str] = None, no_cache: bool = False):
+        """Build service containers"""
+        print("🏗️  Building service containers")
+        
+        if services:
+            print(f"Services: {', '.join(services)}")
+            
+        # Use Docker Compose to build
+        compose_files = [
+            "infrastructure/docker/docker-compose.base-infrastructure.yml",
+            "infrastructure/docker/docker-compose.acgs-services.yml"
+        ]
+        
+        command = ["docker-compose"]
+        for compose_file in compose_files:
+            if (self.project_root / compose_file).exists():
+                command.extend(["-f", str(self.project_root / compose_file)])
+        
+        if no_cache:
+            command.append("--no-cache")
+            
+        command.append("build")
+        
+        if services:
+            command.extend(services)
+            
+        result = self.run_command(command, capture_output=False)
+        if result.returncode == 0:
+            print("✅ Services built successfully")
+        else:
+            print("❌ Service build failed")
+            return False
+            
+        return True
+        
+    # Cleanup commands
+    def cleanup(self, all_data: bool = False):
+        """Clean up Docker resources"""
+        print("🧹 Cleaning up Docker resources")
+        
+        # Stop all services first
+        command = ["docker-compose", "down"]
+        if all_data:
+            command.append("--volumes")
+        
+        result = self.run_command(command, capture_output=False)
+        
+        # Clean up unused resources
+        cleanup_command = ["docker", "system", "prune", "-f"]
+        if all_data:
+            cleanup_command.append("--volumes")
+            
+        result = self.run_command(cleanup_command, capture_output=False)
+        
+        if result.returncode == 0:
+            print("✅ Cleanup completed")
+        else:
+            print("❌ Cleanup failed")
+            return False
+            
+        return True
+        
+    # Info commands
+    def info(self):
+        """Show system information"""
+        print("ℹ️  ACGS-2 System Information")
+        print(f"Project Root: {self.project_root}")
+        print(f"Constitutional Hash: {self.constitutional_hash}")
+        
+        # Check Docker
+        docker_result = self.run_command(["docker", "--version"])
+        if docker_result.returncode == 0:
+            print(f"Docker: {docker_result.stdout.strip()}")
+        else:
+            print("Docker: Not available")
+            
+        # Check Docker Compose
+        compose_result = self.run_command(["docker-compose", "--version"])
+        if compose_result.returncode == 0:
+            print(f"Docker Compose: {compose_result.stdout.strip()}")
+        else:
+            print("Docker Compose: Not available")
+            
+        # Check Python
+        python_result = self.run_command(["python3", "--version"])
+        if python_result.returncode == 0:
+            print(f"Python: {python_result.stdout.strip()}")
+        else:
+            print("Python: Not available")
+            
+        # Check services
+        services_dir = self.project_root / "services"
+        if services_dir.exists():
+            core_services = list((services_dir / "core").glob("*"))
+            platform_services = list((services_dir / "platform_services").glob("*"))
+            
+            print(f"Core Services: {len(core_services)}")
+            print(f"Platform Services: {len(platform_services)}")
+            
+        return True
+
+
+def main():
+    """Main function"""
+    parser = argparse.ArgumentParser(
+        description="ACGS-2 Centralized CLI Tool",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog=f"""
+Examples:
+  {sys.argv[0]} start --environment production
+  {sys.argv[0]} validate --compliance --fix
+  {sys.argv[0]} test --all
+  {sys.argv[0]} docs --generate --force
+  {sys.argv[0]} build --services auth_service,ac_service
+  
+Constitutional Hash: {CONSTITUTIONAL_HASH}
+        """
+    )
+    
+    # Global options
+    parser.add_argument("--project-root", default=".", help="Project root directory")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
+    
+    # Subcommands
+    subparsers = parser.add_subparsers(dest="command", help="Available commands")
+    
+    # Service management
+    start_parser = subparsers.add_parser("start", help="Start services")
+    start_parser.add_argument("--services", nargs="+", help="Specific services to start")
+    start_parser.add_argument("--environment", "-e", default="development", help="Environment")
+    
+    stop_parser = subparsers.add_parser("stop", help="Stop services")
+    stop_parser.add_argument("--services", nargs="+", help="Specific services to stop")
+    stop_parser.add_argument("--environment", "-e", default="development", help="Environment")
+    
+    restart_parser = subparsers.add_parser("restart", help="Restart services")
+    restart_parser.add_argument("--services", nargs="+", help="Specific services to restart")
+    restart_parser.add_argument("--environment", "-e", default="development", help="Environment")
+    
+    status_parser = subparsers.add_parser("status", help="Check service status")
+    status_parser.add_argument("--services", nargs="+", help="Specific services to check")
+    status_parser.add_argument("--environment", "-e", default="development", help="Environment")
+    
+    logs_parser = subparsers.add_parser("logs", help="Show service logs")
+    logs_parser.add_argument("--services", nargs="+", help="Specific services to show logs for")
+    logs_parser.add_argument("--environment", "-e", default="development", help="Environment")
+    logs_parser.add_argument("--follow", "-f", action="store_true", help="Follow logs")
+    
+    # Validation
+    validate_parser = subparsers.add_parser("validate", help="Validate system")
+    validate_parser.add_argument("--compliance", action="store_true", help="Validate constitutional compliance")
+    validate_parser.add_argument("--dependencies", action="store_true", help="Validate service dependencies")
+    validate_parser.add_argument("--system", action="store_true", help="Validate entire system")
+    validate_parser.add_argument("--fix", action="store_true", help="Fix issues automatically")
+    validate_parser.add_argument("--output", "-o", help="Output file for reports")
+    validate_parser.add_argument("--visualize", action="store_true", help="Generate visualizations")
+    
+    # Testing
+    test_parser = subparsers.add_parser("test", help="Run tests")
+    test_parser.add_argument("--constitutional", action="store_true", help="Run constitutional tests")
+    test_parser.add_argument("--performance", action="store_true", help="Run performance tests")
+    test_parser.add_argument("--security", action="store_true", help="Run security tests")
+    test_parser.add_argument("--all", action="store_true", help="Run all tests")
+    
+    # Documentation
+    docs_parser = subparsers.add_parser("docs", help="Documentation operations")
+    docs_parser.add_argument("--generate", action="store_true", help="Generate documentation")
+    docs_parser.add_argument("--validate", action="store_true", help="Validate documentation")
+    docs_parser.add_argument("--force", action="store_true", help="Force regeneration")
+    
+    # Build
+    build_parser = subparsers.add_parser("build", help="Build services")
+    build_parser.add_argument("--services", nargs="+", help="Specific services to build")
+    build_parser.add_argument("--no-cache", action="store_true", help="Build without cache")
+    
+    # Migration
+    migrate_parser = subparsers.add_parser("migrate", help="Migrate to consolidated system")
+    
+    # Cleanup
+    cleanup_parser = subparsers.add_parser("cleanup", help="Clean up resources")
+    cleanup_parser.add_argument("--all", action="store_true", help="Remove all data")
+    
+    # Info
+    info_parser = subparsers.add_parser("info", help="Show system information")
+    
+    args = parser.parse_args()
+    
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+        
+    # Initialize controller
+    controller = ACGSController(Path(args.project_root))
+    controller.print_banner()
+    
+    # Execute command
+    success = True
+    
+    if args.command == "start":
+        success = controller.start_services(args.services, args.environment)
+    elif args.command == "stop":
+        success = controller.stop_services(args.services, args.environment)
+    elif args.command == "restart":
+        success = controller.restart_services(args.services, args.environment)
+    elif args.command == "status":
+        success = controller.status_services(args.services, args.environment)
+    elif args.command == "logs":
+        success = controller.logs_services(args.services, args.environment, args.follow)
+    elif args.command == "validate":
+        if args.compliance:
+            success = controller.validate_compliance(args.fix, args.output)
+        elif args.dependencies:
+            success = controller.validate_dependencies(args.output, args.visualize)
+        elif args.system:
+            success = controller.validate_system()
+        else:
+            success = controller.validate_system()
+    elif args.command == "test":
+        if args.constitutional:
+            success = controller.test_constitutional()
+        elif args.performance:
+            success = controller.test_performance()
+        elif args.security:
+            success = controller.test_security()
+        elif args.all:
+            success = controller.test_all()
+        else:
+            success = controller.test_all()
+    elif args.command == "docs":
+        if args.generate:
+            success = controller.generate_docs(args.force)
+        elif args.validate:
+            success = controller.validate_docs()
+        else:
+            success = controller.generate_docs(args.force)
+    elif args.command == "build":
+        success = controller.build_services(args.services, args.no_cache)
+    elif args.command == "migrate":
+        success = controller.migrate_to_consolidated()
+    elif args.command == "cleanup":
+        success = controller.cleanup(args.all)
+    elif args.command == "info":
+        success = controller.info()
+    else:
+        parser.print_help()
+        success = False
+        
+    sys.exit(0 if success else 1)
+
+
+if __name__ == "__main__":
+    main()

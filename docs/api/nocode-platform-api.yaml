@@ -1,0 +1,1858 @@
+openapi: 3.0.3
+info:
+  title: ACGS-2 No-Code Platform API
+  description: |
+    Comprehensive API specification for the ACGS-2 no-code web UI platform.
+    
+    This API enables non-technical users to create, configure, and deploy applications
+    while maintaining constitutional compliance and performance standards.
+    
+    **Constitutional Hash**: `cdd01ef066bc6cf2`
+    
+    **Performance Targets**:
+    - P99 Latency: <5ms
+    - Throughput: >100 RPS
+    - Cache Hit Rate: >85%
+    
+    **Authentication**: JWT Bearer tokens required for all endpoints
+    
+    **Rate Limiting**: 100 requests per minute per user
+    
+  version: 1.0.0
+  contact:
+    name: ACGS-2 Team
+    email: support@acgs-2.local
+  license:
+    name: Constitutional Compliance License
+    url: https://acgs-2.local/license
+
+servers:
+  - url: https://api.acgs-2.local/v1
+    description: Production server
+  - url: https://api-staging.acgs-2.local/v1
+    description: Staging server
+  - url: http://localhost:8010/v1
+    description: Development server
+
+security:
+  - BearerAuth: []
+  - ConstitutionalHash: []
+
+paths:
+  # Project Management
+  /projects:
+    get:
+      summary: List user projects
+      description: Retrieve all projects accessible to the authenticated user
+      tags:
+        - Projects
+      parameters:
+        - name: limit
+          in: query
+          description: Maximum number of projects to return
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Number of projects to skip
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: filter
+          in: query
+          description: Filter projects by name or description
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projects:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+                  totalCount:
+                    type: integer
+                    description: Total number of projects
+                  hasMore:
+                    type: boolean
+                    description: Whether more projects are available
+                  constitutionalCompliance:
+                    $ref: '#/components/schemas/ComplianceStatus'
+                  performanceMetrics:
+                    $ref: '#/components/schemas/PerformanceMetrics'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+    post:
+      summary: Create new project
+      description: Create a new no-code project
+      tags:
+        - Projects
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - constitutionalHash
+              properties:
+                name:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  description: Project name
+                description:
+                  type: string
+                  maxLength: 500
+                  description: Project description
+                template:
+                  type: string
+                  enum: ["blank", "dashboard", "form", "workflow", "api"]
+                  default: "blank"
+                  description: Project template
+                constitutionalHash:
+                  type: string
+                  enum: ["cdd01ef066bc6cf2"]
+                  description: Constitutional hash for compliance
+                performanceProfile:
+                  $ref: '#/components/schemas/PerformanceProfile'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '401':
+          $ref: '#/components/responses/UnauthorizedError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+        '429':
+          $ref: '#/components/responses/RateLimitError'
+
+  /projects/{projectId}:
+    get:
+      summary: Get project details
+      description: Retrieve detailed information about a specific project
+      tags:
+        - Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Project details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetails'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      summary: Update project
+      description: Update project configuration and metadata
+      tags:
+        - Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectUpdate'
+      responses:
+        '200':
+          description: Project updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+    delete:
+      summary: Delete project
+      description: Delete a project and all its components
+      tags:
+        - Projects
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Project deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+
+  # Component Management
+  /projects/{projectId}/components:
+    get:
+      summary: List project components
+      description: Retrieve all components in a project
+      tags:
+        - Components
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Filter components by type
+          required: false
+          schema:
+            type: string
+            enum: ["form", "chart", "table", "workflow", "api"]
+      responses:
+        '200':
+          description: List of components
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  components:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Component'
+                  performanceMetrics:
+                    $ref: '#/components/schemas/PerformanceMetrics'
+    post:
+      summary: Create component
+      description: Create a new component in the project
+      tags:
+        - Components
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentCreate'
+      responses:
+        '201':
+          description: Component created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+
+  /projects/{projectId}/components/{componentId}:
+    get:
+      summary: Get component details
+      description: Retrieve detailed information about a specific component
+      tags:
+        - Components
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: componentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Component details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComponentDetails'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+    put:
+      summary: Update component
+      description: Update component configuration
+      tags:
+        - Components
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: componentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComponentUpdate'
+      responses:
+        '200':
+          description: Component updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Component'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+    delete:
+      summary: Delete component
+      description: Delete a component from the project
+      tags:
+        - Components
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: componentId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Component deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Constitutional Compliance
+  /constitutional/validate:
+    post:
+      summary: Validate constitutional compliance
+      description: Validate a component or project against constitutional requirements
+      tags:
+        - Constitutional Compliance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidationRequest'
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+  /constitutional/compliance/{projectId}:
+    get:
+      summary: Get compliance status
+      description: Retrieve compliance status for a project
+      tags:
+        - Constitutional Compliance
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Compliance status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplianceStatus'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Performance Monitoring
+  /performance/metrics/{projectId}:
+    get:
+      summary: Get performance metrics
+      description: Retrieve performance metrics for a project
+      tags:
+        - Performance
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: timeRange
+          in: query
+          description: Time range for metrics
+          required: false
+          schema:
+            type: string
+            enum: ["1h", "24h", "7d", "30d"]
+            default: "24h"
+      responses:
+        '200':
+          description: Performance metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PerformanceMetrics'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Real-time Collaboration
+  /collaboration/sessions:
+    post:
+      summary: Create collaboration session
+      description: Create a new collaboration session for a project
+      tags:
+        - Collaboration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - projectId
+                - constitutionalHash
+              properties:
+                projectId:
+                  type: string
+                  format: uuid
+                constitutionalHash:
+                  type: string
+                  enum: ["cdd01ef066bc6cf2"]
+                permissions:
+                  type: array
+                  items:
+                    type: string
+                    enum: ["read", "write", "admin"]
+      responses:
+        '201':
+          description: Collaboration session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CollaborationSession'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+
+  /collaboration/websocket:
+    get:
+      summary: WebSocket endpoint for real-time collaboration
+      description: Establish WebSocket connection for real-time collaboration
+      tags:
+        - Collaboration
+      parameters:
+        - name: sessionId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: constitutionalHash
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: ["cdd01ef066bc6cf2"]
+      responses:
+        '101':
+          description: WebSocket connection established
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+
+  # Template Management
+  /templates:
+    get:
+      summary: List available templates
+      description: Retrieve all available project templates
+      tags:
+        - Templates
+      parameters:
+        - name: category
+          in: query
+          description: Filter templates by category
+          required: false
+          schema:
+            type: string
+            enum: ["dashboard", "form", "workflow", "api", "visualization"]
+      responses:
+        '200':
+          description: List of templates
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  templates:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Template'
+                  constitutionalCompliance:
+                    $ref: '#/components/schemas/ComplianceStatus'
+
+  /templates/{templateId}:
+    get:
+      summary: Get template details
+      description: Retrieve detailed information about a specific template
+      tags:
+        - Templates
+      parameters:
+        - name: templateId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateDetails'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  # Deployment
+  /projects/{projectId}/deploy:
+    post:
+      summary: Deploy project
+      description: Deploy a project to production
+      tags:
+        - Deployment
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeploymentRequest'
+      responses:
+        '202':
+          description: Deployment started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeploymentStatus'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+        '403':
+          $ref: '#/components/responses/ConstitutionalComplianceError'
+
+  /projects/{projectId}/deployments:
+    get:
+      summary: List project deployments
+      description: Retrieve deployment history for a project
+      tags:
+        - Deployment
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of deployments
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deployments:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DeploymentStatus'
+                  constitutionalCompliance:
+                    $ref: '#/components/schemas/ComplianceStatus'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ConstitutionalHash:
+      type: apiKey
+      in: header
+      name: X-Constitutional-Hash
+      description: Constitutional hash for compliance validation
+
+  schemas:
+    Project:
+      type: object
+      required:
+        - id
+        - name
+        - constitutionalHash
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique project identifier
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Project name
+        description:
+          type: string
+          maxLength: 500
+          description: Project description
+        template:
+          type: string
+          enum: ["blank", "dashboard", "form", "workflow", "api"]
+          description: Project template
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash for compliance
+        performanceProfile:
+          $ref: '#/components/schemas/PerformanceProfile'
+        status:
+          type: string
+          enum: ["active", "archived", "deleted"]
+          description: Project status
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+        owner:
+          $ref: '#/components/schemas/User'
+        collaborators:
+          type: array
+          items:
+            $ref: '#/components/schemas/Collaborator'
+
+    ProjectDetails:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            components:
+              type: array
+              items:
+                $ref: '#/components/schemas/Component'
+            constitutionalCompliance:
+              $ref: '#/components/schemas/ComplianceStatus'
+            performanceMetrics:
+              $ref: '#/components/schemas/PerformanceMetrics'
+            deployments:
+              type: array
+              items:
+                $ref: '#/components/schemas/DeploymentStatus'
+
+    ProjectUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        performanceProfile:
+          $ref: '#/components/schemas/PerformanceProfile'
+        status:
+          type: string
+          enum: ["active", "archived"]
+
+    Component:
+      type: object
+      required:
+        - id
+        - type
+        - name
+        - constitutionalHash
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique component identifier
+        type:
+          type: string
+          enum: ["form", "chart", "table", "workflow", "api"]
+          description: Component type
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Component name
+        category:
+          type: string
+          description: Component category
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash for compliance
+        performanceProfile:
+          $ref: '#/components/schemas/PerformanceProfile'
+        configuration:
+          type: object
+          description: Component configuration
+        validationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationRule'
+        position:
+          $ref: '#/components/schemas/Position'
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connection'
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    ComponentDetails:
+      allOf:
+        - $ref: '#/components/schemas/Component'
+        - type: object
+          properties:
+            constitutionalCompliance:
+              $ref: '#/components/schemas/ComplianceStatus'
+            performanceMetrics:
+              $ref: '#/components/schemas/ComponentPerformanceMetrics'
+            auditLog:
+              type: array
+              items:
+                $ref: '#/components/schemas/AuditLogEntry'
+
+    ComponentCreate:
+      type: object
+      required:
+        - type
+        - name
+        - constitutionalHash
+      properties:
+        type:
+          type: string
+          enum: ["form", "chart", "table", "workflow", "api"]
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        category:
+          type: string
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+        performanceProfile:
+          $ref: '#/components/schemas/PerformanceProfile'
+        configuration:
+          type: object
+        validationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationRule'
+        position:
+          $ref: '#/components/schemas/Position'
+
+    ComponentUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        configuration:
+          type: object
+        validationRules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationRule'
+        position:
+          $ref: '#/components/schemas/Position'
+        connections:
+          type: array
+          items:
+            $ref: '#/components/schemas/Connection'
+
+    PerformanceProfile:
+      type: object
+      required:
+        - expectedLatency
+        - cacheability
+        - resourceUsage
+      properties:
+        expectedLatency:
+          type: number
+          minimum: 0
+          maximum: 1000
+          description: Expected latency in milliseconds
+        cacheability:
+          type: boolean
+          description: Whether the component is cacheable
+        resourceUsage:
+          type: string
+          enum: ["low", "medium", "high"]
+          description: Expected resource usage
+        scalabilityFactors:
+          type: object
+          properties:
+            concurrent_users:
+              type: integer
+              minimum: 1
+            data_volume:
+              type: string
+              enum: ["small", "medium", "large"]
+
+    ValidationRule:
+      type: object
+      required:
+        - id
+        - type
+        - message
+        - condition
+      properties:
+        id:
+          type: string
+          description: Unique rule identifier
+        type:
+          type: string
+          enum: ["required", "format", "range", "custom"]
+          description: Rule type
+        message:
+          type: string
+          minLength: 1
+          maxLength: 200
+          description: Validation message
+        condition:
+          type: string
+          minLength: 1
+          description: Validation condition
+        severity:
+          type: string
+          enum: ["error", "warning", "info"]
+          default: "error"
+          description: Rule severity
+
+    Position:
+      type: object
+      required:
+        - x
+        - y
+      properties:
+        x:
+          type: number
+          description: X coordinate
+        y:
+          type: number
+          description: Y coordinate
+        width:
+          type: number
+          minimum: 0
+          description: Component width
+        height:
+          type: number
+          minimum: 0
+          description: Component height
+        zIndex:
+          type: integer
+          minimum: 0
+          description: Z-index for layering
+
+    Connection:
+      type: object
+      required:
+        - id
+        - sourceId
+        - targetId
+        - type
+      properties:
+        id:
+          type: string
+          description: Unique connection identifier
+        sourceId:
+          type: string
+          format: uuid
+          description: Source component ID
+        targetId:
+          type: string
+          format: uuid
+          description: Target component ID
+        type:
+          type: string
+          enum: ["data", "event", "workflow"]
+          description: Connection type
+        configuration:
+          type: object
+          description: Connection configuration
+
+    ComplianceStatus:
+      type: object
+      required:
+        - constitutionalHash
+        - overallScore
+        - components
+      properties:
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        overallScore:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Overall compliance score
+        components:
+          type: object
+          properties:
+            validation:
+              type: integer
+              minimum: 0
+              maximum: 100
+            performance:
+              type: integer
+              minimum: 0
+              maximum: 100
+            security:
+              type: integer
+              minimum: 0
+              maximum: 100
+            auditTrail:
+              type: integer
+              minimum: 0
+              maximum: 100
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+        lastEvaluated:
+          type: string
+          format: date-time
+          description: Last evaluation timestamp
+
+    Violation:
+      type: object
+      required:
+        - id
+        - type
+        - message
+        - severity
+      properties:
+        id:
+          type: string
+          description: Unique violation identifier
+        type:
+          type: string
+          enum: ["constitutional", "performance", "security", "validation"]
+          description: Violation type
+        message:
+          type: string
+          minLength: 1
+          description: Violation message
+        severity:
+          type: string
+          enum: ["critical", "high", "medium", "low"]
+          description: Violation severity
+        componentId:
+          type: string
+          format: uuid
+          description: Related component ID
+        remediation:
+          type: string
+          description: Suggested remediation
+        detectedAt:
+          type: string
+          format: date-time
+          description: Detection timestamp
+
+    Recommendation:
+      type: object
+      required:
+        - id
+        - type
+        - message
+        - priority
+      properties:
+        id:
+          type: string
+          description: Unique recommendation identifier
+        type:
+          type: string
+          enum: ["optimization", "security", "performance", "usability"]
+          description: Recommendation type
+        message:
+          type: string
+          minLength: 1
+          description: Recommendation message
+        priority:
+          type: string
+          enum: ["high", "medium", "low"]
+          description: Recommendation priority
+        componentId:
+          type: string
+          format: uuid
+          description: Related component ID
+        estimatedImpact:
+          type: string
+          enum: ["high", "medium", "low"]
+          description: Estimated impact of applying recommendation
+        generatedAt:
+          type: string
+          format: date-time
+          description: Generation timestamp
+
+    PerformanceMetrics:
+      type: object
+      required:
+        - latency
+        - throughput
+        - cacheHitRate
+        - constitutionalCompliance
+      properties:
+        latency:
+          type: object
+          properties:
+            p50:
+              type: number
+              minimum: 0
+              description: 50th percentile latency in milliseconds
+            p95:
+              type: number
+              minimum: 0
+              description: 95th percentile latency in milliseconds
+            p99:
+              type: number
+              minimum: 0
+              description: 99th percentile latency in milliseconds
+            average:
+              type: number
+              minimum: 0
+              description: Average latency in milliseconds
+        throughput:
+          type: object
+          properties:
+            rps:
+              type: number
+              minimum: 0
+              description: Requests per second
+            rpm:
+              type: number
+              minimum: 0
+              description: Requests per minute
+            trend:
+              type: string
+              enum: ["increasing", "stable", "decreasing"]
+              description: Throughput trend
+        cacheHitRate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Cache hit rate percentage
+        constitutionalCompliance:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: Constitutional compliance percentage
+        resourceUtilization:
+          type: object
+          properties:
+            cpu:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: CPU utilization percentage
+            memory:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Memory utilization percentage
+            storage:
+              type: number
+              minimum: 0
+              description: Storage usage in MB
+        evaluatedAt:
+          type: string
+          format: date-time
+          description: Evaluation timestamp
+
+    ComponentPerformanceMetrics:
+      allOf:
+        - $ref: '#/components/schemas/PerformanceMetrics'
+        - type: object
+          properties:
+            componentId:
+              type: string
+              format: uuid
+              description: Component identifier
+            executionCount:
+              type: integer
+              minimum: 0
+              description: Number of executions
+            errorRate:
+              type: number
+              minimum: 0
+              maximum: 100
+              description: Error rate percentage
+
+    ValidationRequest:
+      type: object
+      required:
+        - type
+        - constitutionalHash
+      properties:
+        type:
+          type: string
+          enum: ["project", "component", "deployment"]
+          description: Validation type
+        projectId:
+          type: string
+          format: uuid
+          description: Project identifier
+        componentId:
+          type: string
+          format: uuid
+          description: Component identifier
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        context:
+          type: object
+          description: Validation context
+        performanceTargets:
+          $ref: '#/components/schemas/PerformanceProfile'
+
+    ValidationResult:
+      type: object
+      required:
+        - isValid
+        - score
+        - constitutionalHash
+        - evaluatedAt
+      properties:
+        isValid:
+          type: boolean
+          description: Whether validation passed
+        score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: Validation score
+        violations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Violation'
+        recommendations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Recommendation'
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        performanceMetrics:
+          $ref: '#/components/schemas/PerformanceMetrics'
+        evaluatedAt:
+          type: string
+          format: date-time
+          description: Evaluation timestamp
+        evaluationDuration:
+          type: number
+          minimum: 0
+          description: Evaluation duration in milliseconds
+
+    CollaborationSession:
+      type: object
+      required:
+        - id
+        - projectId
+        - constitutionalHash
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Session identifier
+        projectId:
+          type: string
+          format: uuid
+          description: Project identifier
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/Participant'
+        permissions:
+          type: array
+          items:
+            type: string
+            enum: ["read", "write", "admin"]
+        status:
+          type: string
+          enum: ["active", "inactive", "expired"]
+          description: Session status
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        expiresAt:
+          type: string
+          format: date-time
+          description: Expiration timestamp
+
+    Participant:
+      type: object
+      required:
+        - userId
+        - joinedAt
+        - permissions
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User identifier
+        user:
+          $ref: '#/components/schemas/User'
+        permissions:
+          type: array
+          items:
+            type: string
+            enum: ["read", "write", "admin"]
+        joinedAt:
+          type: string
+          format: date-time
+          description: Join timestamp
+        lastActiveAt:
+          type: string
+          format: date-time
+          description: Last activity timestamp
+        cursor:
+          $ref: '#/components/schemas/Position'
+
+    Template:
+      type: object
+      required:
+        - id
+        - name
+        - category
+        - constitutionalHash
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Template identifier
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: Template name
+        description:
+          type: string
+          maxLength: 500
+          description: Template description
+        category:
+          type: string
+          enum: ["dashboard", "form", "workflow", "api", "visualization"]
+          description: Template category
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        thumbnail:
+          type: string
+          format: uri
+          description: Template thumbnail URL
+        tags:
+          type: array
+          items:
+            type: string
+          description: Template tags
+        difficulty:
+          type: string
+          enum: ["beginner", "intermediate", "advanced"]
+          description: Template difficulty level
+        estimatedTime:
+          type: integer
+          minimum: 1
+          description: Estimated completion time in minutes
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+
+    TemplateDetails:
+      allOf:
+        - $ref: '#/components/schemas/Template'
+        - type: object
+          properties:
+            components:
+              type: array
+              items:
+                $ref: '#/components/schemas/Component'
+            configuration:
+              type: object
+              description: Template configuration
+            instructions:
+              type: string
+              description: Setup instructions
+            performanceProfile:
+              $ref: '#/components/schemas/PerformanceProfile'
+            constitutionalCompliance:
+              $ref: '#/components/schemas/ComplianceStatus'
+
+    DeploymentRequest:
+      type: object
+      required:
+        - environment
+        - constitutionalHash
+      properties:
+        environment:
+          type: string
+          enum: ["development", "staging", "production"]
+          description: Target environment
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        configuration:
+          type: object
+          description: Deployment configuration
+        performanceTargets:
+          $ref: '#/components/schemas/PerformanceProfile'
+        notifications:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: ["email", "slack", "webhook"]
+              target:
+                type: string
+              events:
+                type: array
+                items:
+                  type: string
+                  enum: ["started", "completed", "failed"]
+
+    DeploymentStatus:
+      type: object
+      required:
+        - id
+        - projectId
+        - environment
+        - status
+        - constitutionalHash
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Deployment identifier
+        projectId:
+          type: string
+          format: uuid
+          description: Project identifier
+        environment:
+          type: string
+          enum: ["development", "staging", "production"]
+          description: Target environment
+        status:
+          type: string
+          enum: ["pending", "running", "completed", "failed", "cancelled"]
+          description: Deployment status
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        url:
+          type: string
+          format: uri
+          description: Deployed application URL
+        logs:
+          type: array
+          items:
+            type: object
+            properties:
+              timestamp:
+                type: string
+                format: date-time
+              level:
+                type: string
+                enum: ["debug", "info", "warn", "error"]
+              message:
+                type: string
+        performanceMetrics:
+          $ref: '#/components/schemas/PerformanceMetrics'
+        constitutionalCompliance:
+          $ref: '#/components/schemas/ComplianceStatus'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        startedAt:
+          type: string
+          format: date-time
+          description: Start timestamp
+        completedAt:
+          type: string
+          format: date-time
+          description: Completion timestamp
+        duration:
+          type: integer
+          minimum: 0
+          description: Deployment duration in milliseconds
+
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - name
+        - role
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: User identifier
+        email:
+          type: string
+          format: email
+          description: User email
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+          description: User name
+        role:
+          type: string
+          enum: ["admin", "user", "viewer"]
+          description: User role
+        permissions:
+          type: array
+          items:
+            type: string
+          description: User permissions
+        constitutionalCompliance:
+          type: object
+          properties:
+            hash:
+              type: string
+              enum: ["cdd01ef066bc6cf2"]
+            level:
+              type: string
+              enum: ["ADMIN", "USER", "GUEST"]
+            lastValidated:
+              type: string
+              format: date-time
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: Last login timestamp
+
+    Collaborator:
+      type: object
+      required:
+        - userId
+        - permissions
+        - addedAt
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: User identifier
+        user:
+          $ref: '#/components/schemas/User'
+        permissions:
+          type: array
+          items:
+            type: string
+            enum: ["read", "write", "admin"]
+        addedAt:
+          type: string
+          format: date-time
+          description: Addition timestamp
+        addedBy:
+          type: string
+          format: uuid
+          description: User who added the collaborator
+
+    AuditLogEntry:
+      type: object
+      required:
+        - id
+        - action
+        - userId
+        - timestamp
+        - constitutionalHash
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Log entry identifier
+        action:
+          type: string
+          enum: ["create", "update", "delete", "deploy", "validate"]
+          description: Action performed
+        userId:
+          type: string
+          format: uuid
+          description: User who performed the action
+        user:
+          $ref: '#/components/schemas/User'
+        resourceType:
+          type: string
+          enum: ["project", "component", "template", "deployment"]
+          description: Resource type affected
+        resourceId:
+          type: string
+          format: uuid
+          description: Resource identifier
+        details:
+          type: object
+          description: Action details
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        timestamp:
+          type: string
+          format: date-time
+          description: Action timestamp
+        ipAddress:
+          type: string
+          format: ipv4
+          description: User IP address
+        userAgent:
+          type: string
+          description: User agent string
+
+    Error:
+      type: object
+      required:
+        - code
+        - message
+        - constitutionalHash
+      properties:
+        code:
+          type: string
+          description: Error code
+        message:
+          type: string
+          description: Error message
+        details:
+          type: object
+          description: Error details
+        constitutionalHash:
+          type: string
+          enum: ["cdd01ef066bc6cf2"]
+          description: Constitutional hash
+        timestamp:
+          type: string
+          format: date-time
+          description: Error timestamp
+        requestId:
+          type: string
+          format: uuid
+          description: Request identifier
+        path:
+          type: string
+          description: API path
+        method:
+          type: string
+          description: HTTP method
+
+  responses:
+    BadRequestError:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "BAD_REQUEST"
+            message: "Invalid request parameters"
+            constitutionalHash: "cdd01ef066bc6cf2"
+            timestamp: "2025-07-18T12:00:00Z"
+            requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    UnauthorizedError:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "UNAUTHORIZED"
+            message: "Authentication required"
+            constitutionalHash: "cdd01ef066bc6cf2"
+            timestamp: "2025-07-18T12:00:00Z"
+            requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    ForbiddenError:
+      description: Forbidden
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "FORBIDDEN"
+            message: "Insufficient permissions"
+            constitutionalHash: "cdd01ef066bc6cf2"
+            timestamp: "2025-07-18T12:00:00Z"
+            requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    NotFoundError:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "NOT_FOUND"
+            message: "Resource not found"
+            constitutionalHash: "cdd01ef066bc6cf2"
+            timestamp: "2025-07-18T12:00:00Z"
+            requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    ConstitutionalComplianceError:
+      description: Constitutional compliance violation
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "CONSTITUTIONAL_COMPLIANCE_VIOLATION"
+            message: "Constitutional hash mismatch or compliance validation failed"
+            constitutionalHash: "cdd01ef066bc6cf2"
+            timestamp: "2025-07-18T12:00:00Z"
+            requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+    RateLimitError:
+      description: Rate limit exceeded
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: "RATE_LIMIT_EXCEEDED"
+            message: "Rate limit exceeded. Please try again later."
+            constitutionalHash: "cdd01ef066bc6cf2"
+            timestamp: "2025-07-18T12:00:00Z"
+            requestId: "123e4567-e89b-12d3-a456-426614174000"
+
+  parameters:
+    ConstitutionalHashHeader:
+      name: X-Constitutional-Hash
+      in: header
+      required: true
+      schema:
+        type: string
+        enum: ["cdd01ef066bc6cf2"]
+      description: Constitutional hash for compliance validation
+
+    PerformanceTargetHeader:
+      name: X-Performance-Target
+      in: header
+      required: false
+      schema:
+        type: string
+        pattern: '^P99<\d+ms,RPS>\d+,Cache>\d+%$'
+        example: "P99<5ms,RPS>100,Cache>85%"
+      description: Performance targets for the request
+
+    RequestIdHeader:
+      name: X-Request-ID
+      in: header
+      required: false
+      schema:
+        type: string
+        format: uuid
+      description: Unique request identifier for tracing
+
+  examples:
+    BasicProject:
+      summary: Basic project example
+      value:
+        id: "123e4567-e89b-12d3-a456-426614174000"
+        name: "Sales Dashboard"
+        description: "Interactive sales performance dashboard"
+        template: "dashboard"
+        constitutionalHash: "cdd01ef066bc6cf2"
+        status: "active"
+        createdAt: "2025-07-18T12:00:00Z"
+        updatedAt: "2025-07-18T12:00:00Z"
+
+    FormComponent:
+      summary: Form component example
+      value:
+        id: "456e7890-e89b-12d3-a456-426614174000"
+        type: "form"
+        name: "Customer Feedback Form"
+        category: "Data Input"
+        constitutionalHash: "cdd01ef066bc6cf2"
+        performanceProfile:
+          expectedLatency: 2
+          cacheability: true
+          resourceUsage: "low"
+        configuration:
+          fields:
+            - name: "name"
+              type: "text"
+              required: true
+            - name: "email"
+              type: "email"
+              required: true
+            - name: "feedback"
+              type: "textarea"
+              required: true
+        position:
+          x: 100
+          y: 50
+          width: 400
+          height: 300
+        createdAt: "2025-07-18T12:00:00Z"
+        updatedAt: "2025-07-18T12:00:00Z"
+
+    ComplianceStatus:
+      summary: Compliance status example
+      value:
+        constitutionalHash: "cdd01ef066bc6cf2"
+        overallScore: 95
+        components:
+          validation: 100
+          performance: 90
+          security: 95
+          auditTrail: 95
+        violations: []
+        recommendations:
+          - id: "rec-001"
+            type: "performance"
+            message: "Consider enabling caching for better performance"
+            priority: "medium"
+            estimatedImpact: "medium"
+        lastEvaluated: "2025-07-18T12:00:00Z"
+
+    PerformanceMetrics:
+      summary: Performance metrics example
+      value:
+        latency:
+          p50: 1.2
+          p95: 3.8
+          p99: 4.5
+          average: 2.1
+        throughput:
+          rps: 125
+          rpm: 7500
+          trend: "stable"
+        cacheHitRate: 87.5
+        constitutionalCompliance: 100
+        resourceUtilization:
+          cpu: 45
+          memory: 62
+          storage: 1024
+        evaluatedAt: "2025-07-18T12:00:00Z"
+
+tags:
+  - name: Projects
+    description: Project management operations
+  - name: Components
+    description: Component management operations
+  - name: Constitutional Compliance
+    description: Constitutional compliance validation
+  - name: Performance
+    description: Performance monitoring operations
+  - name: Collaboration
+    description: Real-time collaboration features
+  - name: Templates
+    description: Template management operations
+  - name: Deployment
+    description: Deployment operations
+
+externalDocs:
+  description: ACGS-2 Documentation
+  url: https://docs.acgs-2.local

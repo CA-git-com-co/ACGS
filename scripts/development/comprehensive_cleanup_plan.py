@@ -212,7 +212,7 @@ class ACGSCleanupOrchestrator:
             "version_conflicts_resolved": [],
         }
 
-        # Find all requirements.txt files
+        # Find all config/environments/requirements.txt files
         requirements_files = list(self.project_root.glob("**/requirements*.txt"))
 
         # Consolidate and clean requirements

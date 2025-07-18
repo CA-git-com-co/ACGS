@@ -287,6 +287,7 @@ class TestJWTSecurity:
 class TestAuthServiceIntegration:
     """Integration tests for Auth service components."""
 
+    @pytest.mark.asyncio
     async def test_login_flow_with_validation(self):
         """Test complete login flow with input validation."""
         # Test valid login with constitutional compliance
@@ -315,6 +316,7 @@ class TestAuthServiceIntegration:
         assert payload.sub == request.username
         assert payload.constitutional_hash == CONSTITUTIONAL_HASH
 
+    @pytest.mark.asyncio
     async def test_constitutional_compliance_validation(self):
         """Test constitutional compliance validation."""
         jwt_manager = JWTSecurityManager(

@@ -426,7 +426,7 @@ class CodeQualityValidator:
             # Check for requirements file
             req_files = list(service_path.glob("requirements*.txt"))
             if not req_files:
-                req_files = [self.project_root / "requirements.txt"]
+                req_files = [self.project_root / "config/environments/requirements.txt"]
 
             vulnerabilities = 0
             for req_file in req_files:
@@ -624,13 +624,13 @@ async def main():
     # Find project root
     project_root = Path.cwd()
     while (
-        not (project_root / "pyproject.toml").exists()
+        not (project_root / "config/environments/pyproject.toml").exists()
         and project_root.parent != project_root
     ):
         project_root = project_root.parent
 
-    if not (project_root / "pyproject.toml").exists():
-        logger.error("Could not find project root (pyproject.toml)")
+    if not (project_root / "config/environments/pyproject.toml").exists():
+        logger.error("Could not find project root (config/environments/pyproject.toml)")
         sys.exit(1)
 
     validator = CodeQualityValidator(project_root)

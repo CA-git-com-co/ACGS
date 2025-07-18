@@ -131,7 +131,7 @@
 - **CI/CD Pipeline Testing**: [`.github/workflows/acgs-comprehensive-testing.yml`](../../archive/workflows/acgs-comprehensive-testing.yml.backup)
 - **Production Readiness Certification**: [`scripts/production_readiness_certification.py`](../../scripts/development/production_readiness_certification.py)
 - **Comprehensive Test Runner**: [`scripts/run_comprehensive_tests.py`](../../tests/run_comprehensive_tests.py)
-- **Enhanced Pytest Configuration**: [`pytest.ini`](../../pytest.ini.backup)
+- **Enhanced Pytest Configuration**: [`config/environments/pytest.ini`](../../config/environments/pytest.ini.backup)
 
 **Key Features Delivered**:
 - >80% test coverage target with constitutional compliance validation

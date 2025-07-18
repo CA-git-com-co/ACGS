@@ -49,7 +49,7 @@ class TestWorkflowValidation:
     
     def test_docker_compose_test_exists(self, project_root: Path):
         """Test that Docker Compose test configuration exists."""
-        docker_compose = project_root / "docker-compose.test.yml"
+        docker_compose = project_root / "config/docker/docker-compose.test.yml"
         assert docker_compose.exists(), "Docker Compose test configuration must exist"
         
         # Validate YAML syntax

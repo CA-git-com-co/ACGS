@@ -123,7 +123,7 @@ timeout 300 uv pip install pip-licenses || echo "pip-licenses install failed"
 
 ```bash
 # Applied to all pip install instances
-timeout 300 pip install -r requirements.txt || echo "⚠️ Requirements install failed"
+timeout 300 pip install -r config/environments/requirements.txt || echo "⚠️ Requirements install failed"
 timeout 300 pip install pytest pytest-cov flake8 mypy bandit || echo "⚠️ Basic tools install failed"
 timeout 300 pip install bandit safety || echo "⚠️ Security tools install failed"
 timeout 300 pip install black isort flake8 mypy || echo "⚠️ Code quality tools install failed"

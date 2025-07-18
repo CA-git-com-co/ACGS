@@ -84,8 +84,8 @@ RUN apt-get update && apt-get install -y \\
 WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY config/environments/requirements.txt .
+RUN pip install --no-cache-dir -r config/environments/requirements.txt
 
 # Copy application code
 COPY services/core/constitutional-ai/ac_service/ ./
@@ -120,8 +120,8 @@ RUN apt-get update && apt-get install -y \\
 WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY config/environments/requirements.txt .
+RUN pip install --no-cache-dir -r config/environments/requirements.txt
 
 # Copy application code
 COPY services/core/governance-synthesis/gs_service/ ./
@@ -156,8 +156,8 @@ RUN apt-get update && apt-get install -y \\
 WORKDIR /app
 
 # Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY config/environments/requirements.txt .
+RUN pip install --no-cache-dir -r config/environments/requirements.txt
 
 # Copy application code
 COPY services/core/policy-governance/pgc_service/ ./
@@ -639,7 +639,7 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8004"]
                         },
                         {
                             "name": "Install dependencies",
-                            "run": "pip install -r requirements.txt",
+                            "run": "pip install -r config/environments/requirements.txt",
                         },
                         {"name": "Run tests", "run": "python -m pytest tests/ -v"},
                         {

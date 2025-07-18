@@ -223,7 +223,7 @@ deploy_expert_service() {
         docker build -t acgs-expert-service:latest -f expert-service/Dockerfile .
         
         print_status "Starting services with Docker Compose..."
-        docker-compose -f docker-compose.unified.yml up -d expert-service redis prometheus
+        docker-compose -f config/docker/docker-compose.unified.yml up -d expert-service redis prometheus
         
         # Wait for service to be ready
         print_status "Waiting for expert service to be ready..."

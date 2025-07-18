@@ -60,7 +60,7 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r config/environments/requirements.txt
         pip install pytest-cov pytest-html pytest-json-report pytest-benchmark
         pip install coverage[toml]
     

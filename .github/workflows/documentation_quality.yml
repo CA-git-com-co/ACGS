@@ -1,0 +1,76 @@
+name: Documentation Quality Assurance
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    paths:
+      - '**/*.md'
+      - 'docs/**/*'
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'docs/**/*'
+  schedule:
+    - cron: '0 4 * * 1'  # Weekly on Monday at 4 AM
+
+jobs:
+  documentation-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Run Documentation Standards Validation
+        run: python3 scripts/validation/documentation_standards_validator.py
+        
+      - name: Run Documentation Quality Check
+        run: python3 scripts/ci/documentation_quality_check.py
+        
+      - name: Upload Quality Report
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: documentation-quality-report
+          path: reports/validation/ci_documentation_quality_check.json
+          
+      - name: Comment PR with Quality Results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'reports/validation/ci_documentation_quality_check.json';
+            
+            if (fs.existsSync(path)) {
+              const report = JSON.parse(fs.readFileSync(path, 'utf8'));
+              
+              let comment = '## 📚 Documentation Quality Report\n\n';
+              
+              if (report.quality_passed) {
+                comment += '✅ **All documentation quality checks PASSED**\n\n';
+              } else {
+                comment += '❌ **Documentation quality checks FAILED**\n\n';
+                comment += '### Issues Found:\n';
+                report.issues.forEach(issue => {
+                  comment += `- ${issue}\n`;
+                });
+                comment += '\n';
+              }
+              
+              comment += '### Metrics:\n';
+              comment += `- Section Compliance: ${report.metrics.section_compliance_rate}%\n`;
+              comment += `- Constitutional Hash Compliance: ${report.metrics.hash_compliance_rate}%\n`;
+              comment += `- Cross-Reference Validity: ${report.cross_reference_metrics.link_validity_rate}%\n`;
+              comment += `\n**Constitutional Hash**: \`cdd01ef066bc6cf2\``;
+              
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }

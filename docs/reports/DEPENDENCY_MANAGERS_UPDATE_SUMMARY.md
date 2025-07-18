@@ -14,7 +14,7 @@ This document summarizes the comprehensive dependency managers update completed 
 
 The dependency managers update successfully modernized the ACGS-2 project's package management infrastructure with:
 
-- **Python**: Updated to use UV with optimized pyproject.toml configuration
+- **Python**: Updated to use UV with optimized config/environments/pyproject.toml configuration
 - **JavaScript/TypeScript**: Configured pnpm workspace with 6 package.json files updated
 - **Rust**: Updated 7 Cargo.toml files with constitutional compliance metadata
 - **Security**: Applied critical security updates for cryptography, urllib3, and certifi
@@ -36,14 +36,14 @@ The dependency managers update successfully modernized the ACGS-2 project's pack
 - **opentelemetry-sdk**: Updated to `>=1.34.1` (Latest observability)
 
 #### Configuration Optimizations
-- **pyproject.toml**: Enhanced with UV-specific optimizations
+- **config/environments/pyproject.toml**: Enhanced with UV-specific optimizations
 - **Constitutional Compliance**: Added ACGS metadata to all configurations
 - **Performance Settings**: Enabled bytecode compilation and optimized resolution
 - **Security Configuration**: Integrated vulnerability monitoring
 
 #### Files Updated
-- `requirements.txt`: 11 critical security updates applied
-- `pyproject.toml`: Optimized with UV configuration and constitutional metadata
+- `config/environments/requirements.txt`: 11 critical security updates applied
+- `config/environments/pyproject.toml`: Optimized with UV configuration and constitutional metadata
 
 ### 📦 JavaScript/TypeScript Dependencies Update
 
@@ -56,7 +56,7 @@ The dependency managers update successfully modernized the ACGS-2 project's pack
 6. `tools/mcp-inspector/client/package.json`
 
 #### Workspace Configuration
-- **pnpm-workspace.yaml**: Created optimized workspace configuration
+- **config/environments/pnpm-workspace.yaml**: Created optimized workspace configuration
 - **Package Manager**: Standardized on pnpm@latest across all projects
 - **Node.js Version**: Updated engine requirement to >=18.0.0
 - **Constitutional Metadata**: Added to all package.json files

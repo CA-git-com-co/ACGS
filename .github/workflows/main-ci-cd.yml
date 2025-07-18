@@ -19,11 +19,11 @@ on:
       - '**.go'
       - '**.yml'
       - '**.yaml'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'package*.json'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       - 'Dockerfile*'
       - 'docker-compose*.yml'
       - 'services/**'
@@ -47,11 +47,11 @@ on:
       - '**.go'
       - '**.yml'
       - '**.yaml'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'Cargo.lock'
       - 'package*.json'
-      - 'pyproject.toml'
+      - 'config/environments/pyproject.toml'
       - 'Dockerfile*'
       - 'docker-compose*.yml'
       - 'services/**'
@@ -183,8 +183,8 @@ jobs:
           filters: |
             python:
               - '**.py'
-              - 'requirements*.txt'
-              - 'pyproject.toml'
+              - 'config/environments/requirements*.txt'
+              - 'config/environments/pyproject.toml'
             rust:
               - '**.rs'
               - 'Cargo.toml'
@@ -277,7 +277,7 @@ jobs:
             ~/.cache/pip
             ~/.cache/uv
             .venv
-          key: python-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+          key: python-${{ env.PYTHON_VERSION }}-${{ hashFiles('**/config/environments/requirements*.txt', '**/config/environments/pyproject.toml') }}
           restore-keys: |
             python-${{ env.PYTHON_VERSION }}-
             
@@ -320,17 +320,17 @@ jobs:
           pip install --upgrade pip wheel setuptools
 
           # Install security-hardened requirements with error handling
-          if [ -f "requirements-security.txt" ]; then
-            echo "Installing requirements-security.txt..."
-            pip install -r requirements-security.txt || {
+          if [ -f "config/environments/requirements-security.txt" ]; then
+            echo "Installing config/environments/requirements-security.txt..."
+            pip install -r config/environments/requirements-security.txt || {
               echo "⚠️ Security requirements failed, falling back to standard requirements"
-              if [ -f "requirements.txt" ]; then
-                pip install -r requirements.txt || echo "⚠️ Standard requirements also failed"
+              if [ -f "config/environments/requirements.txt" ]; then
+                pip install -r config/environments/requirements.txt || echo "⚠️ Standard requirements also failed"
               fi
             }
-          elif [ -f "requirements.txt" ]; then
-            echo "Installing requirements.txt..."
-            pip install -r requirements.txt || echo "⚠️ Requirements installation failed, continuing..."
+          elif [ -f "config/environments/requirements.txt" ]; then
+            echo "Installing config/environments/requirements.txt..."
+            pip install -r config/environments/requirements.txt || echo "⚠️ Requirements installation failed, continuing..."
           else
             echo "⚠️ No requirements files found"
           fi
@@ -456,17 +456,17 @@ jobs:
           pip install --upgrade pip wheel setuptools
           
           # Install requirements with comprehensive fallback
-          if [ -f "requirements-security.txt" ]; then
+          if [ -f "config/environments/requirements-security.txt" ]; then
             echo "Installing security-hardened requirements..."
-            pip install -r requirements-security.txt || {
+            pip install -r config/environments/requirements-security.txt || {
               echo "⚠️ Security requirements failed, trying standard requirements..."
-              if [ -f "requirements.txt" ]; then
-                pip install -r requirements.txt || echo "⚠️ Standard requirements also failed, continuing with minimal setup"
+              if [ -f "config/environments/requirements.txt" ]; then
+                pip install -r config/environments/requirements.txt || echo "⚠️ Standard requirements also failed, continuing with minimal setup"
               fi
             }
-          elif [ -f "requirements.txt" ]; then
+          elif [ -f "config/environments/requirements.txt" ]; then
             echo "Installing standard requirements..."
-            pip install -r requirements.txt || echo "⚠️ Requirements installation failed, continuing with minimal setup"
+            pip install -r config/environments/requirements.txt || echo "⚠️ Requirements installation failed, continuing with minimal setup"
           else
             echo "⚠️ No requirements files found at root level"
           fi

@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 
 # ACGS-1 Comprehensive Security Monitoring Deployment Script
@@ -129,15 +130,15 @@ deploy_elk_stack() {
     
     # Stop any existing containers
     log INFO "Stopping existing containers..."
-    docker-compose -f docker-compose.elk-security.yml down --remove-orphans || true
+    docker-compose -f config/docker/docker-compose.elk-security.yml down --remove-orphans || true
     
     # Pull latest images
     log INFO "Pulling latest Docker images..."
-    docker-compose -f docker-compose.elk-security.yml pull
+    docker-compose -f config/docker/docker-compose.elk-security.yml pull
     
     # Start the stack
     log INFO "Starting ELK security monitoring stack..."
-    docker-compose -f docker-compose.elk-security.yml up -d
+    docker-compose -f config/docker/docker-compose.elk-security.yml up -d
     
     # Wait for services to be ready
     log INFO "Waiting for services to be ready..."

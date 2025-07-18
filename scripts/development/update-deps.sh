@@ -35,7 +35,7 @@ print_error() {
 }
 
 # Check if we're in the right directory
-if [ ! -f "pyproject.toml" ] || [ ! -f "project/package.json" ]; then
+if [ ! -f "config/environments/pyproject.toml" ] || [ ! -f "project/package.json" ]; then
     print_error "This script must be run from the ACGS project root directory"
     exit 1
 fi
@@ -56,7 +56,7 @@ fi
 # Backup current state
 print_status "Creating backup of current dependency state..."
 mkdir -p .backup
-cp pyproject.toml .backup/pyproject.toml.backup
+cp config/environments/pyproject.toml .backup/config/environments/pyproject.toml.backup
 cp project/package.json .backup/package.json.backup
 cp project/package-lock.json .backup/package-lock.json.backup 2>/dev/null || true
 uv pip freeze > .backup/requirements-before.txt 2>/dev/null || true
@@ -77,8 +77,8 @@ uv pip install --upgrade -e .[all]
 print_status "Updating NeMo-Skills from GitHub..."
 uv pip install --upgrade --force-reinstall git+https://github.com/NVIDIA/NeMo-Skills.git
 
-# Generate updated requirements.txt for compatibility
-print_status "Generating updated requirements.txt..."
+# Generate updated config/environments/requirements.txt for compatibility
+print_status "Generating updated config/environments/requirements.txt..."
 uv pip freeze > requirements-frozen.txt
 
 # Update JavaScript dependencies
@@ -178,10 +178,10 @@ echo "🔄 Next Steps:"
 echo "1. Review UPDATE_SUMMARY.md for changes"
 echo "2. Test your application thoroughly"
 echo "3. Commit the changes:"
-echo "   git add pyproject.toml project/package.json project/package-lock.json"
+echo "   git add config/environments/pyproject.toml project/package.json project/package-lock.json"
 echo "   git commit -m 'chore: update dependencies'"
 echo "4. If issues occur, restore from backup:"
-echo "   cp .backup/pyproject.toml.backup pyproject.toml"
+echo "   cp .backup/config/environments/pyproject.toml.backup config/environments/pyproject.toml"
 echo "   cp .backup/package.json.backup project/package.json"
 echo "   cp .backup/package-lock.json.backup project/package-lock.json"
 echo ""

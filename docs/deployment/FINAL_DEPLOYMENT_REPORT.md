@@ -573,7 +573,7 @@ These targets are validated continuously and must be maintained across all opera
 
 ### Production Files
 - `config/docker/docker-compose.production.yml` - Production container orchestration
-- `nginx.production.conf` - Production reverse proxy configuration
+- `config/nginx.production.conf` - Production reverse proxy configuration
 - `config/environments/developmentconfig/environments/production.template.env` - Production environment template
 - `config/security/production.yml` - Security configuration
 - `monitoring.production.yml` - Production monitoring setup

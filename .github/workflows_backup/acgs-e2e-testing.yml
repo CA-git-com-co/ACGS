@@ -38,8 +38,8 @@ jobs:
           pip install pytest pytest-asyncio pytest-cov requests httpx
 
           # Install requirements if they exist
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt || echo "Failed to install requirements.txt, continuing..."
+          if [ -f "config/environments/requirements.txt" ]; then
+            pip install -r config/environments/requirements.txt || echo "Failed to install config/environments/requirements.txt, continuing..."
           fi
 
           if [ -f "requirements-test.txt" ]; then

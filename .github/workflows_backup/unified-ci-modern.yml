@@ -101,8 +101,8 @@ jobs:
               - 'services/**'
               - 'scripts/**'
               - '**/*.py'
-              - '**/requirements*.txt'
-              - 'pyproject.toml'
+              - '**/config/environments/requirements*.txt'
+              - 'config/environments/pyproject.toml'
             typescript:
               - '**/*.ts'
               - '**/*.js'
@@ -190,7 +190,7 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-          cache-dependency-glob: "**/requirements*.txt"
+          cache-dependency-glob: "**/config/environments/requirements*.txt"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -223,17 +223,17 @@ jobs:
           
           # Install project and dev dependencies with fallback
           INSTALL_SUCCESS=false
-          if [ -f "pyproject.toml" ]; then
-            echo "Installing from pyproject.toml..."
+          if [ -f "config/environments/pyproject.toml" ]; then
+            echo "Installing from config/environments/pyproject.toml..."
             if uv pip install -e .[dev,test] --index-strategy unsafe-best-match; then
               INSTALL_SUCCESS=true
             elif uv pip install -e . --index-strategy unsafe-best-match; then
               echo "⚠️ Dev dependencies failed, installed core only"
               INSTALL_SUCCESS=true
             fi
-          elif [ -f "requirements.txt" ]; then
-            echo "Installing from requirements.txt..."
-            if uv pip install -r requirements.txt --index-strategy unsafe-best-match; then
+          elif [ -f "config/environments/requirements.txt" ]; then
+            echo "Installing from config/environments/requirements.txt..."
+            if uv pip install -r config/environments/requirements.txt --index-strategy unsafe-best-match; then
               INSTALL_SUCCESS=true
             fi
           fi
@@ -241,10 +241,10 @@ jobs:
           # Fallback to pip if UV fails
           if [ "$INSTALL_SUCCESS" = "false" ]; then
             echo "⚠️ UV installation failed, falling back to pip..."
-            if [ -f "pyproject.toml" ]; then
+            if [ -f "config/environments/pyproject.toml" ]; then
               pip install -e .[dev,test] || pip install -e .
-            elif [ -f "requirements.txt" ]; then
-              pip install -r requirements.txt
+            elif [ -f "config/environments/requirements.txt" ]; then
+              pip install -r config/environments/requirements.txt
             fi
           fi
           

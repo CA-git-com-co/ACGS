@@ -149,7 +149,7 @@ volumes:
     logger.info("Updating service dependencies to include Redis...")
     for service_dir in (PROJECT_ROOT / "services" / "core").glob("*"):
         if service_dir.is_dir():
-            requirements_file = service_dir / "requirements.txt"
+            requirements_file = service_dir / "config/environments/requirements.txt"
             if requirements_file.exists():
                 with open(requirements_file) as f:
                     content = f.read()

@@ -43,7 +43,7 @@ class SecurityValidator:
         ]
     
     def find_requirements_files(self) -> List[Path]:
-        """Find all requirements.txt files in the project"""
+        """Find all config/environments/requirements.txt files in the project"""
         return list(self.project_root.rglob("requirements*.txt"))
     
     def parse_version(self, version_str: str) -> Tuple[int, ...]:

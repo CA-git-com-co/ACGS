@@ -508,7 +508,7 @@ class ACGSSecurityOrchestrator:
                         title=f"Vulnerable dependency: {issue.get('package', 'unknown')}",
                         severity="HIGH",  # Safety reports are typically high severity
                         description=issue.get("advisory", ""),
-                        file_path="requirements.txt",
+                        file_path="config/environments/requirements.txt",
                         remediation=f"Update {issue.get('package')} to version {issue.get('safe_version', 'latest')}",
                     )
                     vulnerabilities.append(vuln)

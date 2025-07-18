@@ -81,7 +81,7 @@ Composition structure and functionality validated:
 - ✅ KCL Source Code: Comprehensive service generation logic
 - ✅ Service Port Mapping: All 8 services with correct ports
 - ✅ GitHub Repository Creation: Automated provisioning
-- ✅ File Generation: Dockerfile, main.py, requirements.txt, README.md, K8s manifests
+- ✅ File Generation: Dockerfile, main.py, config/environments/requirements.txt, README.md, K8s manifests
 - ✅ Constitutional Compliance: Hash validation in generated services
 - ✅ Security Features: Non-root containers, health checks
 
@@ -198,7 +198,7 @@ The KCL composition generates complete service repositories with:
 
 - ✅ **Dockerfile**: Multi-stage build, health checks, non-root user
 - ✅ **main.py**: FastAPI service with constitutional endpoints
-- ✅ **requirements.txt**: Essential Python dependencies
+- ✅ **config/environments/requirements.txt**: Essential Python dependencies
 - ✅ **README.md**: Comprehensive service documentation
 - ✅ **k8s/manifests.yaml**: Deployment and service definitions
 

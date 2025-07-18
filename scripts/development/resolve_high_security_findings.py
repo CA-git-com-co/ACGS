@@ -689,7 +689,7 @@ def get_security_config() -> Dict[str, Any]:
             ]
 
             # Write security requirements
-            security_req_file = self.project_root / "requirements-security.txt"
+            security_req_file = self.project_root / "config/environments/requirements-security.txt"
             with open(security_req_file, "w") as f:
                 f.write("# ACGS-1 Security Requirements\n")
                 f.write("# Updated security-focused package versions\n\n")

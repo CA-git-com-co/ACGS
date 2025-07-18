@@ -20,10 +20,14 @@ import uvicorn
 sys.path.append(os.path.join(os.path.dirname(__file__), "../../../.."))
 
 try:
-    from services.shared.middleware.standard_middleware_config import setup_standard_acgs_service
+    from services.shared.middleware.standard_middleware_config import (
+        setup_standard_acgs_service,
+    )
+
     STANDARD_MIDDLEWARE_AVAILABLE = True
 except ImportError:
     from fastapi.middleware.cors import CORSMiddleware
+
     STANDARD_MIDDLEWARE_AVAILABLE = False
 
 # Constitutional compliance
@@ -73,7 +77,7 @@ async def health_check() -> Dict[str, Any]:
         "components": {
             "constitutional_engine": True,
             "unified_compliance": True,
-        }
+        },
     }
 
 
@@ -83,10 +87,10 @@ async def validate_constitutional_compliance(content: str = None) -> Dict[str, A
     try:
         if not content:
             raise HTTPException(status_code=422, detail="Content is required")
-        
+
         # Basic validation logic
         compliance_score = 0.85  # Placeholder
-        
+
         return {
             "validation_id": f"val_{int(datetime.now().timestamp())}",
             "content": content,
@@ -100,7 +104,7 @@ async def validate_constitutional_compliance(content: str = None) -> Dict[str, A
                 "transparency": True,
                 "accountability": True,
                 "privacy": True,
-            }
+            },
         }
     except HTTPException:
         raise
@@ -114,7 +118,7 @@ async def get_metrics() -> Dict[str, Any]:
     """Prometheus-compatible metrics endpoint."""
     current_time = datetime.now(timezone.utc)
     uptime_seconds = (current_time - startup_time).total_seconds()
-    
+
     return {
         "service_uptime_seconds": uptime_seconds,
         "constitutional_hash": CONSTITUTIONAL_HASH,

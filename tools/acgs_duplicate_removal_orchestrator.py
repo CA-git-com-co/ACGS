@@ -148,8 +148,8 @@ class ACGSDuplicateRemovalOrchestrator:
                 logger.warning(f"⚠️ Skipped non-identical files: {primary} != {duplicate}")
 
     def fix_requirements_duplicates(self) -> None:
-        """Fix duplicate entries in requirements.txt files."""
-        logger.info("🔧 Fixing requirements.txt duplicates...")
+        """Fix duplicate entries in config/environments/requirements.txt files."""
+        logger.info("🔧 Fixing config/environments/requirements.txt duplicates...")
         
         requirements_files = list(self.project_root.glob("**/requirements*.txt"))
         

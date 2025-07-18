@@ -239,7 +239,7 @@ class SecurityVerifier:
             )
 
         # Check security requirements
-        security_requirements = self.project_root / "requirements-security.txt"
+        security_requirements = self.project_root / "config/environments/requirements-security.txt"
         if security_requirements.exists():
             logger.info("  ✅ Security requirements found")
             results["security_improvements"].append(

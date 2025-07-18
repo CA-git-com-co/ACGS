@@ -63,7 +63,7 @@ ACGS-2/
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   pip install -r requirements.txt
+   pip install -r config/environments/requirements.txt
    pip install -r requirements-test.txt
    ```
 
@@ -89,25 +89,25 @@ ACGS-2/
 
 ## 📦 Dependency Management
 
-ACGS-2 uses a standardized approach to dependency management with **pyproject.toml** as the primary source of truth.
+ACGS-2 uses a standardized approach to dependency management with **config/environments/pyproject.toml** as the primary source of truth.
 
 ### Adding Dependencies
 
 1. **Core dependencies** (required for runtime):
    ```bash
-   # Add to pyproject.toml [project.dependencies]
+   # Add to config/environments/pyproject.toml [project.dependencies]
    uv add package-name>=version
    ```
 
 2. **Development dependencies**:
    ```bash
-   # Add to pyproject.toml [project.optional-dependencies.dev]
+   # Add to config/environments/pyproject.toml [project.optional-dependencies.dev]
    uv add --dev package-name>=version
    ```
 
 3. **Test dependencies**:
    ```bash
-   # Add to pyproject.toml [project.optional-dependencies.test]
+   # Add to config/environments/pyproject.toml [project.optional-dependencies.test]
    uv add --group test package-name>=version
    ```
 
@@ -115,7 +115,7 @@ ACGS-2 uses a standardized approach to dependency management with **pyproject.to
 
 - **Always pin minimum versions** with `>=` for compatibility
 - **Use version ranges sparingly** and only for security-critical packages
-- **Update requirements.txt** to match pyproject.toml for deployment compatibility
+- **Update config/environments/requirements.txt** to match config/environments/pyproject.toml for deployment compatibility
 - **Test all dependency changes** with the full test suite
 - **Document breaking changes** in commit messages
 

@@ -154,7 +154,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest pytest-asyncio pytest-cov pytest-xdist
 
       - name: Run smoke tests
@@ -197,7 +197,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest pytest-asyncio pytest-cov
 
       - name: Run constitutional tests
@@ -239,7 +239,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest pytest-asyncio pytest-benchmark
 
       - name: Run performance tests
@@ -280,7 +280,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest pytest-asyncio bandit safety
 
       - name: Run security tests
@@ -325,7 +325,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest pytest-asyncio pytest-xdist
 
       - name: Run integration tests
@@ -367,7 +367,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install -r config/environments/requirements.txt
           pip install pytest pytest-asyncio pytest-cov pytest-html
 
       - name: Run comprehensive E2E tests

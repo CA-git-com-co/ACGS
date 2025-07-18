@@ -178,7 +178,7 @@ RuntimeError: The starlette.testclient module requires the httpx package to be i
 
 **Fix Applied**:
 - Installed httpx: `pip install httpx`
-- Updated `requirements.txt` to include httpx as dependency
+- Updated `config/environments/requirements.txt` to include httpx as dependency
 
 **Verification**: ✅ Service testing working properly
 
@@ -257,7 +257,7 @@ These targets are validated continuously and must be maintained across all opera
 **Issue**: Pytest not finding tests due to incorrect path configuration
 
 **Fix Applied**:
-- Created `pytest.ini` configuration file
+- Created `config/environments/pytest.ini` configuration file
 - Added `conftest.py` for proper Python path setup
 - Fixed test collection and execution
 
@@ -295,7 +295,7 @@ These targets are validated continuously and must be maintained across all opera
 ============================= test session starts ==============================
 platform linux -- Python 3.12.3, pytest-8.4.1, pluggy-1.6.0
 rootdir: /home/dislove/ACGS-2/services/platform_services/formal_verification
-configfile: pytest.ini
+configfile: config/environments/pytest.ini
 plugins: asyncio-1.0.0, anyio-4.9.0
 collected 14 items
 
@@ -403,10 +403,10 @@ These targets are validated continuously and must be maintained across all opera
 ### **Test Fixes**
 - `tests/test_adversarial_robustness.py`: Robust import handling, relaxed integration test
 - `conftest.py`: Proper pytest configuration
-- `pytest.ini`: Test discovery and execution settings
+- `config/environments/pytest.ini`: Test discovery and execution settings
 
 ### **Dependencies**
-- `requirements.txt`: Added httpx for API testing
+- `config/environments/requirements.txt`: Added httpx for API testing
 - Virtual environment updated with all required packages
 
 

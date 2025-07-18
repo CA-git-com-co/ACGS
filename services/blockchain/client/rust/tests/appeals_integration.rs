@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 // ACGS Appeals Integration Tests - Rust Implementation
 // Comprehensive End-to-End Tests for Appeals Program
 // Migrated from TypeScript to eliminate Node.js dependency conflicts

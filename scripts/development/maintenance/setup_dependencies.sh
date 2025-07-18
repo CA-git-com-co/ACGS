@@ -31,7 +31,7 @@ error() {
 }
 
 # Check if running from project root
-if [ ! -f "pyproject.toml" ] || [ ! -f "Cargo.toml" ]; then
+if [ ! -f "config/environments/pyproject.toml" ] || [ ! -f "Cargo.toml" ]; then
     error "Please run this script from the ACGS project root directory"
     exit 1
 fi

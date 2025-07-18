@@ -47,9 +47,9 @@ create_project_structure() {
 
 # Check and create requirements file if needed
 create_requirements_file() {
-    if [ ! -f "requirements.txt" ]; then
-        log "Creating basic requirements.txt file..."
-        cat > requirements.txt << EOF
+    if [ ! -f "config/environments/requirements.txt" ]; then
+        log "Creating basic config/environments/requirements.txt file..."
+        cat > config/environments/requirements.txt << EOF
 # ACGS-1 Core Requirements
 fastapi>=0.104.0
 uvicorn>=0.23.2
@@ -68,7 +68,7 @@ black>=23.10.0
 isort>=5.12.0
 mypy>=1.6.1
 EOF
-        success "Created requirements.txt"
+        success "Created config/environments/requirements.txt"
     fi
 }
 
@@ -152,13 +152,13 @@ setup_python_env() {
     
     # Install dependencies
     log "Installing Python dependencies..."
-    pip install -r requirements.txt
+    pip install -r config/environments/requirements.txt
     
     # Install service-specific dependencies
     for service_dir in services/core/*/; do
-        if [ -f "${service_dir}requirements.txt" ]; then
+        if [ -f "${service_dir}config/environments/requirements.txt" ]; then
             log "Installing dependencies for ${service_dir}..."
-            pip install -r "${service_dir}requirements.txt"
+            pip install -r "${service_dir}config/environments/requirements.txt"
         fi
     done
     
@@ -214,9 +214,9 @@ EOF
         fi
 
         # Create pnpm workspace configuration
-        if [ ! -f "pnpm-workspace.yaml" ]; then
+        if [ ! -f "config/environments/pnpm-workspace.yaml" ]; then
             log "Creating pnpm workspace configuration..."
-            cat > pnpm-workspace.yaml << EOF
+            cat > config/environments/pnpm-workspace.yaml << EOF
 packages:
   - 'applications/*'
   - 'services/*/frontend'
@@ -598,7 +598,7 @@ EOF
         
         log "Starting development services..."
         cd infrastructure/docker
-        docker-compose -f docker-compose.dev.yml up -d || warning "Docker services failed to start, but continuing..."
+        docker-compose -f config/docker/docker-compose.dev.yml up -d || warning "Docker services failed to start, but continuing..."
         cd ../..
         
         success "Docker infrastructure setup complete"
@@ -848,10 +848,10 @@ def main():
             print("❌ Failed to install UV")
             return False
     
-    # Create pyproject.toml if it doesn't exist
-    if not os.path.exists("pyproject.toml"):
-        print("Creating pyproject.toml...")
-        with open("pyproject.toml", "w") as f:
+    # Create config/environments/pyproject.toml if it doesn't exist
+    if not os.path.exists("config/environments/pyproject.toml"):
+        print("Creating config/environments/pyproject.toml...")
+        with open("config/environments/pyproject.toml", "w") as f:
             f.write('''[build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"

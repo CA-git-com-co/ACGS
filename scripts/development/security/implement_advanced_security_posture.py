@@ -318,7 +318,7 @@ if __name__ == "__main__":
                             },
                             {
                                 "name": "Install dependencies",
-                                "run": "pip install -r requirements.txt",
+                                "run": "pip install -r config/environments/requirements.txt",
                             },
                             {
                                 "name": "Run comprehensive dependency audit",

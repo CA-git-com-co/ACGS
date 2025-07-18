@@ -279,13 +279,13 @@ run_docker_tests() {
     cd "$E2E_DIR/docker"
     
     # Build and run
-    docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit
+    docker-compose -f config/docker/docker-compose.e2e.yml up --build --abort-on-container-exit
     
     # Copy reports
     docker cp acgs_e2e_test_runner:/app/reports "$E2E_DIR/" || true
     
     # Cleanup
-    docker-compose -f docker-compose.e2e.yml down
+    docker-compose -f config/docker/docker-compose.e2e.yml down
     
     cd - > /dev/null
 }

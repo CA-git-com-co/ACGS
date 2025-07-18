@@ -24,7 +24,7 @@ class FinalServiceStructureFix:
         print(f"📝 {log_entry}")
 
     def fix_service_requirements_location(self):
-        """Fix requirements.txt location for nested services."""
+        """Fix config/environments/requirements.txt location for nested services."""
         print("📦 Fixing service requirements file locations...")
 
         services_core = self.project_root / "services" / "core"
@@ -41,15 +41,15 @@ class FinalServiceStructureFix:
             nested_path = service_path / nested_dir
 
             if service_path.exists() and nested_path.exists():
-                # Check if requirements.txt exists in nested directory
-                nested_requirements = nested_path / "requirements.txt"
-                top_requirements = service_path / "requirements.txt"
+                # Check if config/environments/requirements.txt exists in nested directory
+                nested_requirements = nested_path / "config/environments/requirements.txt"
+                top_requirements = service_path / "config/environments/requirements.txt"
 
                 if top_requirements.exists() and not nested_requirements.exists():
-                    # Copy requirements.txt to nested directory
+                    # Copy config/environments/requirements.txt to nested directory
                     shutil.copy2(top_requirements, nested_requirements)
                     self.log_action(
-                        f"Copied requirements.txt to {service_name}/{nested_dir}"
+                        f"Copied config/environments/requirements.txt to {service_name}/{nested_dir}"
                     )
                 elif nested_requirements.exists():
                     self.log_action(
@@ -86,10 +86,10 @@ class FinalServiceStructureFix:
             }
 
             if validation["exists"]:
-                # Check for requirements.txt in appropriate location
+                # Check for config/environments/requirements.txt in appropriate location
                 req_locations = [
-                    nested_path / "requirements.txt",
-                    service_path / "requirements.txt",
+                    nested_path / "config/environments/requirements.txt",
+                    service_path / "config/environments/requirements.txt",
                 ]
                 validation["has_requirements"] = any(
                     loc.exists() for loc in req_locations

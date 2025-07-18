@@ -152,7 +152,7 @@ class EmergencySecurityPatcher:
             # Check if constitutional hash is still present in key files
             test_files = [
                 'CLAUDE.md',
-                'requirements-security.txt',
+                'config/environments/requirements-security.txt',
                 'ACGS_SECURITY_VULNERABILITY_REMEDIATION_PLAN.md'
             ]
             

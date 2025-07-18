@@ -5,14 +5,14 @@ on:
     branches: [ main, develop ]
     paths:
       - '**.py'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Dockerfile*'
       - '.github/workflows/security-scan.yml'
   pull_request:
     branches: [ main ]
     paths:
       - '**.py'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Dockerfile*'
       - '.github/workflows/security-scan.yml'
   schedule:
@@ -61,12 +61,12 @@ jobs:
           pip install bandit safety pip-audit semgrep
           
           # Install ACGS security requirements with fallback
-          if [ -f requirements-security.txt ]; then
-            echo "Installing from requirements-security.txt"
-            pip install -r requirements-security.txt
-          elif [ -f requirements.txt ]; then
-            echo "Installing from requirements.txt"
-            pip install -r requirements.txt
+          if [ -f config/environments/requirements-security.txt ]; then
+            echo "Installing from config/environments/requirements-security.txt"
+            pip install -r config/environments/requirements-security.txt
+          elif [ -f config/environments/requirements.txt ]; then
+            echo "Installing from config/environments/requirements.txt"
+            pip install -r config/environments/requirements.txt
           else
             echo "Installing minimal security dependencies"
             pip install fastapi uvicorn pydantic sqlalchemy
@@ -241,7 +241,7 @@ jobs:
           ## 📋 Next Steps
           
           1. Review detailed scan results in workflow artifacts
-          2. Update dependencies listed in \`requirements-security.txt\`
+          2. Update dependencies listed in \`config/environments/requirements-security.txt\`
           3. Address any static analysis findings
           4. Re-run security scan after fixes
           5. Maintain constitutional compliance during updates
@@ -385,7 +385,7 @@ jobs:
             ## 📋 Action Items
             
             - [ ] Review security impact of each update
-            - [ ] Update \`requirements-security.txt\`
+            - [ ] Update \`config/environments/requirements-security.txt\`
             - [ ] Test in staging environment
             - [ ] Deploy with constitutional validation
             

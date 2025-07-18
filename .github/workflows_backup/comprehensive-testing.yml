@@ -52,8 +52,8 @@ jobs:
           # Install project dependencies
           if [ -f "requirements-test.txt" ]; then
             uv pip install -r requirements-test.txt || echo "Test requirements install failed"
-          elif [ -f "requirements.txt" ]; then
-            uv pip install -r requirements.txt || echo "Requirements install failed"
+          elif [ -f "config/environments/requirements.txt" ]; then
+            uv pip install -r config/environments/requirements.txt || echo "Requirements install failed"
             uv pip install pytest pytest-cov pytest-asyncio || echo "Test tools install failed"
           else
             echo "No requirements files found, installing basic dependencies"
@@ -181,7 +181,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/config/environments/requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 

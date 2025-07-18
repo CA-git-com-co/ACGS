@@ -129,7 +129,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pytest pytest-asyncio httpx fastapi uvicorn pydantic
-          pip install -r services/shared/requirements.txt || echo "No shared requirements found"
+          pip install -r services/shared/config/environments/requirements.txt || echo "No shared requirements found"
 
       - name: Set up test environment
         run: |

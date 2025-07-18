@@ -145,7 +145,7 @@ class E2ETestEnvironment:
             os.environ.update({
                 "TESTING": "true",
                 "CONSTITUTIONAL_HASH": CONSTITUTIONAL_HASH,
-                "DATABASE_URL": "postgresql://postgres:postgres@localhost:5439/acgs_test",
+                "DATABASE_URL": "postgresql+asyncpg://postgres:postgres@localhost:5439/acgs_test",
                 "REDIS_URL": "redis://localhost:6389/15",
                 "JWT_SECRET_KEY": "test-secret-key-for-e2e-testing",
                 "LOG_LEVEL": "INFO"

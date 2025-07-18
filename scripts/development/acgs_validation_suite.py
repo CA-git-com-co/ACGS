@@ -175,14 +175,14 @@ class ACGSValidationSuite:
         metrics = {}
 
         # Check test configuration files
-        test_files = ["pytest.ini", "requirements-test.txt"]
+        test_files = ["config/environments/pytest.ini", "requirements-test.txt"]
 
         for file_path in test_files:
             if not Path(file_path).exists():
                 errors.append(f"Test configuration file missing: {file_path}")
 
         # Validate pytest configuration
-        pytest_ini_path = Path("pytest.ini")
+        pytest_ini_path = Path("config/environments/pytest.ini")
         if pytest_ini_path.exists():
             try:
                 content = pytest_ini_path.read_text()
@@ -191,7 +191,7 @@ class ACGSValidationSuite:
                 if "--cov-fail-under=80" in content:
                     metrics["coverage_target_configured"] = True
             except Exception as e:
-                errors.append(f"Error reading pytest.ini: {e}")
+                errors.append(f"Error reading config/environments/pytest.ini: {e}")
 
         return {"passed": len(errors) == 0, "metrics": metrics, "errors": errors}
 
@@ -313,7 +313,7 @@ class ACGSValidationSuite:
         critical_components = [
             "services/shared/performance_optimizer.py",
             "services/platform_services/authentication/auth_service/app/core/jwt_security.py",
-            "pytest.ini",
+            "config/environments/pytest.ini",
             ".github/workflows/acgs-ci-cd.yml",
         ]
 

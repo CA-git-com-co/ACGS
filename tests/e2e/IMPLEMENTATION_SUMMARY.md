@@ -58,7 +58,7 @@ Successfully implemented a comprehensive end-to-end test framework for the ACGS 
 **Location**: `tests/e2e/`
 
 - **`README.md`**: Comprehensive documentation with usage examples
-- **`pytest.ini`**: Complete pytest configuration with markers and coverage
+- **`config/environments/pytest.ini`**: Complete pytest configuration with markers and coverage
 - **`scripts/run_tests.sh`**: Convenient test execution script with multiple options
 - **`IMPLEMENTATION_SUMMARY.md`**: This summary document
 

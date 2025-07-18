@@ -183,8 +183,8 @@ This audit reveals significant discrepancies between documented and actual ACGS 
 - CI/CD integration with coverage validation
 
 **Test Configuration Consistency**:
-- `pytest.ini`: `--cov-fail-under=80` ✅
-- `pyproject.toml`: `fail_under = 90` ❌ (Inconsistent)
+- `config/environments/pytest.ini`: `--cov-fail-under=80` ✅
+- `config/environments/pyproject.toml`: `fail_under = 90` ❌ (Inconsistent)
 - CI workflows: Various targets (60%, 80%, 90%) ❌
 
 **Test Structure**:
@@ -202,8 +202,8 @@ tests/
 
 | Configuration File | Coverage Target | Status |
 |-------------------|----------------|---------|
-| `pytest.ini` | 80% | ✅ Documented target |
-| `pyproject.toml` | 90% | ❌ Higher than documented |
+| `config/environments/pytest.ini` | 80% | ✅ Documented target |
+| `config/environments/pyproject.toml` | 90% | ❌ Higher than documented |
 | CI workflows | 60-90% | ❌ Inconsistent |
 | Documentation | 80% | ✅ Matches target |
 

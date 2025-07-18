@@ -230,7 +230,7 @@ Each service claim creates a GitHub repository with:
 
 - **Dockerfile**: Multi-stage build with security best practices
 - **main.py**: FastAPI service with constitutional compliance
-- **requirements.txt**: Python dependencies
+- **config/environments/requirements.txt**: Python dependencies
 - **README.md**: Comprehensive documentation
 - **k8s/manifests.yaml**: Kubernetes deployment and service
 - **Health checks**: Built-in monitoring endpoints

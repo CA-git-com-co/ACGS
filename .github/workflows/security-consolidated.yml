@@ -17,7 +17,7 @@ on:
       - '**.js'
       - '**.ts'
       - '**.go'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'package*.json'
       - 'Dockerfile*'
@@ -32,7 +32,7 @@ on:
       - '**.js'
       - '**.ts'
       - '**.go'
-      - 'requirements*.txt'
+      - 'config/environments/requirements*.txt'
       - 'Cargo.toml'
       - 'package*.json'
       - 'Dockerfile*'
@@ -125,7 +125,7 @@ jobs:
           vuln_count=0
           
           # Safety scan for known vulnerabilities
-          if ls requirements*.txt 1> /dev/null 2>&1; then
+          if ls config/environments/requirements*.txt 1> /dev/null 2>&1; then
             echo "Running Safety scan..."
             safety check --json --output safety-results.json || true
             
@@ -137,7 +137,7 @@ jobs:
           
           # Pip-audit scan
           echo "Running pip-audit scan..."
-          if ls requirements*.txt 1> /dev/null 2>&1; then
+          if ls config/environments/requirements*.txt 1> /dev/null 2>&1; then
             pip-audit --format=json --output=pip-audit-results.json || true
             
             # Add to vulnerability count
@@ -292,8 +292,8 @@ jobs:
           FROM python:3.11-slim
           LABEL constitutional.hash="cdd01ef066bc6cf2"
           WORKDIR /app
-          COPY requirements*.txt ./
-          RUN pip install --no-cache-dir -r requirements.txt || true
+          COPY config/environments/requirements*.txt ./
+          RUN pip install --no-cache-dir -r config/environments/requirements.txt || true
           COPY . .
           EXPOSE 8010
           CMD ["python", "--version"]

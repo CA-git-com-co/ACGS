@@ -83,6 +83,7 @@ class SecurityTestSuite:
         if self.session:
             await self.session.close()
     
+    @pytest.mark.asyncio
     async def test_authentication_security(self) -> SecurityTestResult:
         """Test authentication security vulnerabilities"""
         test_name = "Authentication Security Test"
@@ -225,6 +226,7 @@ class SecurityTestSuite:
                 constitutional_compliant=False
             )
     
+    @pytest.mark.asyncio
     async def test_input_validation_security(self) -> SecurityTestResult:
         """Test input validation and injection attack prevention"""
         test_name = "Input Validation Security Test"
@@ -373,6 +375,7 @@ class SecurityTestSuite:
                 constitutional_compliant=False
             )
     
+    @pytest.mark.asyncio
     async def test_cryptographic_security(self) -> SecurityTestResult:
         """Test cryptographic security implementation"""
         test_name = "Cryptographic Security Test"
@@ -508,6 +511,7 @@ class SecurityTestSuite:
                 constitutional_compliant=False
             )
     
+    @pytest.mark.asyncio
     async def test_constitutional_compliance_security(self) -> SecurityTestResult:
         """Test constitutional compliance security measures"""
         test_name = "Constitutional Compliance Security Test"
@@ -635,6 +639,7 @@ class SecurityTestSuite:
                 constitutional_compliant=False
             )
     
+    @pytest.mark.asyncio
     async def test_multi_tenant_security(self) -> SecurityTestResult:
         """Test multi-tenant security isolation"""
         test_name = "Multi-Tenant Security Test"

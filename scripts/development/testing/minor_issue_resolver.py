@@ -275,13 +275,13 @@ ACGS-2 is a comprehensive governance system implementing constitutional AI proce
 
 ### Prerequisites
 - Python 3.9+
-- Required dependencies (see requirements.txt)
+- Required dependencies (see config/environments/requirements.txt)
 
 ### Installation
 ```bash
 git clone <repository-url>
 cd ACGS-2
-pip install -r requirements.txt
+pip install -r config/environments/requirements.txt
 ```
 
 ### Running Tests

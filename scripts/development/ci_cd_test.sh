@@ -69,7 +69,7 @@ run_test "Python Environment" "python3 --version && pip --version"
 
 # Test 2: Install dependencies
 echo -e "\n${BLUE}📦 Installing Enhanced Integration Dependencies...${NC}"
-if pip install -r requirements.txt > /tmp/install.log 2>&1; then
+if pip install -r config/environments/requirements.txt > /tmp/install.log 2>&1; then
     print_status "PASS" "Dependency Installation"
 else
     print_status "FAIL" "Dependency Installation"

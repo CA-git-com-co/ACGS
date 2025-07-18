@@ -40,6 +40,7 @@ except ImportError:
         async def get(db, user_id):
             return None
 
+
 from .config import settings
 
 

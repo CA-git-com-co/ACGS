@@ -1,0 +1,69 @@
+name: Performance Target Validation
+# Constitutional Hash: cdd01ef066bc6cf2
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '0 5 * * 3'  # Weekly on Wednesday at 5 AM
+
+jobs:
+  performance-validation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          
+      - name: Install Dependencies
+        run: |
+          pip install psutil requests
+          
+      - name: Run Performance Architecture Optimizer
+        run: python3 scripts/monitoring/performance_architecture_optimizer.py
+        
+      - name: Validate Performance Targets
+        run: |
+          python3 -c "
+          import json
+          import glob
+          
+          # Find latest performance report
+          report_files = glob.glob('reports/performance/performance_architecture_optimization_*.json')
+          if report_files:
+              latest_file = max(report_files)
+              with open(latest_file) as f:
+                  report = json.load(f)
+                  
+              preservation_rate = report['summary']['target_preservation_rate']
+              monitoring_implemented = report['summary']['monitoring_implemented']
+              
+              print(f'Performance target preservation: {preservation_rate}%')
+              print(f'Monitoring implemented: {monitoring_implemented}')
+              
+              if preservation_rate < 95.0:
+                  print('::warning::Performance target preservation below 95%')
+                  
+              if not monitoring_implemented:
+                  print('::error::Performance monitoring not properly implemented')
+          else:
+              print('::error::No performance report found')
+          "
+          
+      - name: Run Performance Regression Test
+        run: python3 scripts/testing/performance_regression_test.py
+        
+      - name: Upload Performance Reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-validation-reports
+          path: |
+            reports/performance/performance_architecture_optimization_*.json
+            reports/performance/regression_test_*.json
+            reports/performance/realtime_performance_dashboard.json

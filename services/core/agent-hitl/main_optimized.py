@@ -57,7 +57,7 @@ redis_pool: Optional[aioredis.Redis] = None
 async def startup_event():
     """Service startup event with optimizations."""
     global redis_pool
-    
+
     try:
         # Initialize Redis connection pool for caching
         redis_pool = aioredis.from_url(
@@ -69,15 +69,15 @@ async def startup_event():
             socket_connect_timeout=1,
             socket_timeout=1,
         )
-        
+
         # Test Redis connection
         await redis_pool.ping()
         logger.info("✅ Redis connection established")
-        
+
     except Exception as e:
         logger.warning(f"⚠️ Redis connection failed: {e}, continuing without cache")
         redis_pool = None
-    
+
     logger.info("🚀 Starting Agent HITL Service (Optimized)")
     logger.info(f"📋 Constitutional Hash: {CONSTITUTIONAL_HASH}")
     logger.info(f"🕐 Startup Time: {startup_time.isoformat()}")
@@ -88,11 +88,11 @@ async def startup_event():
 async def shutdown_event():
     """Service shutdown event."""
     global redis_pool
-    
+
     if redis_pool:
         await redis_pool.close()
         logger.info("🔄 Redis connection closed")
-    
+
     logger.info("🛑 Shutting down Agent HITL Service")
 
 
@@ -111,7 +111,7 @@ async def health_check() -> Dict[str, Any]:
             "decision_engine": True,
             "cache_layer": True,
             "constitutional_compliance": True,
-        }
+        },
     }
 
     return response
@@ -121,7 +121,7 @@ async def health_check() -> Dict[str, Any]:
 async def agent_status() -> Dict[str, Any]:
     """Get agent coordination status."""
     start_time = time.perf_counter()
-    
+
     try:
         # Check cache first
         cached_status = None
@@ -130,10 +130,11 @@ async def agent_status() -> Dict[str, Any]:
                 cached_status = await redis_pool.get("agent:status")
                 if cached_status:
                     import json
+
                     return json.loads(cached_status)
             except Exception as e:
                 logger.warning(f"Cache read failed: {e}")
-        
+
         # Generate fresh status
         status = {
             "agent_coordination": "operational",
@@ -145,27 +146,30 @@ async def agent_status() -> Dict[str, Any]:
             "pending_decisions": 0,  # Placeholder
             "oversight_queue_length": 0,  # Placeholder
         }
-        
+
         # Cache the result
         if redis_pool:
             try:
                 import json
-                await redis_pool.setex("agent:status", 5, json.dumps(status))  # 5 second cache
+
+                await redis_pool.setex(
+                    "agent:status", 5, json.dumps(status)
+                )  # 5 second cache
             except Exception as e:
                 logger.warning(f"Cache write failed: {e}")
-        
+
         # Update metrics
         end_time = time.perf_counter()
         response_time = end_time - start_time
-        
+
         return JSONResponse(
             content=status,
             headers={
                 "X-Response-Time": f"{response_time * 1000:.3f}ms",
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
-            }
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Agent status check failed: {e}")
         raise HTTPException(status_code=500, detail="Agent status check failed")
@@ -176,14 +180,14 @@ async def request_oversight(
     background_tasks: BackgroundTasks,
     agent_id: str = "default",
     decision_context: str = "general",
-    urgency: str = "normal"
+    urgency: str = "normal",
 ) -> Dict[str, Any]:
     """Request human oversight for agent decision."""
     start_time = time.perf_counter()
-    
+
     try:
         oversight_id = f"oversight_{int(time.time() * 1000)}"
-        
+
         # Create oversight request
         oversight_request = {
             "oversight_id": oversight_id,
@@ -194,26 +198,27 @@ async def request_oversight(
             "created_at": datetime.now(timezone.utc).isoformat(),
             "constitutional_hash": CONSTITUTIONAL_HASH,
         }
-        
+
         # Cache the request
         if redis_pool:
             try:
                 import json
+
                 await redis_pool.setex(
-                    f"oversight:{oversight_id}", 
+                    f"oversight:{oversight_id}",
                     3600,  # 1 hour TTL
-                    json.dumps(oversight_request)
+                    json.dumps(oversight_request),
                 )
             except Exception as e:
                 logger.warning(f"Failed to cache oversight request: {e}")
-        
+
         # Schedule background processing
         background_tasks.add_task(process_oversight_request, oversight_request)
-        
+
         # Update metrics
         end_time = time.perf_counter()
         response_time = end_time - start_time
-        
+
         return JSONResponse(
             content={
                 "oversight_id": oversight_id,
@@ -224,9 +229,9 @@ async def request_oversight(
             headers={
                 "X-Response-Time": f"{response_time * 1000:.3f}ms",
                 "X-Constitutional-Hash": CONSTITUTIONAL_HASH,
-            }
+            },
         )
-        
+
     except Exception as e:
         logger.error(f"Oversight request failed: {e}")
         raise HTTPException(status_code=500, detail="Oversight request failed")
@@ -237,9 +242,9 @@ async def process_oversight_request(oversight_request: Dict[str, Any]):
     try:
         # Simulate processing
         await asyncio.sleep(0.1)  # Minimal processing time
-        
+
         logger.info(f"Processed oversight request: {oversight_request['oversight_id']}")
-        
+
     except Exception as e:
         logger.error(f"Failed to process oversight request: {e}")
 
@@ -248,11 +253,11 @@ async def process_oversight_request(oversight_request: Dict[str, Any]):
 async def get_metrics() -> Dict[str, Any]:
     """Prometheus-compatible metrics endpoint."""
     global request_count, total_response_time
-    
+
     current_time = datetime.now(timezone.utc)
     uptime_seconds = (current_time - startup_time).total_seconds()
     avg_response_time_ms = (total_response_time / max(request_count, 1)) * 1000
-    
+
     return {
         "service_uptime_seconds": uptime_seconds,
         "constitutional_hash": CONSTITUTIONAL_HASH,

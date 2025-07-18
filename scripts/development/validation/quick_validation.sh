@@ -153,26 +153,26 @@ echo ""
 # Check 4: Test Coverage Targets
 log_info "Checking test coverage targets consistency..."
 
-# Check pytest.ini
-if [ -f "$REPO_ROOT/pytest.ini" ]; then
-    if grep -q "cov-fail-under=80\|80" "$REPO_ROOT/pytest.ini"; then
-        log_success "80% test coverage target found in pytest.ini"
+# Check config/environments/pytest.ini
+if [ -f "$REPO_ROOT/config/environments/pytest.ini" ]; then
+    if grep -q "cov-fail-under=80\|80" "$REPO_ROOT/config/environments/pytest.ini"; then
+        log_success "80% test coverage target found in config/environments/pytest.ini"
     else
-        log_warning "80% test coverage target not found in pytest.ini"
+        log_warning "80% test coverage target not found in config/environments/pytest.ini"
     fi
 else
-    log_warning "pytest.ini not found"
+    log_warning "config/environments/pytest.ini not found"
 fi
 
-# Check pyproject.toml
-if [ -f "$REPO_ROOT/pyproject.toml" ]; then
-    if grep -q "fail_under.*80\|80" "$REPO_ROOT/pyproject.toml"; then
-        log_success "80% test coverage target found in pyproject.toml"
+# Check config/environments/pyproject.toml
+if [ -f "$REPO_ROOT/config/environments/pyproject.toml" ]; then
+    if grep -q "fail_under.*80\|80" "$REPO_ROOT/config/environments/pyproject.toml"; then
+        log_success "80% test coverage target found in config/environments/pyproject.toml"
     else
-        log_warning "80% test coverage target not found in pyproject.toml"
+        log_warning "80% test coverage target not found in config/environments/pyproject.toml"
     fi
 else
-    log_warning "pyproject.toml not found"
+    log_warning "config/environments/pyproject.toml not found"
 fi
 
 echo ""

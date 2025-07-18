@@ -1,3 +1,4 @@
+# Constitutional Hash: cdd01ef066bc6cf2
 #!/bin/bash
 # Test script for Rust deployment tools in CI/CD environment
 # Validates all new Rust tools work correctly in automated environments

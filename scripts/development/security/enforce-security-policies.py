@@ -325,7 +325,7 @@ class SecurityPolicyEnforcer:
         logger.info("Running dependency vulnerability checks...")
 
         # Check Python dependencies
-        if Path("requirements.txt").exists() or Path("pyproject.toml").exists():
+        if Path("config/environments/requirements.txt").exists() or Path("config/environments/pyproject.toml").exists():
             self._run_python_dependency_check()
 
         # Check Node.js dependencies
@@ -352,7 +352,7 @@ class SecurityPolicyEnforcer:
                     SecurityViolation(
                         rule="python_vulnerable_dependencies",
                         severity="high",
-                        file_path="requirements.txt",
+                        file_path="config/environments/requirements.txt",
                         line_number=None,
                         description="Vulnerable Python dependencies detected",
                         recommendation="Update vulnerable dependencies to secure versions",

@@ -106,7 +106,7 @@ class ProductionConfigurationManager:
                 "environment": self.configconfig/environments/development.environment,
                 "configurations_generated": [
                     "config/docker/docker-compose.production.yml",
-                    "nginx.production.conf",
+                    "config/nginx.production.conf",
                     "config/environments/developmentconfig/environments/production.env.backup",
                     "config/security/production.yml",
                     "monitoring.production.yml",
@@ -150,7 +150,7 @@ class ProductionConfigurationManager:
                         "443:443"
                     ],
                     "volumes": [
-                        "./nginx.production.conf:/etc/nginx/nginx.conf:ro",
+                        "./config/nginx.production.conf:/etc/nginx/nginx.conf:ro",
                         "ssl_certs:/etc/ssl:ro"
                     ],
                     "networks": ["acgs-production"],
@@ -399,7 +399,7 @@ http {{
 }}
 """
         
-        with open("nginx.production.conf", "w") as f:
+        with open("config/nginx.production.conf", "w") as f:
             f.write(nginx_config)
         
         logger.info("✅ Production Nginx configuration generated")
@@ -590,7 +590,7 @@ echo "🔒 Constitutional Hash: $CONSTITUTIONAL_HASH"
 echo "🔍 Running pre-deployment checks..."
 
 # Check required files
-required_files=("config/environments/developmentconfig/environments/production.env.backup" "config/docker/docker-compose.production.yml" "nginx.production.conf")
+required_files=("config/environments/developmentconfig/environments/production.env.backup" "config/docker/docker-compose.production.yml" "config/nginx.production.conf")
 for file in "${{required_files[@]}}"; do
     if [[ ! -f "$file" ]]; then
         echo "❌ Required file not found: $file"
@@ -684,7 +684,7 @@ docker exec acgs-redis-production redis-cli --rdb - > "$BACKUP_DIR/redis.rdb"
 echo "⚙️ Backing up configuration files..."
 cp config/docker/docker-compose.production.yml "$BACKUP_DIR/"
 cp config/environments/developmentconfig/environments/production.env.backup "$BACKUP_DIR/"
-cp nginx.production.conf "$BACKUP_DIR/"
+cp config/nginx.production.conf "$BACKUP_DIR/"
 
 # Backup volumes
 echo "💽 Backing up Docker volumes..."
@@ -702,7 +702,7 @@ cat > "$BACKUP_DIR/manifest.json" << EOF
     "redis.rdb",
     "config/docker/docker-compose.production.yml",
     "config/environments/developmentconfig/environments/production.env.backup",
-    "nginx.production.conf",
+    "config/nginx.production.conf",
     "prometheus_data.tar.gz",
     "grafana_data.tar.gz"
   ]
@@ -748,7 +748,7 @@ docker-compose -f config/docker/docker-compose.production.yml down
 echo "⚙️ Restoring configuration files..."
 cp "backups/$BACKUP_DIR/config/docker/docker-compose.production.yml" .
 cp "backups/$BACKUP_DIR/config/environments/developmentconfig/environments/production.env.backup" .
-cp "backups/$BACKUP_DIR/nginx.production.conf" .
+cp "backups/$BACKUP_DIR/config/nginx.production.conf" .
 
 # Restore volumes
 echo "💽 Restoring Docker volumes..."

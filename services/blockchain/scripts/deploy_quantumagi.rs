@@ -1,3 +1,4 @@
+// Constitutional Hash: cdd01ef066bc6cf2
 //! Quantumagi Deployment and Integration Tool - Rust Implementation
 //! Handles deployment of Quantumagi programs and integration with ACGS
 //! Replaces blockchain/scripts/deploy_quantumagi.py with native Rust implementation
