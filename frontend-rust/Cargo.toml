@@ -1,0 +1,110 @@
+[package]
+name = "acgs-frontend"
+version = "1.0.0"
+edition = "2021"
+description = "ACGS-2 Constitutional AI Governance System - Rust Frontend"
+authors = ["ACGS-2 Team"]
+license = "MIT"
+repository = "https://github.com/CA-git-com-co/ACGS.git"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[workspace]
+# Empty workspace to exclude from parent workspace
+
+[dependencies]
+# Core web framework - optimized for size
+yew = { version = "0.21", features = ["csr"], default-features = false }
+yew-router = { version = "0.18", default-features = false }
+wasm-bindgen = { version = "0.2", default-features = false }
+wasm-bindgen-futures = { version = "0.4", default-features = false }
+web-sys = { version = "0.3", features = [
+  "console",
+  "Document",
+  "Element",
+  "HtmlElement",
+  "HtmlSelectElement",
+  "HtmlInputElement",
+  "Window",
+  "Navigator",
+  "ServiceWorkerContainer",
+  "ServiceWorker",
+  "ServiceWorkerRegistration",
+  "MessageChannel",
+  "MessagePort",
+  "MessageEvent",
+  "Performance",
+  "Request",
+  "RequestInit",
+  "RequestMode",
+  "Response",
+  "Headers",
+  "Location",
+  "History",
+  "Storage",
+], default-features = false }
+js-sys = "0.3"
+
+# Serialization - optimized for size
+serde = { version = "1.0", features = ["derive"], default-features = false }
+serde_json = { version = "1.0", default-features = false }
+serde-wasm-bindgen = { version = "0.6", default-features = false }
+
+# Utilities - minimal features
+log = { version = "0.4", default-features = false }
+console_log = { version = "1.0", default-features = false }
+
+# Constitutional compliance - minimal features
+sha2 = { version = "0.10", default-features = false }
+hex = { version = "0.4", features = ["alloc"], default-features = false }
+
+# Time utilities - minimal features for size optimization
+chrono = { version = "0.4", features = ["serde", "wasm-bindgen", "clock"], default-features = false }
+gloo-timers = { version = "0.3", features = ["futures"], default-features = false }
+
+# Memory optimization
+wee_alloc = "0.4"
+
+# Bundle size optimization
+console_error_panic_hook = { version = "0.1", optional = true }
+
+[dev-dependencies]
+# Testing framework
+wasm-bindgen-test = "0.3"
+
+[profile.release]
+# Ultra-aggressive size optimization for WASM
+opt-level = "z"        # Optimize for size over speed
+lto = "fat"            # Full link-time optimization
+codegen-units = 1      # Single codegen unit for better optimization
+panic = "abort"        # Smaller panic handling
+strip = "symbols"      # Remove debug symbols
+overflow-checks = false # Disable overflow checks for size
+debug = false          # No debug info
+rpath = false          # No runtime path
+incremental = false    # Disable incremental compilation for better optimization
+
+[profile.release.package."*"]
+# Optimize all dependencies for size
+opt-level = "z"
+debug = false
+
+# Constitutional compliance metadata
+[package.metadata.acgs]
+constitutional_hash = "cdd01ef066bc6cf2"
+performance_targets = { p99_latency = "5ms", throughput = "100 RPS", cache_hit_rate = "85%" }
+implementation_status = "COMPLETE"
+
+# Disable wasm-opt for compatibility
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false
+
+[package.metadata.services]
+auth_service = "http://localhost:8016"
+constitutional_ai = "http://localhost:8001"
+integrity_service = "http://localhost:8002"
+formal_verification = "http://localhost:8003"
+governance_synthesis = "http://localhost:8004"
+policy_governance = "http://localhost:8005"
+evolutionary_computation = "http://localhost:8006"

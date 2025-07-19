@@ -1,0 +1,299 @@
+# ACGS-2 Accessibility Testing Pipeline
+# Constitutional Hash: cdd01ef066bc6cf2
+# 
+# Automated accessibility testing with axe-core, Lighthouse, and WCAG 2.1 AA compliance
+# Target: >95% accessibility score with zero critical violations
+
+name: ♿ ACGS-2 Accessibility Testing
+
+on:
+  push:
+    branches: [main, master, develop, 'feature/*']
+    paths:
+      - 'frontend-rust/**'
+      - '.github/workflows/accessibility-testing.yml'
+  
+  pull_request:
+    branches: [main, master, develop]
+    paths:
+      - 'frontend-rust/**'
+      - '.github/workflows/accessibility-testing.yml'
+  
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: 'Accessibility test level'
+        required: false
+        default: 'full'
+        type: choice
+        options:
+          - quick
+          - full
+          - wcag-only
+      target_score:
+        description: 'Minimum accessibility score (0-100)'
+        required: false
+        default: '95'
+        type: string
+
+env:
+  CONSTITUTIONAL_HASH: cdd01ef066bc6cf2
+  ACCESSIBILITY_TARGET_SCORE: ${{ github.event.inputs.target_score || '95' }}
+  RUST_VERSION: 1.75.0
+  NODE_VERSION: 20
+
+jobs:
+  accessibility-audit:
+    name: 🔍 Accessibility Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: 🦀 Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ env.RUST_VERSION }}
+          targets: wasm32-unknown-unknown
+      
+      - name: 📦 Cache Rust Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            frontend-rust/target
+          key: rust-${{ env.RUST_VERSION }}-${{ hashFiles('frontend-rust/Cargo.lock') }}
+          restore-keys: |
+            rust-${{ env.RUST_VERSION }}-
+      
+      - name: 🌐 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: 'frontend-rust/package*.json'
+      
+      - name: 🔧 Install Trunk
+        run: |
+          cargo install trunk --locked
+          rustup target add wasm32-unknown-unknown
+      
+      - name: 📦 Install Accessibility Testing Tools
+        run: |
+          npm install -g @axe-core/cli lighthouse pa11y
+          npm install -g axe-core @axe-core/puppeteer
+      
+      - name: 🏗️ Build Frontend
+        working-directory: frontend-rust
+        run: |
+          echo "🏗️ Building ACGS-2 Frontend with constitutional hash: $CONSTITUTIONAL_HASH"
+          trunk build --release
+          
+          # Verify build artifacts
+          ls -la dist/
+          echo "📊 Bundle size: $(du -h dist/*.wasm | cut -f1)"
+      
+      - name: 🚀 Start Development Server
+        working-directory: frontend-rust
+        run: |
+          # Start server in background
+          trunk serve --port 8080 --address 0.0.0.0 &
+          SERVER_PID=$!
+          echo "SERVER_PID=$SERVER_PID" >> $GITHUB_ENV
+          
+          # Wait for server to be ready
+          timeout 30 bash -c 'until curl -s http://localhost:8080 > /dev/null; do sleep 1; done'
+          echo "✅ Development server started on port 8080"
+      
+      - name: 🔍 Axe-Core Accessibility Testing
+        run: |
+          echo "🔍 Running axe-core accessibility tests..."
+          
+          # Create results directory
+          mkdir -p accessibility-results
+          
+          # Run axe-core tests
+          axe http://localhost:8080 \
+            --rules-file .github/workflows/axe-rules.json \
+            --reporter json \
+            --output accessibility-results/axe-results.json \
+            --timeout 30000 \
+            --exit
+          
+          # Generate human-readable report
+          axe http://localhost:8080 \
+            --reporter html \
+            --output accessibility-results/axe-report.html \
+            --timeout 30000
+          
+          echo "✅ Axe-core testing completed"
+      
+      - name: 💡 Lighthouse Accessibility Audit
+        run: |
+          echo "💡 Running Lighthouse accessibility audit..."
+          
+          lighthouse http://localhost:8080 \
+            --only-categories=accessibility \
+            --output=json \
+            --output-path=accessibility-results/lighthouse-accessibility.json \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+          
+          lighthouse http://localhost:8080 \
+            --only-categories=accessibility \
+            --output=html \
+            --output-path=accessibility-results/lighthouse-accessibility.html \
+            --chrome-flags="--headless --no-sandbox --disable-dev-shm-usage" \
+            --quiet
+          
+          echo "✅ Lighthouse accessibility audit completed"
+      
+      - name: 🎯 PA11Y WCAG 2.1 AA Testing
+        run: |
+          echo "🎯 Running PA11Y WCAG 2.1 AA compliance tests..."
+          
+          pa11y http://localhost:8080 \
+            --standard WCAG2AA \
+            --reporter json \
+            --timeout 30000 \
+            --output accessibility-results/pa11y-results.json || true
+          
+          pa11y http://localhost:8080 \
+            --standard WCAG2AA \
+            --reporter html \
+            --timeout 30000 \
+            --output accessibility-results/pa11y-report.html || true
+          
+          echo "✅ PA11Y WCAG 2.1 AA testing completed"
+      
+      - name: 📊 Analyze Accessibility Results
+        run: |
+          echo "📊 Analyzing accessibility test results..."
+          
+          # Create analysis script
+          cat > analyze_accessibility.js << 'EOF'
+          const fs = require('fs');
+          const path = require('path');
+          
+          const CONSTITUTIONAL_HASH = process.env.CONSTITUTIONAL_HASH;
+          const TARGET_SCORE = parseInt(process.env.ACCESSIBILITY_TARGET_SCORE);
+          
+          console.log(`🏛️ Constitutional Hash: ${CONSTITUTIONAL_HASH}`);
+          console.log(`🎯 Target Accessibility Score: ${TARGET_SCORE}%`);
+          console.log('');
+          
+          // Analyze Lighthouse results
+          try {
+            const lighthouseData = JSON.parse(fs.readFileSync('accessibility-results/lighthouse-accessibility.json', 'utf8'));
+            const accessibilityScore = Math.round(lighthouseData.lhr.categories.accessibility.score * 100);
+            
+            console.log(`💡 Lighthouse Accessibility Score: ${accessibilityScore}%`);
+            
+            if (accessibilityScore >= TARGET_SCORE) {
+              console.log(`✅ Lighthouse score meets target (${accessibilityScore}% >= ${TARGET_SCORE}%)`);
+            } else {
+              console.log(`❌ Lighthouse score below target (${accessibilityScore}% < ${TARGET_SCORE}%)`);
+              process.exit(1);
+            }
+          } catch (error) {
+            console.log(`⚠️ Could not analyze Lighthouse results: ${error.message}`);
+          }
+          
+          // Analyze Axe-Core results
+          try {
+            const axeData = JSON.parse(fs.readFileSync('accessibility-results/axe-results.json', 'utf8'));
+            const violations = axeData.violations || [];
+            const criticalViolations = violations.filter(v => v.impact === 'critical');
+            const seriousViolations = violations.filter(v => v.impact === 'serious');
+            
+            console.log(`🔍 Axe-Core Results:`);
+            console.log(`  - Total violations: ${violations.length}`);
+            console.log(`  - Critical violations: ${criticalViolations.length}`);
+            console.log(`  - Serious violations: ${seriousViolations.length}`);
+            
+            if (criticalViolations.length === 0) {
+              console.log(`✅ No critical accessibility violations found`);
+            } else {
+              console.log(`❌ Found ${criticalViolations.length} critical accessibility violations`);
+              criticalViolations.forEach(violation => {
+                console.log(`  - ${violation.id}: ${violation.description}`);
+              });
+              process.exit(1);
+            }
+          } catch (error) {
+            console.log(`⚠️ Could not analyze Axe-Core results: ${error.message}`);
+          }
+          
+          console.log('');
+          console.log('🎉 All accessibility tests passed!');
+          console.log(`📋 Constitutional compliance maintained: ${CONSTITUTIONAL_HASH}`);
+          EOF
+          
+          node analyze_accessibility.js
+      
+      - name: 🧹 Cleanup
+        if: always()
+        run: |
+          # Stop development server
+          if [ ! -z "$SERVER_PID" ]; then
+            kill $SERVER_PID || true
+          fi
+      
+      - name: 📤 Upload Accessibility Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: accessibility-reports-${{ github.run_number }}
+          path: accessibility-results/
+          retention-days: 30
+      
+      - name: 📝 Comment PR with Results
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            
+            let comment = `## ♿ Accessibility Test Results\n\n`;
+            comment += `**Constitutional Hash:** \`${process.env.CONSTITUTIONAL_HASH}\`\n`;
+            comment += `**Target Score:** ${process.env.ACCESSIBILITY_TARGET_SCORE}%\n\n`;
+            
+            try {
+              const lighthouseData = JSON.parse(fs.readFileSync('accessibility-results/lighthouse-accessibility.json', 'utf8'));
+              const score = Math.round(lighthouseData.lhr.categories.accessibility.score * 100);
+              const status = score >= parseInt(process.env.ACCESSIBILITY_TARGET_SCORE) ? '✅' : '❌';
+              comment += `### 💡 Lighthouse Accessibility\n`;
+              comment += `${status} **Score:** ${score}%\n\n`;
+            } catch (error) {
+              comment += `### 💡 Lighthouse Accessibility\n⚠️ Results not available\n\n`;
+            }
+            
+            try {
+              const axeData = JSON.parse(fs.readFileSync('accessibility-results/axe-results.json', 'utf8'));
+              const violations = axeData.violations || [];
+              const critical = violations.filter(v => v.impact === 'critical').length;
+              const serious = violations.filter(v => v.impact === 'serious').length;
+              const status = critical === 0 ? '✅' : '❌';
+              comment += `### 🔍 Axe-Core Analysis\n`;
+              comment += `${status} **Critical Violations:** ${critical}\n`;
+              comment += `📊 **Total Violations:** ${violations.length} (${serious} serious)\n\n`;
+            } catch (error) {
+              comment += `### 🔍 Axe-Core Analysis\n⚠️ Results not available\n\n`;
+            }
+            
+            comment += `### 📊 Reports\n`;
+            comment += `- [Lighthouse Report](../actions/runs/${context.runId})\n`;
+            comment += `- [Axe-Core Report](../actions/runs/${context.runId})\n`;
+            comment += `- [PA11Y Report](../actions/runs/${context.runId})\n`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

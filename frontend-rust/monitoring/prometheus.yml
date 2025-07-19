@@ -1,0 +1,77 @@
+# ACGS-2 Prometheus Configuration
+# Constitutional Hash: cdd01ef066bc6cf2
+# 
+# Real-time performance monitoring for production deployment
+# Targets: P99 <5ms, >100 RPS, >85% cache hit rate
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    constitutional_hash: "cdd01ef066bc6cf2"
+    environment: "production"
+    service: "acgs-frontend"
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  # ACGS Frontend Application Metrics
+  - job_name: 'acgs-frontend'
+    static_configs:
+      - targets: ['localhost:8080']
+    metrics_path: '/metrics'
+    scrape_interval: 5s
+    scrape_timeout: 3s
+    honor_labels: true
+    params:
+      constitutional_hash: ['cdd01ef066bc6cf2']
+
+  # Nginx/Web Server Metrics
+  - job_name: 'nginx'
+    static_configs:
+      - targets: ['localhost:9113']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # Node Exporter for System Metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+    scrape_interval: 15s
+
+  # Blackbox Exporter for External Monitoring
+  - job_name: 'blackbox'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+        - http://localhost:8080/health
+        - http://localhost:8080/
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+
+  # Custom ACGS Performance Metrics
+  - job_name: 'acgs-performance'
+    static_configs:
+      - targets: ['localhost:8081']
+    metrics_path: '/performance-metrics'
+    scrape_interval: 5s
+    honor_labels: true
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'acgs_.*'
+        target_label: constitutional_hash
+        replacement: 'cdd01ef066bc6cf2'

@@ -1,0 +1,110 @@
+# Trunk configuration for ACGS-2 Rust Frontend
+# Constitutional Hash: cdd01ef066bc6cf2
+
+[build]
+# Target directory for build artifacts
+dist = "dist"
+
+# Public URL for assets
+public_url = "/"
+
+[serve]
+# Development server configuration
+addresses = ["127.0.0.1"]
+port = 3000
+
+# Enable auto-reload
+auto_reload = true
+
+# Open browser automatically
+open = false
+
+# Asset processing
+[[hooks]]
+stage = "pre_build"
+command = "echo"
+command_arguments = ["Building ACGS-2 Rust Frontend with constitutional hash: cdd01ef066bc6cf2"]
+
+[[hooks]]
+stage = "post_build"
+command = "echo"
+command_arguments = ["ACGS-2 Frontend build complete. Validating constitutional compliance..."]
+
+# Copy static assets
+[[assets]]
+file = "assets/favicon.ico"
+dir = "dist"
+
+[[assets]]
+file = "assets/apple-touch-icon.png"
+dir = "dist"
+
+[[assets]]
+file = "assets/favicon-32x32.png"
+dir = "dist"
+
+[[assets]]
+file = "assets/favicon-16x16.png"
+dir = "dist"
+
+# Copy CSS files
+[[assets]]
+file = "styles/main.css"
+dir = "dist"
+
+# Environment-specific configurations
+[env.development]
+# Development-specific settings
+minify = false
+filehash = false
+
+[env.production]
+# Production optimizations
+minify = true
+filehash = true
+
+# Additional compression
+gzip = true
+brotli = true
+
+# Performance optimizations
+[build.rust]
+# Rust-specific build options
+release = true
+target = "wasm32-unknown-unknown"
+
+# Optimization flags
+[build.rust.env]
+RUSTFLAGS = "-C target-feature=+simd128 -C target-feature=+bulk-memory"
+
+# WASM optimization
+[build.wasm]
+# Enable WASM optimizations
+optimize = true
+debug = false
+
+# WASM-pack specific options
+[build.wasm_pack]
+# Additional wasm-pack arguments for performance
+extra_args = [
+    "--target", "web",
+    "--out-name", "acgs_frontend",
+    "--no-typescript",
+    "--no-pack"
+]
+
+# Constitutional compliance validation
+[metadata]
+constitutional_hash = "cdd01ef066bc6cf2"
+performance_targets = { p99_latency = "5ms", throughput = "100 RPS", cache_hit_rate = "85%" }
+implementation_status = "IN_PROGRESS"
+
+# Service integration endpoints
+[metadata.services]
+auth_service = "http://localhost:8016"
+constitutional_ai = "http://localhost:8001"
+integrity_service = "http://localhost:8002"
+formal_verification = "http://localhost:8003"
+governance_synthesis = "http://localhost:8004"
+policy_governance = "http://localhost:8005"
+evolutionary_computation = "http://localhost:8006"

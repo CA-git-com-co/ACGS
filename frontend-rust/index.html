@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-constitutional-hash="cdd01ef066bc6cf2">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="constitutional-hash" content="cdd01ef066bc6cf2" />
+    <meta name="theme-color" content="#0ea5e9" />
+    <meta name="description" content="ACGS-2 Constitutional AI Governance System - Rust Frontend" />
+    
+    <!-- Security headers -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'wasm-unsafe-eval';
+        style-src 'self' 'unsafe-inline';
+        connect-src 'self' ws://localhost:* wss://localhost:* http://localhost:* https://localhost:*;
+        img-src 'self' data: blob:;
+        font-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+    " />
+    
+    <title>ACGS-2 Constitutional AI Governance System</title>
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/acgs_frontend.wasm" as="fetch" type="application/wasm" crossorigin />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+    
+    <!-- Critical CSS -->
+    <style>
+        /* Critical CSS for initial render */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        body {
+            margin: 0;
+            background-color: #ffffff;
+            color: #1f2937;
+            font-feature-settings: "rlig" 1, "calt" 1;
+        }
+        
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 9999;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        
+        .constitutional-hash {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Hide loading screen when app is ready */
+        .app-ready .loading-screen {
+            display: none;
+        }
+        
+        /* Error state */
+        .error-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #dc2626;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .error-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .error-message {
+            font-size: 16px;
+            margin-bottom: 20px;
+            max-width: 600px;
+        }
+        
+        .error-details {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 4px;
+            max-width: 800px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading ACGS-2 Frontend</div>
+        <div class="constitutional-hash">Constitutional Hash: cdd01ef066bc6cf2</div>
+    </div>
+    
+    <!-- Error screen (hidden by default) -->
+    <div class="error-screen" id="error-screen" style="display: none;">
+        <div class="error-title">Failed to Load ACGS-2 Frontend</div>
+        <div class="error-message" id="error-message">
+            An error occurred while loading the application. Please check your browser console for details.
+        </div>
+        <div class="error-details" id="error-details"></div>
+    </div>
+    
+    <!-- Main application container -->
+    <div id="app"></div>
+    
+    <!-- WASM and JS loading script -->
+    <script type="module">
+        // Performance monitoring
+        const performanceStart = performance.now();
+        
+        // Error handling
+        window.addEventListener('error', (event) => {
+            console.error('Application error:', event.error);
+            showError('JavaScript Error', event.error?.message || 'Unknown error');
+        });
+        
+        window.addEventListener('unhandledrejection', (event) => {
+            console.error('Unhandled promise rejection:', event.reason);
+            showError('Promise Rejection', event.reason?.message || 'Unknown error');
+        });
+        
+        function showError(title, message, details = '') {
+            const loadingScreen = document.getElementById('loading-screen');
+            const errorScreen = document.getElementById('error-screen');
+            const errorMessage = document.getElementById('error-message');
+            const errorDetails = document.getElementById('error-details');
+            
+            loadingScreen.style.display = 'none';
+            errorScreen.style.display = 'flex';
+            errorMessage.textContent = message;
+            
+            if (details) {
+                errorDetails.textContent = details;
+                errorDetails.style.display = 'block';
+            }
+        }
+        
+        function hideLoading() {
+            const loadingScreen = document.getElementById('loading-screen');
+            loadingScreen.style.display = 'none';
+            document.body.classList.add('app-ready');
+            
+            // Log performance
+            const loadTime = performance.now() - performanceStart;
+            console.log(`ACGS-2 Frontend loaded in ${loadTime.toFixed(2)}ms`);
+            
+            // Check performance target
+            if (loadTime > 5000) { // 5 second target for initial load
+                console.warn(`Load time exceeded target: ${loadTime.toFixed(2)}ms > 5000ms`);
+            }
+        }
+        
+        // Load WASM module
+        async function loadWasm() {
+            try {
+                // Import the generated JS bindings
+                const { default: init } = await import('./pkg/acgs_frontend.js');
+                
+                // Initialize the WASM module
+                await init();
+                
+                // Hide loading screen
+                hideLoading();
+                
+                console.log('ACGS-2 Rust Frontend initialized successfully');
+                console.log('Constitutional Hash: cdd01ef066bc6cf2');
+                
+            } catch (error) {
+                console.error('Failed to load WASM module:', error);
+                showError(
+                    'WASM Loading Error',
+                    'Failed to load the WebAssembly module. Please ensure your browser supports WebAssembly.',
+                    error.toString()
+                );
+            }
+        }
+        
+        // Check WebAssembly support
+        if (typeof WebAssembly === 'undefined') {
+            showError(
+                'WebAssembly Not Supported',
+                'Your browser does not support WebAssembly. Please use a modern browser.',
+                'WebAssembly is required for the ACGS-2 Rust frontend.'
+            );
+        } else {
+            // Load the application
+            loadWasm();
+        }
+        
+        // Constitutional compliance validation
+        const expectedHash = 'cdd01ef066bc6cf2';
+        const metaHash = document.querySelector('meta[name="constitutional-hash"]')?.content;
+        
+        if (metaHash !== expectedHash) {
+            console.error('Constitutional hash mismatch:', { expected: expectedHash, actual: metaHash });
+        }
+    </script>
+    
+    <!-- Service Worker registration (optional) -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

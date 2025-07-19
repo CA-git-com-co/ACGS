@@ -1,0 +1,132 @@
+# ACGS-2 Prometheus Alert Rules
+# Constitutional Hash: cdd01ef066bc6cf2
+# 
+# Performance monitoring alerts for production deployment
+# Targets: P99 <5ms, >100 RPS, >85% cache hit rate
+
+groups:
+  - name: acgs_frontend_performance
+    rules:
+      # P99 Latency Alert
+      - alert: ACGS_HighLatency
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 0.005
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Frontend P99 latency is too high"
+          description: "P99 latency is {{ $value }}s, which exceeds the 5ms target for more than 2 minutes."
+
+      # Low Throughput Alert
+      - alert: ACGS_LowThroughput
+        expr: rate(http_requests_total[5m]) < 100
+        for: 3m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Frontend throughput is below target"
+          description: "Request rate is {{ $value }} RPS, which is below the 100 RPS target."
+
+      # Cache Hit Rate Alert
+      - alert: ACGS_LowCacheHitRate
+        expr: (rate(cache_hits_total[5m]) / (rate(cache_hits_total[5m]) + rate(cache_misses_total[5m]))) * 100 < 85
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Frontend cache hit rate is below target"
+          description: "Cache hit rate is {{ $value }}%, which is below the 85% target."
+
+      # High Error Rate Alert
+      - alert: ACGS_HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 1
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Frontend error rate is too high"
+          description: "Error rate is {{ $value }}%, which exceeds 1% threshold."
+
+      # Constitutional Compliance Alert
+      - alert: ACGS_ConstitutionalComplianceFailure
+        expr: rate(constitutional_compliance_failures_total[5m]) > 0
+        for: 0m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Constitutional compliance failure detected"
+          description: "Constitutional compliance failures detected: {{ $value }} failures per second."
+
+  - name: acgs_frontend_availability
+    rules:
+      # Service Down Alert
+      - alert: ACGS_ServiceDown
+        expr: up{job="acgs-frontend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Frontend service is down"
+          description: "ACGS Frontend service has been down for more than 1 minute."
+
+      # Health Check Failure
+      - alert: ACGS_HealthCheckFailure
+        expr: probe_success{job="blackbox"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "ACGS Frontend health check failing"
+          description: "Health check has been failing for more than 2 minutes."
+
+  - name: acgs_frontend_resources
+    rules:
+      # High Memory Usage
+      - alert: ACGS_HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "High memory usage on ACGS Frontend server"
+          description: "Memory usage is {{ $value }}%, which exceeds 90% threshold."
+
+      # High CPU Usage
+      - alert: ACGS_HighCPUUsage
+        expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "High CPU usage on ACGS Frontend server"
+          description: "CPU usage is {{ $value }}%, which exceeds 80% threshold."
+
+      # Disk Space Alert
+      - alert: ACGS_LowDiskSpace
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 10
+        for: 5m
+        labels:
+          severity: warning
+          constitutional_hash: "cdd01ef066bc6cf2"
+          service: "acgs-frontend"
+        annotations:
+          summary: "Low disk space on ACGS Frontend server"
+          description: "Disk space is {{ $value }}% available, which is below 10% threshold."

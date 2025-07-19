@@ -1,0 +1,62 @@
+{
+  "name": "acgs-frontend",
+  "version": "1.0.0",
+  "description": "ACGS-2 Constitutional AI Governance System - Rust Frontend",
+  "private": true,
+  "scripts": {
+    "build": "trunk build --release",
+    "dev": "trunk serve --dev",
+    "test": "cargo test",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:ui": "playwright test --ui",
+    "test:accessibility": "npm run test:axe && npm run test:lighthouse && npm run test:pa11y",
+    "test:axe": "axe http://localhost:8080 --reporter json --output accessibility-results/axe-results.json",
+    "test:lighthouse": "lighthouse http://localhost:8080 --only-categories=accessibility --output=json --output-path=accessibility-results/lighthouse-accessibility.json",
+    "test:pa11y": "pa11y http://localhost:8080 --standard WCAG2AA --reporter json --output accessibility-results/pa11y-results.json",
+    "test:all": "npm run test && npm run test:e2e && npm run test:accessibility",
+    "lint": "cargo clippy",
+    "format": "cargo fmt",
+    "playwright:install": "playwright install"
+  },
+  "devDependencies": {
+    "@axe-core/cli": "^4.8.0",
+    "@axe-core/puppeteer": "^4.8.0",
+    "@playwright/test": "^1.40.0",
+    "axe-core": "^4.8.0",
+    "lighthouse": "^11.0.0",
+    "pa11y": "^8.0.0",
+    "puppeteer": "^21.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CA-git-com-co/ACGS.git"
+  },
+  "keywords": [
+    "accessibility",
+    "wcag",
+    "axe-core",
+    "lighthouse",
+    "constitutional-ai",
+    "governance",
+    "rust",
+    "wasm"
+  ],
+  "author": "ACGS-2 Team",
+  "license": "MIT",
+  "constitutional_compliance": {
+    "hash": "cdd01ef066bc6cf2",
+    "accessibility_target": "95%",
+    "wcag_level": "AA",
+    "testing_tools": [
+      "axe-core",
+      "lighthouse",
+      "pa11y"
+    ]
+  }
+}
